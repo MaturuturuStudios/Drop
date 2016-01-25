@@ -12,4 +12,8 @@ public class Character_Size : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	public float GetSize() {
+		return 1;	// TODO	dummy, replace at will
+	}
 }

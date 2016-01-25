@@ -12,4 +12,8 @@ public class Character_Jump : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	public bool Jump() {
+		return false;	// TODO	dummy, replace at will
+	}
 }
