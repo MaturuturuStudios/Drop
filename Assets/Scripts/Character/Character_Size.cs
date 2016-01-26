@@ -53,7 +53,7 @@ public class Character_Size : MonoBehaviour {
 	}
 
 	public float GetSize() {
-		return 1;	// TODO	dummy, replace at will
+		return size;
 	}
 
 	private void SetCenter(float previousRadius){
