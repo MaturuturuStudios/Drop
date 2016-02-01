@@ -14,8 +14,8 @@ public class Game_Controller : MonoBehaviour {
 
     void Update()
     {
-        if (character.GetComponent<Character_Shoot2>().Shooting() == false)
-        {
+        //if (character.GetComponent<Character_Shoot2>().Shooting() == false)
+        //{
             // Horizontal input
             float h_input = Input.GetAxis("Horizontal");
             character.GetComponent<Character_Movement>().SetInput(h_input);
@@ -24,7 +24,7 @@ public class Game_Controller : MonoBehaviour {
             float jump_input = Input.GetAxis("Jump");
             if (jump_input > 0)
                 character.GetComponent<Character_Jump>().Jump();
-        }
+       // }
 
     }
 }
