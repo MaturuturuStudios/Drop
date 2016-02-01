@@ -34,13 +34,12 @@ public class Game_Controller : MonoBehaviour {
     private void DebugSize() {
         Character_Size size_drop = character.GetComponent<Character_Size>();
 
-        if(Input.GetKeyDown(KeyCode.UpArrow)) {
+        if(Input.GetKeyDown(KeyCode.UpArrow)) 
             size_drop.IncrementSize();
-        }
 
-        if(Input.GetKeyDown(KeyCode.DownArrow)) {
+        if(Input.GetKeyDown(KeyCode.DownArrow)) 
             size_drop.DecrementSize();
-        }
+        
 
         //Some number pressed? we use 1-9 as range 1-9
         bool done = false;
