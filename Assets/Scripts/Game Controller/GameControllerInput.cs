@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Game_Controller : MonoBehaviour {
+public class GameControllerInput : MonoBehaviour {
 
 	// External references
-	public GameObject character;
+	public GameObject current_character;
     
-
 	void Start () {
         // Do nothing
        
@@ -17,12 +16,12 @@ public class Game_Controller : MonoBehaviour {
         //{
             // Horizontal input
             float h_input = Input.GetAxis("Horizontal");
-            character.GetComponent<Character_Movement>().SetInput(h_input);
+			current_character.GetComponent<CharacterControllerCustom>().SetInput(h_input);
 
             // Jump input
             float jump_input = Input.GetAxis("Jump");
             if (jump_input > 0)
-                character.GetComponent<Character_Jump>().Jump();
+				current_character.GetComponent<CharacterControllerCustom>().Jump();
 
             //Size debug input
             DebugSize();
@@ -32,7 +31,7 @@ public class Game_Controller : MonoBehaviour {
 
     //TODO: must be here or in his script?
     private void DebugSize() {
-        Character_Size size_drop = character.GetComponent<Character_Size>();
+		CharacterSize size_drop = current_character.GetComponent<CharacterSize>();
 
         if(Input.GetKeyDown(KeyCode.UpArrow)) 
             size_drop.IncrementSize();

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Character_Shoot2 : MonoBehaviour{
+public class CharacterShoot : MonoBehaviour{
+
     public Rigidbody bulletPrefab;
     float attackSpeed = 2f;
     float cooldown;

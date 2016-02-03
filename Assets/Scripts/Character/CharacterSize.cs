@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Character_Size : MonoBehaviour {
+public class CharacterSize : MonoBehaviour {
+
     public float shrink_speed = 0.4f;
     public float enlarge_speed = 0.4f;
 
