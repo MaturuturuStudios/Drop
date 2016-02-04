@@ -16,12 +16,12 @@ public class GameControllerInput : MonoBehaviour {
         //{
             // Horizontal input
             float h_input = Input.GetAxis("Horizontal");
-			current_character.GetComponent<CharacterControllerCustom>().SetInput(h_input);
+			current_character.GetComponent<CharacterControllerCustomPlayer>().SetInput(h_input);
 
             // Jump input
             float jump_input = Input.GetAxis("Jump");
             if (jump_input > 0)
-				current_character.GetComponent<CharacterControllerCustom>().Jump();
+				current_character.GetComponent<CharacterControllerCustomPlayer>().Jump();
 
             //Size debug input
             DebugSize();

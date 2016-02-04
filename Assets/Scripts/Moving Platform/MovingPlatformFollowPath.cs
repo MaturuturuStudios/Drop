@@ -15,7 +15,7 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 		Loop
 	}
 
-	// Public atributes
+	// Public attributes
 	public FollowType followType = FollowType.MoveTowards;
 	public PathType pathType = PathType.BackAndForward;
 
@@ -36,10 +36,10 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 		// Selects the current path type
 		switch (pathType) {
 			case PathType.BackAndForward:
-				_pathEnumerator = path.getBackAndForwardEumerator();
+				_pathEnumerator = path.GetBackAndForwardEumerator();
 				break;
 			case PathType.Loop:
-				_pathEnumerator = path.getLoopEumerator();
+				_pathEnumerator = path.GetLoopEumerator();
 				break;
 			default:
 				Debug.LogError("Unrecognized path type!", gameObject);

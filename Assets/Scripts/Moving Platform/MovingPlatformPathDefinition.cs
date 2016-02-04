@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 public class MovingPlatformPathDefinition : MonoBehaviour {
 
-	// Public atributes
+	// Public attributes
 	public Transform[] points;
 
-    public IEnumerator<Transform> getBackAndForwardEumerator() {
+    public IEnumerator<Transform> GetBackAndForwardEumerator() {
 		// Only one point is required
         if (points == null || points.Length < 1)
             yield break;
@@ -32,7 +32,7 @@ public class MovingPlatformPathDefinition : MonoBehaviour {
         }
 	}
 
-	public IEnumerator<Transform> getLoopEumerator() {
+	public IEnumerator<Transform> GetLoopEumerator() {
 		if (points == null || points.Length < 1)
 			yield break;
 		
