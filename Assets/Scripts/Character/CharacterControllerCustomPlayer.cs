@@ -4,59 +4,42 @@ using System;
 
 public class CharacterControllerCustomPlayer : MonoBehaviour {
 
+	// Properties
+	public float HorizontalInput { get; set; }
+	public float JumpInput { get; set; }
+	public bool FacingRight { get; set; }
+
 	// Public attributes
 	public float maxSpeed = 8;
 	public float accelerationOnGround = 10;
 	public float accelerationOnAir = 5;
 
 	// Private attributes
-	private bool _isFacingRight;
 	private CharacterControllerCustom _controller;
-	private float _normalizedHorizontalSpeed;
 
 	public void Start() {
 		// Recovers the other components
 		_controller = GetComponent<CharacterControllerCustom>();
 
 		// By default, the player starts facing right
-		_isFacingRight = true;
+		FacingRight = true;
 	}
 
 	public void Update() {
-		HandleInput();
+		// Checks where the player is facing
+		if (HorizontalInput > 0)
+			FacingRight = true;
+		else if (HorizontalInput < 0)
+			FacingRight = false;
 
+		// Calculates the right acceleration
 		float acceleration = _controller.State.IsGrounded ? accelerationOnGround : accelerationOnAir;
-		_controller.SetHorizontalForce(Mathf.Lerp(_controller.Velocity.x, _normalizedHorizontalSpeed * maxSpeed,  acceleration * Time.deltaTime));
-	}
 
-	private void HandleInput() {
-		if (Input.GetKey(KeyCode.D)) {
-			_normalizedHorizontalSpeed = 1;
-			if (!_isFacingRight)
-				Flip();
-		}
-		else if (Input.GetKey(KeyCode.A)) {
-			_normalizedHorizontalSpeed = -1;
-			if (_isFacingRight)
-				Flip();
-		}
-		else {
-			_normalizedHorizontalSpeed = 0;
-		}
+		// Adds the force to the character controller
+		_controller.SetHorizontalForce(Mathf.Lerp(_controller.Velocity.x, HorizontalInput * maxSpeed,  acceleration * Time.deltaTime));
 
-		if (_controller.CanJump && Input.GetKeyDown(KeyCode.Space))
+		// Makes the character jump
+		if (JumpInput > 0)
 			_controller.Jump();
-	}
-
-	private void Flip() {
-		_isFacingRight = !_isFacingRight;
-	}
-
-	public void SetInput(float h_input) {
-		// TODO
-	}
-
-	public void Jump() {
-		// TODO
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections;
 public class GameControllerInput : MonoBehaviour {
 
 	// External references
-	public GameObject current_character;
+	public GameObject currentCharacter;
     
 	void Start () {
         // Do nothing
@@ -12,26 +12,23 @@ public class GameControllerInput : MonoBehaviour {
 	}
 
     void Update() {
-        //if (character.GetComponent<Character_Shoot2>().Shooting() == false)
-        //{
-            // Horizontal input
-            float h_input = Input.GetAxis("Horizontal");
-			current_character.GetComponent<CharacterControllerCustomPlayer>().SetInput(h_input);
+		CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 
-            // Jump input
-            float jump_input = Input.GetAxis("Jump");
-            if (jump_input > 0)
-				current_character.GetComponent<CharacterControllerCustomPlayer>().Jump();
+		// Horizontal input
+		float hInput = Input.GetAxis("Horizontal");
+		cccp.HorizontalInput = hInput;
 
-            //Size debug input
-            DebugSize();
-       // }
+        // Jump input
+        float jumpInput = Input.GetAxis("Jump");
+		cccp.JumpInput = jumpInput;
 
+		//Size debug input
+		DebugSize();
     }
 
     //TODO: must be here or in his script?
     private void DebugSize() {
-		CharacterSize size_drop = current_character.GetComponent<CharacterSize>();
+		CharacterSize size_drop = currentCharacter.GetComponent<CharacterSize>();
 
         if(Input.GetKeyDown(KeyCode.UpArrow)) 
             size_drop.IncrementSize();
