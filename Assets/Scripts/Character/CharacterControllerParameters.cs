@@ -17,6 +17,7 @@ public class CharacterControllerParameters {
 	public float slopeLimit = 45;
 	public Vector3 maxVelocity = new Vector3(float.MaxValue, float.MaxValue, 0);
 	public Vector3 gravity = new Vector3(0, -25, 0);
+	public float mass = 1;
 	public JumpBehaviour jumpBehaviour = JumpBehaviour.CanJumpOnGround;
 	public float jumpFrecuency = 0.25f;
 	public float jumpMagnitude = 1;

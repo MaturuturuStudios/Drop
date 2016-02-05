@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 public class CharacterControllerCustom : MonoBehaviour {
 
@@ -27,6 +28,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	// Private attributes
 	private SphereCollider _collider;
 	private CharacterControllerParameters _overrideParameters;
+	private List<RaycastHit> _collisions;
 
 	// Variables
 	private Vector3[] _rayOrigins;
@@ -36,6 +38,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void Awake() {
 		// Creates the original state
 		State = new CharacterControllerState();
+		_collisions = new List<RaycastHit>();
 		HandleCollisions = true;
 
 		// Creates the arrays for the ray's origins
@@ -91,15 +94,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 	}
 
 
-	public void LateUpdate() {
+	public void FixedUpdate() {
 		// Decreaseses the counter of time beetween jumps
-		_jumpingTime -= Time.deltaTime;
+		_jumpingTime -= Time.fixedDeltaTime;
 
 		// Adds the gravity to the velocity
-		_velocity += Parameters.gravity * Time.deltaTime;
+		_velocity += Parameters.gravity * Time.fixedDeltaTime;
 
 		// Trys the movement of the entity acording to it's speed
-		Move(Velocity * Time.deltaTime);
+		Move(Velocity * Time.fixedDeltaTime);
 	}
 
 	private void Move(Vector3 movement) {
@@ -124,7 +127,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Updates the velocity with the actual value this frame
 		if (Time.deltaTime > 0)
-			_velocity = movement / Time.deltaTime;
+			_velocity = movement / Time.fixedDeltaTime;
 	}
 
 	private void CalculateRayOrigins(Vector3 movement) {
@@ -142,6 +145,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 	}
 
 	private void CheckCollisions(ref Vector3 movement) {
+		// Creates a list for this frame's collisions
+		List<RaycastHit> thisFrameCollisions = new List<RaycastHit>();
+
 		// Casts rays according to the movement direction
 		for (int i = 0; i < _rayOrigins.Length; i++) {
 			// Caulculates the origin and direction of the ray
@@ -157,6 +163,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 			// From now on, a collision has occured
 			State.HasCollisions = true;
+			// If the collider is not already stored, stores the raycast hit
+			if (thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
+				thisFrameCollisions.Add(hit);
 
 			// Checks the angle of the normal
 			float normalAngle = Vector3.Angle(hit.normal, -Parameters.gravity);
@@ -165,10 +174,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 				State.IsGrounded = true;
 				State.GroundedObject = hit.collider.gameObject;
 			}
-			
+			else {
+				State.IsSliding = true;
+			}
+			State.SlopeAngle = normalAngle;
+
 			// Checks the angle of the movement
 			float movementAngle = Vector3.Angle(movement, Parameters.gravity);
-			if (Mathf.Abs(normalAngle) < Parameters.slopeLimit && Mathf.Abs(movementAngle) < Parameters.slopeLimit) {
+			if (State.IsGrounded && Mathf.Abs(movementAngle) < Parameters.slopeLimit) {
 				// Clamps the movement to the collision point
 				movement = hit.point - rayOrigin;
 				movement -= movement.normalized * skinWidth;
@@ -183,13 +196,56 @@ public class CharacterControllerCustom : MonoBehaviour {
 			if (rayDistance < skinWidth + 0.0001f)
 				break;
 		}
+
+		// Handles the collisions of the frame
+		HandleRaycastCollisions(thisFrameCollisions);
 	}
 
-	public void OnTriggerEnter(Collider other) {
-		// TODO
+	private void HandleRaycastCollisions(List<RaycastHit> thisFrameCollisions) {
+		// Checks the new collisions
+		foreach (RaycastHit hit in thisFrameCollisions) {
+
+			// Collision enter
+			if (_collisions.Where(e => e.collider == hit.collider).Count() == 0)
+				gameObject.SendMessage("OnCustomCollisionEnter", hit);
+
+			// Collision stay
+			else
+				gameObject.SendMessage("OnCustomCollisionStay", hit);
+
+			// Calls the generic collision method for all collisions
+			gameObject.SendMessage("OnCustomCollision", hit);
+		}
+
+		// Checks the exit collisions
+		foreach (RaycastHit hit in _collisions) {
+
+			// Collision exit
+			if (thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
+				gameObject.SendMessage("OnCustomCollisionExit", hit);
+		}
+
+		// Stores the frame's collisions
+		_collisions = thisFrameCollisions;
 	}
 
-	public void OnTriggerExit(Collider other) {
-		// TODO
+	public void OnCustomCollision(RaycastHit hit) {
+		// If the other object has a rigidbody and it's not kinematic, adds force to it
+		Rigidbody rb = hit.rigidbody;
+		if (rb != null && !rb.isKinematic) {
+			rb.AddForce(Velocity * Parameters.mass, ForceMode.Impulse);
+		}
+	}
+
+	public void OnCustomCollisionEnter(RaycastHit hit) {
+		// TODO: Add any functionality
+	}
+
+	public void OnCustomCollisionStay(RaycastHit hit) {
+		// TODO: Add any functionality
+	}
+
+	public void OnCustomCollisionExit(RaycastHit hit) {
+		// TODO: Add any functionality
 	}
 }

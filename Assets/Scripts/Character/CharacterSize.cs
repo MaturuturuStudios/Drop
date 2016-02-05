@@ -87,5 +87,25 @@ public class CharacterSize : MonoBehaviour {
 
     public bool CanSetSize(int size) {
         return true;
-    }
+	}
+
+	public void OnCustomCollision(RaycastHit hit) {
+		// TODO: Test method, remove at will
+		Debug.Log("DEFAULT: I have been aknowledge!");
+	}
+
+	public void OnCustomCollisionEnter(RaycastHit hit) {
+		// TODO: Test method, remove at will
+		Debug.Log("ENTER: I have been aknowledge!");
+	}
+
+	public void OnCustomCollisionStay(RaycastHit hit) {
+		// TODO: Test method, remove at will
+		Debug.Log("STAY: I have been aknowledge!");
+	}
+
+	public void OnCustomCollisionExit(RaycastHit hit) {
+		// TODO: Test method, remove at will
+		Debug.Log("EXIT: I have been aknowledge!");
+	}
 }
