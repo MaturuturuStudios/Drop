@@ -18,8 +18,12 @@ public class GameControllerInput : MonoBehaviour {
 		float hInput = Input.GetAxis("Horizontal");
 		cccp.HorizontalInput = hInput;
 
-        // Jump input
-        float jumpInput = Input.GetAxis("Jump");
+		// Vertical input
+		float vInput = Input.GetAxis("Vertical");
+		cccp.VerticalInput = vInput;
+
+		// Jump input
+		float jumpInput = Input.GetAxis("Jump");
 		cccp.JumpInput = jumpInput;
 
 		//Size debug input

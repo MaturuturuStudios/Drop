@@ -6,13 +6,9 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 	// Properties
 	public float HorizontalInput { get; set; }
+	public float VerticalInput { get; set; }
 	public float JumpInput { get; set; }
-	public bool FacingRight { get; set; }
-
-	// Public attributes
-	public float maxSpeed = 8;
-	public float accelerationOnGround = 10;
-	public float accelerationOnAir = 5;
+	public Vector3 FacingDirection { get; set; }
 
 	// Private attributes
 	private CharacterControllerCustom _controller;
@@ -22,21 +18,15 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		_controller = GetComponent<CharacterControllerCustom>();
 
 		// By default, the player starts facing right
-		FacingRight = true;
+		FacingDirection = Vector3.right;
 	}
 
 	public void Update() {
 		// Checks where the player is facing
-		if (HorizontalInput > 0)
-			FacingRight = true;
-		else if (HorizontalInput < 0)
-			FacingRight = false;
-
-		// Calculates the right acceleration
-		float acceleration = _controller.State.IsGrounded ? accelerationOnGround : accelerationOnAir;
+		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
 
 		// Adds the force to the character controller
-		_controller.SetHorizontalForce(Mathf.Lerp(_controller.Velocity.x, HorizontalInput * maxSpeed,  acceleration * Time.deltaTime));
+		_controller.SetInputForce(HorizontalInput, VerticalInput);
 
 		// Makes the character jump
 		if (JumpInput > 0)

@@ -56,12 +56,109 @@ public class CharacterControllerCustom : MonoBehaviour {
 		_velocity = force;
 	}
 
+	public void SetInputForce(float horizontalInput, float verticalInput) {
+		// Checks if it can move
+		if (!CanMove()) {
+			horizontalInput = 0;
+			verticalInput = 0;
+		}
+
+		// Checks the movement type
+		bool horizontal = false;
+		bool vertical = false;
+		switch (Parameters.movementFreedom) {
+			case CharacterControllerParameters.MovementFreedom.Horizontal:
+				horizontal = true;
+				break;
+			case CharacterControllerParameters.MovementFreedom.Vertical:
+				vertical = true;
+				break;
+			case CharacterControllerParameters.MovementFreedom.Both:
+				horizontal = true;
+				vertical = true;
+				break;
+			default:
+				return;
+		}
+
+		// Gets the right acceleration
+		float acceleration = State.IsGrounded ? Parameters.accelerationOnGround : Parameters.accelerationOnAir;
+
+		// Adds the right force
+		if (horizontal) {
+			// Horizontal force
+			if (Parameters.relativeToGravity) {
+				// Relative velocity
+				Vector3 horizontalVelocity = GetHorizontalVelocity();
+				Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.gravity);
+				float gravityAngle = Vector3.Angle(horizontalVelocity, perpendicular);
+				float magnitude = horizontalVelocity.magnitude;
+				float speed = gravityAngle < 90 ? magnitude : -magnitude;
+                SetHorizontalForce(Mathf.Lerp(speed, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
+			}
+			else
+			{
+				// Global velocity
+				_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
+			}
+		}
+		if (vertical) {
+			// Vertical force
+			if (Parameters.relativeToGravity) {
+				// Relative velocity
+				Vector3 verticalVelocity = GetVerticalVelocity();
+				float gravityAngle = Vector3.Angle(verticalVelocity, -Parameters.gravity);
+				float magnitude = verticalVelocity.magnitude;
+				float speed = gravityAngle < 90 ? magnitude : -magnitude;
+				SetVerticalForce(Mathf.Lerp(speed, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
+			}
+			else {
+				// Global velocity
+				_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
+			}
+		}
+	}
+
 	public void SetHorizontalForce(float x) {
-		_velocity.x = x;
+		Vector3 verticalVelocity = GetVerticalVelocity();
+		Vector3 direction = Vector3.Cross(Vector3.forward, Parameters.gravity).normalized;
+		_velocity = verticalVelocity + direction * x;
 	}
 
 	public void SetVerticalForce(float y) {
-		_velocity.y = y;
+		Vector3 horizontalVelocity = GetHorizontalVelocity();
+		Vector3 direction = -Parameters.gravity.normalized;
+        _velocity = horizontalVelocity + direction * y;
+	}
+
+	public Vector3 GetHorizontalVelocity() {
+		Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.gravity);
+		return GetVelocityOnDirection(perpendicular);
+	}
+
+	public Vector3 GetVerticalVelocity() {
+		return GetVelocityOnDirection(-Parameters.gravity);
+	}
+
+	public Vector3 GetVelocityOnDirection(Vector3 direction) {
+		Vector3 normalized = direction.normalized;
+		return Vector3.Project(_velocity, direction);
+	}
+
+	public bool CanMove() {
+		// Checks if the controller accepts input
+		switch (Parameters.movementBehaviour) {
+			case CharacterControllerParameters.MovementBehaviour.CanMoveAnywhere:
+				return true;
+			case CharacterControllerParameters.MovementBehaviour.CantMoveSliding:
+				return !State.IsSliding;
+			case CharacterControllerParameters.MovementBehaviour.CanMoveOnGround:
+				return State.IsGrounded;
+			case CharacterControllerParameters.MovementBehaviour.CantMove:
+				return false;
+			default:
+				return false;
+		}
 	}
 
 	public void Jump() {
@@ -70,7 +167,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			return;
 
 		// Calculates the jump speed to reach the desired height
-		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.y * Parameters.jumpMagnitude));
+		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.magnitude * Parameters.jumpMagnitude));
 		SetVerticalForce(jumpSpeed);
 		_jumpingTime = Parameters.jumpFrecuency;
 	}
@@ -173,8 +270,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 				// The platform is considered ground
 				State.IsGrounded = true;
 				State.GroundedObject = hit.collider.gameObject;
+				State.IsSliding = false;
 			}
-			else {
+			else if (!State.IsGrounded) {
 				State.IsSliding = true;
 			}
 			State.SlopeAngle = normalAngle;
@@ -205,6 +303,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Checks the new collisions
 		foreach (RaycastHit hit in thisFrameCollisions) {
 
+			// Calls the generic collision method for all collisions
+			gameObject.SendMessage("OnCustomCollision", hit);
+
 			// Collision enter
 			if (_collisions.Where(e => e.collider == hit.collider).Count() == 0)
 				gameObject.SendMessage("OnCustomCollisionEnter", hit);
@@ -212,9 +313,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// Collision stay
 			else
 				gameObject.SendMessage("OnCustomCollisionStay", hit);
-
-			// Calls the generic collision method for all collisions
-			gameObject.SendMessage("OnCustomCollision", hit);
 		}
 
 		// Checks the exit collisions
@@ -230,10 +328,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	}
 
 	public void OnCustomCollision(RaycastHit hit) {
-		// If the other object has a rigidbody and it's not kinematic, adds force to it
 		Rigidbody rb = hit.rigidbody;
-		if (rb != null && !rb.isKinematic) {
-			rb.AddForce(Velocity * Parameters.mass, ForceMode.Impulse);
+		if (rb != null) {
+			// If the other object has a rigidbody and it's not kinematic, adds force to it at the contact point
+			if (!rb.isKinematic)
+				rb.AddForceAtPosition(Velocity * Parameters.mass, hit.point, ForceMode.Impulse);
 		}
 	}
 
