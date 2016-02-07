@@ -10,6 +10,7 @@ public class CharacterControllerState {
 	public bool IsSliding { get; set; }
 	public GameObject GroundedObject { get; set; }
 	public float SlopeAngle { get; set; }
+	public Vector3 PlatformVelocity { get; set; }
 
 	public void Reset() {
 		HasCollisions = false;

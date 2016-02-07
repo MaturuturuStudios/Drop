@@ -28,17 +28,21 @@ public class CharacterControllerCustom : MonoBehaviour {
 	// Private attributes
 	private SphereCollider _collider;
 	private CharacterControllerParameters _overrideParameters;
-	private List<RaycastHit> _collisions;
+	private List<RaycastHit> _thisFrameCollisions;
+	private List<RaycastHit> _lastFrameCollisions;
 
 	// Variables
 	private Vector3[] _rayOrigins;
 	private float _angleBeetweenRays;
 	private float _jumpingTime;
+	private Vector3 _activeGlobalPlatformPoint;
+	private Vector3 _activeLocalPlatformPoint;
 
 	public void Awake() {
 		// Creates the original state
 		State = new CharacterControllerState();
-		_collisions = new List<RaycastHit>();
+		_thisFrameCollisions = new List<RaycastHit>();
+		_lastFrameCollisions = new List<RaycastHit>();
 		HandleCollisions = true;
 
 		// Creates the arrays for the ray's origins
@@ -46,14 +50,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Recovers the desired components
 		_collider = GetComponent<SphereCollider>();
-	}
-
-	public void AddForce(Vector3 force) {
-		_velocity += force;
-	}
-
-	public void SetForce(Vector3 force) {
-		_velocity = force;
 	}
 
 	public void SetInputForce(float horizontalInput, float verticalInput) {
@@ -94,10 +90,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 				float gravityAngle = Vector3.Angle(horizontalVelocity, perpendicular);
 				float magnitude = horizontalVelocity.magnitude;
 				float speed = gravityAngle < 90 ? magnitude : -magnitude;
-                SetHorizontalForce(Mathf.Lerp(speed, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
+				SetHorizontalForce(Mathf.Lerp(speed, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
 			}
-			else
-			{
+			else {
 				// Global velocity
 				_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
 			}
@@ -119,6 +114,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
+	public void AddForce(Vector3 force) {
+		_velocity += force;
+	}
+
+	public void SetForce(Vector3 force) {
+		_velocity = force;
+	}
+
 	public void SetHorizontalForce(float x) {
 		Vector3 verticalVelocity = GetVerticalVelocity();
 		Vector3 direction = Vector3.Cross(Vector3.forward, Parameters.gravity).normalized;
@@ -128,7 +131,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void SetVerticalForce(float y) {
 		Vector3 horizontalVelocity = GetHorizontalVelocity();
 		Vector3 direction = -Parameters.gravity.normalized;
-        _velocity = horizontalVelocity + direction * y;
+		_velocity = horizontalVelocity + direction * y;
 	}
 
 	public Vector3 GetHorizontalVelocity() {
@@ -142,7 +145,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 	public Vector3 GetVelocityOnDirection(Vector3 direction) {
 		Vector3 normalized = direction.normalized;
-		return Vector3.Project(_velocity, direction);
+		return Vector3.Project(_velocity, normalized);
 	}
 
 	public bool CanMove() {
@@ -190,16 +193,59 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
-
-	public void FixedUpdate() {
+	public void LateUpdate() {
 		// Decreaseses the counter of time beetween jumps
-		_jumpingTime -= Time.fixedDeltaTime;
+		_jumpingTime -= Time.deltaTime;
 
 		// Adds the gravity to the velocity
-		_velocity += Parameters.gravity * Time.fixedDeltaTime;
+		_velocity += Parameters.gravity * Time.deltaTime;
+
+		// Checks if the entity is grounded on a moving platform
+		HandleMovingPlatforms();
+
+		// Cheks if the entity is overlaping a collider
+		HandleOverlaping();
 
 		// Trys the movement of the entity acording to it's speed
-		Move(Velocity * Time.fixedDeltaTime);
+		Move(Velocity * Time.deltaTime);
+	}
+
+	private void HandleMovingPlatforms() {
+		if (State.GroundedObject != null) {
+			// Gets the new global position of the entity relatively to the platform
+			Vector3 newGlobalPlatformPoint = State.GroundedObject.transform.TransformPoint(_activeLocalPlatformPoint);
+			Vector3 moveDistance = newGlobalPlatformPoint - _activeGlobalPlatformPoint;
+
+			// Moves the entity to match the platform translation
+			if (moveDistance != Vector3.zero)
+				transform.Translate(moveDistance, Space.World);
+
+			// Saves the velocity of the platform
+			State.PlatformVelocity = moveDistance / Time.deltaTime;
+		}
+		else {
+			// Resets the velocity of the platform
+			State.PlatformVelocity = Vector3.zero;
+		}
+	}
+
+	private void HandleOverlaping() {
+		// Gets the overlaping colliders
+		float distance = _collider.radius * transform.localScale.x - skinWidth;
+		Collider[] colliders = Physics.OverlapSphere(transform.position, distance, platformMask);
+		foreach (Collider collider in colliders) {
+			// If a collider is overlaping this entity, it must be becouse it moved independently, so it should have a Rigidbody
+			Rigidbody rb = collider.gameObject.GetComponent<Rigidbody>();
+			if (rb == null)
+				return;
+
+			RaycastHit hit;
+			if (!Physics.Raycast(transform.position, -rb.velocity, out hit, distance, platformMask))
+				return;
+
+			Vector3 repositionVector = rb.velocity.normalized * (distance - hit.distance);
+			transform.Translate(repositionVector);
+		}
 	}
 
 	private void Move(Vector3 movement) {
@@ -224,7 +270,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Updates the velocity with the actual value this frame
 		if (Time.deltaTime > 0)
-			_velocity = movement / Time.fixedDeltaTime;
+			_velocity = movement / Time.deltaTime;
+
+		// Stores the global and local position relative to the ground
+		if (State.GroundedObject != null) {
+			_activeGlobalPlatformPoint = transform.position;
+			_activeLocalPlatformPoint = State.GroundedObject.transform.InverseTransformPoint(transform.position);
+		}
+
+		// Finally, notifies the collisions
+		NotifyCollisions();
 	}
 
 	private void CalculateRayOrigins(Vector3 movement) {
@@ -242,8 +297,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 	}
 
 	private void CheckCollisions(ref Vector3 movement) {
-		// Creates a list for this frame's collisions
-		List<RaycastHit> thisFrameCollisions = new List<RaycastHit>();
+		// Resets the collisions
+		_thisFrameCollisions = new List<RaycastHit>();
 
 		// Casts rays according to the movement direction
 		for (int i = 0; i < _rayOrigins.Length; i++) {
@@ -261,8 +316,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// From now on, a collision has occured
 			State.HasCollisions = true;
 			// If the collider is not already stored, stores the raycast hit
-			if (thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				thisFrameCollisions.Add(hit);
+			if (_thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
+				_thisFrameCollisions.Add(hit);
 
 			// Checks the angle of the normal
 			float normalAngle = Vector3.Angle(hit.normal, -Parameters.gravity);
@@ -282,69 +337,53 @@ public class CharacterControllerCustom : MonoBehaviour {
 			if (State.IsGrounded && Mathf.Abs(movementAngle) < Parameters.slopeLimit) {
 				// Clamps the movement to the collision point
 				movement = hit.point - rayOrigin;
-				movement -= movement.normalized * skinWidth;
+				movement -= rayDirection * skinWidth;
 			}
 			else {
 				// Modifies the movement to slide with the collider
-				Vector3 repositionVector = Vector3.Project(-movement, hit.normal);
-				movement += repositionVector;
+				Vector3 hitVector = hit.point - rayOrigin - rayDirection * skinWidth;
+				Vector3 repositionVector = Vector3.Project(movement - hitVector, hit.normal);
+				movement -= repositionVector;
 			}
 
 			// Precaution check
 			if (rayDistance < skinWidth + 0.0001f)
 				break;
 		}
-
-		// Handles the collisions of the frame
-		HandleRaycastCollisions(thisFrameCollisions);
 	}
 
-	private void HandleRaycastCollisions(List<RaycastHit> thisFrameCollisions) {
+	private void NotifyCollisions() {
 		// Checks the new collisions
-		foreach (RaycastHit hit in thisFrameCollisions) {
+		foreach (RaycastHit hit in _thisFrameCollisions) {
 
 			// Calls the generic collision method for all collisions
 			gameObject.SendMessage("OnCustomCollision", hit);
 
 			// Collision enter
-			if (_collisions.Where(e => e.collider == hit.collider).Count() == 0)
-				gameObject.SendMessage("OnCustomCollisionEnter", hit);
+			if (_lastFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
+				gameObject.SendMessage("OnCustomCollisionEnter", hit, SendMessageOptions.DontRequireReceiver);
 
 			// Collision stay
 			else
-				gameObject.SendMessage("OnCustomCollisionStay", hit);
+				gameObject.SendMessage("OnCustomCollisionStay", hit, SendMessageOptions.DontRequireReceiver);
 		}
 
 		// Checks the exit collisions
-		foreach (RaycastHit hit in _collisions) {
+		foreach (RaycastHit hit in _lastFrameCollisions) {
 
 			// Collision exit
-			if (thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				gameObject.SendMessage("OnCustomCollisionExit", hit);
+			if (_thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
+				gameObject.SendMessage("OnCustomCollisionExit", hit, SendMessageOptions.DontRequireReceiver);
 		}
 
 		// Stores the frame's collisions
-		_collisions = thisFrameCollisions;
+		_lastFrameCollisions = _thisFrameCollisions;
 	}
 
 	public void OnCustomCollision(RaycastHit hit) {
 		Rigidbody rb = hit.rigidbody;
-		if (rb != null) {
-			// If the other object has a rigidbody and it's not kinematic, adds force to it at the contact point
-			if (!rb.isKinematic)
-				rb.AddForceAtPosition(Velocity * Parameters.mass, hit.point, ForceMode.Impulse);
-		}
-	}
-
-	public void OnCustomCollisionEnter(RaycastHit hit) {
-		// TODO: Add any functionality
-	}
-
-	public void OnCustomCollisionStay(RaycastHit hit) {
-		// TODO: Add any functionality
-	}
-
-	public void OnCustomCollisionExit(RaycastHit hit) {
-		// TODO: Add any functionality
+		// If the other object has a rigidbody and it's not kinematic, adds force to it at the contact point
+		if (rb != null && !rb.isKinematic)
+			rb.AddForceAtPosition(Velocity * Parameters.mass, hit.point, ForceMode.Impulse);
 	}
 }

@@ -25,6 +25,7 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 
 	// Private variables
 	private IEnumerator<Transform> _pathEnumerator;
+	private Rigidbody _rigidbody;
 
 	public void Start() {
 		// A path is required
@@ -32,6 +33,9 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 			Debug.LogError("Path cannot be null!", gameObject);
 			return;
 		}
+
+		// Reecovers the rigidbody component
+		_rigidbody = GetComponent<Rigidbody>();
 
 		// Selects the current path type
 		switch (pathType) {
@@ -59,10 +63,10 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 		// Moves the entity using the right function
 		switch (followType) {
 			case FollowType.MoveTowards:
-				transform.position = Vector3.MoveTowards(transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
+				_rigidbody.MovePosition(Vector3.MoveTowards(transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime));
 				break;
 			case FollowType.Lerp:
-				transform.position = Vector3.Lerp(transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
+				_rigidbody.MovePosition(Vector3.Lerp(transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime));
 				break;
 			default:
 				return;
