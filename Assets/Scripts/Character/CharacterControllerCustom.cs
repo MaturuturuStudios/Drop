@@ -251,7 +251,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			State.IsSliding = true;
 			State.GroundedObject = null;
 
-			// Projects the speed to the normal perpendicular
+			// Projects the speed to the normal's perpendicular
 			Vector3 normalPerpendicular = Vector3.Cross(hit.normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 		}
@@ -259,7 +259,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Apply force to the other object if it allows it
 		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
 		if (otherRigidbody != null && !otherRigidbody.isKinematic) {
-			otherRigidbody.AddForce(_velocity * Parameters.mass, ForceMode.Impulse);
+			otherRigidbody.AddForceAtPosition(_velocity * Parameters.mass, hit.point, ForceMode.Impulse);
 		}
 	}
 }

@@ -88,20 +88,4 @@ public class CharacterSize : MonoBehaviour {
     public bool CanSetSize(int size) {
         return true;
 	}
-
-	public void OnCustomCollision(RaycastHit hit) {
-		// TODO: Test method, remove at will
-	}
-
-	public void OnCustomCollisionEnter(RaycastHit hit) {
-		// TODO: Test method, remove at will
-	}
-
-	public void OnCustomCollisionStay(RaycastHit hit) {
-		// TODO: Test method, remove at will
-	}
-
-	public void OnCustomCollisionExit(RaycastHit hit) {
-		// TODO: Test method, remove at will
-	}
 }
