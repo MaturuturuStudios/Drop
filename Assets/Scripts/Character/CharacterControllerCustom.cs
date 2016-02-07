@@ -8,7 +8,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 	// Properties
 	public CharacterControllerState State { get; private set; }
 	public Vector3 Velocity { get { return _velocity; } }
-	public bool HandleCollisions { get; set; }
 	public CharacterControllerParameters Parameters {
 		get {
 			// If no override paramaters have been specified, return the default parameters
@@ -22,18 +21,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 	// Public attributes
 	public LayerMask platformMask;
 	public CharacterControllerParameters defaultParameters;
-	public float skinWidth = 0.02f;
-	public int totalRays = 16;
 
 	// Private attributes
-	private SphereCollider _collider;
+	private CharacterController _controller;
 	private CharacterControllerParameters _overrideParameters;
-	private List<RaycastHit> _thisFrameCollisions;
-	private List<RaycastHit> _lastFrameCollisions;
 
 	// Variables
-	private Vector3[] _rayOrigins;
-	private float _angleBeetweenRays;
 	private float _jumpingTime;
 	private Vector3 _activeGlobalPlatformPoint;
 	private Vector3 _activeLocalPlatformPoint;
@@ -41,23 +34,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void Awake() {
 		// Creates the original state
 		State = new CharacterControllerState();
-		_thisFrameCollisions = new List<RaycastHit>();
-		_lastFrameCollisions = new List<RaycastHit>();
-		HandleCollisions = true;
-
-		// Creates the arrays for the ray's origins
-		_rayOrigins = new Vector3[totalRays];
 
 		// Recovers the desired components
-		_collider = GetComponent<SphereCollider>();
+		_controller = GetComponent<CharacterController>();
 	}
 
 	public void SetInputForce(float horizontalInput, float verticalInput) {
 		// Checks if it can move
-		if (!CanMove()) {
-			horizontalInput = 0;
-			verticalInput = 0;
-		}
+		if (!CanMove())
+			return;
 
 		// Checks the movement type
 		bool horizontal = false;
@@ -77,40 +62,33 @@ public class CharacterControllerCustom : MonoBehaviour {
 				return;
 		}
 
+		// If the input is relative to the gravity, rotates the velocity to match it
+		float gravityAngle = 0;
+		if (Parameters.relativeToGravity) {
+			gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
+			if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
+				gravityAngle = -gravityAngle;
+			_velocity = Quaternion.Euler(0, 0, gravityAngle) * _velocity;
+		}
+
 		// Gets the right acceleration
 		float acceleration = State.IsGrounded ? Parameters.accelerationOnGround : Parameters.accelerationOnAir;
-
-		// Adds the right force
+		// Adds the right forces
 		if (horizontal) {
-			// Horizontal force
-			if (Parameters.relativeToGravity) {
-				// Relative velocity
-				Vector3 horizontalVelocity = GetHorizontalVelocity();
-				Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.gravity);
-				float gravityAngle = Vector3.Angle(horizontalVelocity, perpendicular);
-				float magnitude = horizontalVelocity.magnitude;
-				float speed = gravityAngle < 90 ? magnitude : -magnitude;
-				SetHorizontalForce(Mathf.Lerp(speed, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
-			}
-			else {
-				// Global velocity
-				_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
-			}
+			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
 		}
 		if (vertical) {
-			// Vertical force
-			if (Parameters.relativeToGravity) {
-				// Relative velocity
-				Vector3 verticalVelocity = GetVerticalVelocity();
-				float gravityAngle = Vector3.Angle(verticalVelocity, -Parameters.gravity);
-				float magnitude = verticalVelocity.magnitude;
-				float speed = gravityAngle < 90 ? magnitude : -magnitude;
-				SetVerticalForce(Mathf.Lerp(speed, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
-			}
-			else {
-				// Global velocity
-				_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
-			}
+			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
+		}
+
+		// If it's grounded on a slope, substracts the necessary vertical speed to stick to the ground
+		if (State.IsGrounded && Mathf.Abs(State.SlopeAngle) > 0.001f) {
+			_velocity.y -= _velocity.x * Mathf.Sin(State.SlopeAngle * Mathf.Deg2Rad);
+		}
+
+		// If the input was relative to the gravity, restores it's orientation
+		if (Parameters.relativeToGravity) {
+			_velocity = Quaternion.Euler(0, 0, -gravityAngle) * _velocity;
 		}
 	}
 
@@ -172,6 +150,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Calculates the jump speed to reach the desired height
 		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.magnitude * Parameters.jumpMagnitude));
 		SetVerticalForce(jumpSpeed);
+
+		// Adds the velocity of the platform
+		AddForce(State.PlatformVelocity);
+
 		_jumpingTime = Parameters.jumpFrecuency;
 	}
 
@@ -203,9 +185,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
 
-		// Cheks if the entity is overlaping a collider
-		HandleOverlaping();
-
 		// Trys the movement of the entity acording to it's speed
 		Move(Velocity * Time.deltaTime);
 	}
@@ -229,36 +208,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
-	private void HandleOverlaping() {
-		// Gets the overlaping colliders
-		float distance = _collider.radius * transform.localScale.x - skinWidth;
-		Collider[] colliders = Physics.OverlapSphere(transform.position, distance, platformMask);
-		foreach (Collider collider in colliders) {
-			// If a collider is overlaping this entity, it must be becouse it moved independently, so it should have a Rigidbody
-			Rigidbody rb = collider.gameObject.GetComponent<Rigidbody>();
-			if (rb == null)
-				return;
-
-			RaycastHit hit;
-			if (!Physics.Raycast(transform.position, -rb.velocity, out hit, distance, platformMask))
-				return;
-
-			Vector3 repositionVector = rb.velocity.normalized * (distance - hit.distance);
-			transform.Translate(repositionVector);
-		}
-	}
-
 	private void Move(Vector3 movement) {
 		// Resets the state
 		State.Reset();
-
-		if (HandleCollisions) {
-			// Precomputes the ray's origins
-			CalculateRayOrigins(movement);
-
-			// Checks for possible collisions
-			CheckCollisions(ref movement);
-		}
 
 		// Clamps the movement
 		movement.x = Mathf.Clamp(movement.x, -Parameters.maxVelocity.x, Parameters.maxVelocity.x);
@@ -266,124 +218,48 @@ public class CharacterControllerCustom : MonoBehaviour {
 		movement.z = Mathf.Clamp(movement.z, -Parameters.maxVelocity.z, Parameters.maxVelocity.z);
 
 		// Do the actual movement
-		transform.Translate(movement, Space.World);
-
-		// Updates the velocity with the actual value this frame
-		if (Time.deltaTime > 0)
-			_velocity = movement / Time.deltaTime;
+		_controller.Move(movement);
+		Debug.DrawRay(transform.position, movement, Color.red);
 
 		// Stores the global and local position relative to the ground
 		if (State.GroundedObject != null) {
 			_activeGlobalPlatformPoint = transform.position;
 			_activeLocalPlatformPoint = State.GroundedObject.transform.InverseTransformPoint(transform.position);
 		}
-
-		// Finally, notifies the collisions
-		NotifyCollisions();
 	}
 
-	private void CalculateRayOrigins(Vector3 movement) {
-		// Stores the angle beetween rays
-		_angleBeetweenRays = 360.0f / totalRays;
+	public void OnControllerColliderHit(ControllerColliderHit hit) {
+		// There has been collisions this frame
+		State.HasCollisions = true;
 
-		// Calculates the ray's origins
-		Vector3 scale = transform.localScale;
-		for (int i = 0; i < _rayOrigins.Length; i++) {
-			// Calculates the right coordinates and creates the point
-			float x = transform.position.x + (_collider.radius * scale.x - skinWidth) * Mathf.Cos(i * _angleBeetweenRays * Mathf.Deg2Rad);
-			float y = transform.position.y + (_collider.radius * scale.y - skinWidth) * Mathf.Sin(i * _angleBeetweenRays * Mathf.Deg2Rad);
-			_rayOrigins[i] = new Vector3(x, y, 0);
+		// Looks for the angle beetween the collision nomal an the gravity
+		State.SlopeAngle = Vector3.Angle(hit.normal, -Parameters.gravity);
+		if (Vector3.Cross(hit.normal, -Parameters.gravity).z < 0)
+			State.SlopeAngle = -State.SlopeAngle;
+		if (Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit) {
+			// The collider is considered ground
+			State.IsGrounded = true;
+			State.IsSliding = false;
+			State.GroundedObject = hit.collider.gameObject;
+
+			// Removes the velocity's vertical component
+			SetVerticalForce(0);
 		}
-	}
+		else {
+			// The collider is considered a slope
+			State.IsGrounded = false;
+			State.IsSliding = true;
+			State.GroundedObject = null;
 
-	private void CheckCollisions(ref Vector3 movement) {
-		// Resets the collisions
-		_thisFrameCollisions = new List<RaycastHit>();
-
-		// Casts rays according to the movement direction
-		for (int i = 0; i < _rayOrigins.Length; i++) {
-			// Caulculates the origin and direction of the ray
-			Vector3 rayOrigin = _rayOrigins[i];
-			Vector3 rayDirection = movement.normalized;
-			float rayDistance = movement.magnitude + skinWidth;
-
-			// Casts the ray
-			Debug.DrawRay(rayOrigin, rayDirection * rayDistance, Color.red);
-			RaycastHit hit;
-			if (!Physics.Raycast(rayOrigin, rayDirection, out hit, rayDistance, platformMask))
-				continue;
-
-			// From now on, a collision has occured
-			State.HasCollisions = true;
-			// If the collider is not already stored, stores the raycast hit
-			if (_thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				_thisFrameCollisions.Add(hit);
-
-			// Checks the angle of the normal
-			float normalAngle = Vector3.Angle(hit.normal, -Parameters.gravity);
-			if (Mathf.Abs(normalAngle) < Parameters.slopeLimit) {
-				// The platform is considered ground
-				State.IsGrounded = true;
-				State.GroundedObject = hit.collider.gameObject;
-				State.IsSliding = false;
-			}
-			else if (!State.IsGrounded) {
-				State.IsSliding = true;
-			}
-			State.SlopeAngle = normalAngle;
-
-			// Checks the angle of the movement
-			float movementAngle = Vector3.Angle(movement, Parameters.gravity);
-			if (State.IsGrounded && Mathf.Abs(movementAngle) < Parameters.slopeLimit) {
-				// Clamps the movement to the collision point
-				movement = hit.point - rayOrigin;
-				movement -= rayDirection * skinWidth;
-			}
-			else {
-				// Modifies the movement to slide with the collider
-				Vector3 hitVector = hit.point - rayOrigin - rayDirection * skinWidth;
-				Vector3 repositionVector = Vector3.Project(movement - hitVector, hit.normal);
-				movement -= repositionVector;
-			}
-
-			// Precaution check
-			if (rayDistance < skinWidth + 0.0001f)
-				break;
-		}
-	}
-
-	private void NotifyCollisions() {
-		// Checks the new collisions
-		foreach (RaycastHit hit in _thisFrameCollisions) {
-
-			// Calls the generic collision method for all collisions
-			gameObject.SendMessage("OnCustomCollision", hit);
-
-			// Collision enter
-			if (_lastFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				gameObject.SendMessage("OnCustomCollisionEnter", hit, SendMessageOptions.DontRequireReceiver);
-
-			// Collision stay
-			else
-				gameObject.SendMessage("OnCustomCollisionStay", hit, SendMessageOptions.DontRequireReceiver);
+			// Projects the speed to the normal perpendicular
+			Vector3 normalPerpendicular = Vector3.Cross(hit.normal, Vector3.forward);
+			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 		}
 
-		// Checks the exit collisions
-		foreach (RaycastHit hit in _lastFrameCollisions) {
-
-			// Collision exit
-			if (_thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				gameObject.SendMessage("OnCustomCollisionExit", hit, SendMessageOptions.DontRequireReceiver);
+		// Apply force to the other object if it allows it
+		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
+		if (otherRigidbody != null && !otherRigidbody.isKinematic) {
+			otherRigidbody.AddForce(_velocity * Parameters.mass, ForceMode.Impulse);
 		}
-
-		// Stores the frame's collisions
-		_lastFrameCollisions = _thisFrameCollisions;
-	}
-
-	public void OnCustomCollision(RaycastHit hit) {
-		Rigidbody rb = hit.rigidbody;
-		// If the other object has a rigidbody and it's not kinematic, adds force to it at the contact point
-		if (rb != null && !rb.isKinematic)
-			rb.AddForceAtPosition(Velocity * Parameters.mass, hit.point, ForceMode.Impulse);
 	}
 }
