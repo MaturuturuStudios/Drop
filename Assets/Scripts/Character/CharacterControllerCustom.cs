@@ -232,9 +232,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// There has been collisions this frame
 		State.HasCollisions = true;
 
+		// Spheres have their normal inverted for whatever reason
+		Vector3 normal = hit.normal;
+		if (hit.collider is SphereCollider)
+			normal = -hit.normal;
+
 		// Looks for the angle beetween the collision nomal an the gravity
-		State.SlopeAngle = Vector3.Angle(hit.normal, -Parameters.gravity);
-		if (Vector3.Cross(hit.normal, -Parameters.gravity).z < 0)
+		State.SlopeAngle = Vector3.Angle(normal, -Parameters.gravity);
+		if (Vector3.Cross(normal, -Parameters.gravity).z < 0)
 			State.SlopeAngle = -State.SlopeAngle;
 		if (Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit) {
 			// The collider is considered ground
@@ -252,7 +257,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			State.GroundedObject = null;
 
 			// Projects the speed to the normal's perpendicular
-			Vector3 normalPerpendicular = Vector3.Cross(hit.normal, Vector3.forward);
+			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 		}
 
