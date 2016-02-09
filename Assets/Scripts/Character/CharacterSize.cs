@@ -13,12 +13,14 @@ public class CharacterSize : MonoBehaviour {
 
 	private Transform _dropTransform;
 	private CharacterControllerCustom _dropController;
+    private float _ratioRadius;
 
 	// Use this for initialization
 	void Start() {
 		_dropTransform = gameObject.transform;
 		_dropTransform.localScale = Vector3.one;
 		_dropController = GetComponent<CharacterControllerCustom>();
+        _ratioRadius=GetComponent<CharacterController>().radius;
 
 		_size = 1;
 		_targettingSize = 0;
@@ -27,7 +29,7 @@ public class CharacterSize : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update() {
-		if(Input.GetKeyDown(KeyCode.UpArrow))
+        if(Input.GetKeyDown(KeyCode.UpArrow))
 			IncrementSize();
 
 		if(Input.GetKeyDown(KeyCode.DownArrow))
@@ -56,9 +58,10 @@ public class CharacterSize : MonoBehaviour {
 
 	public void SetSize(int size) {
 		if(size > 0 && this._size != size) {
-			//TODO can't move
-			//CharacterControllerParameters parameters;
-			//parameters.movementBehaviour = CharacterControllerParameters.MovementBehaviour.CantMoveSliding;
+            //TODO can't move
+            CharacterControllerParameters parameters = new CharacterControllerParameters();
+            parameters.movementControl = CharacterControllerParameters.MovementControl.None;
+            GetComponent<CharacterControllerCustom>().Parameters = parameters;
 
 			//TODO: watch this value, using only x scale, presuppose  x,y,z has the same scale
 			float difference = size - _dropTransform.localScale.x;
@@ -77,7 +80,7 @@ public class CharacterSize : MonoBehaviour {
 
 	private void GradualModifySize() {
 		if(_targettingSize > 0) {
-			float previousRadius = _dropTransform.localScale.x * 0.5f;
+			float previousRadius = _dropTransform.localScale.x * _ratioRadius;
 			float newScale = 0;
 
 			//positive if I grow up
@@ -104,12 +107,13 @@ public class CharacterSize : MonoBehaviour {
 				_dropTransform.position += offset;
 			}
 
-			//finished! can move again.
-			//Controlling nobody changed the movement to another value
-			//TODO: move again
-			//if(_targettingSize==0)
-			// _dropController.Parameters.movementBehaviour = _previousBehaviour;
-		}
+            //finished! can move again.
+            if(_targettingSize == 0) {
+                CharacterControllerParameters parameters = new CharacterControllerParameters();
+                parameters.movementControl = CharacterControllerParameters.MovementControl.Both;
+                GetComponent<CharacterControllerCustom>().Parameters = parameters;
+            }
+        }
 	}
 
 	private bool CanSetSize(float previousRadius, float newRadius, out Vector3 offset) {
@@ -136,19 +140,17 @@ public class CharacterSize : MonoBehaviour {
 
 	private void SpitDrop() {
 		//TODO spit a drop when I'm growing up and I can't have more
-		//also, truncate the size value
 
 		//final size...
 		float finalScale = _dropTransform.localScale.x;
-		int finalSize = (int)finalScale;
+        //truncate value
+		int finalSize = (int) finalScale;
 
 		int numberDropsRemain = _newSize - finalSize;
 		Debug.Log("Spit " + numberDropsRemain + " out");
-
-		//set the final size
-		//TODO: can move again
-		//_dropController.Parameters.movementBehaviour = _previousBehaviour;
-		SetSize(finalSize);
+        
+        //set the final size
+        SetSize(finalSize);
 	}
 
 	private struct InfoAxis {
