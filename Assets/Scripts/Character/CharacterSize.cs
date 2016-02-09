@@ -1,22 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// The size of the character. Control if the character can grow up or decrease and how.
+/// </summary>
 public class CharacterSize : MonoBehaviour {
+    #region Public Attributes
+    /// <summary>
+    /// Decrease rate
+    /// </summary>
+    public float shrinkSpeed = 5f;
+    /// <summary>
+    /// Growth rate
+    /// </summary>
+    public float enlargeSpeed = 5f;
+    #endregion
 
-	public float shrinkSpeed = 5f;
-	public float enlargeSpeed = 5f;
-
-	private float _targettingSize;
+    #region Private Attributes
+    private float _targettingSize;
+    /// <summary>
+    /// Growing or decreasing
+    /// </summary>
 	private int _shrinkOrEnlarge;
 	private int _size;
 	private int _newSize;
+    #endregion
 
-	private Transform _dropTransform;
+    #region Private Attributes
+    private Transform _dropTransform;
 	private CharacterControllerCustom _dropController;
     private float _ratioRadius;
+    #endregion
 
-	// Use this for initialization
-	void Start() {
+    #region Methods
+    // Use this for initialization
+    void Start() {
 		_dropTransform = gameObject.transform;
 		_dropTransform.localScale = Vector3.one;
 		_dropController = GetComponent<CharacterControllerCustom>();
@@ -58,7 +76,7 @@ public class CharacterSize : MonoBehaviour {
 
 	public void SetSize(int size) {
 		if(size > 0 && this._size != size) {
-            //TODO can't move
+            //can't move
             CharacterControllerParameters parameters = new CharacterControllerParameters();
             parameters.movementControl = CharacterControllerParameters.MovementControl.None;
             GetComponent<CharacterControllerCustom>().Parameters = parameters;
@@ -124,7 +142,8 @@ public class CharacterSize : MonoBehaviour {
 		Vector3 position = _dropTransform.position;
 
 		//set the center with the new radius
-		//position.y += newRadius - previousRadius;
+        float offsetCenter= newRadius - previousRadius;
+        position.y += offsetCenter;
 
 		InfoAxis horizontal_axis = checkAxis(0, position, previousRadius, newRadius);
 		InfoAxis vertical_axis = checkAxis(1, position, previousRadius, newRadius);
@@ -132,6 +151,7 @@ public class CharacterSize : MonoBehaviour {
 		if(!horizontal_axis.block && !vertical_axis.block) {
 			//move the offset...
 			offset = horizontal_axis.offset + vertical_axis.offset;
+            offset.y += offsetCenter;
 			canGrowUp = true;
 		}
 
@@ -270,4 +290,6 @@ public class CharacterSize : MonoBehaviour {
 	public void OnCustomCollisionExit(RaycastHit hit) {
 		// TODO: Test method, remove at will
 	}
+
+    #endregion
 }
