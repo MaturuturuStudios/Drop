@@ -18,7 +18,7 @@ public class CharacterSize : MonoBehaviour {
 
     #region Custom private Enumerations
     /// <summary>
-    /// 
+    /// Information about the axis when check for collisions
     /// </summary>
     private struct InfoAxis {
         //0 for horizontal
@@ -31,21 +31,17 @@ public class CharacterSize : MonoBehaviour {
 
     #region Variables
     /// <summary>
-    /// Actual difference with the target size of the character (absolute)
-    /// </summary>
-    private float _targettingSize;
-    /// <summary>
     /// Growing or decreasing
     /// </summary>
 	private int _shrinkOrEnlarge;
     /// <summary>
-    /// Actual size of the character
-    /// </summary>
-	private int _size;
-    /// <summary>
     /// Target size of the character
     /// </summary>
-	private int _newSize;
+	private int _targetSize;
+    /// <summary>
+    /// Parameters setted to the moment the character is growing up/decreasing
+    /// </summary>
+    CharacterControllerParameters _quietGrowingParameters;
     #endregion
 
     #region Private Attributes
@@ -53,10 +49,6 @@ public class CharacterSize : MonoBehaviour {
     /// Transform of the character
     /// </summary>
     private Transform _dropTransform;
-    /// <summary>
-    /// Controller of character (the custom one)
-    /// </summary>
-	private CharacterControllerCustom _dropController;
     /// <summary>
     /// Radius of character
     /// </summary>
@@ -72,11 +64,12 @@ public class CharacterSize : MonoBehaviour {
     void Start() {
 		_dropTransform = gameObject.transform;
 		_dropTransform.localScale = Vector3.one;
-		_dropController = GetComponent<CharacterControllerCustom>();
         _ratioRadius=GetComponent<CharacterController>().radius;
 
-		_size = 1;
-		_targettingSize = 0;
+        _quietGrowingParameters = new CharacterControllerParameters();
+        _quietGrowingParameters.movementControl = CharacterControllerParameters.MovementControl.None;
+
+        _targetSize = 1;
 		SetSize(1);
 	}
 
@@ -108,14 +101,14 @@ public class CharacterSize : MonoBehaviour {
     /// Increment the size by one
     /// </summary>
     public void IncrementSize() {
-		SetSize(_size + 1);
+		SetSize(_targetSize + 1);
 	}
 
     /// <summary>
     /// Decrement the size by one (with minimum of one)
     /// </summary>
 	public void DecrementSize() {
-		SetSize(_size - 1);
+		SetSize(_targetSize - 1);
 	}
 
     /// <summary>
@@ -123,30 +116,27 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
     /// <param name="size">New size</param>
 	public void SetSize(int size) {
-		if(size > 0 && this._size != size) {
+		if(size > 0 && size != _targetSize) {
             //can't move
-            CharacterControllerParameters parameters = new CharacterControllerParameters();
-            parameters.movementControl = CharacterControllerParameters.MovementControl.None;
-            GetComponent<CharacterControllerCustom>().Parameters = parameters;
+            GetComponent<CharacterControllerCustom>().Parameters = _quietGrowingParameters;
 
-			//TODO: watch this value, using only x scale, presuppose  x,y,z has the same scale
-			float difference = size - _dropTransform.localScale.x;
-			_newSize = size;
-			_targettingSize = Mathf.Abs(difference);
+            //set the new size
+            _targetSize = size;
 
-			//positive if I grow up
-			_shrinkOrEnlarge = (difference > 0) ? (int)Mathf.Ceil(difference) :
+            //set if growing up or decreasing. Positive if I grow up
+            //TODO: watch this value, using only x scale, presuppose  x,y,z has the same scale
+            float difference = size - _dropTransform.localScale.x;
+            _shrinkOrEnlarge = (difference > 0) ? (int)Mathf.Ceil(difference) :
 				                                (int)Mathf.Floor(difference);
-            _size = size;
 		}
 	}
 
     /// <summary>
     /// Get the actual size
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The actual/Targeted size, may not be the actual size of the character</returns>
 	public float GetSize() {
-		return _size;
+        return _targetSize;
 	}
     #endregion
 
@@ -156,43 +146,49 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
     private void GradualModifySize() {
         //if I have pending change...
-		if(_targettingSize > 0) {
-			//set the size, positive if I grow up
-			float speed = (_shrinkOrEnlarge < 0) ? shrinkSpeed : enlargeSpeed;
+        if(_targetSize != transform.localScale.x) {
+            //set the size, positive if I grow up
+            float speed = (_shrinkOrEnlarge < 0) ? shrinkSpeed : enlargeSpeed;
+
             //substract the growth
-			_targettingSize -= Time.deltaTime * speed * Mathf.Abs(_shrinkOrEnlarge);
-            
-            
+            float _targettingSize = Mathf.Abs(_targetSize - _dropTransform.localScale.x);
+            _targettingSize -= Time.deltaTime * speed * Mathf.Abs(_shrinkOrEnlarge);
+
+
             float newScale = 0;
             if(_targettingSize <= 0) {
-                //if finally reached the target size, set the size so we don't have floating remains
-                newScale = _size;
-				_targettingSize = 0;
+                //if finally reached the target size, set the size harcoding so we don't have floating remains
+                newScale = _targetSize;
+                _targettingSize = 0;
 
-			} else
-				newScale = _dropTransform.localScale.x + Time.deltaTime * speed * _shrinkOrEnlarge;
-            
+            } else
+                newScale = _dropTransform.localScale.x + Time.deltaTime * speed * _shrinkOrEnlarge;
+
 
             //control if i have space enough and repositioning it
             Vector3 offset = Vector3.zero;
             float newRadius = newScale * _ratioRadius;
             float previousRadius = _dropTransform.localScale.x * _ratioRadius;
 
-            if(!CanSetSize(previousRadius, newRadius, out offset))
-				SpitDrop();
-			else {
-				//set the new size
-				_dropTransform.localScale = new Vector3(newScale, newScale, newScale);
-				//put it where it has no collision
-				_dropTransform.position += offset;
-			}
+            if(!CanSetSize(previousRadius, newRadius, out offset)) {
+                //this line is needed. If spitDrop set the size equal to actual size of character
+                //GradualModifySize will not enter so never get inside the condition
+                //where we recover the movement to the character
+                _targettingSize = 0;
+                //I can't, get the maximum size and spit the rest
+                SpitDrop(newScale);
+
+            } else {
+                //set the new size to the character
+                _dropTransform.localScale = new Vector3(newScale, newScale, newScale);
+                //put it where it has no collision
+                _dropTransform.position += offset;
+            }
 
             //in my size! can move again.
-            if(_targettingSize == 0) {
-                CharacterControllerParameters parameters = new CharacterControllerParameters();
-                parameters.movementControl = CharacterControllerParameters.MovementControl.Both;
-                GetComponent<CharacterControllerCustom>().Parameters = parameters;
-            }
+            if(_targettingSize == 0) 
+                GetComponent<CharacterControllerCustom>().Parameters = null;
+            
         }
 	}
 
@@ -202,7 +198,7 @@ public class CharacterSize : MonoBehaviour {
     /// <param name="previousRadius">The last radius</param>
     /// <param name="newRadius">The new radius</param>
     /// <param name="offset">The needed offset for the character for not collide</param>
-    /// <returns></returns>
+    /// <returns>true if the new size is posible</returns>
 	private bool CanSetSize(float previousRadius, float newRadius, out Vector3 offset) {
         bool canGrowUp = false;
         offset = Vector3.zero;
@@ -241,14 +237,14 @@ public class CharacterSize : MonoBehaviour {
     /// If can't grow up, spit the extra drops and set the maximum size I can
     /// TODO: spit the extra drops
     /// </summary>
-	private void SpitDrop() {
+	private void SpitDrop(float newScale) {
 		//final size...
 		float finalScale = _dropTransform.localScale.x;
         //truncate value
 		int finalSize = setMaximumSize((int) finalScale);
 
         //calculate the extra drop I have to spit
-		int numberDropsRemain = _newSize - finalSize;
+		int numberDropsRemain = _targetSize - finalSize;
 		Debug.Log("Spit " + numberDropsRemain + " out");
         
         //set the final size
