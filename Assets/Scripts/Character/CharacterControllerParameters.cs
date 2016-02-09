@@ -12,7 +12,7 @@ public class CharacterControllerParameters {
 
 	/// <summary>
 	/// Defines which axis the input is going to affect. Note that these axis will be affected by the
-	/// input even if the controller is not receiving input but won't if it's not able to move.
+	/// input even if the controller is not receiving input or is not able to move.
 	/// </summary>
 	public enum MovementControl {
 
@@ -184,6 +184,46 @@ public class CharacterControllerParameters {
 
 		return clone;
 	}
+
+	#endregion
+
+	#region Commonly Used Parameters
+
+	/// <summary>
+	/// Parameters used while growing. It can't move nor jump and will stop.
+	/// </summary>
+	public static readonly CharacterControllerParameters GrowingParameters = new CharacterControllerParameters() {
+		movementBehaviour = MovementBehaviour.CantMove,
+		jumpBehaviour = JumpBehaviour.CantJump
+	};
+
+	/// <summary>
+	/// Parameters used while shooting. It can't move nor jump and will suddenly stop.
+	/// </summary>
+	public static readonly CharacterControllerParameters ShootingParameters = new CharacterControllerParameters() {
+		movementBehaviour = MovementBehaviour.CantMove,
+		jumpBehaviour = JumpBehaviour.CantJump,
+		accelerationOnGround = float.MaxValue
+	};
+
+	/// <summary>
+	/// Parameters used while flying through the air. It can't move nor jump and will not stop.
+	/// </summary>
+	public static readonly CharacterControllerParameters FlyingParameters = new CharacterControllerParameters() {
+		movementControl = MovementControl.None,
+		movementBehaviour = MovementBehaviour.CantMove,
+		jumpBehaviour = JumpBehaviour.CantJump,
+		accelerationOnAir = 0
+	};
+
+	/// <summary>
+	/// Parameters used while floating on a wind stream. It can move in any direction but can't jump.
+	/// </summary>
+	public static readonly CharacterControllerParameters FloatingParameters = new CharacterControllerParameters() {
+		movementControl = MovementControl.Both,
+		movementBehaviour = MovementBehaviour.CanMoveAnywhere,
+		jumpBehaviour = JumpBehaviour.CantJump
+	};
 
 	#endregion
 }

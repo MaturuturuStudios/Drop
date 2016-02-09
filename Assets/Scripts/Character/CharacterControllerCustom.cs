@@ -227,9 +227,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <param name="horizontalInput">Signed-normalized value for the horizontal input</param>
 	/// <param name="verticalInput">Signed-normalized value for the vertical input</param>
 	public void SetInputForce(float horizontalInput, float verticalInput) {
-		// Checks if it can move
-		if (!CanMove())
-			return;
+		// Checks if it can move. Nullifies the input otherwise
+		if (!CanMove()) {
+			horizontalInput = 0;
+			verticalInput = 0;
+		}
 
 		// Checks the movement type
 		bool horizontal = false;
@@ -315,9 +317,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.magnitude * Parameters.jumpMagnitude));
 		SetVerticalForceRelative(jumpSpeed);
 
-		// Adds the velocity of the platform
-		AddForce(State.PlatformVelocity);
-
 		_jumpingTime = Parameters.jumpFrecuency;
 	}
 
@@ -395,8 +394,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <param name="movement">Movement distance</param>
 	private void Move(Vector3 movement) {
-		// Resets the state
+		// Resets the state, but keeps the platform velocity
+		Vector3 temp = State.PlatformVelocity;
 		State.Reset();
+		State.PlatformVelocity = temp;
 
 		// Clamps the movement
 		movement.x = Mathf.Clamp(movement.x, -Parameters.maxVelocity.x, Parameters.maxVelocity.x);
