@@ -207,16 +207,19 @@ public class CharacterSize : MonoBehaviour {
         bool canGrowUp = false;
         offset = Vector3.zero;
 
+        //set the center with the new radius
+        float offsetCenter = newRadius - previousRadius;
+
         //if is decreasing, does not check never, where a big one fit, a smaller one too
+        //only set the center
         if(_shrinkOrEnlarge < 0) {
+            offset.y += offsetCenter;
             return true;
         }
 
 		//get the position of the character
 		Vector3 position = _dropTransform.position;
-
 		//set the center with the new radius
-        float offsetCenter= newRadius - previousRadius;
         position.y += offsetCenter;
 
         //ask the axis
@@ -242,7 +245,7 @@ public class CharacterSize : MonoBehaviour {
 		//final size...
 		float finalScale = _dropTransform.localScale.x;
         //truncate value
-		int finalSize = (int) finalScale;
+		int finalSize = setMaximumSize((int) finalScale);
 
         //calculate the extra drop I have to spit
 		int numberDropsRemain = _newSize - finalSize;
@@ -251,6 +254,43 @@ public class CharacterSize : MonoBehaviour {
         //set the final size
         SetSize(finalSize);
 	}
+
+    /// <summary>
+    /// When the growth is blocked, set the maximum size posible
+    /// </summary>
+    /// <param name="sizeMaximum">The know maximum</param>
+    /// <returns>The maximum size posible</returns>
+    private int setMaximumSize(int sizeMaximum) {
+        if(sizeMaximum == 1) {
+            return 1;
+        }
+
+        int maximum = sizeMaximum+1;
+
+        bool posibleSize = false;
+        do {
+            --maximum;
+
+            //get the position of the character
+            Vector3 position = _dropTransform.position;
+
+            float newRadius = maximum * _ratioRadius;
+            float previousRadius = _dropTransform.localScale.x * _ratioRadius;
+
+            //set the center with the new radius
+            float offsetCenter = newRadius - previousRadius;
+            position.y += offsetCenter;
+
+            //ask the axis
+            InfoAxis horizontal_axis = checkAxis(0, position, newRadius, newRadius);
+            InfoAxis vertical_axis = checkAxis(1, position, newRadius, newRadius);
+
+            //if not blocked... (or minimum one)
+            posibleSize = (!horizontal_axis.block && !vertical_axis.block) || maximum==1;
+        } while(!posibleSize);
+        
+        return maximum;
+    }
 
     /// <summary>
     /// Get the vectors of the direction for the RayCast to the given axis and side
