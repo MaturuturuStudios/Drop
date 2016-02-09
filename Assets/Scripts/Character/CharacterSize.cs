@@ -137,6 +137,7 @@ public class CharacterSize : MonoBehaviour {
 			//positive if I grow up
 			_shrinkOrEnlarge = (difference > 0) ? (int)Mathf.Ceil(difference) :
 				                                (int)Mathf.Floor(difference);
+            _size = size;
 		}
 	}
 
@@ -203,8 +204,13 @@ public class CharacterSize : MonoBehaviour {
     /// <param name="offset">The needed offset for the character for not collide</param>
     /// <returns></returns>
 	private bool CanSetSize(float previousRadius, float newRadius, out Vector3 offset) {
-		bool canGrowUp = false;
-		offset = Vector3.zero;
+        bool canGrowUp = false;
+        offset = Vector3.zero;
+
+        //if is decreasing, does not check never, where a big one fit, a smaller one too
+        if(_shrinkOrEnlarge < 0) {
+            return true;
+        }
 
 		//get the position of the character
 		Vector3 position = _dropTransform.position;
