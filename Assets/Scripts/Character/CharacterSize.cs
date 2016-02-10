@@ -71,7 +71,7 @@ public class CharacterSize : MonoBehaviour {
 
         _targetSize = 1;
 		SetSize(1);
-	}
+    }
 
 	/// <summary>
     /// Check input and control the size
@@ -161,8 +161,9 @@ public class CharacterSize : MonoBehaviour {
                 newScale = _targetSize;
                 _targettingSize = 0;
 
-            } else
+            } else 
                 newScale = _dropTransform.localScale.x + Time.deltaTime * speed * _shrinkOrEnlarge;
+            
 
 
             //control if i have space enough and repositioning it
@@ -170,19 +171,20 @@ public class CharacterSize : MonoBehaviour {
             float newRadius = newScale * _ratioRadius;
             float previousRadius = _dropTransform.localScale.x * _ratioRadius;
 
-            if(!CanSetSize(previousRadius, newRadius, out offset)) {
+            if(CanSetSize(previousRadius, newRadius, out offset)) {
+                //put it where it has no collision
+                _dropTransform.position += offset;
+                //set the new size to the character
+                _dropTransform.localScale = new Vector3(newScale, newScale, newScale);
+                
+
+            } else {
                 //this line is needed. If spitDrop set the size equal to actual size of character
                 //GradualModifySize will not enter so never get inside the condition
                 //where we recover the movement to the character
                 _targettingSize = 0;
                 //I can't, get the maximum size and spit the rest
-                SpitDrop(newScale);
-
-            } else {
-                //set the new size to the character
-                _dropTransform.localScale = new Vector3(newScale, newScale, newScale);
-                //put it where it has no collision
-                _dropTransform.position += offset;
+                SpitDrop(newScale, offset);
             }
 
             //in my size! can move again.
@@ -219,73 +221,79 @@ public class CharacterSize : MonoBehaviour {
         position.y += offsetCenter;
 
         //ask the axis
-		InfoAxis horizontal_axis = checkAxis(0, position, previousRadius, newRadius);
-		InfoAxis vertical_axis = checkAxis(1, position, previousRadius, newRadius);
+		InfoAxis horizontal_axis = checkAxis(0, position,  newRadius);
+		InfoAxis vertical_axis = checkAxis(1, position, newRadius);
 
         //if not blocked...
-		if(!horizontal_axis.block && !vertical_axis.block) {
-			//set the offset and set that I can grow up
-			offset = horizontal_axis.offset + vertical_axis.offset;
+        if(!horizontal_axis.block && !vertical_axis.block) {
+            //set the offset and set that I can grow up
             offset.y += offsetCenter;
-			canGrowUp = true;
-		}
+            canGrowUp = true;
+        }
 
-		return canGrowUp;
+        return canGrowUp;
 	}
 
     /// <summary>
     /// If can't grow up, spit the extra drops and set the maximum size I can
     /// TODO: spit the extra drops
     /// </summary>
-	private void SpitDrop(float newScale) {
-		//final size...
-		float finalScale = _dropTransform.localScale.x;
-        //truncate value
-		int finalSize = setMaximumSize((int) finalScale);
-
+    /// <param name="newScale">the scale which doesn't fit</param>
+    /// <param name="newPosition">the position according to the scale</param>
+	private void SpitDrop(float newScale, Vector3 offsetCenter) {
+        //get the maximum size
+        int finalSize = setMaximumSize(newScale, _dropTransform.position + offsetCenter);
         //calculate the extra drop I have to spit
-		int numberDropsRemain = _targetSize - finalSize;
-		Debug.Log("Spit " + numberDropsRemain + " out");
-        
+        int numberDropsRemain = _targetSize - finalSize;
+        Debug.Log("Spit " + numberDropsRemain + " out");
+
         //set the final size
         SetSize(finalSize);
-	}
+    }
 
     /// <summary>
     /// When the growth is blocked, set the maximum size posible
     /// </summary>
-    /// <param name="sizeMaximum">The know maximum</param>
+    /// <param name="actualScale">The actual scale which does not fit</param>
     /// <returns>The maximum size posible</returns>
-    private int setMaximumSize(int sizeMaximum) {
-        if(sizeMaximum == 1) {
+    private int setMaximumSize(float actualScale, Vector3 actualPosition) {
+        if(actualScale <= 1.0f) {
             return 1;
         }
 
-        int maximum = sizeMaximum+1;
+        //get the maximum size (truncate the actual scale)
+        int maximum = (int) actualScale;
+        
+        //radius with the size that exceed the limit
+        float previousRadius = actualScale * _ratioRadius;
 
         bool posibleSize = false;
         do {
-            --maximum;
+            if(maximum == 1) {
+                return maximum;
+            }
 
-            //get the position of the character
-            Vector3 position = _dropTransform.position;
-
+            //radius with a lower size
             float newRadius = maximum * _ratioRadius;
-            float previousRadius = _dropTransform.localScale.x * _ratioRadius;
 
-            //set the center with the new radius
+            //get the position of the character and set the new center with the new radius
+            Vector3 position = actualPosition;
             float offsetCenter = newRadius - previousRadius;
             position.y += offsetCenter;
 
             //ask the axis
-            InfoAxis horizontal_axis = checkAxis(0, position, newRadius, newRadius);
-            InfoAxis vertical_axis = checkAxis(1, position, newRadius, newRadius);
+            InfoAxis horizontal_axis = checkAxis(0, position,  newRadius);
+            InfoAxis vertical_axis = checkAxis(1, position, newRadius);
 
-            //if not blocked... (or minimum one)
-            posibleSize = (!horizontal_axis.block && !vertical_axis.block) || maximum==1;
+            //if not blocked... (or minimum size one)
+            posibleSize = !horizontal_axis.block && !vertical_axis.block;
+
+            //one size less for the next iteration
+            --maximum;
         } while(!posibleSize);
-        
-        return maximum;
+
+        //recover the maximum (because we sustracted for the next iteration)
+        return maximum+1;
     }
 
     /// <summary>
@@ -316,13 +324,13 @@ public class CharacterSize : MonoBehaviour {
 
 		case 1:
 			if(side == 0) {
-				directionOneSide[0] = Vector3.up;
-				directionOneSide[1] = rotation * Vector3.up;
-				directionOneSide[2] = rotation2 * Vector3.up;
-			} else {
-				directionOneSide[0] = Vector3.down;
-				directionOneSide[1] = rotation * Vector3.down;
-				directionOneSide[2] = rotation2 * Vector3.down;
+                directionOneSide[0] = Vector3.down;
+                directionOneSide[1] = rotation * Vector3.down;
+                directionOneSide[2] = rotation2 * Vector3.down;
+            } else {
+                directionOneSide[0] = Vector3.up;
+                directionOneSide[1] = rotation * Vector3.up;
+                directionOneSide[2] = rotation2 * Vector3.up;    
 			}
 			break;
 		}
@@ -339,7 +347,7 @@ public class CharacterSize : MonoBehaviour {
     /// <param name="radius">The new/actual radius to get the distance to cast</param>
     /// <returns>Information about the axis. Will include the offset needed to move to avoid collisions.
     /// If the axis is blocked, the offset is not reliable.</returns>
-	private InfoAxis checkAxis(int axis, Vector3 position, float previousRadius, float radius) {
+	private InfoAxis checkAxis(int axis, Vector3 position, float radius) {
         //prepare the information result
 		InfoAxis infoResult;
 		infoResult.axis = axis;
@@ -352,7 +360,6 @@ public class CharacterSize : MonoBehaviour {
 		Vector3 rayOrigin = position;
 		//the distance is the new radius given
 		float distance = radius;
-		float previousDistance = previousRadius;
 
 		//three raycast per side of axis, so we have three directions of the raycast
 		Vector3[] directionOneSide = getDirectionAxis(axis, 0);
@@ -360,44 +367,50 @@ public class CharacterSize : MonoBehaviour {
 
 		//check the three raycast of one side
 		for(int i = 0; i < 3; ++i) {
-			//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red);
+			//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red,5);
 			RaycastHit hit;
 			if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance)) {
-				//get the offset from the hit (hit distance minus the previous radius) * the direction of the normal
-				offset -= hit.normal * (hit.distance - previousDistance);
-			}
+                //get the offset
+                Vector3 hitting = hit.normal * (distance - hit.distance);
+                offset.x = (offset.x > 0 || hitting.x >= 0) ? Mathf.Max(hitting.x, offset.x) : Mathf.Min(hitting.x, offset.x);
+                offset.y = (offset.y > 0 || hitting.y >= 0) ? Mathf.Max(hitting.y, offset.y) : Mathf.Min(hitting.y, offset.y);
+            }
 		}
 
 		bool recheck = false;
-		//check the three raycast of the other side
-		for(int i = 0; i < 3 && !infoResult.block; ++i) {
+        //was a previous collision?
+        bool hasCollision = offset != Vector3.zero;
+        //check the three raycast of the other side
+        for(int i = 0; i < 3 && !infoResult.block; ++i) {
 			//Debug.DrawRay(rayOrigin + offset, directionOtherSide[i] * distance, Color.red, 5);
-			RaycastHit hit;
+            RaycastHit hit;
 			if(Physics.Raycast(rayOrigin + offset, directionOtherSide[i], out hit, distance)) {
 				//was a previous collision? axis blocked
-				if(offset != Vector3.zero)
+				if(hasCollision)
 					infoResult.block = true;
 				else
 					//need a recheck of the other side
 					recheck = true;
 
-				//get the offset from the hit (hit distance minus the previous radius) * the direction of the normal
-				offset -= hit.normal * (hit.distance - previousDistance);
-			}
+                //get the offset
+                Vector3 hitting = hit.normal * (distance - hit.distance);
+                offset.x = (offset.x > 0 || hitting.x >= 0) ? Mathf.Max(hitting.x, offset.x) : Mathf.Min(hitting.x, offset.x);
+                offset.y = (offset.y > 0 || hitting.y >= 0) ? Mathf.Max(hitting.y, offset.y) : Mathf.Min(hitting.y, offset.y);
+            }
 		}
 
 		//need a recheck of the other side
 		if(recheck) {
 			for(int i = 0; i < 3; ++i) {
-				//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red, 3);
-				RaycastHit hit;
-				if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance))
-					//blocked!
-					infoResult.block = true;
+				//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red, 5);
+                RaycastHit hit;
+                if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance)) {
+                    //blocked!
+                    infoResult.block = true;
+                }
 			}
 		}
-
-
+        
 		infoResult.offset = offset;
 		return infoResult;
 	}
