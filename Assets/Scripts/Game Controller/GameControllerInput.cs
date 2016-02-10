@@ -5,7 +5,8 @@ using System;
 public class GameControllerInput : MonoBehaviour {
 
 	// Internal references
-	private GameControllerIndependentControl _switcher;
+    private GameControllerIndependentControl _switcher;
+    public GameObject PfDrop;
 
 	void Start() {
 		// Do nothing
@@ -13,6 +14,9 @@ public class GameControllerInput : MonoBehaviour {
 	}
 
 	void Update() {
+        //TODO
+        // if you put it in this line in Start() you can't change of drop, you lose the reference
+        // I have to take over of here and actualize it when control is changed in GameControllerIndependentControl
 		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 
 		// Horizontal input
@@ -29,9 +33,11 @@ public class GameControllerInput : MonoBehaviour {
 
         HasToChange();
 
+        DebugAddDrops();
+
 	}
 
-    private void HasToChange()
+    void HasToChange()
     {
 
         if (Input.GetKeyDown(KeyCode.Keypad1))
@@ -43,9 +49,25 @@ public class GameControllerInput : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Keypad4))
             _switcher.SetControl(3);
         if (Input.GetKeyDown(KeyCode.Keypad5))
-            _switcher.ControlNextDrop();
-        if (Input.GetKeyDown(KeyCode.Keypad6))
             _switcher.ControlBackDrop();
+        if (Input.GetKeyDown(KeyCode.Keypad6))
+            _switcher.ControlNextDrop();
+
+    }
+
+    void DebugAddDrops()
+    {
+
+        if (Input.GetKeyDown(KeyCode.Keypad7))
+        {
+            GameObject dropClone = (GameObject)Instantiate(PfDrop);
+            _switcher.AddDrop(dropClone);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Keypad8))
+        {
+            _switcher.RemoveDrop(_switcher.currentCharacter);
+        }
 
     }
 }
