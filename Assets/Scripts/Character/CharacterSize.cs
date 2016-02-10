@@ -1,100 +1,424 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// The size of the character. Control if the character can grow up or decrease and how.
+/// </summary>
 public class CharacterSize : MonoBehaviour {
+    #region Public Attributes
+    /// <summary>
+    /// Decrease rate
+    /// </summary>
+    public float shrinkSpeed = 5f;
+    /// <summary>
+    /// Growth rate
+    /// </summary>
+    public float enlargeSpeed = 5f;
+    #endregion
 
-    public float shrink_speed = 0.4f;
-    public float enlarge_speed = 0.4f;
+    #region Custom private Enumerations
+    /// <summary>
+    /// Information about the axis when check for collisions
+    /// </summary>
+    private struct InfoAxis {
+        //0 for horizontal
+        //1 for vertical
+        public int axis;
+        public Vector3 offset;
+        public bool block;
+    };
+    #endregion
 
-    private float _targetting_size;
-    private int _shrink_or_enlarge;
-    private int _size;
+    #region Variables
+    /// <summary>
+    /// Growing or decreasing
+    /// </summary>
+	private int _shrinkOrEnlarge;
+    /// <summary>
+    /// Target size of the character
+    /// </summary>
+	private int _targetSize;
+    /// <summary>
+    /// Parameters setted to the moment the character is growing up/decreasing
+    /// </summary>
+    CharacterControllerParameters _quietGrowingParameters;
+    #endregion
 
-    private Transform _drop_transform;
-    private SphereCollider _drop_collider;
+    #region Private Attributes
+    /// <summary>
+    /// Transform of the character
+    /// </summary>
+    private Transform _dropTransform;
+    /// <summary>
+    /// Radius of character
+    /// </summary>
+    private float _ratioRadius;
+    #endregion
 
-    // Use this for initialization
+    #region Methods
+    #region Public Methods
+    /// <summary>
+    /// Initialization method.
+    /// The character start with size one
+    /// </summary>
     void Start() {
-        _drop_transform = gameObject.transform;
-        _drop_collider = gameObject.GetComponent<SphereCollider>();
-        _drop_transform.localScale = Vector3.one;
+		_dropTransform = gameObject.transform;
+		_dropTransform.localScale = Vector3.one;
+        _ratioRadius=GetComponent<CharacterController>().radius;
 
-        _size = 1;
-        _targetting_size = 0;
-        SetSize(1);
+        _quietGrowingParameters = new CharacterControllerParameters();
+        _quietGrowingParameters.movementControl = CharacterControllerParameters.MovementControl.None;
+
+        _targetSize = 1;
+		SetSize(1);
     }
 
-    // Update is called once per frame
-    void Update() {
-        
+	/// <summary>
+    /// Check input and control the size
+    /// </summary>
+	void Update() {
 
-        GradualModifySize();
-    }
+        if(Input.GetKeyDown(KeyCode.UpArrow))
+			IncrementSize();
 
+		if(Input.GetKeyDown(KeyCode.DownArrow))
+			DecrementSize();
+
+
+		//Some number pressed? we use 1-9 as range 1-9
+		bool done = false;
+		for(int i = 1; i < 10 && !done; i++) {
+			if(Input.GetKeyDown("" + i)) {
+				SetSize(i);
+				done = true;
+			}
+		}
+
+		GradualModifySize();
+	}
+
+    /// <summary>
+    /// Increment the size by one
+    /// </summary>
     public void IncrementSize() {
-        SetSize(_size + 1);
-    }
+		SetSize(_targetSize + 1);
+	}
 
-    public void DecrementSize() {
-        SetSize(_size - 1);
-    }
+    /// <summary>
+    /// Decrement the size by one (with minimum of one)
+    /// </summary>
+	public void DecrementSize() {
+		SetSize(_targetSize - 1);
+	}
 
-    public void SetSize(int size) {
-        if(size > 0 && this._size != size) {
+    /// <summary>
+    /// Set a size. While changing the size, the character will not move
+    /// </summary>
+    /// <param name="size">New size</param>
+	public void SetSize(int size) {
+		if(size > 0 && size != _targetSize) {
+            //can't move
+            GetComponent<CharacterControllerCustom>().Parameters = _quietGrowingParameters;
+
+            //set the new size
+            _targetSize = size;
+
+            //set if growing up or decreasing. Positive if I grow up
             //TODO: watch this value, using only x scale, presuppose  x,y,z has the same scale
-            float difference = size - _drop_transform.localScale.x;
-            _targetting_size = Mathf.Abs(difference);
-            //positive if I grow up
-            _shrink_or_enlarge = (difference > 0) ? (int)Mathf.Ceil(difference) :
-                                                    (int)Mathf.Floor(difference);
-            this._size = size;
-        }
-    }
+            float difference = size - _dropTransform.localScale.x;
+            _shrinkOrEnlarge = (difference > 0) ? (int)Mathf.Ceil(difference) :
+				                                (int)Mathf.Floor(difference);
+		}
+	}
 
-    public float GetSize() {
-        return _size;
-    }
+    /// <summary>
+    /// Get the actual size
+    /// </summary>
+    /// <returns>The actual/Targeted size, may not be the actual size of the character</returns>
+	public float GetSize() {
+        return _targetSize;
+	}
+    #endregion
 
-    private void SetCenter(float previousRadius, float newRadius) {
-        float offset = newRadius - previousRadius;
-
-        Vector3 localPosition = _drop_transform.localPosition;
-        localPosition.y += offset;
-        _drop_transform.localPosition = new Vector3(localPosition.x, localPosition.y, localPosition.z);
-    }
-
+    #region Private Methods
+    /// <summary>
+    /// Control the gradual change of size
+    /// </summary>
     private void GradualModifySize() {
-        if(_targetting_size > 0) {
-            float radius = _drop_collider.radius;
-            float previous_radius = radius * _drop_transform.localScale.x;
+        //if I have pending change...
+        if(_targetSize != transform.localScale.x) {
+            //set the size, positive if I grow up
+            float speed = (_shrinkOrEnlarge < 0) ? shrinkSpeed : enlargeSpeed;
 
-            //positive if I grow up
-            float speed = (_shrink_or_enlarge < 0) ? shrink_speed : enlarge_speed;
+            //substract the growth
+            float _targettingSize = Mathf.Abs(_targetSize - _dropTransform.localScale.x);
+            _targettingSize -= Time.deltaTime * speed * Mathf.Abs(_shrinkOrEnlarge);
 
-            _targetting_size -= Time.deltaTime * speed * Mathf.Abs(_shrink_or_enlarge);
-            //if finally reached the target size, set the size so we don't have floating remains
-            if(_targetting_size <= 0) {
-                _drop_transform.localScale = new Vector3(_size, _size, _size);
-                _targetting_size = 0;
+
+            float newScale = 0;
+            if(_targettingSize <= 0) {
+                //if finally reached the target size, set the size harcoding so we don't have floating remains
+                newScale = _targetSize;
+                _targettingSize = 0;
+
             } else 
-                _drop_transform.localScale += Vector3.one * Time.deltaTime * speed * _shrink_or_enlarge;
+                newScale = _dropTransform.localScale.x + Time.deltaTime * speed * _shrinkOrEnlarge;
+            
 
-            radius = _drop_collider.radius;
-            float new_radius = radius * _drop_transform.localScale.x;
-            SetCenter(previous_radius, new_radius);
+
+            //control if i have space enough and repositioning it
+            Vector3 offset = Vector3.zero;
+            float newRadius = newScale * _ratioRadius;
+            float previousRadius = _dropTransform.localScale.x * _ratioRadius;
+
+            if(CanSetSize(previousRadius, newRadius, out offset)) {
+                //put it where it has no collision
+                _dropTransform.position += offset;
+                //set the new size to the character
+                _dropTransform.localScale = new Vector3(newScale, newScale, newScale);
+                
+
+            } else {
+                //this line is needed. If spitDrop set the size equal to actual size of character
+                //GradualModifySize will not enter so never get inside the condition
+                //where we recover the movement to the character
+                _targettingSize = 0;
+                //I can't, get the maximum size and spit the rest
+                SpitDrop(newScale, offset);
+            }
+
+            //in my size! can move again.
+            if(_targettingSize == 0) 
+                GetComponent<CharacterControllerCustom>().Parameters = null;
+            
         }
+	}
+
+    /// <summary>
+    /// Check If I have enough space with the actual size
+    /// </summary>
+    /// <param name="previousRadius">The last radius</param>
+    /// <param name="newRadius">The new radius</param>
+    /// <param name="offset">The needed offset for the character for not collide</param>
+    /// <returns>true if the new size is posible</returns>
+	private bool CanSetSize(float previousRadius, float newRadius, out Vector3 offset) {
+        bool canGrowUp = false;
+        offset = Vector3.zero;
+
+        //set the center with the new radius
+        float offsetCenter = newRadius - previousRadius;
+
+        //if is decreasing, does not check never, where a big one fit, a smaller one too
+        //only set the center
+        if(_shrinkOrEnlarge < 0) {
+            offset.y += offsetCenter;
+            return true;
+        }
+
+		//get the position of the character
+		Vector3 position = _dropTransform.position;
+		//set the center with the new radius
+        position.y += offsetCenter;
+
+        //ask the axis
+		InfoAxis horizontal_axis = checkAxis(0, position,  newRadius);
+		InfoAxis vertical_axis = checkAxis(1, position, newRadius);
+
+        //if not blocked...
+        if(!horizontal_axis.block && !vertical_axis.block) {
+            //set the offset and set that I can grow up
+            offset.y += offsetCenter;
+            canGrowUp = true;
+        }
+
+        return canGrowUp;
+	}
+
+    /// <summary>
+    /// If can't grow up, spit the extra drops and set the maximum size I can
+    /// TODO: spit the extra drops
+    /// </summary>
+    /// <param name="newScale">the scale which doesn't fit</param>
+    /// <param name="newPosition">the position according to the scale</param>
+	private void SpitDrop(float newScale, Vector3 offsetCenter) {
+        //get the maximum size
+        int finalSize = setMaximumSize(newScale, _dropTransform.position + offsetCenter);
+        //calculate the extra drop I have to spit
+        int numberDropsRemain = _targetSize - finalSize;
+        Debug.Log("Spit " + numberDropsRemain + " out");
+
+        //set the final size
+        SetSize(finalSize);
     }
 
-    public bool CanSetSize(int size) {
-        return true;
+    /// <summary>
+    /// When the growth is blocked, set the maximum size posible
+    /// </summary>
+    /// <param name="actualScale">The actual scale which does not fit</param>
+    /// <returns>The maximum size posible</returns>
+    private int setMaximumSize(float actualScale, Vector3 actualPosition) {
+        if(actualScale <= 1.0f) {
+            return 1;
+        }
+
+        //get the maximum size (truncate the actual scale)
+        int maximum = (int) actualScale;
+        
+        //radius with the size that exceed the limit
+        float previousRadius = actualScale * _ratioRadius;
+
+        bool posibleSize = false;
+        do {
+            if(maximum == 1) {
+                return maximum;
+            }
+
+            //radius with a lower size
+            float newRadius = maximum * _ratioRadius;
+
+            //get the position of the character and set the new center with the new radius
+            Vector3 position = actualPosition;
+            float offsetCenter = newRadius - previousRadius;
+            position.y += offsetCenter;
+
+            //ask the axis
+            InfoAxis horizontal_axis = checkAxis(0, position,  newRadius);
+            InfoAxis vertical_axis = checkAxis(1, position, newRadius);
+
+            //if not blocked... (or minimum size one)
+            posibleSize = !horizontal_axis.block && !vertical_axis.block;
+
+            //one size less for the next iteration
+            --maximum;
+        } while(!posibleSize);
+
+        //recover the maximum (because we sustracted for the next iteration)
+        return maximum+1;
+    }
+
+    /// <summary>
+    /// Get the vectors of the direction for the RayCast to the given axis and side
+    /// </summary>
+    /// <param name="axis">The axis</param>
+    /// <param name="side">The side (0-1)</param>
+    /// <returns>Three vectors indicating the direction</returns>
+	private Vector3[] getDirectionAxis(int axis, int side) {
+		Vector3[] directionOneSide = new Vector3[3];
+
+		//rotation between raycast
+		Quaternion rotation = Quaternion.Euler(0, 0, 45);
+		Quaternion rotation2 = Quaternion.Euler(0, 0, -45);
+
+		switch(axis) {
+		case 0: //horizontal
+			if(side == 0) {
+				directionOneSide[0] = Vector3.left;
+				directionOneSide[1] = rotation * Vector3.left;
+				directionOneSide[2] = rotation2 * Vector3.left;
+			} else {
+				directionOneSide[0] = Vector3.right;
+				directionOneSide[1] = rotation * Vector3.right;
+				directionOneSide[2] = rotation2 * Vector3.right;
+			}
+			break;
+
+		case 1:
+			if(side == 0) {
+                directionOneSide[0] = Vector3.down;
+                directionOneSide[1] = rotation * Vector3.down;
+                directionOneSide[2] = rotation2 * Vector3.down;
+            } else {
+                directionOneSide[0] = Vector3.up;
+                directionOneSide[1] = rotation * Vector3.up;
+                directionOneSide[2] = rotation2 * Vector3.up;    
+			}
+			break;
+		}
+
+		return directionOneSide;
 	}
 
-	public void OnCustomCollision(RaycastHit hit) {
-		// TODO: Test method, remove at will
-	}
+    /// <summary>
+    /// Check an axis.
+    /// </summary>
+    /// <param name="axis">The axis to check</param>
+    /// <param name="position">the center of the character</param>
+    /// <param name="previousRadius">The previous radius of the character</param>
+    /// <param name="radius">The new/actual radius to get the distance to cast</param>
+    /// <returns>Information about the axis. Will include the offset needed to move to avoid collisions.
+    /// If the axis is blocked, the offset is not reliable.</returns>
+	private InfoAxis checkAxis(int axis, Vector3 position, float radius) {
+        //prepare the information result
+		InfoAxis infoResult;
+		infoResult.axis = axis;
+		infoResult.block = false;
+		infoResult.offset = Vector3.zero;
 
-	public void OnCustomCollisionEnter(RaycastHit hit) {
-		// TODO: Test method, remove at will
+		Vector3 offset = Vector3.zero;
+
+		//start on center
+		Vector3 rayOrigin = position;
+		//the distance is the new radius given
+		float distance = radius;
+
+		//three raycast per side of axis, so we have three directions of the raycast
+		Vector3[] directionOneSide = getDirectionAxis(axis, 0);
+		Vector3[] directionOtherSide = getDirectionAxis(axis, 1);
+
+		//check the three raycast of one side
+		for(int i = 0; i < 3; ++i) {
+			//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red,5);
+			RaycastHit hit;
+			if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance)) {
+                //get the offset
+                Vector3 hitting = hit.normal * (distance - hit.distance);
+                offset.x = (offset.x > 0 || hitting.x >= 0) ? Mathf.Max(hitting.x, offset.x) : Mathf.Min(hitting.x, offset.x);
+                offset.y = (offset.y > 0 || hitting.y >= 0) ? Mathf.Max(hitting.y, offset.y) : Mathf.Min(hitting.y, offset.y);
+            }
+		}
+
+		bool recheck = false;
+        //was a previous collision?
+        bool hasCollision = offset != Vector3.zero;
+        //check the three raycast of the other side
+        for(int i = 0; i < 3 && !infoResult.block; ++i) {
+			//Debug.DrawRay(rayOrigin + offset, directionOtherSide[i] * distance, Color.red, 5);
+            RaycastHit hit;
+			if(Physics.Raycast(rayOrigin + offset, directionOtherSide[i], out hit, distance)) {
+				//was a previous collision? axis blocked
+				if(hasCollision)
+					infoResult.block = true;
+				else
+					//need a recheck of the other side
+					recheck = true;
+
+                //get the offset
+                Vector3 hitting = hit.normal * (distance - hit.distance);
+                offset.x = (offset.x > 0 || hitting.x >= 0) ? Mathf.Max(hitting.x, offset.x) : Mathf.Min(hitting.x, offset.x);
+                offset.y = (offset.y > 0 || hitting.y >= 0) ? Mathf.Max(hitting.y, offset.y) : Mathf.Min(hitting.y, offset.y);
+            }
+		}
+
+		//need a recheck of the other side
+		if(recheck) {
+			for(int i = 0; i < 3; ++i) {
+				//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red, 5);
+                RaycastHit hit;
+                if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance)) {
+                    //blocked!
+                    infoResult.block = true;
+                }
+			}
+		}
+        
+		infoResult.offset = offset;
+		return infoResult;
+	}
+    #endregion
+
+    #region "Inherited" Methods
+    public void OnCustomCollisionEnter(RaycastHit hit) {
+		// TODO: collision with another drop?
 	}
 
 	public void OnCustomCollisionStay(RaycastHit hit) {
@@ -104,4 +428,6 @@ public class CharacterSize : MonoBehaviour {
 	public void OnCustomCollisionExit(RaycastHit hit) {
 		// TODO: Test method, remove at will
 	}
+    #endregion
+    #endregion
 }

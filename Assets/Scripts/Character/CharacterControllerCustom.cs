@@ -3,57 +3,231 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+/// <summary>
+/// Custom controller that depends on Unity's CharacterController component.
+/// </summary>
 public class CharacterControllerCustom : MonoBehaviour {
 
-	// Properties
+	#region Properties
+
+	/// <summary>
+	/// Contains information about the state of the character controller on the last frame.
+	/// </summary>
 	public CharacterControllerState State { get; private set; }
-	public Vector3 Velocity { get { return _velocity; } }
-	public bool HandleCollisions { get; set; }
+
+	/// <summary>
+	/// The parameters of the character controller. They store how the character should behave.
+	/// </summary>
 	public CharacterControllerParameters Parameters {
 		get {
 			// If no override paramaters have been specified, return the default parameters
 			return _overrideParameters ?? defaultParameters;
 		}
+		set {
+			_overrideParameters = value;
+		}
 	}
 
-	// Backing fields
+	/// <summary>
+	/// The current velocity of the Character. The character will move acording to this
+	/// velocity each frame.
+	/// </summary>
+	public Vector3 Velocity { get { return _velocity; } }
+
+	#endregion
+
+	#region Backing Fields
+
+	/// <summary>
+	/// Backing field for the Velocity property.
+	/// </summary>
 	private Vector3 _velocity;
 
-	// Public attributes
-	public LayerMask platformMask;
-	public CharacterControllerParameters defaultParameters;
-	public float skinWidth = 0.02f;
-	public int totalRays = 16;
-
-	// Private attributes
-	private SphereCollider _collider;
+	/// <summary>
+	/// Backing field for the Parameters property.
+	/// </summary>
 	private CharacterControllerParameters _overrideParameters;
-	private List<RaycastHit> _thisFrameCollisions;
-	private List<RaycastHit> _lastFrameCollisions;
 
-	// Variables
-	private Vector3[] _rayOrigins;
-	private float _angleBeetweenRays;
+	#endregion
+
+	#region Public Attributes
+
+	/// <summary>
+	/// Default parameters. If no parameters have been specified, the default ones will 
+	/// be used.
+	/// </summary>
+	public CharacterControllerParameters defaultParameters;
+
+	#endregion
+
+	#region Private Attributes
+
+	/// <summary>
+	/// A reference to the CharacterController component of the entity.
+	/// </summary>
+	private CharacterController _controller;
+
+	#endregion
+
+	#region Variables
+
+	/// <summary>
+	/// Time since the last time the character jumped.
+	/// </summary>
 	private float _jumpingTime;
+
+	/// <summary>
+	/// Position on the global coordinates of the entity while standing on a platform.
+	/// </summary>
 	private Vector3 _activeGlobalPlatformPoint;
+
+	/// <summary>
+	/// Position of the entity relative to the platform it's standing on.
+	/// </summary>
 	private Vector3 _activeLocalPlatformPoint;
 
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// Unity's method called as soon as this entity is created.
+	/// It will be called even if the entity is disabled.
+	/// </summary>
 	public void Awake() {
 		// Creates the original state
 		State = new CharacterControllerState();
-		_thisFrameCollisions = new List<RaycastHit>();
-		_lastFrameCollisions = new List<RaycastHit>();
-		HandleCollisions = true;
-
-		// Creates the arrays for the ray's origins
-		_rayOrigins = new Vector3[totalRays];
 
 		// Recovers the desired components
-		_collider = GetComponent<SphereCollider>();
+		_controller = GetComponent<CharacterController>();
 	}
 
+	#region Force Methods
+
+	/// <summary>
+	/// Adds a force to the velocity of the character.
+	/// </summary>
+	/// <param name="force">Amount of force to add</param>
+	public void AddForce(Vector3 force) {
+		_velocity += force;
+	}
+
+	/// <summary>
+	/// Sets the velocity of the character.
+	/// </summary>
+	/// <param name="force">The new velocity of the character</param>
+	public void SetForce(Vector3 force) {
+		_velocity = force;
+	}
+
+	/// <summary>
+	/// Sets the horizontal velocity of the character.
+	/// The vertical component will not be modified.
+	/// </summary>
+	/// <param name="x">The new horizontal velocity of the character</param>
+	public void SetHorizontalForce(float x) {
+		_velocity.x = x;
+	}
+
+	/// <summary>
+	/// Sets the vertical velocity of the character.
+	/// The horizontal component will not be modified.
+	/// </summary>
+	/// <param name="y">The new vertical velocity of the character</param>
+	public void SetVerticalForce(float y) {
+		_velocity.y = y;
+	}
+
+	/// <summary>
+	/// Adds a force to the velocity of the character.
+	/// This force is applied relative to the gravity instead to the global axis.
+	/// </summary>
+	/// <param name="force">Amount of force to add</param>
+	public void AddForceRelative(Vector3 force) {
+		// Rotates the force acording to the gravity and adds it to the velocity
+		float gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
+		if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
+			gravityAngle = -gravityAngle;
+		_velocity += Quaternion.Euler(0, 0, -gravityAngle) * force;
+	}
+
+	/// <summary>
+	/// Sets the velocity of the character.
+	/// This force is applied relative to the gravity instead to the global axis.
+	/// </summary>
+	/// <param name="force">The new velocity of the character</param>
+	public void SetForceRelative(Vector3 force) {
+		// Rotates the force acording to the gravity and sets the velocity to it
+		float gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
+		if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
+			gravityAngle = -gravityAngle;
+		_velocity = Quaternion.Euler(0, 0, -gravityAngle) * force;
+	}
+
+	/// <summary>
+	/// Sets the horizontal velocity of the character.
+	/// The vertical component will not be modified.
+	/// This force is applied relative to the gravity instead to the global axis.
+	/// </summary>
+	/// <param name="x">The new horizontal velocity of the character</param>
+	public void SetHorizontalForceRelative(float x) {
+		Vector3 verticalVelocity = GetVerticalVelocityRelative();
+		Vector3 direction = Vector3.Cross(Vector3.forward, Parameters.gravity).normalized;
+		_velocity = verticalVelocity + direction * x;
+	}
+
+	/// <summary>
+	/// Sets the vertical velocity of the character.
+	/// The horizontal component will not be modified.
+	/// This force is applied relative to the gravity instead to the global axis.
+	/// </summary>
+	/// <param name="y">The new vertical velocity of the character</param>
+	public void SetVerticalForceRelative(float y) {
+		Vector3 horizontalVelocity = GetHorizontalVelocityRelative();
+		Vector3 direction = -Parameters.gravity.normalized;
+		_velocity = horizontalVelocity + direction * y;
+	}
+
+	/// <summary>
+	/// Returns the velocity of the character on the desired direction.
+	/// </summary>
+	/// <param name="direction">The direction of the desired velocity</param>
+	/// <returns>The velocity of the entity projected on the direction</returns>
+	public Vector3 GetVelocityOnDirection(Vector3 direction) {
+		return Vector3.Project(_velocity, direction);
+	}
+
+	/// <summary>
+	/// Returns the velocity of the character on the horizontal axis, relative to the
+	/// gravity.
+	/// </summary>
+	/// <returns>Horizontal component of the velocity</returns>
+	public Vector3 GetHorizontalVelocityRelative() {
+		Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.gravity);
+		return GetVelocityOnDirection(perpendicular);
+	}
+	
+	/// <summary>
+	/// Returns the velocity of the character on the vertical axis, relative to the
+	/// gravity.
+	/// </summary>
+	/// <returns>Vertical component of the velocity</returns>
+	public Vector3 GetVerticalVelocityRelative() {
+		return GetVelocityOnDirection(-Parameters.gravity);
+	}
+
+	#endregion
+
+	#region Input Methods
+
+	/// <summary>
+	/// Sets the input of the character on this frame. The velocity will be modified
+	/// acording to this input while using the acceleration defined on the parameters.
+	/// </summary>
+	/// <param name="horizontalInput">Signed-normalized value for the horizontal input</param>
+	/// <param name="verticalInput">Signed-normalized value for the vertical input</param>
 	public void SetInputForce(float horizontalInput, float verticalInput) {
-		// Checks if it can move
+		// Checks if it can move. Nullifies the input otherwise
 		if (!CanMove()) {
 			horizontalInput = 0;
 			verticalInput = 0;
@@ -62,92 +236,58 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Checks the movement type
 		bool horizontal = false;
 		bool vertical = false;
-		switch (Parameters.movementFreedom) {
-			case CharacterControllerParameters.MovementFreedom.Horizontal:
+		switch (Parameters.movementControl) {
+			case CharacterControllerParameters.MovementControl.Horizontal:
 				horizontal = true;
 				break;
-			case CharacterControllerParameters.MovementFreedom.Vertical:
+			case CharacterControllerParameters.MovementControl.Vertical:
 				vertical = true;
 				break;
-			case CharacterControllerParameters.MovementFreedom.Both:
+			case CharacterControllerParameters.MovementControl.Both:
 				horizontal = true;
 				vertical = true;
+				break;
+			case CharacterControllerParameters.MovementControl.None:
 				break;
 			default:
 				return;
 		}
 
+		// If the input is relative to the gravity, rotates the velocity to match it
+		float gravityAngle = 0;
+		if (Parameters.relativeToGravity) {
+			gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
+			if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
+				gravityAngle = -gravityAngle;
+			_velocity = Quaternion.Euler(0, 0, gravityAngle) * _velocity;
+		}
+
 		// Gets the right acceleration
 		float acceleration = State.IsGrounded ? Parameters.accelerationOnGround : Parameters.accelerationOnAir;
-
-		// Adds the right force
+		// Adds the right forces
 		if (horizontal) {
-			// Horizontal force
-			if (Parameters.relativeToGravity) {
-				// Relative velocity
-				Vector3 horizontalVelocity = GetHorizontalVelocity();
-				Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.gravity);
-				float gravityAngle = Vector3.Angle(horizontalVelocity, perpendicular);
-				float magnitude = horizontalVelocity.magnitude;
-				float speed = gravityAngle < 90 ? magnitude : -magnitude;
-				SetHorizontalForce(Mathf.Lerp(speed, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
-			}
-			else {
-				// Global velocity
-				_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
-			}
+			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
 		}
 		if (vertical) {
-			// Vertical force
-			if (Parameters.relativeToGravity) {
-				// Relative velocity
-				Vector3 verticalVelocity = GetVerticalVelocity();
-				float gravityAngle = Vector3.Angle(verticalVelocity, -Parameters.gravity);
-				float magnitude = verticalVelocity.magnitude;
-				float speed = gravityAngle < 90 ? magnitude : -magnitude;
-				SetVerticalForce(Mathf.Lerp(speed, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime));
-			}
-			else {
-				// Global velocity
-				_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
-			}
+			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
+		}
+
+		// If it's grounded on a slope, substracts the necessary vertical speed to stick to the ground
+		if (State.IsGrounded && Mathf.Abs(State.SlopeAngle) > 0.001f) {
+			_velocity.y -= _velocity.x * Mathf.Sin(State.SlopeAngle * Mathf.Deg2Rad);
+		}
+
+		// If the input was relative to the gravity, restores it's orientation
+		if (Parameters.relativeToGravity) {
+			_velocity = Quaternion.Euler(0, 0, -gravityAngle) * _velocity;
 		}
 	}
 
-	public void AddForce(Vector3 force) {
-		_velocity += force;
-	}
-
-	public void SetForce(Vector3 force) {
-		_velocity = force;
-	}
-
-	public void SetHorizontalForce(float x) {
-		Vector3 verticalVelocity = GetVerticalVelocity();
-		Vector3 direction = Vector3.Cross(Vector3.forward, Parameters.gravity).normalized;
-		_velocity = verticalVelocity + direction * x;
-	}
-
-	public void SetVerticalForce(float y) {
-		Vector3 horizontalVelocity = GetHorizontalVelocity();
-		Vector3 direction = -Parameters.gravity.normalized;
-		_velocity = horizontalVelocity + direction * y;
-	}
-
-	public Vector3 GetHorizontalVelocity() {
-		Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.gravity);
-		return GetVelocityOnDirection(perpendicular);
-	}
-
-	public Vector3 GetVerticalVelocity() {
-		return GetVelocityOnDirection(-Parameters.gravity);
-	}
-
-	public Vector3 GetVelocityOnDirection(Vector3 direction) {
-		Vector3 normalized = direction.normalized;
-		return Vector3.Project(_velocity, normalized);
-	}
-
+	/// <summary>
+	/// Checks if the character can move on his current state. If not, the input
+	/// will not be accepted and the character will keep it's velocity.
+	/// </summary>
+	/// <returns>If the character can move</returns>
 	public bool CanMove() {
 		// Checks if the controller accepts input
 		switch (Parameters.movementBehaviour) {
@@ -164,6 +304,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Makes the character jump, modifying the vertical force relatively to the gravity.
+	/// The character vertical speed will be replaced.
+	/// </summary>
 	public void Jump() {
 		// Checks if it can jump
 		if (!CanJump())
@@ -171,10 +315,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Calculates the jump speed to reach the desired height
 		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.magnitude * Parameters.jumpMagnitude));
-		SetVerticalForce(jumpSpeed);
+		SetVerticalForceRelative(jumpSpeed);
+
 		_jumpingTime = Parameters.jumpFrecuency;
 	}
 
+	/// <summary>
+	/// Checks if the character can jump on his current state.
+	/// </summary>
+	/// <returns>If the character can jump</returns>
 	public bool CanJump() {
 		// If it has recently jumped, it cannot jump again
 		if (_jumpingTime > 0)
@@ -193,6 +342,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
+	#endregion
+
+	/// <summary>
+	/// Unity's method called at the end of the frame.
+	/// This method will be called after each Update method is called.
+	/// Moves the character acording to it's velocity
+	/// </summary>
 	public void LateUpdate() {
 		// Decreaseses the counter of time beetween jumps
 		_jumpingTime -= Time.deltaTime;
@@ -203,13 +359,17 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
 
-		// Cheks if the entity is overlaping a collider
-		HandleOverlaping();
-
-		// Trys the movement of the entity acording to it's speed
+		// Trys the movement of the entity acording to it's velocity
 		Move(Velocity * Time.deltaTime);
 	}
 
+	#region Movement Methods
+
+	/// <summary>
+	/// Handles the movement of the character while it's standing on a moving platform.
+	/// The moving platform can be moved in any way, and the character will follow it
+	/// even if it teleports.
+	/// </summary>
 	private void HandleMovingPlatforms() {
 		if (State.GroundedObject != null) {
 			// Gets the new global position of the entity relatively to the platform
@@ -229,36 +389,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
-	private void HandleOverlaping() {
-		// Gets the overlaping colliders
-		float distance = _collider.radius * transform.localScale.x - skinWidth;
-		Collider[] colliders = Physics.OverlapSphere(transform.position, distance, platformMask);
-		foreach (Collider collider in colliders) {
-			// If a collider is overlaping this entity, it must be becouse it moved independently, so it should have a Rigidbody
-			Rigidbody rb = collider.gameObject.GetComponent<Rigidbody>();
-			if (rb == null)
-				return;
-
-			RaycastHit hit;
-			if (!Physics.Raycast(transform.position, -rb.velocity, out hit, distance, platformMask))
-				return;
-
-			Vector3 repositionVector = rb.velocity.normalized * (distance - hit.distance);
-			transform.Translate(repositionVector);
-		}
-	}
-
+	/// <summary>
+	/// Moves the character the desired distance.
+	/// </summary>
+	/// <param name="movement">Movement distance</param>
 	private void Move(Vector3 movement) {
-		// Resets the state
+		// Resets the state, but keeps the platform velocity
+		Vector3 temp = State.PlatformVelocity;
 		State.Reset();
-
-		if (HandleCollisions) {
-			// Precomputes the ray's origins
-			CalculateRayOrigins(movement);
-
-			// Checks for possible collisions
-			CheckCollisions(ref movement);
-		}
+		State.PlatformVelocity = temp;
 
 		// Clamps the movement
 		movement.x = Mathf.Clamp(movement.x, -Parameters.maxVelocity.x, Parameters.maxVelocity.x);
@@ -266,124 +405,64 @@ public class CharacterControllerCustom : MonoBehaviour {
 		movement.z = Mathf.Clamp(movement.z, -Parameters.maxVelocity.z, Parameters.maxVelocity.z);
 
 		// Do the actual movement
-		transform.Translate(movement, Space.World);
-
-		// Updates the velocity with the actual value this frame
-		if (Time.deltaTime > 0)
-			_velocity = movement / Time.deltaTime;
+		_controller.Move(movement);
+		Debug.DrawRay(transform.position, movement, Color.red);
 
 		// Stores the global and local position relative to the ground
 		if (State.GroundedObject != null) {
 			_activeGlobalPlatformPoint = transform.position;
 			_activeLocalPlatformPoint = State.GroundedObject.transform.InverseTransformPoint(transform.position);
 		}
-
-		// Finally, notifies the collisions
-		NotifyCollisions();
 	}
 
-	private void CalculateRayOrigins(Vector3 movement) {
-		// Stores the angle beetween rays
-		_angleBeetweenRays = 360.0f / totalRays;
+	/// <summary>
+	/// Unity's method for handling the collisions derived from the CharacterController
+	/// component.
+	/// Creates the right state of the character and modifies it's velocity based on
+	/// the collision information.
+	/// </summary>
+	/// <param name="hit">Information of the collision</param>
+	public void OnControllerColliderHit(ControllerColliderHit hit) {
+		// There has been collisions this frame
+		State.HasCollisions = true;
 
-		// Calculates the ray's origins
-		Vector3 scale = transform.localScale;
-		for (int i = 0; i < _rayOrigins.Length; i++) {
-			// Calculates the right coordinates and creates the point
-			float x = transform.position.x + (_collider.radius * scale.x - skinWidth) * Mathf.Cos(i * _angleBeetweenRays * Mathf.Deg2Rad);
-			float y = transform.position.y + (_collider.radius * scale.y - skinWidth) * Mathf.Sin(i * _angleBeetweenRays * Mathf.Deg2Rad);
-			_rayOrigins[i] = new Vector3(x, y, 0);
+		// Spheres have their normal inverted for whatever reason
+		Vector3 normal = hit.normal;
+		if (hit.collider is SphereCollider)
+			normal = -hit.normal;
+
+		// Looks for the angle beetween the collision nomal an the gravity
+		State.SlopeAngle = Vector3.Angle(normal, -Parameters.gravity);
+		if (Vector3.Cross(normal, -Parameters.gravity).z < 0)
+			State.SlopeAngle = -State.SlopeAngle;
+		if (Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit) {
+			// The collider is considered ground
+			State.IsGrounded = true;
+			State.IsSliding = false;
+			State.GroundedObject = hit.collider.gameObject;
+
+			// Removes the velocity's vertical component
+			SetVerticalForceRelative(0);
+		}
+		else {
+			// The collider is considered a slope
+			State.IsGrounded = false;
+			State.IsSliding = true;
+			State.GroundedObject = null;
+
+			// Projects the speed to the normal's perpendicular
+			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
+			_velocity = Vector3.Project(_velocity, normalPerpendicular);
+		}
+
+		// Applys force to the other object if it allows it
+		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
+		if (otherRigidbody != null && !otherRigidbody.isKinematic) {
+			otherRigidbody.AddForce(_velocity * Parameters.mass, ForceMode.Impulse);
 		}
 	}
 
-	private void CheckCollisions(ref Vector3 movement) {
-		// Resets the collisions
-		_thisFrameCollisions = new List<RaycastHit>();
+	#endregion
 
-		// Casts rays according to the movement direction
-		for (int i = 0; i < _rayOrigins.Length; i++) {
-			// Caulculates the origin and direction of the ray
-			Vector3 rayOrigin = _rayOrigins[i];
-			Vector3 rayDirection = movement.normalized;
-			float rayDistance = movement.magnitude + skinWidth;
-
-			// Casts the ray
-			Debug.DrawRay(rayOrigin, rayDirection * rayDistance, Color.red);
-			RaycastHit hit;
-			if (!Physics.Raycast(rayOrigin, rayDirection, out hit, rayDistance, platformMask))
-				continue;
-
-			// From now on, a collision has occured
-			State.HasCollisions = true;
-			// If the collider is not already stored, stores the raycast hit
-			if (_thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				_thisFrameCollisions.Add(hit);
-
-			// Checks the angle of the normal
-			float normalAngle = Vector3.Angle(hit.normal, -Parameters.gravity);
-			if (Mathf.Abs(normalAngle) < Parameters.slopeLimit) {
-				// The platform is considered ground
-				State.IsGrounded = true;
-				State.GroundedObject = hit.collider.gameObject;
-				State.IsSliding = false;
-			}
-			else if (!State.IsGrounded) {
-				State.IsSliding = true;
-			}
-			State.SlopeAngle = normalAngle;
-
-			// Checks the angle of the movement
-			float movementAngle = Vector3.Angle(movement, Parameters.gravity);
-			if (State.IsGrounded && Mathf.Abs(movementAngle) < Parameters.slopeLimit) {
-				// Clamps the movement to the collision point
-				movement = hit.point - rayOrigin;
-				movement -= rayDirection * skinWidth;
-			}
-			else {
-				// Modifies the movement to slide with the collider
-				Vector3 hitVector = hit.point - rayOrigin - rayDirection * skinWidth;
-				Vector3 repositionVector = Vector3.Project(movement - hitVector, hit.normal);
-				movement -= repositionVector;
-			}
-
-			// Precaution check
-			if (rayDistance < skinWidth + 0.0001f)
-				break;
-		}
-	}
-
-	private void NotifyCollisions() {
-		// Checks the new collisions
-		foreach (RaycastHit hit in _thisFrameCollisions) {
-
-			// Calls the generic collision method for all collisions
-			gameObject.SendMessage("OnCustomCollision", hit);
-
-			// Collision enter
-			if (_lastFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				gameObject.SendMessage("OnCustomCollisionEnter", hit, SendMessageOptions.DontRequireReceiver);
-
-			// Collision stay
-			else
-				gameObject.SendMessage("OnCustomCollisionStay", hit, SendMessageOptions.DontRequireReceiver);
-		}
-
-		// Checks the exit collisions
-		foreach (RaycastHit hit in _lastFrameCollisions) {
-
-			// Collision exit
-			if (_thisFrameCollisions.Where(e => e.collider == hit.collider).Count() == 0)
-				gameObject.SendMessage("OnCustomCollisionExit", hit, SendMessageOptions.DontRequireReceiver);
-		}
-
-		// Stores the frame's collisions
-		_lastFrameCollisions = _thisFrameCollisions;
-	}
-
-	public void OnCustomCollision(RaycastHit hit) {
-		Rigidbody rb = hit.rigidbody;
-		// If the other object has a rigidbody and it's not kinematic, adds force to it at the contact point
-		if (rb != null && !rb.isKinematic)
-			rb.AddForceAtPosition(Velocity * Parameters.mass, hit.point, ForceMode.Impulse);
-	}
+	#endregion
 }
