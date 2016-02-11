@@ -16,11 +16,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
     {
         if (id < allCharacters.Count && id >= 0)
         {
+            //Try to  stop it
+            StopDrop();
+
             //Set Control
             currentCharacter = allCharacters[id];
 
-            //Try to  stop it
-            StopDrop();
         }
     }
 
@@ -28,6 +29,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
     {
         //Add to control list
         allCharacters.Add(drop);
+
+        StopDrop();
 
         //Set Control
         currentCharacter = drop;
@@ -44,6 +47,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
             Destroy(drop);
 
             //Set Control
+            StopDrop();
             currentCharacter = allCharacters[0];
         }
     }
@@ -60,8 +64,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 next_drop = 0;
 
             //Set Control
-            currentCharacter = allCharacters[next_drop];
             StopDrop();
+            currentCharacter = allCharacters[next_drop];
         }
     }
 
@@ -77,8 +81,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 back_drop = allCharacters.Count - 1;
 
             //Set Control
-            currentCharacter = allCharacters[back_drop];
             StopDrop();
+            currentCharacter = allCharacters[back_drop];
         }
     }
 
@@ -90,6 +94,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
         cccp.HorizontalInput = 0;
         cccp.VerticalInput = 0;
         cccp.JumpInput = 0;
+
+
     }
 
 }
