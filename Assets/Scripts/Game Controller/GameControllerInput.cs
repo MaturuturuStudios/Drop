@@ -7,6 +7,7 @@ public class GameControllerInput : MonoBehaviour {
 	// Internal references
     private GameControllerIndependentControl _switcher;
     public GameObject PfDrop;
+    private bool _shootmodeON=false;
 
 	void Start() {
 		// Do nothing
@@ -30,6 +31,9 @@ public class GameControllerInput : MonoBehaviour {
 		// Jump input
 		float jumpInput = Input.GetAxis("Jump");
 		cccp.JumpInput = jumpInput;
+
+
+   
 
         HasToChange();
 
