@@ -159,6 +159,11 @@ public class CharacterControllerParameters {
 	/// </summary>
 	public Vector3 maxVelocity = new Vector3(float.MaxValue, float.MaxValue, 0);
 
+	/// <summary>
+	/// If enabled, the position's Z coordinate of the entity will be zeroed each frame.
+	/// </summary>
+	public bool zClamp = true;
+
 	#endregion
 
 	#region Methods
@@ -169,18 +174,19 @@ public class CharacterControllerParameters {
 	/// <returns>A copy of this parameters</returns>
 	public CharacterControllerParameters Clone() {
 		CharacterControllerParameters clone = new CharacterControllerParameters();
-		clone.mass = mass;
 		clone.movementControl = movementControl;
-		clone.relativeToGravity = relativeToGravity;
 		clone.movementBehaviour = movementBehaviour;
+		clone.relativeToGravity = relativeToGravity;
 		clone.maxSpeed = maxSpeed;
 		clone.accelerationOnGround = accelerationOnGround;
 		clone.accelerationOnAir = accelerationOnAir;
 		clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrecuency = jumpFrecuency;
 		clone.jumpMagnitude = jumpMagnitude;
+		clone.mass = mass;
 		clone.gravity = gravity;
 		clone.maxVelocity = maxVelocity;
+		clone.zClamp = zClamp;
 
 		return clone;
 	}

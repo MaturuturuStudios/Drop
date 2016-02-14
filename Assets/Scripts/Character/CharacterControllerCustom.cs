@@ -67,6 +67,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	private CharacterController _controller;
 
+	/// <summary>
+	/// A reference to the entity's Transform component.
+	/// </summary>
+	private Transform _transform;
+
 	#endregion
 
 	#region Variables
@@ -100,6 +105,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Recovers the desired components
 		_controller = GetComponent<CharacterController>();
+		_transform = transform;
 	}
 
 	#region Force Methods
@@ -214,6 +220,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <returns>Vertical component of the velocity</returns>
 	public Vector3 GetVerticalVelocityRelative() {
 		return GetVelocityOnDirection(-Parameters.gravity);
+	}
+
+	/// <summary>
+	/// Zeroes the velocity of the controller.
+	/// </summary>
+	public void Stop() {
+		_velocity = Vector3.zero;
 	}
 
 	#endregion
@@ -378,7 +391,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 			// Moves the entity to match the platform translation
 			if (moveDistance != Vector3.zero)
-				transform.Translate(moveDistance, Space.World);
+				_transform.Translate(moveDistance, Space.World);
 
 			// Saves the velocity of the platform
 			State.PlatformVelocity = moveDistance / Time.deltaTime;
@@ -406,12 +419,19 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Do the actual movement
 		_controller.Move(movement);
-		Debug.DrawRay(transform.position, movement, Color.red);
+		Debug.DrawRay(_transform.position, movement, Color.red);
+
+		// If the Z coordinate is clamped, resets it to zero
+		if (Parameters.zClamp) {
+			Vector3 clamped = _transform.position;
+			clamped.z = 0;
+			_transform.position = clamped;
+		}
 
 		// Stores the global and local position relative to the ground
 		if (State.GroundedObject != null) {
-			_activeGlobalPlatformPoint = transform.position;
-			_activeLocalPlatformPoint = State.GroundedObject.transform.InverseTransformPoint(transform.position);
+			_activeGlobalPlatformPoint = _transform.position;
+			_activeLocalPlatformPoint = State.GroundedObject.transform.InverseTransformPoint(_transform.position);
 		}
 	}
 

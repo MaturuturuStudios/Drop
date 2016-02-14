@@ -70,5 +70,21 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			_controller.Jump();
 	}
 
+	/// <summary>
+	/// Removes the input of the controller. If the optional parameter
+	/// is received, instantly stops the entity, removing it's velocity.
+	/// </summary>
+	/// <param name="hardStop">If the entity velocity should be removed</param>
+	public void Stop(bool hardStop = false) {
+		// Removes the input
+		HorizontalInput = 0;
+		VerticalInput = 0;
+		JumpInput = 0;
+
+		// If it has to, hard stops the controller
+		if (hardStop)
+			_controller.Stop();
+	}
+
 	#endregion
 }

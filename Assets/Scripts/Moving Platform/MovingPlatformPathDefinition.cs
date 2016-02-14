@@ -5,10 +5,24 @@ using System.Collections.Generic;
 
 public class MovingPlatformPathDefinition : MonoBehaviour {
 
-	// Public attributes
+	#region Public Attributes
+
+	/// <summary>
+	/// Array containing the points of the path. The platform will
+	/// go from one point to the next.
+	/// </summary>
 	public Transform[] points;
 
-    public IEnumerator<Transform> GetBackAndForwardEumerator() {
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// Returns an enumerator that reverses the path once it reaches
+	/// it's end.
+	/// </summary>
+	/// <returns>A back and forward path enumerator</returns>
+	public IEnumerator<Transform> GetBackAndForwardEumerator() {
 		// Only one point is required
         if (points == null || points.Length < 1)
             yield break;
@@ -32,6 +46,11 @@ public class MovingPlatformPathDefinition : MonoBehaviour {
         }
 	}
 
+	/// <summary>
+	/// Returns an enumerator that starts the path from the beginning
+	/// once it reaches it's end, in the same order.
+	/// </summary>
+	/// <returns>A loop path enumerator</returns>
 	public IEnumerator<Transform> GetLoopEumerator() {
 		if (points == null || points.Length < 1)
 			yield break;
@@ -48,6 +67,10 @@ public class MovingPlatformPathDefinition : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Unity's method called by the editor in order to draw the gizmos.
+	/// Draws the path on the editor.
+	/// </summary>
 	public void OnDrawGizmos() {
         // At least 2 points are needed to draw a line
         if (points == null || points.Length < 2)
@@ -56,4 +79,6 @@ public class MovingPlatformPathDefinition : MonoBehaviour {
         for (int i = 1; i < points.Length; i++)
             Gizmos.DrawLine(points[i - 1].position, points[i].position);
     }
+
+	#endregion
 }
