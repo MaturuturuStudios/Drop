@@ -34,11 +34,11 @@ public class WindTube : MonoBehaviour {
 	#region Methods
 
 	/// <summary>
-	/// Unity's method called at the first frame the entity is enabled.
+	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
-	public void Start() {
-		// Retrieves the trasnform component of the entity.
+	public void Awake() {
+		// Retrieves the components of the entity.
 		_transform = transform;
 	}
 
@@ -75,6 +75,22 @@ public class WindTube : MonoBehaviour {
 
 			return;
 		}
+	}
+
+	/// <summary>
+	/// Unity's method called by the editor in order to draw the gizmos.
+	/// Draws the volume on the editor.
+	/// </summary>
+	public void OnDrawGizmos() {
+		// Defines the color of the gizmo
+		Color color = Color.cyan;
+		color.a = 0.25f;
+		Gizmos.color = color;
+
+		// Draws the cube
+		BoxCollider collider = GetComponent<BoxCollider>();
+		Gizmos.matrix = transform.localToWorldMatrix;
+		Gizmos.DrawCube(Vector3.up * collider.size.y / 2, collider.size);
 	}
 
 	#endregion
