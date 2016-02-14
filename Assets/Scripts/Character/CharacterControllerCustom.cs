@@ -169,12 +169,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// This force is applied relative to the gravity instead to the global axis.
 	/// </summary>
 	/// <param name="force">Amount of force to add</param>
-	public void AddForceRelative(Vector3 force) {
+	/// <param name="mode">The type of force it is applying</param>
+	public void AddForceRelative(Vector3 force, ForceMode mode = ForceMode.VelocityChange) {
 		// Rotates the force acording to the gravity and adds it to the velocity
 		float gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
 		if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
 			gravityAngle = -gravityAngle;
-		_velocity += Quaternion.Euler(0, 0, -gravityAngle) * force;
+		AddForce(Quaternion.Euler(0, 0, -gravityAngle) * force, mode);
 	}
 
 	/// <summary>
