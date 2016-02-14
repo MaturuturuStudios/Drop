@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Moves an entity according to a MovingPlatformPathDefinition script.
+/// </summary>
 public class MovingPlatformFollowPath : MonoBehaviour {
 
 	#region Custom Enumerations

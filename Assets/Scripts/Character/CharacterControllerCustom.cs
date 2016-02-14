@@ -114,8 +114,28 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// Adds a force to the velocity of the character.
 	/// </summary>
 	/// <param name="force">Amount of force to add</param>
-	public void AddForce(Vector3 force) {
-		_velocity += force;
+	/// <param name="mode">The type of force it is applying</param>
+	public void AddForce(Vector3 force, ForceMode mode = ForceMode.VelocityChange) {
+		switch (mode) {
+			case ForceMode.VelocityChange:
+				// Adds the velocity ignoring it's mass
+				_velocity += force;
+				break;
+			case ForceMode.Impulse:
+				// Adds the velocity using it's mass
+				_velocity += force / Parameters.mass;
+				break;
+			case ForceMode.Acceleration:
+				// Adds the force over time ignoring it's mass
+				_velocity += force * Time.deltaTime;
+				break;
+			case ForceMode.Force:
+				// Adds the force over time using it's mass
+				_velocity += (force / Parameters.mass) * Time.deltaTime;
+				break;
+			default:
+				return;
+		}
 	}
 
 	/// <summary>
