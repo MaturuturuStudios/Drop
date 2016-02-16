@@ -18,9 +18,17 @@ public class CharacterShootandTrajectory : MonoBehaviour
     private Vector3 aux;
 
     public GameObject gamecontroler;
+
+    CharacterControllerCustom ccc;
+
+    private bool shootmode = false;
+    
     //---------------------------------------	
     void Start ()
 	{
+
+        ccc = GetComponent<CharacterControllerCustom>();
+
         vel.x = vel.y=3;
         vel.z= 0f;
 
@@ -56,13 +64,29 @@ public class CharacterShootandTrajectory : MonoBehaviour
 		}
         if (Input.GetKeyDown(KeyCode.X))
         {
-            //shoot mode on
-            //GetComponent<CharacterControllerCustom>().Parameters.movementBehaviour =1;
+            if (shootmode == false)
+            {
+                shootmode = true;
+                ccc.Parameters = CharacterControllerParameters.ShootingParameters;
+
+            }else if (shootmode == true)
+            {
+                shootmode = false;
+            }
 
         }
         if (Input.GetKeyDown(KeyCode.Z))
         {
             //shoot mode of
+            shootmode = false;
+            Vector3 vo;
+            vo.x = 0;
+            vo.z = 5;
+            vo.y = 0;
+            transform.eulerAngles = new Vector3(0, 0, 0);
+            setTrajectoryPoints(transform.position, vo);
+            
+            ccc.Parameters = null;
         }
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
@@ -80,11 +104,12 @@ public class CharacterShootandTrajectory : MonoBehaviour
         {
             vel.x -= 1;
         }
-        if (isPressed)
+        if (shootmode)
 		{
 			//Vector3 vel = GetForceFrom(ball.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
 			float angle = Mathf.Atan2(vel.y,vel.x)* Mathf.Rad2Deg;
 			transform.eulerAngles = new Vector3(0,0,angle);
+           // setTrajectoryPoints(transform.position, vel / ball.GetComponent<Rigidbody>().mass);
 			setTrajectoryPoints(transform.position, vel/ball.GetComponent<CharacterControllerCustom>().Parameters.mass);
         }
 	}
@@ -95,8 +120,11 @@ public class CharacterShootandTrajectory : MonoBehaviour
 	{
 		ball = (GameObject) Instantiate(BallPrefb);
 		Vector3 pos = transform.position;
-		pos.z=1;
+        pos.z = 1;
+        float a=GetComponent<CharacterController>().radius;
 		ball.transform.position = pos;
+        ball.GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.FlyingParameters;
+        
 		ball.SetActive(false);
 	}
 	//---------------------------------------	
@@ -105,8 +133,8 @@ public class CharacterShootandTrajectory : MonoBehaviour
 		ball.SetActive(true);	
 		//ball.GetComponent<Rigidbody>().useGravity = true;
         //ball.GetComponent<Rigidbody>().AddForce(GetForceFrom(ball.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition)),ForceMode.Impulse);
-        //ball.GetComponent<Rigidbody>().AddForce(vel, ForceMode.Impulse);
-        ball.GetComponent<CharacterControllerCustom>().AddForce(vel);
+       // ball.GetComponent<Rigidbody>().AddForce(vel, ForceMode.Impulse);
+        ball.GetComponent<CharacterControllerCustom>().AddForce(vel, ForceMode.VelocityChange);
         //isBallThrown = true;
     }
 	//---------------------------------------	
@@ -127,11 +155,11 @@ public class CharacterShootandTrajectory : MonoBehaviour
 		for (int i = 0 ; i < numOfTrajectoryPoints ; i++)
 		{
 			float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
-			float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (Physics2D.gravity.magnitude * fTime * fTime / 2.0f);
+			float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.gravity.magnitude * fTime * fTime / 2.0f);
 			Vector3 pos = new Vector3(pStartPosition.x + dx , pStartPosition.y + dy ,2);
-			trajectoryPoints[i].transform.position = pos;
+			trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100 * Time.deltaTime);
 			trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-			trajectoryPoints[i].transform.eulerAngles = new Vector3(0,0,Mathf.Atan2(pVelocity.y - (Physics.gravity.magnitude)*fTime,pVelocity.x)*Mathf.Rad2Deg);
+			trajectoryPoints[i].transform.eulerAngles = new Vector3(0,0,Mathf.Atan2(pVelocity.y - (ccc.Parameters.gravity.magnitude)*fTime,pVelocity.x)*Mathf.Rad2Deg);
 			fTime += 0.1f;
 		}
 	}

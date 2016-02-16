@@ -1,61 +1,75 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class CharacterShoot : MonoBehaviour{
+public class CharacterShoot : MonoBehaviour {
+	
+	public GameObject BallPrefb;
+	
+	private GameObject ball;
+	private bool  isBallThrown;
 
-    public Rigidbody bulletPrefab;
-    float attackSpeed = 2f;
-    float cooldown;
-    public GameObject focus;
+    private bool shootmode = false;
 
-    private bool Shoot_position;
 
-    public float smooth = 2.0F;
-    public float tiltAngle = 30.0F;
+    CharacterControllerCustom ccc;
+    CharacterShootTrajectory st;
+   
+    
+    //---------------------------------------	
+    void Start (){
 
-    private Quaternion target;
-
-    void Start(){
-        Shoot_position = false;
-        focus.SetActive(false);
-        
-    }
-
-    void Update(){
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            Shoot_position = false;
-            focus.SetActive(false);
-        }
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            Shoot_position = true;
-        }
-        if (Time.time >= cooldown && Shoot_position){
-            focus.SetActive(true);
-
-            float tiltAroundZ = Input.GetAxis("Horizontal") * -tiltAngle;
+        ccc = GetComponent<CharacterControllerCustom>();
+        st= GetComponent<CharacterShootTrajectory>();
+      
+	}
+	//---------------------------------------	
+	void Update (){
+        if (Input.GetKeyDown(KeyCode.X)) {
+            if (shootmode == false){
+                shootmode = true;
+                st.enabled = true;
                 
-            target = Quaternion.Euler(0, 0, tiltAroundZ);
-            focus.transform.rotation = Quaternion.Slerp(focus.transform.rotation, target, Time.deltaTime * smooth);
-
-            if (Input.GetKeyDown(KeyCode.Space))
-                {
-                //transform.rotation = focus.transform.rotation;
-                    Fire();
-                    Debug.Log("Shoot");
-                }
+                ccc.Parameters = CharacterControllerParameters.ShootingParameters;
+            }else if(shootmode== true){
+                shootmode = false;
+                st.QuitTrajectory();
+                st.enabled = false;
+                ccc.Parameters = null;
             }
+
         }
+        
+        if ((Input.GetMouseButtonUp(0)) && (shootmode==true)){
+			
+			if(!isBallThrown){
+                createBall();
+                throwBall();             
+            }
+		}
+        
+        
+	}
+	//---------------------------------------	
+	// When ball is thrown, it will create new ball
+	//---------------------------------------	
+	private void createBall(){
+		ball = (GameObject) Instantiate(BallPrefb);
+		Vector3 pos = transform.position;
+        pos.z = 1;
+        float a=GetComponent<CharacterController>().radius;
+		ball.transform.position = pos;
+        ball.GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.FlyingParameters;
+        
+		ball.SetActive(false);
+	}
+	//---------------------------------------	
+	private void throwBall(){
+		ball.SetActive(true);	
 
-        // Fire a bullet
-   void Fire(){
-            Rigidbody bPrefab = Instantiate(bulletPrefab, transform.position, target) as Rigidbody;
-            bPrefab.AddForce(Vector3.up * 100f);
-            cooldown = Time.time + attackSpeed;
+        ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange);
+       
     }
-
-    public bool Shooting(){
-        return Shoot_position;
-    }
+	
+	
 }
