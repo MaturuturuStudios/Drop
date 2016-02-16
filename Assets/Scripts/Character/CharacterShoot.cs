@@ -56,7 +56,7 @@ public class CharacterShoot : MonoBehaviour {
 	private void createBall(){
 		ball = (GameObject) Instantiate(BallPrefb);
 
-        GetComponent<GameControllerIndependentControl>().AddDrop(ball);
+        //GetComponent<GameControllerIndependentControl>().AddDrop(ball);
 
 		Vector3 pos = transform.position;
         pos.z = 1;
@@ -71,7 +71,8 @@ public class CharacterShoot : MonoBehaviour {
 		ball.SetActive(true);	
 
         ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange);
-       
+
+        GetComponent<GameControllerIndependentControl>().AddDrop(ball);
     }
 	
 	
