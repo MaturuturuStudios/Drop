@@ -78,11 +78,11 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
 	void Update() {
 
-        /*if(Input.GetKeyDown(KeyCode.UpArrow))
+        if(Input.GetKeyDown(KeyCode.M))
 			IncrementSize();
 
-		if(Input.GetKeyDown(KeyCode.DownArrow))
-			DecrementSize();*/
+		if(Input.GetKeyDown(KeyCode.N))
+			DecrementSize();
 
 
 		//Some number pressed? we use 1-9 as range 1-9
