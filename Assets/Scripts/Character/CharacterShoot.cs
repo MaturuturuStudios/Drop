@@ -55,6 +55,9 @@ public class CharacterShoot : MonoBehaviour {
 	//---------------------------------------	
 	private void createBall(){
 		ball = (GameObject) Instantiate(BallPrefb);
+
+        GetComponent<GameControllerIndependentControl>().AddDrop(ball);
+
 		Vector3 pos = transform.position;
         pos.z = 1;
         //float a=GetComponent<CharacterController>().radius;
