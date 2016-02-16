@@ -54,7 +54,10 @@ public class CharacterShoot : MonoBehaviour {
 	// When ball is thrown, it will create new ball
 	//---------------------------------------	
 	private void createBall(){
-		ball = (GameObject) Instantiate(BallPrefb);
+
+        //var ball = Instantiate(BallPrefb) as GameObject;
+
+        ball = (GameObject) Instantiate(BallPrefb);
 
         //GetComponent<GameControllerIndependentControl>().AddDrop(ball);
 
