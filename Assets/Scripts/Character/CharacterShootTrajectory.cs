@@ -41,8 +41,14 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-      
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+
+        vel.x += h;
+        vel.y += v;
+
+        /*if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             vel.y += 1;
         }
@@ -57,7 +63,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             vel.x -= 1;
-        }
+        }*/
 
         float angle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
         transform.eulerAngles = new Vector3(0, 0, angle);

@@ -14,13 +14,14 @@ public class CharacterShoot : MonoBehaviour {
 
     CharacterControllerCustom ccc;
     CharacterShootTrajectory st;
-   
-    
+    GameControllerIndependentControl gc;
+
     //---------------------------------------	
     void Start (){
 
         ccc = GetComponent<CharacterControllerCustom>();
         st= GetComponent<CharacterShootTrajectory>();
+        gc = GetComponent<GameControllerIndependentControl>();
       
 	}
 	//---------------------------------------	
@@ -59,8 +60,6 @@ public class CharacterShoot : MonoBehaviour {
 
         ball = (GameObject) Instantiate(BallPrefb);
 
-        //GetComponent<GameControllerIndependentControl>().AddDrop(ball);
-
 		Vector3 pos = transform.position;
         pos.z = 1;
         //float a=GetComponent<CharacterController>().radius;
@@ -75,7 +74,7 @@ public class CharacterShoot : MonoBehaviour {
 
         ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange);
 
-        GetComponent<GameControllerIndependentControl>().AddDrop(ball);
+        gc.AddDrop(ball);
     }
 	
 	
