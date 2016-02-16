@@ -36,13 +36,31 @@ public class GameControllerInput : MonoBehaviour {
    
 
         HasToChange();
-
         DebugAddDrops();
-
+        DebugSize();
 	}
 
-    void HasToChange()
-    {
+    /// <summary>
+    /// Control the size
+    /// </summary>
+    private void DebugSize() {
+        if(Input.GetKeyDown(KeyCode.KeypadPlus))
+            _switcher.currentCharacter.GetComponent<CharacterSize>().IncrementSize();
+
+        if(Input.GetKeyDown(KeyCode.KeypadMinus))
+            _switcher.currentCharacter.GetComponent<CharacterSize>().DecrementSize();
+
+        //Some number pressed? we use 1-9 as range 1-9
+        bool done = false;
+        for(int i = 1; i < 10 && !done; i++) {
+            if(Input.GetKeyDown("" + i)) {
+                _switcher.currentCharacter.GetComponent<CharacterSize>().SetSize(i);
+                done = true;
+            }
+        }
+    }
+
+    private void HasToChange() {
 
         if (Input.GetKeyDown(KeyCode.Keypad1))
             _switcher.SetControl(0);
@@ -59,19 +77,17 @@ public class GameControllerInput : MonoBehaviour {
 
     }
 
-    void DebugAddDrops()
-    {
+    private void DebugAddDrops() {
 
-        if (Input.GetKeyDown(KeyCode.Keypad7))
-        {
+        if(Input.GetKeyDown(KeyCode.Keypad7)) {
             GameObject dropClone = (GameObject)Instantiate(PfDrop);
             _switcher.AddDrop(dropClone);
         }
+        
 
         if (Input.GetKeyDown(KeyCode.Keypad8))
-        {
             _switcher.RemoveDrop(_switcher.currentCharacter);
-        }
+        
 
     }
 }

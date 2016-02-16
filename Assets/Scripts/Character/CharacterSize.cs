@@ -77,23 +77,6 @@ public class CharacterSize : MonoBehaviour {
     /// Check input and control the size
     /// </summary>
 	void Update() {
-
-        if(Input.GetKeyDown(KeyCode.M))
-			IncrementSize();
-
-		if(Input.GetKeyDown(KeyCode.N))
-			DecrementSize();
-
-
-		//Some number pressed? we use 1-9 as range 1-9
-		bool done = false;
-		for(int i = 1; i < 10 && !done; i++) {
-			if(Input.GetKeyDown("" + i)) {
-				SetSize(i);
-				done = true;
-			}
-		}
-
 		GradualModifySize();
 	}
 
@@ -415,19 +398,6 @@ public class CharacterSize : MonoBehaviour {
 		return infoResult;
 	}
     #endregion
-
-    #region "Inherited" Methods
-    public void OnCustomCollisionEnter(RaycastHit hit) {
-		// TODO: collision with another drop?
-	}
-
-	public void OnCustomCollisionStay(RaycastHit hit) {
-		// TODO: Test method, remove at will
-	}
-
-	public void OnCustomCollisionExit(RaycastHit hit) {
-		// TODO: Test method, remove at will
-	}
-    #endregion
+    
     #endregion
 }
