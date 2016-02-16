@@ -25,7 +25,7 @@ public class CharacterShoot : MonoBehaviour {
 	}
 	//---------------------------------------	
 	void Update (){
-        if (Input.GetKeyDown(KeyCode.X)) {
+        if ((Input.GetKeyDown(KeyCode.X) && ccc.State.IsGrounded)) {
             if (shootmode == false){
                 shootmode = true;
                 st.enabled = true;
@@ -40,7 +40,7 @@ public class CharacterShoot : MonoBehaviour {
 
         }
         
-        if ((Input.GetMouseButtonUp(0)) && (shootmode==true)){
+        if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
 			
 			if(!isBallThrown){
                 createBall();
@@ -57,7 +57,7 @@ public class CharacterShoot : MonoBehaviour {
 		ball = (GameObject) Instantiate(BallPrefb);
 		Vector3 pos = transform.position;
         pos.z = 1;
-        float a=GetComponent<CharacterController>().radius;
+        //float a=GetComponent<CharacterController>().radius;
 		ball.transform.position = pos;
         ball.GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.FlyingParameters;
         
