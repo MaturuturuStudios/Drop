@@ -3,25 +3,41 @@ using System.Collections.Generic;
 
 public class GameControllerIndependentControl : MonoBehaviour {
 
+    //Control atributes
     public GameObject currentCharacter;
-    public List<GameObject> allCharacters;
+    public List<GameObject> allCurrentCharacters;
 
+    //Drops pool
+    public int numOfDrops = 10;
+    private List<GameObject> _DropsPool;
 
-    void Start(){/*Nothing at the moment*/}
+    //Drop prefab
+    public GameObject PfDrop;
+
+    void Start(){
+
+        //fill the drops pool
+        _DropsPool = new List<GameObject>();
+        for (int i = 0; i < numOfDrops; ++i)
+        {
+            GameObject drop = (GameObject)Instantiate(PfDrop);
+            drop.GetComponent<Renderer>().enabled = false;
+            _DropsPool.Add(drop);
+        }
+    }
 
 	void Update () {/*Nothing at the moment*/}
 
 
     public void SetControl(int id)
     {
-        if (id < allCharacters.Count && id >= 0)
+        if (id < allCurrentCharacters.Count && id >= 0)
         {
-            //Try to  stop it
+            //Try to stop abandoned drop
             StopDrop();
 
-            //Set Control
-            currentCharacter = allCharacters[id];
-
+            //Set Control to new drop
+            currentCharacter = allCurrentCharacters[id];
         }
     }
 
@@ -34,65 +50,90 @@ public class GameControllerIndependentControl : MonoBehaviour {
         
     }
 
-    //TODO: need to control duplicates when adding drop
-    public void AddDrop(GameObject drop)
+    public GameObject AddDrop(bool setControl = false)
     {
-        //Add to control list
-        allCharacters.Add(drop);
+        GameObject drop = null;
+        if (_DropsPool.Count > allCurrentCharacters.Count)
+        {
+            //Get a drop from the pool
+            Vector3 position = currentCharacter.transform.position;
+            drop = _DropsPool[allCurrentCharacters.Count];
+            drop.transform.position = new Vector3(position.x, position.y, position.z);  //At the moment we put it on the same place as controled
+            _DropsPool[allCurrentCharacters.Count].GetComponent<Renderer>().enabled = true;
 
-        StopDrop();
+            //Set Control
+            if (setControl)
+                SetControl(allCurrentCharacters.Count - 1);
 
-        //Set Control
-        //currentCharacter = drop;
+            //Add to control list
+            allCurrentCharacters.Add(_DropsPool[allCurrentCharacters.Count]);
+        }
+        return drop;
     }
 
-    public void RemoveDrop(GameObject drop)
+    public void RemoveDropFromControl(GameObject drop)
     {
-        if (allCharacters.Count > 1)
+        if (allCurrentCharacters.Count > 1)
         {
             //remove from control list
-            allCharacters.Remove(drop);
+            allCurrentCharacters.Remove(drop);
 
             //I don't know if i have to kill the drop
             Destroy(drop);
 
             //Set Control
             StopDrop();
-            currentCharacter = allCharacters[0];
+            currentCharacter = allCurrentCharacters[0];
+        }
+    }
+
+    public void KillDrop(GameObject drop)
+    {
+        if (allCurrentCharacters.Count > 1)
+        {
+            //remove from control list
+            allCurrentCharacters.Remove(drop);
+
+            //I don't know if i have to kill the drop
+            Destroy(drop);
+
+            //Set Control
+            StopDrop();
+            currentCharacter = allCurrentCharacters[0];
         }
     }
 
     public void ControlNextDrop()
     {
-        if (allCharacters.Count > 1)
+        if (allCurrentCharacters.Count > 1)
         {
             //Get next index
-            int next_drop = allCharacters.IndexOf(currentCharacter) + 1;
+            int next_drop = allCurrentCharacters.IndexOf(currentCharacter) + 1;
 
             //Loop control
-            if (next_drop == allCharacters.Count)
+            if (next_drop == allCurrentCharacters.Count)
                 next_drop = 0;
 
             //Set Control
             StopDrop();
-            currentCharacter = allCharacters[next_drop];
+            currentCharacter = allCurrentCharacters[next_drop];
         }
     }
 
     public void ControlBackDrop()
     {
-        if (allCharacters.Count > 1)
+        if (allCurrentCharacters.Count > 1)
         {
             //Get prev index
-            int back_drop = allCharacters.IndexOf(currentCharacter) - 1;
+            int back_drop = allCurrentCharacters.IndexOf(currentCharacter) - 1;
 
             //Loop control
             if (back_drop == -1)
-                back_drop = allCharacters.Count - 1;
+                back_drop = allCurrentCharacters.Count - 1;
 
             //Set Control
             StopDrop();
-            currentCharacter = allCharacters[back_drop];
+            currentCharacter = allCurrentCharacters[back_drop];
         }
     }
 

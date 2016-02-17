@@ -473,7 +473,7 @@ public class CharacterSize : MonoBehaviour {
         }
 
         //remove the other drop
-        _independentControl.RemoveDrop(anotherDrop);
+        _independentControl.KillDrop(anotherDrop);
 
         //store the direction of hit to spit out the drop in the correct direction
         _directionSpitDrop = hit.normal;

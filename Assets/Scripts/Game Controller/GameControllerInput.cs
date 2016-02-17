@@ -4,9 +4,8 @@ using System;
 
 public class GameControllerInput : MonoBehaviour {
 
-	// Internal references
+    // Internal references
     private GameControllerIndependentControl _switcher;
-    public GameObject PfDrop;
     private bool _shootmodeON=false;
 
 	void Start() {
@@ -80,13 +79,13 @@ public class GameControllerInput : MonoBehaviour {
     private void DebugAddDrops() {
 
         if(Input.GetKeyDown(KeyCode.Keypad7)) {
-            GameObject dropClone = (GameObject)Instantiate(PfDrop);
-            _switcher.AddDrop(dropClone);
+            GameObject drop = _switcher.AddDrop(true);
+            Debug.Log("add drop");
         }
         
 
         if (Input.GetKeyDown(KeyCode.Keypad8))
-            _switcher.RemoveDrop(_switcher.currentCharacter);
+            _switcher.KillDrop(_switcher.currentCharacter);
         
 
     }

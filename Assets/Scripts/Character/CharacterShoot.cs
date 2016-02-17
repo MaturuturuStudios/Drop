@@ -14,15 +14,18 @@ public class CharacterShoot : MonoBehaviour {
 
     CharacterControllerCustom ccc;
     CharacterShootTrajectory st;
-    GameControllerIndependentControl gc;
+    //GameControllerIndependentControl gc; //Comentado por toni
+    GameControllerIndependentControl _gcic;
 
     //---------------------------------------	
     void Start (){
 
         ccc = GetComponent<CharacterControllerCustom>();
         st= GetComponent<CharacterShootTrajectory>();
-        gc = GetComponent<GameControllerIndependentControl>();
-      
+        //gc = GetComponent<GameControllerIndependentControl>(); //Comentado por toni
+
+        _gcic = GameObject.FindGameObjectWithTag("GameController")
+                                .GetComponent<GameControllerIndependentControl>();
 	}
 	//---------------------------------------	
 	void Update (){
@@ -44,7 +47,7 @@ public class CharacterShoot : MonoBehaviour {
         if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
 			
 			if(!isBallThrown){
-                createBall();
+                //createBall(); //Comentado por toni
                 throwBall();             
             }
 		}
@@ -70,11 +73,14 @@ public class CharacterShoot : MonoBehaviour {
 	}
 	//---------------------------------------	
 	private void throwBall(){
-		ball.SetActive(true);	
 
-        ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange);
+        ball = _gcic.AddDrop(true);  //Añadido por toni
 
-        gc.AddDrop(ball);
+        // ball.SetActive(true);
+
+        ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange); 
+         
+        //gc.AddDrop(ball);    //Comentado por toni     
     }
 	
 	
