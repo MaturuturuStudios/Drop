@@ -92,13 +92,7 @@ public class CharacterSize : MonoBehaviour {
         _targetSize = 1;
         SetSize(1);
     }
-
-    /// <summary>
-    /// Nothing
-    /// </summary>
-    void Start() {
-		
-    }
+    
 
 	/// <summary>
     /// Check input and control the size
@@ -274,6 +268,8 @@ public class CharacterSize : MonoBehaviour {
         //set a force
         newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
         newDrop.GetComponent<CharacterControllerCustom>().AddForce(_directionSpitDrop*impulseSpit, ForceMode.VelocityChange);
+        //for test, clarity on behaviour
+        _directionSpitDrop = Vector3.zero;
 
         //TODO: delegate!
         _independentControl.AddDrop(newDrop);
@@ -480,7 +476,11 @@ public class CharacterSize : MonoBehaviour {
         _independentControl.RemoveDrop(anotherDrop);
 
         //store the direction of hit to spit out the drop in the correct direction
-        _directionSpitDrop = Vector3.left;
+        _directionSpitDrop = hit.normal;
+        _directionSpitDrop.z = 0;
+        if(hit.gameObject == anotherDrop) {
+            _directionSpitDrop *= -1;
+        }
 
         //increment size of the actual drop
         SetSize(totalSize);
