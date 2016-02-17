@@ -14,6 +14,8 @@ public class CharacterSize : MonoBehaviour {
     /// Growth rate
     /// </summary>
     public float enlargeSpeed = 5f;
+
+    public GameObject BallPrefab;
     #endregion
 
     #region Custom private Enumerations
@@ -62,14 +64,10 @@ public class CharacterSize : MonoBehaviour {
 
     #region Methods
     #region Public Methods
-    /// <summary>
-    /// Initialization method.
-    /// The character start with size one
-    /// </summary>
-    void Start() {
-		_dropTransform = gameObject.transform;
-		_dropTransform.localScale = Vector3.one;
-        _ratioRadius=GetComponent<CharacterController>().radius;
+    void Awake() {
+        _dropTransform = gameObject.transform;
+        _dropTransform.localScale = Vector3.one;
+        _ratioRadius = GetComponent<CharacterController>().radius;
 
         _independentControl = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
@@ -78,7 +76,15 @@ public class CharacterSize : MonoBehaviour {
         _quietGrowingParameters.movementControl = CharacterControllerParameters.MovementControl.None;
 
         _targetSize = 1;
-		SetSize(1);
+        SetSize(1);
+    }
+
+    /// <summary>
+    /// Initialization method.
+    /// The character start with size one
+    /// </summary>
+    void Start() {
+		
     }
 
 	/// <summary>
@@ -237,6 +243,13 @@ public class CharacterSize : MonoBehaviour {
         //calculate the extra drop I have to spit
         int numberDropsRemain = _targetSize - finalSize;
         Debug.Log("Spit " + numberDropsRemain + " out");
+
+        //TODO: delegate ball creation to independentControl
+        //_independentControl.createDrop
+        Vector3 position = new Vector3(3,7,0);
+        GameObject newDrop=(GameObject)Instantiate(BallPrefab, position, Quaternion.identity);
+        newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
+        _independentControl.AddDrop(newDrop);
 
         //set the final size
         SetSize(finalSize);
@@ -456,28 +469,14 @@ public class CharacterSize : MonoBehaviour {
         //Get the size of the other drop
         CharacterSize otherDropSize = hit.gameObject.GetComponent<CharacterSize>();
 
-        //check who is the controlled drop
-        if(gameObject != _independentControl.currentCharacter && hit.gameObject != _independentControl.currentCharacter) {
-            //check if some of them belong to user control
-
-            //none of them, check who's bigger
-            int difference = otherDropSize.GetSize() - GetSize();
-            if(difference > 0)
-                otherDropSize.DropFusion(gameObject);
-            else
-                //I' bigger, or has equal size, so lets go with race condition
-                //first called will grow up (at least, this one was called)
-                DropFusion(hit.gameObject);
-            
-        } else if(hit.gameObject == _independentControl.currentCharacter) {
-            //the other drop gets the control
+        //check who's bigger
+        int difference = otherDropSize.GetSize() - GetSize();
+        if(difference > 0)
             otherDropSize.DropFusion(gameObject);
-
-        } else{
-            //I'm the controlled one
+        else 
+            //I' bigger, or has equal size, so lets go with race condition
+            //first called will grow up (at least, this one was called)
             DropFusion(hit.gameObject);
-        }
-
     }
     #endregion
 
