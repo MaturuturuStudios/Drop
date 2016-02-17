@@ -14,8 +14,14 @@ public class CharacterSize : MonoBehaviour {
     /// Growth rate
     /// </summary>
     public float enlargeSpeed = 5f;
-
-    public GameObject BallPrefab;
+    /// <summary>
+    /// Prefab of the drop that will be spitted
+    /// </summary>
+    //public GameObject BallPrefab;
+    /// <summary>
+    /// Impulse of the drop spitted when growing up
+    /// </summary>
+    public float impulseSpit = 20f;
     #endregion
 
     #region Custom private Enumerations
@@ -44,6 +50,10 @@ public class CharacterSize : MonoBehaviour {
     /// Parameters setted to the moment the character is growing up/decreasing
     /// </summary>
     CharacterControllerParameters _quietGrowingParameters;
+    /// <summary>
+    /// The direction where I spit the drop if I have to when growing up, zero if random
+    /// </summary>
+    Vector3 _directionSpitDrop;
     #endregion
 
     #region Private Attributes
@@ -64,6 +74,10 @@ public class CharacterSize : MonoBehaviour {
 
     #region Methods
     #region Public Methods
+    /// <summary>
+    /// Initialization method.
+    /// The character start with size one
+    /// </summary>
     void Awake() {
         _dropTransform = gameObject.transform;
         _dropTransform.localScale = Vector3.one;
@@ -80,8 +94,7 @@ public class CharacterSize : MonoBehaviour {
     }
 
     /// <summary>
-    /// Initialization method.
-    /// The character start with size one
+    /// Nothing
     /// </summary>
     void Start() {
 		
@@ -244,11 +257,25 @@ public class CharacterSize : MonoBehaviour {
         int numberDropsRemain = _targetSize - finalSize;
         Debug.Log("Spit " + numberDropsRemain + " out");
 
+        //final position for the spitted drop
+        float finalRadius = (finalSize + numberDropsRemain) *_ratioRadius;
+        Vector3 position = _dropTransform.position + offsetCenter;
+        position += _directionSpitDrop * finalRadius;
+
         //TODO: delegate ball creation to independentControl
         //_independentControl.createDrop
-        Vector3 position = new Vector3(3,7,0);
-        GameObject newDrop=(GameObject)Instantiate(BallPrefab, position, Quaternion.identity);
+        //create the drop
+        GameObject newDrop =(GameObject)Instantiate(gameObject, position, Quaternion.identity);
+
+        //set the position and size
+        newDrop.transform.position = position;
+        newDrop.transform.localScale = Vector3.one;
         newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
+        //set a force
+        newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
+        newDrop.GetComponent<CharacterControllerCustom>().AddForce(_directionSpitDrop*impulseSpit, ForceMode.VelocityChange);
+
+        //TODO: delegate!
         _independentControl.AddDrop(newDrop);
 
         //set the final size
@@ -424,7 +451,7 @@ public class CharacterSize : MonoBehaviour {
     /// Fusion between two drops
     /// </summary>
     /// <param name="anotherDrop">The drop to be absorved</param>
-    private void DropFusion(GameObject anotherDrop) {
+    private void DropFusion(GameObject anotherDrop, ControllerColliderHit hit) {
         //always check the other drop because of a posible race condition
         //checking with the active flag, destroy method does not destroy until the end of frame
         //but this method can be called again with the same object on the same frame, just in case checking...
@@ -434,20 +461,26 @@ public class CharacterSize : MonoBehaviour {
 
         //TODO: maybe dangerous, setting it inactive will inactivate all his scripts
         anotherDrop.SetActive(false);
-        
 
         //Get the size of the other drop
         CharacterSize otherDropSize = anotherDrop.GetComponent<CharacterSize>();
         int otherSize = otherDropSize.GetSize();
         int totalSize= otherSize + GetSize();
         
-        Debug.Log(otherSize);
-        Debug.Log(GetSize());
-        Debug.Log(totalSize);
-
+        //Change control of drop if necessary
+        if(anotherDrop == _independentControl.currentCharacter || gameObject == _independentControl.currentCharacter) {
+            //just in case, add the drop to the controller to make sure is in the list of drops under player's control
+            //posible case: a drop from scenario, not under control that is bigger than character. During fusion,
+            //the character will be removed and the scenario's drop take the control, but is not on list!!
+            _independentControl.AddDrop(gameObject);
+            _independentControl.SetControl(gameObject);
+        }
 
         //remove the other drop
         _independentControl.RemoveDrop(anotherDrop);
+
+        //store the direction of hit to spit out the drop in the correct direction
+        _directionSpitDrop = Vector3.left;
 
         //increment size of the actual drop
         SetSize(totalSize);
@@ -472,11 +505,11 @@ public class CharacterSize : MonoBehaviour {
         //check who's bigger
         int difference = otherDropSize.GetSize() - GetSize();
         if(difference > 0)
-            otherDropSize.DropFusion(gameObject);
+            otherDropSize.DropFusion(gameObject, hit);
         else 
             //I' bigger, or has equal size, so lets go with race condition
             //first called will grow up (at least, this one was called)
-            DropFusion(hit.gameObject);
+            DropFusion(hit.gameObject, hit);
     }
     #endregion
 

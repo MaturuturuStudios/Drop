@@ -25,6 +25,16 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+    /// TODO: make method
+    /// <summary>
+    /// Set the control to the given drop if is on the list of drops under player's control
+    /// </summary>
+    /// <param name="drop">drop to control</param>
+    public void SetControl(GameObject drop) {
+        
+    }
+
+    //TODO: need to control duplicates when adding drop
     public void AddDrop(GameObject drop)
     {
         //Add to control list
@@ -33,7 +43,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         StopDrop();
 
         //Set Control
-        currentCharacter = drop;
+        //currentCharacter = drop;
     }
 
     public void RemoveDrop(GameObject drop)
