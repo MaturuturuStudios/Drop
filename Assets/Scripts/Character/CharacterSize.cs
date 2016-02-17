@@ -53,6 +53,11 @@ public class CharacterSize : MonoBehaviour {
     /// Radius of character
     /// </summary>
     private float _ratioRadius;
+
+    /// <summary>
+    /// Independent control to create or remove drops
+    /// </summary>
+    private GameControllerIndependentControl _independentControl;
     #endregion
 
     #region Methods
@@ -65,6 +70,9 @@ public class CharacterSize : MonoBehaviour {
 		_dropTransform = gameObject.transform;
 		_dropTransform.localScale = Vector3.one;
         _ratioRadius=GetComponent<CharacterController>().radius;
+
+        _independentControl = GameObject.FindGameObjectWithTag("GameController")
+                                .GetComponent<GameControllerIndependentControl>();
 
         _quietGrowingParameters = new CharacterControllerParameters();
         _quietGrowingParameters.movementControl = CharacterControllerParameters.MovementControl.None;
@@ -118,7 +126,7 @@ public class CharacterSize : MonoBehaviour {
     /// Get the actual size
     /// </summary>
     /// <returns>The actual/Targeted size, may not be the actual size of the character</returns>
-	public float GetSize() {
+	public int GetSize() {
         return _targetSize;
 	}
     #endregion
@@ -397,7 +405,81 @@ public class CharacterSize : MonoBehaviour {
 		infoResult.offset = offset;
 		return infoResult;
 	}
+
+
+    /// <summary>
+    /// Fusion between two drops
+    /// </summary>
+    /// <param name="anotherDrop">The drop to be absorved</param>
+    private void DropFusion(GameObject anotherDrop) {
+        //always check the other drop because of a posible race condition
+        //checking with the active flag, destroy method does not destroy until the end of frame
+        //but this method can be called again with the same object on the same frame, just in case checking...
+        if(anotherDrop == null || !anotherDrop.activeInHierarchy) {
+            return;
+        }
+
+        //TODO: maybe dangerous, setting it inactive will inactivate all his scripts
+        anotherDrop.SetActive(false);
+        
+
+        //Get the size of the other drop
+        CharacterSize otherDropSize = anotherDrop.GetComponent<CharacterSize>();
+        int otherSize = otherDropSize.GetSize();
+        int totalSize= otherSize + GetSize();
+        
+        Debug.Log(otherSize);
+        Debug.Log(GetSize());
+        Debug.Log(totalSize);
+
+
+        //remove the other drop
+        _independentControl.RemoveDrop(anotherDrop);
+
+        //increment size of the actual drop
+        SetSize(totalSize);
+
+    }
     #endregion
-    
+
+    #region Override Methods
+    /// <summary>
+    /// Check if is other drop and need a fusion
+    /// </summary>
+    /// <param name="hit">The collision data</param>
+    private void OnControllerColliderHit(ControllerColliderHit hit) {
+        //I'm always the player, is the other a player? or maybe does not exists
+        if(hit.gameObject == null || hit.gameObject.tag != "Player") {
+            return;
+        }
+
+        //Get the size of the other drop
+        CharacterSize otherDropSize = hit.gameObject.GetComponent<CharacterSize>();
+
+        //check who is the controlled drop
+        if(gameObject != _independentControl.currentCharacter && hit.gameObject != _independentControl.currentCharacter) {
+            //check if some of them belong to user control
+
+            //none of them, check who's bigger
+            int difference = otherDropSize.GetSize() - GetSize();
+            if(difference > 0)
+                otherDropSize.DropFusion(gameObject);
+            else
+                //I' bigger, or has equal size, so lets go with race condition
+                //first called will grow up (at least, this one was called)
+                DropFusion(hit.gameObject);
+            
+        } else if(hit.gameObject == _independentControl.currentCharacter) {
+            //the other drop gets the control
+            otherDropSize.DropFusion(gameObject);
+
+        } else{
+            //I'm the controlled one
+            DropFusion(hit.gameObject);
+        }
+
+    }
+    #endregion
+
     #endregion
 }
