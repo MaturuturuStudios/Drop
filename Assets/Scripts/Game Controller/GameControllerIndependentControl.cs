@@ -50,6 +50,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
         
     }
 
+    //TODO
+    public bool IsUnderControl()
+    {
+        return true;
+    }
+
     public GameObject AddDrop(bool setControl = false)
     {
         GameObject drop = null;
@@ -57,8 +63,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         {
             //Get a drop from the pool
             Vector3 position = currentCharacter.transform.position;
-            drop = _DropsPool[allCurrentCharacters.Count];
-            drop.transform.position = new Vector3(position.x, position.y, position.z);  //At the moment we put it on the same place as controled
+            _DropsPool[allCurrentCharacters.Count].transform.position = new Vector3(position.x, position.y, position.z);  //At the moment we put it on the same place as controled
             _DropsPool[allCurrentCharacters.Count].GetComponent<Renderer>().enabled = true;
 
             //Set Control
@@ -78,9 +83,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //remove from control list
             allCurrentCharacters.Remove(drop);
 
-            //I don't know if i have to kill the drop
-            Destroy(drop);
-
             //Set Control
             StopDrop();
             currentCharacter = allCurrentCharacters[0];
@@ -94,12 +96,13 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //remove from control list
             allCurrentCharacters.Remove(drop);
 
-            //I don't know if i have to kill the drop
-            Destroy(drop);
+            //Set the drop out
+            drop.transform.position = new Vector3(0.0f, 0.0f, -20.0f);  
+            drop.GetComponent<Renderer>().enabled = false;
 
             //Set Control
             StopDrop();
-            currentCharacter = allCurrentCharacters[0];
+            //currentCharacter = allCurrentCharacters[0];
         }
     }
 
