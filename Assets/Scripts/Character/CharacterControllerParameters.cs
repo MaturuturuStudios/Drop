@@ -216,19 +216,9 @@ public class CharacterControllerParameters {
 	/// Parameters used while flying through the air. It can't move nor jump and will not stop.
 	/// </summary>
 	public static readonly CharacterControllerParameters FlyingParameters = new CharacterControllerParameters() {
-		movementControl = MovementControl.None,
-		movementBehaviour = MovementBehaviour.CantMove,
+		movementBehaviour = MovementBehaviour.CanMoveOnGround,
 		jumpBehaviour = JumpBehaviour.CantJump,
 		accelerationOnAir = 0
-	};
-
-	/// <summary>
-	/// Parameters used while floating on a wind stream. It can move in any direction but can't jump.
-	/// </summary>
-	public static readonly CharacterControllerParameters FloatingParameters = new CharacterControllerParameters() {
-		movementControl = MovementControl.Both,
-		movementBehaviour = MovementBehaviour.CanMoveAnywhere,
-		jumpBehaviour = JumpBehaviour.CantJump
 	};
 
 	#endregion

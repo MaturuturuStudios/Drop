@@ -67,8 +67,8 @@ public class CharacterShoot : MonoBehaviour {
         pos.z = 1;
         //float a=GetComponent<CharacterController>().radius;
 		ball.transform.position = pos;
-        ball.GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.FlyingParameters;
-        
+		//ball.GetComponent<CharacterControllerCustomPlayer>().Parameters = CharacterControllerParameters.FlyingParameters;	// Comentado por nacho (ver 'throwBall')
+
 		ball.SetActive(false);
 	}
 	//---------------------------------------	
@@ -79,9 +79,9 @@ public class CharacterShoot : MonoBehaviour {
         Vector3 pos = transform.position;
         pos.z = 1;
         ball.transform.position = pos;
-        ball.GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.FlyingParameters;
+        //ball.GetComponent<CharacterControllerCustomPlayer>().Parameters = CharacterControllerParameters.FlyingParameters;   // Comentado por nacho (ver 'throwBall')
 
-        ball.SetActive(false);
+		ball.SetActive(false);
     }
 
 	private void throwBall(){
@@ -92,10 +92,11 @@ public class CharacterShoot : MonoBehaviour {
 
         ball.SetActive(true);
 
-        ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange); 
-         
-        //gc.AddDrop(ball);    //Comentado por toni     
-    }
+        //ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange);
+		ball.GetComponent<CharacterControllerCustomPlayer>().SendFlying(st.GetComponent<CharacterShootTrajectory>().getvect());	// Cambiado por nacho. ¡Ahora existe este método tan guay!
+
+		//gc.AddDrop(ball);    //Comentado por toni     
+	}
 	
 	
 }
