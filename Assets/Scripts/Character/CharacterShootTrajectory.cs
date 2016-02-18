@@ -95,11 +95,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
         fTime += 0.1f;
         for (int i = 0; i < numOfTrajectoryPoints; i++) {
             float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
-            float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.gravity.magnitude * fTime * fTime / 2.0f);
+            float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 2);
             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100 );
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
+            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
         }
     }

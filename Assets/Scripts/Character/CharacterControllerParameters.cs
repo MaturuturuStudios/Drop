@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEditor;
 using System.Collections;
 
 /// <summary>
@@ -89,6 +90,20 @@ public class CharacterControllerParameters {
 
 	#endregion
 
+	#region Properties
+
+	/// <summary>
+	/// Returns the gravity of the character. It will return the custom one if it has been set
+	/// to do it. Else, it will return the unity's default gravity.
+	/// </summary>
+	public Vector3 Gravity {
+		get {
+			return useCustomGravity ? customGravity : Physics.gravity;
+		}
+	}
+
+	#endregion
+
 	#region Public Attributes
 
 	/// <summary>
@@ -149,9 +164,14 @@ public class CharacterControllerParameters {
 	public float baseMass = 1;
 
 	/// <summary>
+	/// If enabled, the character will use it's own gravity instead of unity's.
+	/// </summary>
+	public bool useCustomGravity = true;
+
+	/// <summary>
 	/// The gravity affecting the character. Will pull the character on this direction each frame.
 	/// </summary>
-	public Vector3 gravity = new Vector3(0, -25, 0);
+	public Vector3 customGravity = new Vector3(0, -25, 0);
 
 	/// <summary>
 	/// The maximimum velocity the character can move. It's independent of the input and will often
@@ -184,7 +204,7 @@ public class CharacterControllerParameters {
 		clone.jumpFrecuency = jumpFrecuency;
 		clone.jumpMagnitude = jumpMagnitude;
 		clone.baseMass = baseMass;
-		clone.gravity = gravity;
+		clone.customGravity = customGravity;
 		clone.maxVelocity = maxVelocity;
 		clone.zClamp = zClamp;
 

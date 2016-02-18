@@ -178,8 +178,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <param name="mode">The type of force it is applying</param>
 	public void AddForceRelative(Vector3 force, ForceMode mode = ForceMode.VelocityChange) {
 		// Rotates the force acording to the gravity and adds it to the velocity
-		float gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
-		if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
+		float gravityAngle = Vector3.Angle(Parameters.Gravity, Vector3.down);
+		if (Vector3.Cross(Parameters.Gravity, Vector3.down).z < 0)
 			gravityAngle = -gravityAngle;
 		AddForce(Quaternion.Euler(0, 0, -gravityAngle) * force, mode);
 	}
@@ -191,8 +191,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <param name="force">The new velocity of the character</param>
 	public void SetForceRelative(Vector3 force) {
 		// Rotates the force acording to the gravity and sets the velocity to it
-		float gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
-		if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
+		float gravityAngle = Vector3.Angle(Parameters.Gravity, Vector3.down);
+		if (Vector3.Cross(Parameters.Gravity, Vector3.down).z < 0)
 			gravityAngle = -gravityAngle;
 		_velocity = Quaternion.Euler(0, 0, -gravityAngle) * force;
 	}
@@ -205,7 +205,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <param name="x">The new horizontal velocity of the character</param>
 	public void SetHorizontalForceRelative(float x) {
 		Vector3 verticalVelocity = GetVerticalVelocityRelative();
-		Vector3 direction = Vector3.Cross(Vector3.forward, Parameters.gravity).normalized;
+		Vector3 direction = Vector3.Cross(Vector3.forward, Parameters.Gravity).normalized;
 		_velocity = verticalVelocity + direction * x;
 	}
 
@@ -217,7 +217,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <param name="y">The new vertical velocity of the character</param>
 	public void SetVerticalForceRelative(float y) {
 		Vector3 horizontalVelocity = GetHorizontalVelocityRelative();
-		Vector3 direction = -Parameters.gravity.normalized;
+		Vector3 direction = -Parameters.Gravity.normalized;
 		_velocity = horizontalVelocity + direction * y;
 	}
 
@@ -236,7 +236,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <returns>Horizontal component of the velocity</returns>
 	public Vector3 GetHorizontalVelocityRelative() {
-		Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.gravity);
+		Vector3 perpendicular = Vector3.Cross(Vector3.forward, Parameters.Gravity);
 		return GetVelocityOnDirection(perpendicular);
 	}
 	
@@ -246,7 +246,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <returns>Vertical component of the velocity</returns>
 	public Vector3 GetVerticalVelocityRelative() {
-		return GetVelocityOnDirection(-Parameters.gravity);
+		return GetVelocityOnDirection(-Parameters.Gravity);
 	}
 
 	#endregion
@@ -289,8 +289,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// If the input is relative to the gravity, rotates the velocity to match it
 		float gravityAngle = 0;
 		if (Parameters.relativeToGravity) {
-			gravityAngle = Vector3.Angle(Parameters.gravity, Vector3.down);
-			if (Vector3.Cross(Parameters.gravity, Vector3.down).z < 0)
+			gravityAngle = Vector3.Angle(Parameters.Gravity, Vector3.down);
+			if (Vector3.Cross(Parameters.Gravity, Vector3.down).z < 0)
 				gravityAngle = -gravityAngle;
 			_velocity = Quaternion.Euler(0, 0, gravityAngle) * _velocity;
 		}
@@ -354,8 +354,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 			return;
 
 		// Calculates the jump speed to reach the desired height
-		float jumpHeight = GetSize();
-		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.magnitude * Parameters.jumpMagnitude * jumpHeight));
+		float jumpHeight = GetSize() * Parameters.jumpMagnitude;
+		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
 		SetVerticalForceRelative(jumpSpeed);
 
 		_jumpingTime = Parameters.jumpFrecuency;
@@ -395,7 +395,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		_jumpingTime -= Time.deltaTime;
 
 		// Adds the gravity to the velocity
-		_velocity += Parameters.gravity * Time.deltaTime;
+		_velocity += Parameters.Gravity * Time.deltaTime;
 
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
@@ -494,8 +494,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 
 		// Looks for the angle beetween the collision nomal an the gravity
-		State.SlopeAngle = Vector3.Angle(normal, -Parameters.gravity);
-		if (Vector3.Cross(normal, -Parameters.gravity).z < 0)
+		State.SlopeAngle = Vector3.Angle(normal, -Parameters.Gravity);
+		if (Vector3.Cross(normal, -Parameters.Gravity).z < 0)
 			State.SlopeAngle = -State.SlopeAngle;
 		if (Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit) {
 			// The collider is considered ground

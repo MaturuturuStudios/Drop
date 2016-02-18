@@ -77,7 +77,7 @@ public class WindTube : MonoBehaviour {
 
 			// If the gravity is negated, substracts it
 			if (negateGravity)
-				ccc.AddForce(-ccc.Parameters.gravity, ForceMode.Acceleration);
+				ccc.AddForce(-ccc.Parameters.Gravity, ForceMode.Acceleration);
 
 			return;
 		}
