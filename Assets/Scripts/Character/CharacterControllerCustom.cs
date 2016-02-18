@@ -72,6 +72,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	private Transform _transform;
 
+	/// <summary>
+	/// A reference to the CharacterSize script of the entity.
+	/// </summary>
+	private CharacterSize _characterSize;
+
 	#endregion
 
 	#region Variables
@@ -104,8 +109,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		State = new CharacterControllerState();
 
 		// Recovers the desired components
-		_controller = GetComponent<CharacterController>();
 		_transform = transform;
+		_controller = GetComponent<CharacterController>();
+		_characterSize = GetComponent<CharacterSize>();
 	}
 
 	#region Force Methods
@@ -243,13 +249,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 		return GetVelocityOnDirection(-Parameters.gravity);
 	}
 
-	/// <summary>
-	/// Zeroes the velocity of the controller.
-	/// </summary>
-	public void Stop() {
-		_velocity = Vector3.zero;
-	}
-
 	#endregion
 
 	#region Input Methods
@@ -298,6 +297,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Gets the right acceleration
 		float acceleration = State.IsGrounded ? Parameters.accelerationOnGround : Parameters.accelerationOnAir;
+
+		// Multiplies the acceleration and input by the character's size's square root
+		float sqrtSize = Mathf.Sqrt(GetSize());
+		acceleration *= sqrtSize;
+		horizontalInput *= sqrtSize;
+		verticalInput *= sqrtSize;
+
 		// Adds the right forces
 		if (horizontal) {
 			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
@@ -348,7 +354,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 			return;
 
 		// Calculates the jump speed to reach the desired height
-		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.magnitude * Parameters.jumpMagnitude));
+		float jumpHeight = GetSize();
+		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.gravity.magnitude * Parameters.jumpMagnitude * jumpHeight));
 		SetVerticalForceRelative(jumpSpeed);
 
 		_jumpingTime = Parameters.jumpFrecuency;
@@ -457,6 +464,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Zeroes the velocity of the controller.
+	/// </summary>
+	public void Stop() {
+		_velocity = Vector3.zero;
+	}
+
+	/// <summary>
 	/// Unity's method for handling the collisions derived from the CharacterController
 	/// component.
 	/// Creates the right state of the character and modifies it's velocity based on
@@ -471,6 +485,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 		Vector3 normal = hit.normal;
 		if (hit.collider is SphereCollider)
 			normal = -hit.normal;
+
+		// Before modifying the velocity, applys force to the other object if it allows it
+		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
+		if (otherRigidbody != null && !otherRigidbody.isKinematic) {
+			Vector3 force = Vector3.Project(_velocity, -normal) * Parameters.mass;
+			otherRigidbody.AddForceAtPosition(force, hit.point, ForceMode.Impulse);
+		}
 
 		// Looks for the angle beetween the collision nomal an the gravity
 		State.SlopeAngle = Vector3.Angle(normal, -Parameters.gravity);
@@ -495,12 +516,22 @@ public class CharacterControllerCustom : MonoBehaviour {
 			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 		}
+	}
 
-		// Applys force to the other object if it allows it
-		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
-		if (otherRigidbody != null && !otherRigidbody.isKinematic) {
-			otherRigidbody.AddForce(_velocity * Parameters.mass, ForceMode.Impulse);
-		}
+	#endregion
+
+	#region Private Methods
+	
+	/// <summary>
+	/// Returns the size of the character. If no size has been defined, returns a default
+	/// value of 1.
+	/// </summary>
+	/// <returns>The size of the character</returns>
+	private int GetSize() {
+		if (_characterSize != null && _characterSize.isActiveAndEnabled)
+			return _characterSize.GetSize();
+		else
+			return 1;
 	}
 
 	#endregion

@@ -18,7 +18,12 @@ public class WindTube : MonoBehaviour {
 	/// If enabled, gravity will not affect the entity while floating
 	/// on the wind tube.
 	/// </summary>
-	public bool negatesGravity = true;
+	public bool negateGravity = true;
+
+	/// <summary>
+	/// If enabled, the force will ignore the mass of the entity
+	/// </summary>
+	public bool ignoreMass = false;
 
 	#endregion
 
@@ -51,14 +56,15 @@ public class WindTube : MonoBehaviour {
 	public void OnTriggerStay(Collider other) {
 		// Determines the force to add
 		Vector3 force = _transform.up * windForce;
+		ForceMode mode = ignoreMass ? ForceMode.Acceleration : ForceMode.Force;
 
 		// Checks if the entity has a rigidbody
 		Rigidbody rb = other.attachedRigidbody;
 		if (rb != null) {
-			rb.AddForce(force, ForceMode.Force);
+			rb.AddForce(force, mode);
 
 			// If the gravity is negated, substracts it
-			if (negatesGravity)
+			if (negateGravity)
 				rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
 
 			return;
@@ -67,10 +73,10 @@ public class WindTube : MonoBehaviour {
 		// Checks if the entity has a custom character controller
 		CharacterControllerCustom ccc = other.gameObject.GetComponent<CharacterControllerCustom>();
 		if (ccc != null) {
-			ccc.AddForce(force, ForceMode.Force);
+			ccc.AddForce(force, mode);
 
 			// If the gravity is negated, substracts it
-			if (negatesGravity)
+			if (negateGravity)
 				ccc.AddForce(-ccc.Parameters.gravity, ForceMode.Acceleration);
 
 			return;
