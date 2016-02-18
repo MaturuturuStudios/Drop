@@ -110,7 +110,7 @@ public class CharacterShootandTrajectory : MonoBehaviour
 			float angle = Mathf.Atan2(vel.y,vel.x)* Mathf.Rad2Deg;
 			transform.eulerAngles = new Vector3(0,0,angle);
            // setTrajectoryPoints(transform.position, vel / ball.GetComponent<Rigidbody>().mass);
-			setTrajectoryPoints(transform.position, vel/ball.GetComponent<CharacterControllerCustom>().Parameters.mass);
+			setTrajectoryPoints(transform.position, vel);
         }
 	}
 	//---------------------------------------	

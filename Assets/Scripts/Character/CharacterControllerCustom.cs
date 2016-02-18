@@ -129,7 +129,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 				break;
 			case ForceMode.Impulse:
 				// Adds the velocity using it's mass
-				_velocity += force / Parameters.mass;
+				_velocity += force / GetTotalMass();
 				break;
 			case ForceMode.Acceleration:
 				// Adds the force over time ignoring it's mass
@@ -137,7 +137,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 				break;
 			case ForceMode.Force:
 				// Adds the force over time using it's mass
-				_velocity += (force / Parameters.mass) * Time.deltaTime;
+				_velocity += (force / GetTotalMass()) * Time.deltaTime;
 				break;
 			default:
 				return;
@@ -489,7 +489,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Before modifying the velocity, applys force to the other object if it allows it
 		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
 		if (otherRigidbody != null && !otherRigidbody.isKinematic) {
-			Vector3 force = Vector3.Project(_velocity, -normal) * Parameters.mass;
+			Vector3 force = Vector3.Project(_velocity, -normal) * GetTotalMass();
 			otherRigidbody.AddForceAtPosition(force, hit.point, ForceMode.Impulse);
 		}
 
@@ -520,7 +520,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 	#endregion
 
-	#region Private Methods
+	#region Other Methods
 	
 	/// <summary>
 	/// Returns the size of the character. If no size has been defined, returns a default
@@ -532,6 +532,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 			return _characterSize.GetSize();
 		else
 			return 1;
+	}
+
+	/// <summary>
+	/// Returns the total mass of the character, scaled by it's size.
+	/// </summary>
+	/// <returns>The character's mass</returns>
+	public float GetTotalMass() {
+		return Parameters.baseMass * GetSize();
 	}
 
 	#endregion

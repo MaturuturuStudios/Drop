@@ -68,7 +68,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         float angle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
         transform.eulerAngles = new Vector3(0, 0, angle);
 
-        setTrajectoryPoints(transform.position, vel / s.BallPrefb.GetComponent<CharacterControllerCustom>().Parameters.mass);
+        setTrajectoryPoints(transform.position, vel);
     }
     public void QuitTrajectory() {
         for (int i = 0; i < numOfTrajectoryPoints; i++)

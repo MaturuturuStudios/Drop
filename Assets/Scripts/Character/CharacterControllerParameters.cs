@@ -143,10 +143,10 @@ public class CharacterControllerParameters {
 	public float jumpMagnitude = 1;
 
 	/// <summary>
-	/// The mass of the character. This will affect how much force will the character apply to
-	/// other entitys when colliding whith them.
+	/// The base mass of the character, when it's size is 1. This will affect how much force will the
+	/// character apply to other entitys when colliding whith them.
 	/// </summary>
-	public float mass = 1;
+	public float baseMass = 1;
 
 	/// <summary>
 	/// The gravity affecting the character. Will pull the character on this direction each frame.
@@ -183,7 +183,7 @@ public class CharacterControllerParameters {
 		clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrecuency = jumpFrecuency;
 		clone.jumpMagnitude = jumpMagnitude;
-		clone.mass = mass;
+		clone.baseMass = baseMass;
 		clone.gravity = gravity;
 		clone.maxVelocity = maxVelocity;
 		clone.zClamp = zClamp;
