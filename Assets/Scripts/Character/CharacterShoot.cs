@@ -72,11 +72,25 @@ public class CharacterShoot : MonoBehaviour {
 		ball.SetActive(false);
 	}
 	//---------------------------------------	
+
+    //Set ball properties like createBall()
+    private void prepareDropToFly()
+    {
+        Vector3 pos = transform.position;
+        pos.z = 1;
+        ball.transform.position = pos;
+        ball.GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.FlyingParameters;
+
+        ball.SetActive(false);
+    }
+
 	private void throwBall(){
 
-        ball = _gcic.AddDrop(true);  //Añadido por toni
+        ball = _gcic.AddDrop();  //Añadido por toni
 
-        // ball.SetActive(true);
+        prepareDropToFly();
+
+        ball.SetActive(true);
 
         ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange); 
          
