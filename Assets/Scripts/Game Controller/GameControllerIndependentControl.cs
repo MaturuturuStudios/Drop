@@ -22,45 +22,13 @@ public class GameControllerIndependentControl : MonoBehaviour {
         {
             GameObject drop = (GameObject)Instantiate(PfDrop);
             drop.GetComponent<Renderer>().enabled = false;
-            drop.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);  
+            drop.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
+            drop.SetActive(false);
             _DropsPool.Add(drop);
         }
     }
 
 	void Update () {/*Nothing at the moment*/}
-
-
-    public void SetControl(int id)
-    {
-        if (id < allCurrentCharacters.Count && id >= 0)
-        {
-            //Try to stop abandoned drop
-            StopDrop();
-
-            //Set Control to new drop
-            currentCharacter = allCurrentCharacters[id];
-        }
-    }
-
-    /// TODO: make method
-    /// <summary>
-    /// Set the control to the given drop if is on the list of drops under player's control
-    /// </summary>
-    /// <param name="drop">drop to control</param>
-    public void SetControl(GameObject drop) {        
-        int index = _DropsPool.IndexOf(drop);
-
-        if (index > -1)
-        {
-            SetControl(index);
-        }
-    }
-
-    //TODO
-    public bool IsUnderControl(GameObject drop)
-    {
-        return _DropsPool.Contains(drop);
-    }
 
     public GameObject AddDrop(bool setControl = false)
     {
@@ -75,15 +43,32 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //position.y += 1 * drop.GetComponent<CharacterSize>().GetSize();
             drop.transform.position = new Vector3(position.x +2 , position.y, position.z);  //At the moment we put it on the same place as controled
             drop.GetComponent<Renderer>().enabled = true;
+            drop.SetActive(false);
 
             //Set Control
             if (setControl)
                 SetControl(allCurrentCharacters.Count - 1);
 
             //Add to control list
-            allCurrentCharacters.Add(_DropsPool[allCurrentCharacters.Count]);
+            allCurrentCharacters.Add(drop);
         }
         return drop;
+    }
+
+    public void KillDrop(GameObject drop)
+    {
+        if (allCurrentCharacters.Count > 1)
+        {
+            //remove from control list
+            allCurrentCharacters.Remove(drop);
+
+            //Set the drop out
+            drop.GetComponent<Renderer>().enabled = false;
+            drop.transform.position = new Vector3(0.0f, -200.0f, 0.0f);
+            drop.SetActive(false);
+
+            StopDrop();
+        }
     }
 
     public void RemoveDropFromControlList(GameObject drop)
@@ -96,21 +81,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //Set Control
             StopDrop();
             currentCharacter = allCurrentCharacters[0];
-        }
-    }
-
-    public void KillDrop(GameObject drop)
-    {
-        if (allCurrentCharacters.Count > 1)
-        {
-            //remove from control list
-            allCurrentCharacters.Remove(drop);
-
-            //Set the drop out
-            drop.GetComponent<Renderer>().enabled = false;
-            drop.transform.position = new Vector3(0.0f, -200.0f, 0.0f);  
-
-            StopDrop();
         }
     }
 
@@ -148,12 +118,44 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
+    public void SetControl(int id)
+    {
+        if (id < allCurrentCharacters.Count && id > -1)
+        {
+            //Try to stop abandoned drop
+            StopDrop();
+
+            //Set Control to new drop
+            currentCharacter = allCurrentCharacters[id];
+        }
+    }
+
+    /// TODO: make method
+    /// <summary>
+    /// Set the control to the given drop if is on the list of drops under player's control
+    /// </summary>
+    /// <param name="drop">drop to control</param>
+    public void SetControl(GameObject drop)
+    {
+        int index = _DropsPool.IndexOf(drop);
+
+        if (index > -1)
+        {
+            SetControl(index);
+        }
+    }
+
+    //TODO
+    public bool IsUnderControl(GameObject drop)
+    {
+        return _DropsPool.Contains(drop);
+    }
+
     private void StopDrop()
     {
-        CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
-
         //Reset State
-        cccp.Stop();
+        currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
     }
 
     //TODO
