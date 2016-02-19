@@ -78,6 +78,11 @@ public class CharacterControllerParameters {
 		CanJumpAnywhere,
 
 		/// <summary>
+		/// Will be able to jump while sliding.
+		/// </summary>
+		CanJumpSliding,
+
+		/// <summary>
 		/// Will be able to jump while grounded.
 		/// </summary>
 		CanJumpOnGround,
@@ -142,9 +147,29 @@ public class CharacterControllerParameters {
 	public float accelerationOnAir = 5;
 
 	/// <summary>
+	/// Defines the maximum angle vertical walls will have. Beetween this angle, and the slope limit,
+	/// the character will slide along the object.
+	/// </summary>
+	[Range(0, 90)]
+	public float maxWallSlideAngle = 90;
+
+	/// <summary>
+	/// Defines the drag factor that will affect the character's velocity while sliding down a
+	/// slope.
+	/// </summary>
+	[Range(0, 1)]
+	public float slidingDragFactor = 0.5f;
+
+	/// <summary>
+	/// Defines the precission when comparing angles. Higher values result in more reliable movement
+	/// but can produce errors.
+	/// </summary>
+	public float angleThereshold = 0.01f;
+
+	/// <summary>
 	/// Defines in which situations the character will be able to jump.
 	/// </summary>
-	public JumpBehaviour jumpBehaviour = JumpBehaviour.CanJumpOnGround;
+	public JumpBehaviour jumpBehaviour = JumpBehaviour.CanJumpSliding;
 
 	/// <summary>
 	/// Amount of time beetween jumps. The character will not be able to jump after this time period
@@ -200,11 +225,15 @@ public class CharacterControllerParameters {
 		clone.maxSpeed = maxSpeed;
 		clone.accelerationOnGround = accelerationOnGround;
 		clone.accelerationOnAir = accelerationOnAir;
-		clone.jumpBehaviour = jumpBehaviour;
+		clone.maxWallSlideAngle = maxWallSlideAngle;
+		clone.slidingDragFactor = slidingDragFactor;
+		clone.angleThereshold = angleThereshold;
+        clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrecuency = jumpFrecuency;
 		clone.jumpMagnitude = jumpMagnitude;
 		clone.baseMass = baseMass;
-		clone.customGravity = customGravity;
+		clone.useCustomGravity = useCustomGravity;
+        clone.customGravity = customGravity;
 		clone.maxVelocity = maxVelocity;
 		clone.zClamp = zClamp;
 

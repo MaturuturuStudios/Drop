@@ -15,9 +15,14 @@ public class CharacterControllerState {
 	public bool HasCollisions { get; set; }
 
 	/// <summary>
-	/// If the character was grounded at the end of the last frame
+	/// If the character was grounded at the end of the last frame.
 	/// </summary>
 	public bool IsGrounded { get; set; }
+
+	/// <summary>
+	/// If the character was falling at the end of the last frame.
+	/// </summary>
+	public bool IsFalling { get; set; }
 
 	/// <summary>
 	/// The object the character is grounded on.
@@ -50,6 +55,7 @@ public class CharacterControllerState {
 	public void Reset() {
 		HasCollisions = false;
 		IsGrounded = false;
+		IsFalling = false;
 		GroundedObject = null;
 		PlatformVelocity = Vector3.zero;
 		IsSliding = false;
