@@ -79,6 +79,8 @@ public class CharacterSize : MonoBehaviour {
     /// The character start with size one
     /// </summary>
     void Awake() {
+        //Time.timeScale = 0.1f;
+        //Time.fixedDeltaTime = 0.1f;
         _dropTransform = gameObject.transform;
         _dropTransform.localScale = Vector3.one;
         _ratioRadius = GetComponent<CharacterController>().radius;
@@ -92,7 +94,6 @@ public class CharacterSize : MonoBehaviour {
         _targetSize = 1;
         SetSize(1);
     }
-    
 
 	/// <summary>
     /// Check input and control the size
@@ -115,12 +116,17 @@ public class CharacterSize : MonoBehaviour {
 		SetSize(_targetSize - 1);
 	}
 
+    public void SetSize(int size) {
+        SetSize(size, Vector3.zero);
+    }
+
     /// <summary>
     /// Set a size. While changing the size, the character will not move
     /// </summary>
     /// <param name="size">New size</param>
-	public void SetSize(int size) {
+	public void SetSize(int size, Vector3 spitDirection) {
 		if(size > 0 && size != _targetSize) {
+            _directionSpitDrop = spitDirection;
             //can't move
             GetComponent<CharacterControllerCustom>().Parameters = _quietGrowingParameters;
 
@@ -256,10 +262,8 @@ public class CharacterSize : MonoBehaviour {
         Vector3 position = _dropTransform.position + offsetCenter;
         position += _directionSpitDrop * finalRadius;
 
-        //TODO: delegate ball creation to independentControl
-        //_independentControl.createDrop
         //create the drop
-        GameObject newDrop =(GameObject)Instantiate(gameObject, position, Quaternion.identity);
+        GameObject newDrop = _independentControl.AddDrop();
 
         //set the position and size
         newDrop.transform.position = position;
@@ -270,9 +274,6 @@ public class CharacterSize : MonoBehaviour {
         newDrop.GetComponent<CharacterControllerCustom>().AddForce(_directionSpitDrop*impulseSpit, ForceMode.VelocityChange);
         //for test, clarity on behaviour
         _directionSpitDrop = Vector3.zero;
-
-        //TODO: delegate!
-        _independentControl.AddDrop(newDrop);
 
         //set the final size
         SetSize(finalSize);
@@ -441,76 +442,6 @@ public class CharacterSize : MonoBehaviour {
 		infoResult.offset = offset;
 		return infoResult;
 	}
-
-
-    /// <summary>
-    /// Fusion between two drops
-    /// </summary>
-    /// <param name="anotherDrop">The drop to be absorved</param>
-    private void DropFusion(GameObject anotherDrop, ControllerColliderHit hit) {
-        //always check the other drop because of a posible race condition
-        //checking with the active flag, destroy method does not destroy until the end of frame
-        //but this method can be called again with the same object on the same frame, just in case checking...
-        if(anotherDrop == null || !anotherDrop.activeInHierarchy) {
-            return;
-        }
-
-        //TODO: maybe dangerous, setting it inactive will inactivate all his scripts
-        anotherDrop.SetActive(false);
-
-        //Get the size of the other drop
-        CharacterSize otherDropSize = anotherDrop.GetComponent<CharacterSize>();
-        int otherSize = otherDropSize.GetSize();
-        int totalSize= otherSize + GetSize();
-        
-        //Change control of drop if necessary
-        if(anotherDrop == _independentControl.currentCharacter || gameObject == _independentControl.currentCharacter) {
-            //just in case, add the drop to the controller to make sure is in the list of drops under player's control
-            //posible case: a drop from scenario, not under control that is bigger than character. During fusion,
-            //the character will be removed and the scenario's drop take the control, but is not on list!!
-            _independentControl.AddDrop(gameObject);
-            _independentControl.SetControl(gameObject);
-        }
-
-        //remove the other drop
-        _independentControl.KillDrop(anotherDrop);
-
-        //store the direction of hit to spit out the drop in the correct direction
-        _directionSpitDrop = hit.normal;
-        _directionSpitDrop.z = 0;
-        if(hit.gameObject == anotherDrop) {
-            _directionSpitDrop *= -1;
-        }
-
-        //increment size of the actual drop
-        SetSize(totalSize);
-
-    }
-    #endregion
-
-    #region Override Methods
-    /// <summary>
-    /// Check if is other drop and need a fusion
-    /// </summary>
-    /// <param name="hit">The collision data</param>
-    private void OnControllerColliderHit(ControllerColliderHit hit) {
-        //I'm always the player, is the other a player? or maybe does not exists
-        if(hit.gameObject == null || hit.gameObject.tag != "Player") {
-            return;
-        }
-
-        //Get the size of the other drop
-        CharacterSize otherDropSize = hit.gameObject.GetComponent<CharacterSize>();
-
-        //check who's bigger
-        int difference = otherDropSize.GetSize() - GetSize();
-        if(difference > 0)
-            otherDropSize.DropFusion(gameObject, hit);
-        else 
-            //I' bigger, or has equal size, so lets go with race condition
-            //first called will grow up (at least, this one was called)
-            DropFusion(hit.gameObject, hit);
-    }
     #endregion
 
     #endregion

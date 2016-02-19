@@ -25,7 +25,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         {
             GameObject drop = (GameObject)Instantiate(PfDrop);
             drop.gameObject.name = "Drop (" + i + ")";
-            drop.GetComponent<Renderer>().enabled = false;
+            //drop.GetComponent<Renderer>().enabled = false; comment by dorian
             drop.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
             drop.SetActive(false);
             _DropsPool.Add(drop);
@@ -48,9 +48,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Move the drop & enable it
             Vector3 position = currentCharacter.transform.position;
-            drop.transform.position = new Vector3(position.x , position.y, position.z);  //At the moment we put it on the same place as controled
-            drop.GetComponent<Renderer>().enabled = true;
-            drop.SetActive(false);
+            //At the moment we put it on the same place as controled
+            drop.transform.position = new Vector3(position.x , position.y, position.z);
+            //drop.GetComponent<Renderer>().enabled = true; comment by dorian
+            drop.SetActive(true);
+            //TODO: reset state, workaround for bug
+            drop.GetComponent<CharacterControllerCustom>().ResetState();
 
             //Set Control
             if (setControl)
@@ -73,7 +76,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         allCurrentCharacters.Remove(drop);
 
         //Set the drop out the scene
-        drop.GetComponent<Renderer>().enabled = false;
+        //drop.GetComponent<Renderer>().enabled = false; comment by dorian
         drop.transform.position = new Vector3(0.0f, -200.0f, 0.0f);
         //Disactive drop
         drop.SetActive(false);

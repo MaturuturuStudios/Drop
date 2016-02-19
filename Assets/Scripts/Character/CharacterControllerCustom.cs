@@ -627,6 +627,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
+    // TODO: workaround for bug
+    public void ResetState() {
+        State = new CharacterControllerState();
+    }
+
 	#endregion
 
 	#endregion
