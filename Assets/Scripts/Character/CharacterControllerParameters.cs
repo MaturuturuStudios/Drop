@@ -52,7 +52,12 @@ public class CharacterControllerParameters {
 		CanMoveAnywhere,
 
 		/// <summary>
-		/// Will always but when sliding accept input.
+		/// Will always but when on a slope accept input.
+		/// </summary>
+		CantMoveOnSlope,
+
+		/// <summary>
+		/// Will always but when sliding down a slope accept input.
 		/// </summary>
 		CantMoveSliding,
 
@@ -76,6 +81,11 @@ public class CharacterControllerParameters {
 		/// Will always be able to jump.
 		/// </summary>
 		CanJumpAnywhere,
+
+		/// <summary>
+		/// Will be able to jump while on a slope.
+		/// </summary>
+		CanJumpOnSlope,
 
 		/// <summary>
 		/// Will be able to jump while sliding.
@@ -121,7 +131,7 @@ public class CharacterControllerParameters {
 	/// Defines in which situations the input will be accepted. If it can't, no input modifications 
 	/// will be performed so the entity will keep it's velocity.
 	/// </summary>
-	public MovementBehaviour movementBehaviour = MovementBehaviour.CantMoveSliding;
+	public MovementBehaviour movementBehaviour = MovementBehaviour.CantMoveOnSlope;
 
 	/// <summary>
 	/// If enabled, the input will be relative to the gravity instead of the vertical axis.
@@ -169,7 +179,7 @@ public class CharacterControllerParameters {
 	/// <summary>
 	/// Defines in which situations the character will be able to jump.
 	/// </summary>
-	public JumpBehaviour jumpBehaviour = JumpBehaviour.CanJumpSliding;
+	public JumpBehaviour jumpBehaviour = JumpBehaviour.CanJumpOnSlope;
 
 	/// <summary>
 	/// Amount of time beetween jumps. The character will not be able to jump after this time period
@@ -181,6 +191,16 @@ public class CharacterControllerParameters {
 	/// Jumping factor. Defines the height that should be achieved at the peek of the jump.
 	/// </summary>
 	public float jumpMagnitude = 1;
+
+	/// <summary>
+	/// Jumping factor applied when wall jumping.
+	/// </summary>
+	public float wallJumpMagnitude = 1;
+
+	/// <summary>
+	/// Amount of time the character will be uncontrollable after performing a wall jump.
+	/// </summary>
+	public float wallJumpFlyTime = 0.5f;
 
 	/// <summary>
 	/// The base mass of the character, when it's size is 1. This will affect how much force will the
@@ -231,7 +251,9 @@ public class CharacterControllerParameters {
         clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrecuency = jumpFrecuency;
 		clone.jumpMagnitude = jumpMagnitude;
-		clone.baseMass = baseMass;
+		clone.wallJumpMagnitude = wallJumpMagnitude;
+		clone.wallJumpFlyTime = wallJumpFlyTime;
+        clone.baseMass = baseMass;
 		clone.useCustomGravity = useCustomGravity;
         clone.customGravity = customGravity;
 		clone.maxVelocity = maxVelocity;

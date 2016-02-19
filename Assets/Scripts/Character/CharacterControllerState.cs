@@ -35,7 +35,13 @@ public class CharacterControllerState {
 	public Vector3 PlatformVelocity { get; set; }
 
 	/// <summary>
+	/// If the character was standing on a slope the last frame.
+	/// </summary>
+	public bool IsOnSlope { get; set; }
+
+	/// <summary>
 	/// If the character was sliding along a slope the last frame.
+	/// A character sliding will always be on a slope.
 	/// </summary>
 	public bool IsSliding { get; set; }
 
@@ -58,6 +64,7 @@ public class CharacterControllerState {
 		IsFalling = false;
 		GroundedObject = null;
 		PlatformVelocity = Vector3.zero;
+		IsOnSlope = false;
 		IsSliding = false;
 		SlopeAngle = 0;
 	}

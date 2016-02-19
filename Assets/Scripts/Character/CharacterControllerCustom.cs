@@ -87,6 +87,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private float _jumpingTime;
 
 	/// <summary>
+	/// Time since the last time the character wall jumped.
+	/// </summary>
+	private float _wallJumpingTime;
+
+	/// <summary>
+	/// Flag that indicates if the character is wall jumping.
+	/// </summary>
+	private bool _wallJumping;
+
+	/// <summary>
 	/// Stores the sliding state from the previous frame.
 	/// </summary>
 	private bool _wasSliding;
@@ -303,9 +313,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Gets the right acceleration
 		float acceleration = State.IsGrounded ? Parameters.accelerationOnGround : Parameters.accelerationOnAir;
 
-		// Multiplies the acceleration and input by the character's size's square root
+		// Multiplies the input by the character's size's square root
 		float sqrtSize = Mathf.Sqrt(GetSize());
-		acceleration *= sqrtSize;
 		horizontalInput *= sqrtSize;
 		verticalInput *= sqrtSize;
 
@@ -335,12 +344,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <returns>If the character can move</returns>
 	public bool CanMove() {
 		// Checks if the controller accepts input
+		bool slopeIsVertical = Mathf.Abs(Mathf.Abs(State.SlopeAngle) - Parameters.maxWallSlideAngle) < Parameters.angleThereshold;
 		switch (Parameters.movementBehaviour) {
 			case CharacterControllerParameters.MovementBehaviour.CanMoveAnywhere:
 				return true;
-			case CharacterControllerParameters.MovementBehaviour.CantMoveSliding:
+			case CharacterControllerParameters.MovementBehaviour.CantMoveOnSlope:
 				// Patch: if the slope is vertical, still allow movement
-				bool slopeIsVertical = Mathf.Abs(Mathf.Abs(State.SlopeAngle) - Parameters.maxWallSlideAngle) < Parameters.angleThereshold;
+				return !State.IsOnSlope || slopeIsVertical;
+            case CharacterControllerParameters.MovementBehaviour.CantMoveSliding:
+				// Patch: if the slope is vertical, still allow movement
 				return !State.IsSliding || slopeIsVertical;
 			case CharacterControllerParameters.MovementBehaviour.CanMoveOnGround:
 				return State.IsGrounded;
@@ -360,10 +372,30 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (!CanJump())
 			return;
 		
-		// Calculates the jump speed to reach the desired height
-		float jumpHeight = GetSize() * Parameters.jumpMagnitude;
-		float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
-		SetVerticalForceRelative(jumpSpeed);
+		// Normal jump
+		if (!State.IsOnSlope) {
+			// Calculates the jump speed to reach the desired height
+			float jumpHeight = GetSize() * Parameters.jumpMagnitude;
+			float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
+			SetVerticalForceRelative(jumpSpeed);
+		}
+		// Wall jump
+		else {
+			// Calculates the jump speed to reach the desired height
+			float jumpHeight = GetSize() * Parameters.wallJumpMagnitude;
+			float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
+			SetVerticalForceRelative(jumpSpeed);
+
+			// Adds enough horizontal force to the character to reach it's maximum speed
+			float sqrSize = Mathf.Sqrt(GetSize());
+			float wallJumpSpeed = Mathf.Sign(State.SlopeAngle) * Parameters.maxSpeed * sqrSize;
+			SetHorizontalForceRelative(wallJumpSpeed);
+
+			// Changes the character's parameters and sets the wall jumping flag
+			Parameters = CharacterControllerParameters.FlyingParameters;
+			_wallJumping = true;
+			_wallJumpingTime = Parameters.wallJumpFlyTime * sqrSize;
+		}
 
 		_jumpingTime = Parameters.jumpFrecuency;
 	}
@@ -381,6 +413,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 		switch (Parameters.jumpBehaviour) {
 			case CharacterControllerParameters.JumpBehaviour.CanJumpAnywhere:
 				return true;
+			case CharacterControllerParameters.JumpBehaviour.CanJumpOnSlope:
+				return State.IsGrounded || State.IsOnSlope;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpSliding:
 				return State.IsGrounded || State.IsSliding;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpOnGround:
@@ -400,13 +434,18 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// Moves the character acording to it's velocity
 	/// </summary>
 	public void LateUpdate() {
-		// Decreaseses the counter of time beetween jumps
+		// Decreaseses the timers
 		_jumpingTime -= Time.deltaTime;
+		_wallJumpingTime -= Time.deltaTime;
 
-		// Adds the gravity to the velocity
+		// If the wall jumping timer has expired, stops the wall jump
+		if (_wallJumpingTime < 0)
+			StopWallJumping();
+
+		// Adds the gravity to the velocity. If sliding, multiply it by a drag factor.
 		float dragFactor = 1;
 		if (State.IsSliding)
-			dragFactor -= Parameters.slidingDragFactor;
+			dragFactor -= Parameters.slidingDragFactor / Mathf.Sqrt(GetSize());
 		_velocity += Parameters.Gravity * Time.deltaTime * dragFactor;
 
 		// Checks if the entity is grounded on a moving platform
@@ -497,8 +536,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <param name="hit">Information of the collision</param>
 	public void OnControllerColliderHit(ControllerColliderHit hit) {
-		// There has been collisions this frame
+		// There has been collisions this frame. Stops the wall jumping
 		State.HasCollisions = true;
+		StopWallJumping();
 
 		// Spheres have their normal inverted for whatever reason
 		Vector3 normal = hit.normal;
@@ -521,6 +561,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// The collider is considered ground
 			State.IsGrounded = true;
 			State.IsFalling = false;
+			State.IsOnSlope = false;
 			State.IsSliding = false;
 			State.GroundedObject = hit.collider.gameObject;
 
@@ -530,6 +571,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		else {
 			// The collider is considered a slope
 			State.IsGrounded = false;
+			State.IsOnSlope = true;
 			State.GroundedObject = null;
 
 			// Projects the speed to the normal's perpendicular
@@ -537,8 +579,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 
 			// Check if the character is sliding allong a wall
-			if (State.IsFalling && Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold
-				) {
+			if (State.IsFalling && Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
 				// The character is now sliding
 				State.IsSliding = true;
 
@@ -574,6 +615,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <returns>The character's mass</returns>
 	public float GetTotalMass() {
 		return Parameters.baseMass * GetSize();
+	}
+
+	/// <summary>
+	/// If the character is wall jumping, restores it's parameters to their default values.
+	/// </summary>
+	private void StopWallJumping() {
+		if (_wallJumping) {
+			_wallJumping = false;
+			Parameters = null;
+		}
 	}
 
 	#endregion

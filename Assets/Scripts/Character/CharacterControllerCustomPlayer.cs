@@ -49,6 +49,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// </summary>
 	private bool _stopFlyingWhenGrounded;
 
+	/// <summary>
+	/// Flag that indicates if the player has released the jump button.
+	/// </summary>
+	private bool _jumpReleased;
+
 	#endregion
 
 	#region Methods
@@ -63,6 +68,9 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 		// By default, the player starts facing right
 		FacingDirection = Vector3.right;
+
+		// Sets tje jump button flag
+		_jumpReleased = true;
 	}
 
 	/// <summary>
@@ -81,8 +89,15 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		_controller.SetInputForce(HorizontalInput, VerticalInput);
 
 		// Makes the character jump
-		if (JumpInput > 0)
-			_controller.Jump();
+		if (JumpInput > 0) {
+			if (_jumpReleased) {
+				_jumpReleased = false;
+				_controller.Jump();
+			}
+		}
+		else {
+			_jumpReleased = true;
+		}
 	}
 
 	/// <summary>
