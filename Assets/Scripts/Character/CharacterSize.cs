@@ -47,10 +47,6 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
 	private int _targetSize;
     /// <summary>
-    /// Parameters setted to the moment the character is growing up/decreasing
-    /// </summary>
-    CharacterControllerParameters _quietGrowingParameters;
-    /// <summary>
     /// The direction where I spit the drop if I have to when growing up, zero if random
     /// </summary>
     Vector3 _directionSpitDrop;
@@ -65,7 +61,10 @@ public class CharacterSize : MonoBehaviour {
     /// Radius of character
     /// </summary>
     private float _ratioRadius;
-
+    /// <summary>
+    /// 
+    /// </summary>
+    private LayerMask _layerCast;
     /// <summary>
     /// Independent control to create or remove drops
     /// </summary>
@@ -79,17 +78,13 @@ public class CharacterSize : MonoBehaviour {
     /// The character start with size one
     /// </summary>
     void Awake() {
-        //Time.timeScale = 0.1f;
-        //Time.fixedDeltaTime = 0.1f;
+        _layerCast = ( 1 << LayerMask.NameToLayer("Scene"));
         _dropTransform = gameObject.transform;
         _dropTransform.localScale = Vector3.one;
         _ratioRadius = GetComponent<CharacterController>().radius;
 
         _independentControl = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
-
-        _quietGrowingParameters = new CharacterControllerParameters();
-        _quietGrowingParameters.movementControl = CharacterControllerParameters.MovementControl.None;
 
         _targetSize = 1;
         SetSize(1);
@@ -116,6 +111,10 @@ public class CharacterSize : MonoBehaviour {
 		SetSize(_targetSize - 1);
 	}
 
+    /// <summary>
+    /// Set a size. While changing the size, the character will not move
+    /// </summary>
+    /// <param name="size">New size</param>
     public void SetSize(int size) {
         SetSize(size, Vector3.zero);
     }
@@ -124,11 +123,12 @@ public class CharacterSize : MonoBehaviour {
     /// Set a size. While changing the size, the character will not move
     /// </summary>
     /// <param name="size">New size</param>
+    /// <param name="spitDirection">Direction of spit if need to spit a drop</param>
 	public void SetSize(int size, Vector3 spitDirection) {
 		if(size > 0 && size != _targetSize) {
             _directionSpitDrop = spitDirection;
             //can't move
-            GetComponent<CharacterControllerCustom>().Parameters = _quietGrowingParameters;
+            GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.GrowingParameters;
 
             //set the new size
             _targetSize = size;
@@ -393,11 +393,12 @@ public class CharacterSize : MonoBehaviour {
 		Vector3[] directionOneSide = getDirectionAxis(axis, 0);
 		Vector3[] directionOtherSide = getDirectionAxis(axis, 1);
 
+        
 		//check the three raycast of one side
 		for(int i = 0; i < 3; ++i) {
 			//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red,5);
 			RaycastHit hit;
-			if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance)) {
+			if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance, _layerCast.value)) {
                 //get the offset
                 Vector3 hitting = hit.normal * (distance - hit.distance);
                 offset.x = (offset.x > 0 || hitting.x >= 0) ? Mathf.Max(hitting.x, offset.x) : Mathf.Min(hitting.x, offset.x);
@@ -412,9 +413,9 @@ public class CharacterSize : MonoBehaviour {
         for(int i = 0; i < 3 && !infoResult.block; ++i) {
 			//Debug.DrawRay(rayOrigin + offset, directionOtherSide[i] * distance, Color.red, 5);
             RaycastHit hit;
-			if(Physics.Raycast(rayOrigin + offset, directionOtherSide[i], out hit, distance)) {
-				//was a previous collision? axis blocked
-				if(hasCollision)
+			if(Physics.Raycast(rayOrigin + offset, directionOtherSide[i], out hit, distance, _layerCast.value)) {
+                //was a previous collision? axis blocked
+                if(hasCollision)
 					infoResult.block = true;
 				else
 					//need a recheck of the other side
@@ -432,7 +433,7 @@ public class CharacterSize : MonoBehaviour {
 			for(int i = 0; i < 3; ++i) {
 				//Debug.DrawRay(rayOrigin + offset, directionOneSide[i] * distance, Color.red, 5);
                 RaycastHit hit;
-                if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance)) {
+                if(Physics.Raycast(rayOrigin + offset, directionOneSide[i], out hit, distance, _layerCast.value)) {
                     //blocked!
                     infoResult.block = true;
                 }
