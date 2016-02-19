@@ -14,6 +14,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
     //Drop prefab
     public GameObject PfDrop;
 
+    //Camera 
+    CameraControler _cameraControler;
+
     /// <summary>
     /// Called on start script
     /// </summary>
@@ -24,12 +27,18 @@ public class GameControllerIndependentControl : MonoBehaviour {
         for (int i = allCurrentCharacters.Count - 1; i < numOfDrops; ++i)
         {
             GameObject drop = (GameObject)Instantiate(PfDrop);
-            drop.gameObject.name = "Drop (" + i + ")";
+            drop.gameObject.name = "Drop (" + allCurrentCharacters.Count  + ")";
             drop.GetComponent<Renderer>().enabled = false;
             drop.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
             drop.SetActive(false);
             _DropsPool.Add(drop);
         }
+
+        //Get the camera
+        _cameraControler = GameObject.FindGameObjectWithTag("MainCamera")
+                                .GetComponent<CameraControler>();
+        //Actualize camera objective
+        _cameraControler.setObjective(currentCharacter);
     }
 
 	void Update () {/*Nothing at the moment*/}
@@ -59,6 +68,21 @@ public class GameControllerIndependentControl : MonoBehaviour {
             if (addToControlList)
                 allCurrentCharacters.Add(drop);
 
+        }
+        else
+        {
+            //add more drops
+            for (int i = allCurrentCharacters.Count - 1; i < numOfDrops; ++i)
+            {
+                GameObject clone = (GameObject)Instantiate(PfDrop);
+                clone.gameObject.name = "Drop (" + allCurrentCharacters.Count + ")";
+                clone.GetComponent<Renderer>().enabled = false;
+                clone.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
+                clone.SetActive(false);
+                _DropsPool.Add(clone);
+            }
+
+            drop = AddDrop(setControl, addToControlList);
         }
         return drop;
     }
@@ -94,7 +118,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            currentCharacter = allCurrentCharacters[0];
+            SetControl(0);
         }
     }
 
@@ -114,7 +138,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            currentCharacter = allCurrentCharacters[next_drop];
+            SetControl(next_drop);
+
+            //Actualize camera objective
+            _cameraControler.setObjective(currentCharacter);
         }
     }
 
@@ -134,7 +161,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            currentCharacter = allCurrentCharacters[back_drop];
+            SetControl(back_drop);
+
+            //Actualize camera objective
+            _cameraControler.setObjective(currentCharacter);
         }
     }
 
@@ -155,6 +185,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //Check if it is under control, if not add it
             if (!IsUnderControl(currentCharacter))
                 allCurrentCharacters.Add(currentCharacter);
+
+            //Actualize camera objective
+            _cameraControler.setObjective(currentCharacter);
         }
     }
 
@@ -167,9 +200,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         int index = _DropsPool.IndexOf(drop);
 
         if (index > -1)
-        {
             SetControl(index);
-        }
     }
 
     /// <summary>
