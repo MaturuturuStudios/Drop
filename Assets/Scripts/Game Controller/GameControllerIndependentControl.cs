@@ -52,8 +52,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
             drop.transform.position = new Vector3(position.x , position.y, position.z);
             //drop.GetComponent<Renderer>().enabled = true; comment by dorian
             drop.SetActive(true);
-            //TODO: reset state, workaround for bug
-            drop.GetComponent<CharacterControllerCustom>().ResetState();
+            //drop.GetComponent<CharacterControllerCustom>().ResetState();	// Comment by nacho: this is no longer needed
 
             //Set Control
             if (setControl)

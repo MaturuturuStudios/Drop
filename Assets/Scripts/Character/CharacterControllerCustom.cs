@@ -129,6 +129,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 		_characterSize = GetComponent<CharacterSize>();
 	}
 
+	/// <summary>
+	/// Unity's method called every time the entity becomes enabled.
+	/// </summary>
+	void OnEnable() {
+		// Resets the state
+		State.Reset();
+	}
+
 	#region Force Methods
 
 	/// <summary>
@@ -626,11 +634,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 			Parameters = null;
 		}
 	}
-
-    // TODO: workaround for bug
-    public void ResetState() {
-        State = new CharacterControllerState();
-    }
 
 	#endregion
 
