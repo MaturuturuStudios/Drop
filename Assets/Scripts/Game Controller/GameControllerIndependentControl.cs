@@ -15,7 +15,16 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public GameObject PfDrop;
 
     //Camera 
-    CameraControler _cameraControler;
+    CameraController _cameraController;
+
+    void Awake()
+    {
+        //Get the camera
+        _cameraController = GameObject.FindGameObjectWithTag("MainCamera")
+                                .GetComponent<CameraController>();
+        //Actualize camera objective
+        _cameraController.SetObjective(currentCharacter);
+    }
 
     /// <summary>
     /// Called on start script
@@ -33,12 +42,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
             drop.SetActive(false);
             _DropsPool.Add(drop);
         }
-
-        //Get the camera
-        _cameraControler = GameObject.FindGameObjectWithTag("MainCamera")
-                                .GetComponent<CameraControler>();
-        //Actualize camera objective
-        _cameraControler.setObjective(currentCharacter);
     }
 
 	void Update () {/*Nothing at the moment*/}
@@ -141,7 +144,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
             SetControl(next_drop);
 
             //Actualize camera objective
-            _cameraControler.setObjective(currentCharacter);
+            _cameraController.SetObjective(currentCharacter);
         }
     }
 
@@ -164,7 +167,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
             SetControl(back_drop);
 
             //Actualize camera objective
-            _cameraControler.setObjective(currentCharacter);
+            _cameraController.SetObjective(currentCharacter);
         }
     }
 
@@ -187,7 +190,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 allCurrentCharacters.Add(currentCharacter);
 
             //Actualize camera objective
-            _cameraControler.setObjective(currentCharacter);
+            _cameraController.SetObjective(currentCharacter);
         }
     }
 
