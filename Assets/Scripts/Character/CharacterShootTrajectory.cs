@@ -6,17 +6,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
     public GameObject TrajectoryPointPrefeb;
     public int numOfTrajectoryPoints = 30;
+
     private List<GameObject> trajectoryPoints;
-
-    
-
     private CharacterControllerCustom ccc;
     private  CharacterShoot s;
-
     private Vector3 vel;
-
-    
-
     private float power = 25;
 
     // Use this for initialization

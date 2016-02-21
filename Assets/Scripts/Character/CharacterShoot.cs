@@ -3,18 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CharacterShoot : MonoBehaviour {
-	
-	public GameObject BallPrefb;
-	
-	private GameObject ball;
+
+    public GameObject BallPrefb;
+
+   
+    private GameObject ball;
 	private bool  isBallThrown;
-
+    private int lessize=0;
+    private int falling = 0;
     private bool shootmode = false;
-
+    
 
     CharacterControllerCustom ccc;
     CharacterShootTrajectory st;
-    //GameControllerIndependentControl gc; //Comentado por toni
     GameControllerIndependentControl _gcic;
 
     //---------------------------------------	
@@ -27,28 +28,44 @@ public class CharacterShoot : MonoBehaviour {
         _gcic = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
 	}
+    public bool isShooting(){
+        return shootmode;
+    }
 	//---------------------------------------	
 	void Update (){
-        if ((Input.GetKeyDown(KeyCode.X) && ccc.State.IsGrounded)) {
+        if ((Input.GetKeyDown(KeyCode.X) && ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize()>1))) {
             if (shootmode == false){
                 shootmode = true;
                 st.enabled = true;
                 
                 ccc.Parameters = CharacterControllerParameters.ShootingParameters;
-            }else if(shootmode== true){
+            }else if((shootmode== true))
+            {
                 shootmode = false;
                 st.QuitTrajectory();
                 st.enabled = false;
                 ccc.Parameters = null;
-            }
-
+            }       
+        }
+        if ((lessize == 1) || ccc.State.IsGrounded == false){
+            shootmode = false;
+            st.QuitTrajectory();
+            st.enabled = false;
+            
+             //ccc.Parameters = null;                      
         }
         
+       
         if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
 			
 			if(!isBallThrown){
-                //createBall(); //Comentado por toni
-                throwBall();             
+                throwBall();
+                lessize = GetComponent<CharacterSize>().GetSize();
+                lessize -= 1;
+                GetComponent<CharacterSize>().SetSize(lessize);
+
+                //_gcic.SetControl(1);
+                _gcic.ControlNextDrop();
             }
 		}
         
@@ -57,45 +74,26 @@ public class CharacterShoot : MonoBehaviour {
 	//---------------------------------------	
 	// When ball is thrown, it will create new ball
 	//---------------------------------------	
-	private void createBall(){
-
-        //var ball = Instantiate(BallPrefb) as GameObject;
-
-        ball = (GameObject) Instantiate(BallPrefb);
-
-		Vector3 pos = transform.position;
-        pos.z = 1;
-        //float a=GetComponent<CharacterController>().radius;
-		ball.transform.position = pos;
-		//ball.GetComponent<CharacterControllerCustomPlayer>().Parameters = CharacterControllerParameters.FlyingParameters;	// Comentado por nacho (ver 'throwBall')
-
-		ball.SetActive(false);
-	}
-	//---------------------------------------	
-
     //Set ball properties like createBall()
     private void prepareDropToFly()
     {
         Vector3 pos = transform.position;
         pos.z = 1;
         ball.transform.position = pos;
-        //ball.GetComponent<CharacterControllerCustomPlayer>().Parameters = CharacterControllerParameters.FlyingParameters;   // Comentado por nacho (ver 'throwBall')
-
 		ball.SetActive(false);
     }
 
 	private void throwBall(){
 
-        ball = _gcic.AddDrop();  //Añadido por toni
+        ball = _gcic.AddDrop();  
 
         prepareDropToFly();
 
         ball.SetActive(true);
 
-        //ball.GetComponent<CharacterControllerCustom>().AddForce(st.GetComponent<CharacterShootTrajectory>().getvect(), ForceMode.VelocityChange);
-		ball.GetComponent<CharacterControllerCustomPlayer>().SendFlying(st.GetComponent<CharacterShootTrajectory>().getvect());	// Cambiado por nacho. ¡Ahora existe este método tan guay!
+		ball.GetComponent<CharacterControllerCustomPlayer>().SendFlying(st.GetComponent<CharacterShootTrajectory>().getvect());	
 
-		//gc.AddDrop(ball);    //Comentado por toni     
+		   
 	}
 	
 	
