@@ -35,6 +35,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
 	void Update () {/*Nothing at the moment*/}
 
     /// <summary>
+    /// Check the number of drops avaliable to take control of them Create by Robert you can delete it
+    /// </summary>
+    public int NumberofDropsinPool() {
+        return _DropsPool.Capacity;
+    }
+    /// <summary>
     /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>

@@ -58,7 +58,7 @@ public class CharacterShoot : MonoBehaviour {
        
         if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
 			
-			if(!isBallThrown){
+			if(_gcic.allCurrentCharacters.Capacity<_gcic.numOfDrops){
                 throwBall();
                 lessize = GetComponent<CharacterSize>().GetSize();
                 lessize -= 1;
