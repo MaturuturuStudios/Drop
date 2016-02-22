@@ -153,8 +153,8 @@ public class CameraController : MonoBehaviour {
         else
         {
             //Actualize Camera bounds
-            float widthBound = (width * size / 2);
-            float heightBound = (height * size / 2);
+            widthBound = (width * size / 2);
+            heightBound = (height * size / 2);
             
             if (_cameraState == CameraState.MOVING)
                 Debug.Log("Moving");
