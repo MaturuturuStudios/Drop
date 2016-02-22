@@ -54,46 +54,60 @@ public class CameraController : MonoBehaviour {
         _lastPlayerPosition = currentCharacter.transform.position;
     }
 
+    void Update()
+    {
+    }
+
     void LateUpdate()
     {
-        _offset = new Vector3(0.0f, up, far);
+
+
 
         if (_lastPlayerPosition == currentCharacter.transform.position)
         {
             _idleCounter += Time.deltaTime;
-            if (_idleCounter > 3)
+            if (_idleCounter > 1.0f)
                 _cameraState = CameraState.IDLE;
         }
-        else {
-            _idleCounter = 0;
+        else
+        {
+            _idleCounter = 0.0f;
             _cameraState = CameraState.MOVING;
         }
         _lastPlayerPosition = currentCharacter.transform.position;
 
         if (lastCharacter != currentCharacter)
         {
+            far = -25.0f;
             _changeDropCounter += Time.deltaTime;
             _cameraState = CameraState.CHANGE_DROP;
-            if (_changeDropCounter > 1)
+            if (_changeDropCounter > 0.25f)
+            {
+                far = -15.0f;
                 lastCharacter = currentCharacter;
+            }
         }
         else
         {
-            _changeDropCounter = 0;
+            _changeDropCounter = 0.0f;
         }
 
+        float size = currentCharacter.GetComponent<CharacterSize>().GetSize();
+        _offset = new Vector3(0.0f, up, far - (size*5));
 
-
-
+        _cameraBoundary.transform.localScale = new Vector3(width * size, height * size, 0.1f);
         Vector3 objectiveMovement;
         Vector3 diffMovement;
 
         if (_cameraState == CameraState.IDLE)
         {
             Debug.Log("idle");
-            objectiveMovement = currentCharacter.transform.position + _offset;
+            objectiveMovement = _lastPositionMovement;
             diffMovement = currentCharacter.transform.position + _offset - _lastPositionMovement;
-
+            if (_offset.z < -15)
+            {
+                objectiveMovement = _lastPositionMovement;
+            }
             float ratioXYMovement = Mathf.Abs(diffMovement.x) / Mathf.Abs(diffMovement.y);
             if (ratioXYMovement > 1)
                 ratioXYMovement = 1;
@@ -105,7 +119,6 @@ public class CameraController : MonoBehaviour {
                     passedOutX = (cameraMovementSpeedIdle * ratioXYMovement);
                 objectiveMovement.x = _lastPositionMovement.x + passedOutX;
             }
-            passedOutX = currentCharacter.transform.position.x - _cameraBoundary.transform.position.x;
             if (passedOutX < 0)
             {
                 if (passedOutX < (-cameraMovementSpeedIdle * ratioXYMovement))
@@ -125,7 +138,6 @@ public class CameraController : MonoBehaviour {
                     passedOutY = (cameraMovementSpeedIdle * ratioXYMovement);
                 objectiveMovement.y = _lastPositionMovement.y + passedOutY;
             }
-            passedOutY = currentCharacter.transform.position.y - _cameraBoundary.transform.position.y;
             if (passedOutY < 0)
             {
                 if (passedOutY < (-cameraMovementSpeedIdle * ratioXYMovement))
@@ -133,10 +145,15 @@ public class CameraController : MonoBehaviour {
                 objectiveMovement.y = _lastPositionMovement.y + passedOutY;
             }
 
-            _cameraBoundary.transform.position = objectiveMovement - _offset;
-            transform.position = objectiveMovement;
+            if (diffMovement.z > cameraMovementSpeed * size)
+            {
+                objectiveMovement.z += cameraMovementSpeed * size;
+            }
+            else if (diffMovement.z < -cameraMovementSpeed * size)
+            {
+                objectiveMovement.z -= cameraMovementSpeed * size;
+            }
 
-            _lastPositionMovement = objectiveMovement;
         }
         else if (_cameraState == CameraState.MOVING)
         {
@@ -148,18 +165,18 @@ public class CameraController : MonoBehaviour {
             if (ratioXYMovement > 1)
                 ratioXYMovement = 1;
 
-            float passedOutX = currentCharacter.transform.position.x - (width / 2) - _cameraBoundary.transform.position.x;
+            float passedOutX = currentCharacter.transform.position.x - (width * size / 2) - _cameraBoundary.transform.position.x;
             if (passedOutX > 0)
             {
-                if (passedOutX > (cameraMovementSpeed * ratioXYMovement))
+                if (passedOutX > (cameraMovementSpeed * ratioXYMovement * size))
                     passedOutX = (cameraMovementSpeed * ratioXYMovement);
                 objectiveMovement.x = _lastPositionMovement.x + passedOutX;
             }
-            passedOutX = currentCharacter.transform.position.x + (width / 2) - _cameraBoundary.transform.position.x;
+            passedOutX = currentCharacter.transform.position.x + (width * size / 2) - _cameraBoundary.transform.position.x;
             if (passedOutX < 0)
             {
-                if (passedOutX < (-cameraMovementSpeed * ratioXYMovement))
-                    passedOutX = (-cameraMovementSpeed * ratioXYMovement);
+                if (passedOutX < (-cameraMovementSpeed * ratioXYMovement * size))
+                    passedOutX = (-cameraMovementSpeed * ratioXYMovement * size);
                 objectiveMovement.x = _lastPositionMovement.x + passedOutX;
             }
 
@@ -168,25 +185,29 @@ public class CameraController : MonoBehaviour {
             if (ratioXYMovement > 1)
                 ratioXYMovement = 1;
 
-            float passedOutY = currentCharacter.transform.position.y - (height / 2) - _cameraBoundary.transform.position.y;
+            float passedOutY = currentCharacter.transform.position.y - (height * size / 2) - _cameraBoundary.transform.position.y;
             if (passedOutY > 0)
             {
-                if (passedOutY > (cameraMovementSpeed * ratioXYMovement))
-                    passedOutY = (cameraMovementSpeed * ratioXYMovement);
+                if (passedOutY > (cameraMovementSpeed * ratioXYMovement * size))
+                    passedOutY = (cameraMovementSpeed * ratioXYMovement * size);
                 objectiveMovement.y = _lastPositionMovement.y + passedOutY;
             }
-            passedOutY = currentCharacter.transform.position.y + (height / 2) - _cameraBoundary.transform.position.y;
+            passedOutY = currentCharacter.transform.position.y + (height * size / 2) - _cameraBoundary.transform.position.y;
             if (passedOutY < 0)
             {
-                if (passedOutY < (-cameraMovementSpeed * ratioXYMovement))
-                    passedOutY = (-cameraMovementSpeed * ratioXYMovement);
+                if (passedOutY < (-cameraMovementSpeed * ratioXYMovement * size))
+                    passedOutY = (-cameraMovementSpeed * ratioXYMovement * size);
                 objectiveMovement.y = _lastPositionMovement.y + passedOutY;
             }
 
-            _cameraBoundary.transform.position = objectiveMovement - _offset;
-            transform.position = objectiveMovement;
-
-            _lastPositionMovement = objectiveMovement;
+            if (diffMovement.z > cameraMovementSpeed * size)
+            {
+                objectiveMovement.z += cameraMovementSpeed * size;
+            }
+            else if (diffMovement.z < -cameraMovementSpeed * size)
+            {
+                objectiveMovement.z -= cameraMovementSpeed * size;
+            }
 
         }
         else  
@@ -195,16 +216,15 @@ public class CameraController : MonoBehaviour {
                 Debug.Log("ChangeDrop");
             objectiveMovement = _lastPositionMovement;
             diffMovement = currentCharacter.transform.position + _offset - _lastPositionMovement;
-        }
 
-
-        if (diffMovement.z > cameraMovementSpeed)
-        {
-            objectiveMovement.z += cameraMovementSpeed;
-        }
-        else if (diffMovement.z < -cameraMovementSpeed)
-        {
-            objectiveMovement.z -= cameraMovementSpeed;
+            if (diffMovement.z > cameraMovementSpeed)
+            {
+                objectiveMovement.z += cameraMovementSpeed;
+            }
+            else if (diffMovement.z < -cameraMovementSpeed)
+            {
+                objectiveMovement.z -= cameraMovementSpeed;
+            }
         }
 
         _cameraBoundary.transform.position = objectiveMovement - _offset;
