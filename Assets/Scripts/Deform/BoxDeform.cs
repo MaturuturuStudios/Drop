@@ -62,7 +62,7 @@ public class BoxDeform : MonoBehaviour {
 	}
 
 	public void OnDrawGizmos() {
-		_meshFilter = GetComponent<MeshFilter>();
+		Awake();
 		Update();
 	}
 
