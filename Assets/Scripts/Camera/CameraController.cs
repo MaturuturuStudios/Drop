@@ -169,6 +169,7 @@ public class CameraController : MonoBehaviour {
 
         //Actualize X position
         float movementX = currentCharacter.transform.position.x - widthBound - _cameraBoundary.transform.position.x;
+        //float movementX = currentCharacter.transform.position.x - widthBound + _offset - _lastPositionMovement.x;
         if (movementX > 0)
         {
             if (movementX > (cameraMovementSpeed * ratioXYMovement * size))
