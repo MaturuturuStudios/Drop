@@ -76,10 +76,11 @@ public class CharacterSize : MonoBehaviour {
     #region Public Methods
     /// <summary>
     /// Initialization method.
-    /// The character start with truncated scale
+    /// The character start with size one
     /// </summary>
     void Awake() {
         _dropTransform = gameObject.transform;
+        _dropTransform.localScale = Vector3.one;
         _ratioRadius = GetComponent<CharacterController>().radius;
 
         _independentControl = GameObject.FindGameObjectWithTag("GameController")
@@ -88,13 +89,8 @@ public class CharacterSize : MonoBehaviour {
         _quietGrowingParameters = new CharacterControllerParameters();
         _quietGrowingParameters.movementControl = CharacterControllerParameters.MovementControl.None;
 
-        //set the initial size
-        int size = (int) _dropTransform.localScale.x;
-        if (size - _dropTransform.localScale.x != 0) {
-            _dropTransform.localScale = Vector3.one * size;
-        }
-        _targetSize = size;
-        SetSize(size);
+        _targetSize = 1;
+        SetSize(1);
     }
     
 
