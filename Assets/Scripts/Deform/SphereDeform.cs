@@ -90,12 +90,12 @@ public class SphereDeform : MonoBehaviour {
 			else
 				colliderHitCount.Add(hitCollider, 1);
 
-			// Gets the distance to deform (in local space)
-			Vector3 deformDistance = _rayDirections[i] * -(_rayDistance - _rayHitsInfo[i].distance) / _transform.lossyScale.x;
-            Vector3 deformation = Vector3.Project(deformDistance, _rayHitsInfo[i].normal);
+			// Gets the distance to deform
+			Vector3 deformation = _rayDirections[i] * -(_rayDistance - _rayHitsInfo[i].distance);
+            deformation = Vector3.Project(deformation, _rayHitsInfo[i].normal);
 
-			// Gets the origin of the deform (in local space)
-			Vector3 origin = _transform.InverseTransformPoint(_rayOrigins[i] + _rayDirections[i] * _rayDistance);
+			// Gets the origin of the deform
+			Vector3 origin = _rayOrigins[i] + _rayDirections[i] * _rayDistance;
 			
 			// Calculates the chamf factor
 			float chamfFactor = Mathf.Abs(Mathf.Cos(Vector3.Angle(_rayDirections[i], deformation)));
@@ -127,28 +127,33 @@ public class SphereDeform : MonoBehaviour {
 	}
 
 	private Vector3[] DeformVertices(Vector3 origin, Vector3 deformation, ref Vector3[] vertices, float chamfFator) {
-		// Note: all values and calculations are in local space coordinates
 		Vector3[] chamfDeform = new Vector3[vertices.Length];
 		for (int i = 0; i < vertices.Length; i++) {
+			// Calculates the global vertex position
+			Vector3 vertexGlobalPosition = _transform.TransformPoint(vertices[i]);
+
 			// Calculates the distance from the origin to the vertex
-			Vector3 vertexDistance = vertices[i] - origin;
+			Vector3 vertexDistance = vertexGlobalPosition - origin;
 
 			// Projects the distance into the deformation vector
 			Vector3 distanceProjection = Vector3.Project(vertexDistance, deformation);
 
 			// If the distance is greater than the chamf penetration times the deformation, skips the vertex
-			if (distanceProjection.sqrMagnitude > (chamfPenetration * deformation).sqrMagnitude)
+			float penetration = chamfPenetration / transform.lossyScale.x;
+            if (distanceProjection.sqrMagnitude > (penetration * deformation).sqrMagnitude)
 				continue;
 
 			// If the distance is lower than the deformation, moves the vertex
 			if (distanceProjection.sqrMagnitude < deformation.sqrMagnitude)
-				vertices[i] += deformation - distanceProjection;
+				vertices[i] = _transform.InverseTransformPoint(vertexGlobalPosition + deformation - distanceProjection);
 
 			// If the champ flag is set, moves the near vertex to keep the volume
 			if (chamf) {
 				// Moves the vertex to keep the volume
 				Vector3 offset = Vector3.ProjectOnPlane(vertexDistance, deformation);
-				chamfDeform[i] = offset * chamfScale * chamfFator * (chamfPenetration * deformation - distanceProjection).magnitude;
+				offset *= (penetration * deformation - distanceProjection).magnitude;
+				offset *= chamfScale * chamfFator;
+                chamfDeform[i] = _transform.InverseTransformDirection(offset) / (_transform.lossyScale.x * _transform.lossyScale.x);
 			}
 		}
 		return chamfDeform;
