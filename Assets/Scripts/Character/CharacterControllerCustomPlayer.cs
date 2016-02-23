@@ -7,6 +7,15 @@ using System;
 /// </summary>
 public class CharacterControllerCustomPlayer : MonoBehaviour {
 
+	#region Public Attributes
+
+	/// <summary>
+	/// The time the jump button will be considered pressed.
+	/// </summary>
+	public float jumpPressTolerance = 0.1f;
+
+	#endregion
+
 	#region Properties
 
 	/// <summary>
@@ -54,6 +63,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// </summary>
 	private bool _jumpReleased;
 
+	/// <summary>
+	/// Time since the jump button was pressed.
+	/// </summary>
+	private float _jumpPressTime;
+
 	#endregion
 
 	#region Methods
@@ -69,7 +83,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		// By default, the player starts facing right
 		FacingDirection = Vector3.right;
 
-		// Sets tje jump button flag
+		// Sets the jump button flag
 		_jumpReleased = true;
 	}
 
@@ -78,6 +92,9 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// Sends the input to the controller.
 	/// </summary>
 	public void Update() {
+		// Decreses the timers
+		_jumpPressTime -= Time.deltaTime;
+
 		// Checks where the player is facing
 		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
 
@@ -88,15 +105,18 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		// Adds the force to the character controller
 		_controller.SetInputForce(HorizontalInput, VerticalInput);
 
-		// Makes the character jump
-		if (JumpInput > 0) {
-			if (_jumpReleased) {
-				_jumpReleased = false;
-				_controller.Jump();
-			}
+		// Checks if the jump button has been recently pressed
+		if (JumpInput > 0 && _jumpReleased) {
+			_jumpReleased = false;
+			_jumpPressTime = jumpPressTolerance;
 		}
-		else {
+		else if (JumpInput <= 0)
 			_jumpReleased = true;
+
+		// Makes the character jump
+		if (_jumpPressTime >= 0 && _controller.CanJump()) {
+			_jumpPressTime = -1;
+			_controller.Jump();
 		}
 	}
 
