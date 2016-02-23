@@ -80,14 +80,18 @@ public class CharacterSize : MonoBehaviour {
     void Awake() {
         _layerCast = ( 1 << LayerMask.NameToLayer("Scene"));
         _dropTransform = gameObject.transform;
-        _dropTransform.localScale = Vector3.one;
         _ratioRadius = GetComponent<CharacterController>().radius;
 
         _independentControl = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
 
-        _targetSize = 1;
-        SetSize(1);
+        //set the initial size
+        int size = (int)_dropTransform.localScale.x;
+        if(size - _dropTransform.localScale.x != 0) {
+            _dropTransform.localScale = Vector3.one * size;
+        }
+        _targetSize = size;
+        SetSize(size);
     }
 
 	/// <summary>
