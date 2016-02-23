@@ -20,7 +20,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	public CharacterControllerParameters Parameters {
 		get {
-			// If no override paramaters have been specified, return the default parameters
+			// If no override parameters have been specified, return the default parameters
 			return _overrideParameters ?? defaultParameters;
 		}
 		set {
@@ -29,7 +29,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// The current velocity of the Character. The character will move acording to this
+	/// The current velocity of the Character. The character will move according to this
 	/// velocity each frame.
 	/// </summary>
 	public Vector3 Velocity { get { return _velocity; } }
@@ -200,7 +200,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <param name="force">Amount of force to add</param>
 	/// <param name="mode">The type of force it is applying</param>
 	public void AddForceRelative(Vector3 force, ForceMode mode = ForceMode.VelocityChange) {
-		// Rotates the force acording to the gravity and adds it to the velocity
+		// Rotates the force according to the gravity and adds it to the velocity
 		float gravityAngle = Vector3.Angle(Parameters.Gravity, Vector3.down);
 		if (Vector3.Cross(Parameters.Gravity, Vector3.down).z < 0)
 			gravityAngle = -gravityAngle;
@@ -213,7 +213,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <param name="force">The new velocity of the character</param>
 	public void SetForceRelative(Vector3 force) {
-		// Rotates the force acording to the gravity and sets the velocity to it
+		// Rotates the force according to the gravity and sets the velocity to it
 		float gravityAngle = Vector3.Angle(Parameters.Gravity, Vector3.down);
 		if (Vector3.Cross(Parameters.Gravity, Vector3.down).z < 0)
 			gravityAngle = -gravityAngle;
@@ -278,7 +278,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 	/// <summary>
 	/// Sets the input of the character on this frame. The velocity will be modified
-	/// acording to this input while using the acceleration defined on the parameters.
+	/// according to this input while using the acceleration defined on the parameters.
 	/// </summary>
 	/// <param name="horizontalInput">Signed-normalized value for the horizontal input</param>
 	/// <param name="verticalInput">Signed-normalized value for the vertical input</param>
@@ -334,7 +334,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
 		}
 
-		// If it's grounded on a slope, substracts the necessary vertical speed to stick to the ground
+		// If it's grounded on a slope, subtracts the necessary vertical speed to stick to the ground
 		if (State.IsGrounded && Mathf.Abs(State.SlopeAngle) > Parameters.angleThereshold) {
 			_velocity.y -= _velocity.x * Mathf.Sin(State.SlopeAngle * Mathf.Deg2Rad);
 		}
@@ -437,12 +437,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	#endregion
 
 	/// <summary>
-	/// Unity's method called at the end of the frame.
-	/// This method will be called after each Update method is called.
-	/// Moves the character acording to it's velocity
+	/// Unity's method called each frame.
+	/// Moves the character according to it's velocity
 	/// </summary>
-	public void LateUpdate() {
-		// Decreaseses the timers
+	public void Update() {
+		// Decreases the timers
 		_jumpingTime -= Time.deltaTime;
 		_wallJumpingTime -= Time.deltaTime;
 
@@ -459,7 +458,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
 
-		// Trys the movement of the entity acording to it's velocity
+		// Tries the movement of the entity according to it's velocity
 		Move(Velocity * Time.deltaTime);
 	}
 
@@ -553,14 +552,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (hit.collider is SphereCollider)
 			normal = -hit.normal;
 
-		// Before modifying the velocity, applys force to the other object if it allows it
+		// Before modifying the velocity, applies force to the other object if it allows it
 		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
 		if (otherRigidbody != null && !otherRigidbody.isKinematic) {
 			Vector3 force = Vector3.Project(_velocity, -normal) * GetTotalMass();
 			otherRigidbody.AddForceAtPosition(force, hit.point, ForceMode.Impulse);
 		}
 
-		// Looks for the angle beetween the collision nomal an the gravity
+		// Looks for the angle between the collision normal an the gravity
 		State.SlopeAngle = Vector3.Angle(normal, -Parameters.Gravity);
 		if (Vector3.Cross(normal, -Parameters.Gravity).z < 0)
 			State.SlopeAngle = -State.SlopeAngle;
@@ -586,12 +585,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 
-			// Check if the character is sliding allong a wall
+			// Check if the character is sliding along a wall
 			if (State.IsFalling && Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
 				// The character is now sliding
 				State.IsSliding = true;
 
-				// If the character wasn's sliding, stops it
+				// If the character wasn't sliding, stops it
 				if (!_wasSliding)
 					Stop();
 			}
