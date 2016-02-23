@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class SphereDeform : MonoBehaviour {
 	
@@ -38,7 +38,7 @@ public class SphereDeform : MonoBehaviour {
 		_meshFilter.mesh = _modifiedMesh;
 	}
 
-	void Update() {
+	void LateUpdate() {
 		// Calculates the origin and direction of each ray
 		PrecalculateRays();
 
@@ -77,16 +77,26 @@ public class SphereDeform : MonoBehaviour {
 	private void Deform() {
 		Vector3[] modifiedVertices = originalMesh.vertices;
 		Vector3[][] chamfDeform = new Vector3[numberOfRays][];
+		Dictionary<Collider, int> colliderHitCount = new Dictionary<Collider, int>();
 		for (int i = 0; i < numberOfRays; i++) {
 			// If the ray didn't hit anything, skips it
 			if (!_rayHits[i])
 				continue;
 
-			// Gets the distance to deform
-			float deformDistance = _rayDistance - _rayHitsInfo[i].distance;
-            Vector3 deformation = _rayHitsInfo[i].normal * deformDistance;
-			Vector3 origin = _rayOrigins[i] + _rayDirections[i] * _rayDistance;
+			// Increases the count of collisions with the collider
+			Collider hitCollider = _rayHitsInfo[i].collider;
+			if (colliderHitCount.ContainsKey(hitCollider))
+				colliderHitCount[hitCollider] += 1;
+			else
+				colliderHitCount.Add(hitCollider, 1);
 
+			// Gets the distance to deform (in local space)
+			Vector3 deformDistance = _rayDirections[i] * -(_rayDistance - _rayHitsInfo[i].distance) / _transform.lossyScale.x;
+            Vector3 deformation = Vector3.Project(deformDistance, _rayHitsInfo[i].normal);
+
+			// Gets the origin of the deform (in local space)
+			Vector3 origin = _transform.InverseTransformPoint(_rayOrigins[i] + _rayDirections[i] * _rayDistance);
+			
 			// Calculates the chamf factor
 			float chamfFactor = Mathf.Abs(Mathf.Cos(Vector3.Angle(_rayDirections[i], deformation)));
 			chamfFactor *= chamfFactor;
@@ -100,7 +110,9 @@ public class SphereDeform : MonoBehaviour {
 			for (int i = 0; i < chamfDeform.Length; i++)
 				if (chamfDeform[i] != null) {
 					for (int j = 0; j < chamfDeform[i].Length; j++)
-						modifiedVertices[j] += chamfDeform[i][j];
+						if (chamfDeform[i][j] != null) {
+							modifiedVertices[j] += chamfDeform[i][j] / colliderHitCount[_rayHitsInfo[i].collider];
+						}
 				}
 		}
 
@@ -115,11 +127,11 @@ public class SphereDeform : MonoBehaviour {
 	}
 
 	private Vector3[] DeformVertices(Vector3 origin, Vector3 deformation, ref Vector3[] vertices, float chamfFator) {
+		// Note: all values and calculations are in local space coordinates
 		Vector3[] chamfDeform = new Vector3[vertices.Length];
 		for (int i = 0; i < vertices.Length; i++) {
 			// Calculates the distance from the origin to the vertex
-			Vector3 vertexPosition = _transform.TransformPoint(vertices[i]);
-			Vector3 vertexDistance = vertexPosition - origin;
+			Vector3 vertexDistance = vertices[i] - origin;
 
 			// Projects the distance into the deformation vector
 			Vector3 distanceProjection = Vector3.Project(vertexDistance, deformation);
@@ -130,13 +142,13 @@ public class SphereDeform : MonoBehaviour {
 
 			// If the distance is lower than the deformation, moves the vertex
 			if (distanceProjection.sqrMagnitude < deformation.sqrMagnitude)
-				vertices[i] += (deformation - distanceProjection) / _transform.lossyScale.x;
+				vertices[i] += deformation - distanceProjection;
 
 			// If the champ flag is set, moves the near vertex to keep the volume
 			if (chamf) {
 				// Moves the vertex to keep the volume
 				Vector3 offset = Vector3.ProjectOnPlane(vertexDistance, deformation);
-				chamfDeform[i] = offset * chamfScale * chamfFator * (chamfPenetration * deformation - distanceProjection).magnitude / _transform.lossyScale.x;
+				chamfDeform[i] = offset * chamfScale * chamfFator * (chamfPenetration * deformation - distanceProjection).magnitude;
 			}
 		}
 		return chamfDeform;
