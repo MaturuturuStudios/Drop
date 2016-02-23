@@ -157,6 +157,12 @@ public class CharacterControllerParameters {
 	public float accelerationOnAir = 5;
 
 	/// <summary>
+	/// The amount of stickiness to apply to the character while moving down a slope.
+	/// </summary>
+	[Range(0, 2)]
+	public float slopeStickiness = 1.1f;
+
+	/// <summary>
 	/// Defines the maximum angle vertical walls will have. Beetween this angle, and the slope limit,
 	/// the character will slide along the object.
 	/// </summary>
@@ -246,7 +252,8 @@ public class CharacterControllerParameters {
 		clone.accelerationOnGround = accelerationOnGround;
 		clone.accelerationOnAir = accelerationOnAir;
 		clone.maxWallSlideAngle = maxWallSlideAngle;
-		clone.slidingDragFactor = slidingDragFactor;
+		clone.slopeStickiness = slopeStickiness;
+        clone.slidingDragFactor = slidingDragFactor;
 		clone.angleThereshold = angleThereshold;
         clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrecuency = jumpFrecuency;

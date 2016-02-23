@@ -336,8 +336,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// If it's grounded on a slope, subtracts the necessary vertical speed to stick to the ground
 		if (State.IsGrounded && Mathf.Abs(State.SlopeAngle) > Parameters.angleThereshold) {
-			_velocity.y -= _velocity.x * Mathf.Sin(State.SlopeAngle * Mathf.Deg2Rad);
-		}
+			float velocityStick = _velocity.x * Mathf.Sin(State.SlopeAngle * Mathf.Deg2Rad);
+			if (velocityStick > 0)
+				velocityStick *= Parameters.slopeStickiness;
+            _velocity.y -= velocityStick;
+        }
 
 		// If the input was relative to the gravity, restores it's orientation
 		if (Parameters.relativeToGravity) {
