@@ -1,32 +1,126 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// Modifies a spherical mesh simulating it is fluid.
+/// Deforms the mesh when colliding with other entitys.
+/// </summary>
 public class SphereDeform : MonoBehaviour {
-	
+
+	#region Public Attributes
+
+	/// <summary>
+	/// The mesh to deform. This mesh will be cloned so it won't be
+	/// directly modified.
+	/// </summary>
 	public Mesh originalMesh;
+
+	/// <summary>
+	/// The collider containing the minimum size the mesh can have.
+	/// </summary>
 	public SphereCollider sphereCollider;
+
+	/// <summary>
+	/// The layer which the mesh will deform with.
+	/// </summary>
 	public LayerMask layer;
 
+	/// <summary>
+	/// Number of rays to cast in order to detect the other colliders.
+	/// </summary>
 	public int numberOfRays = 8;
+
+	/// <summary>
+	/// The distance the rays will check for collisions.
+	/// </summary>
 	public float distance = 0.05f;
+
+	/// <summary>
+	/// Inner distance to cast the rays. Used to improve reliability.
+	/// </summary>
 	public float skinWidth = 0.02f;
+
+	/// <summary>
+	/// Speed of the vertices when moving to the modified position.
+	/// </summary>
 	[Range(0,1)]
 	public float deformationSpeed = 0.25f;
+
+	/// <summary>
+	/// If the deformation should affect nearby vertices.
+	/// </summary>
     public bool chamf = true;
+
+	/// <summary>
+	/// The amount of deformation to apply to the vertices.
+	/// </summary>
 	public float chamfScale = 0.25f;
+
+	/// <summary>
+	/// Amount of penetration to check if a nearby vertex should be
+	/// deformed.
+	/// </summary>
 	public float chamfPenetration = 5;
 
+	#endregion
+
+	#region Private Attributes
+
+	/// <summary>
+	/// Reference to the entity's mesh filter component.
+	/// </summary>
 	private MeshFilter _meshFilter;
+
+	/// <summary>
+	/// Reference to the entity's transfom component.
+	/// </summary>
 	private Transform _transform;
 
+	/// <summary>
+	/// The modified mesh that would be deformed.
+	/// </summary>
 	private Mesh _modifiedMesh;
+
+	#endregion
+
+	#region Variables
+
+	/// <summary>
+	/// Total distance to cast the rays.
+	/// </summary>
 	private float _rayDistance;
+
+	/// <summary>
+	/// The origin point for each ray.
+	/// </summary>
 	private Vector3[] _rayOrigins;
+
+	/// <summary>
+	/// The direction for casting each ray.
+	/// </summary>
 	private Vector3[] _rayDirections;
+
+	/// <summary>
+	/// Constains wich rays have hit this frame and which have not.
+	/// </summary>
 	private bool[] _rayHits;
+
+	/// <summary>
+	/// Contains the information about each ray cast hit.
+	/// </summary>
 	private RaycastHit[] _rayHitsInfo;
 
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// Unity's method called when the entity is created.
+	/// It will be called even if the entity is disabled.
+	/// Recovers the references and clones the mesh.
+	/// </summary>
 	void Awake() {
+		// Recovers the desired components
 		_meshFilter = GetComponent<MeshFilter>();
 		_transform = transform;
 
@@ -38,6 +132,10 @@ public class SphereDeform : MonoBehaviour {
 		_meshFilter.mesh = _modifiedMesh;
 	}
 
+	/// <summary>
+	/// Unity's method called at the end of each frame.
+	/// Does the deformation.
+	/// </summary>
 	void LateUpdate() {
 		// Calculates the origin and direction of each ray
 		PrecalculateRays();
@@ -49,6 +147,10 @@ public class SphereDeform : MonoBehaviour {
 		Deform();
 	}
 
+	/// <summary>
+	/// Precalculates all the information needed to cast the rays:
+	/// origin, direction and distance.
+	/// </summary>
 	private void PrecalculateRays() {
 		_rayOrigins = new Vector3[numberOfRays];
 		_rayDirections = new Vector3[numberOfRays];
@@ -65,6 +167,9 @@ public class SphereDeform : MonoBehaviour {
 		_rayDistance = (distance + skinWidth) * transform.lossyScale.x;
 	}
 
+	/// <summary>
+	/// Casts the rays and stores the results.
+	/// </summary>
 	private void CastRays() {
 		_rayHits = new bool[numberOfRays];
 		_rayHitsInfo = new RaycastHit[numberOfRays];
@@ -74,6 +179,9 @@ public class SphereDeform : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Does the actual deformation.
+	/// </summary>
 	private void Deform() {
 		Vector3[] modifiedVertices = originalMesh.vertices;
 		Vector3[][] chamfDeform = new Vector3[numberOfRays][];
@@ -126,6 +234,14 @@ public class SphereDeform : MonoBehaviour {
 		_modifiedMesh.RecalculateNormals();
 	}
 
+	/// <summary>
+	/// Calculates the deformation derived from a single ray.
+	/// </summary>
+	/// <param name="origin">Point in the mesh where the ray passes through</param>
+	/// <param name="deformation">Deformation performed by the ray</param>
+	/// <param name="vertices">The vertices to deform</param>
+	/// <param name="chamfFator">Factor of deformation caused by the ray</param>
+	/// <returns></returns>
 	private Vector3[] DeformVertices(Vector3 origin, Vector3 deformation, ref Vector3[] vertices, float chamfFator) {
 		Vector3[] chamfDeform = new Vector3[vertices.Length];
 		for (int i = 0; i < vertices.Length; i++) {
@@ -158,4 +274,6 @@ public class SphereDeform : MonoBehaviour {
 		}
 		return chamfDeform;
 	}
+
+	#endregion
 }
