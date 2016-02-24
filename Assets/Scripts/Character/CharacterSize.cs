@@ -7,6 +7,10 @@ using System.Collections;
 public class CharacterSize : MonoBehaviour {
     #region Public Attributes
     /// <summary>
+    /// Initial size of the character
+    /// </summary>
+    public int initialSize = 1;
+    /// <summary>
     /// Decrease rate
     /// </summary>
     public float shrinkSpeed = 5f;
@@ -86,12 +90,12 @@ public class CharacterSize : MonoBehaviour {
                                 .GetComponent<GameControllerIndependentControl>();
 
         //set the initial size
-        int size = (int)_dropTransform.localScale.x;
-        if(size - _dropTransform.localScale.x != 0) {
-            _dropTransform.localScale = Vector3.one * size;
+        if(initialSize < 0) {
+            initialSize = 1;
         }
-        _targetSize = size;
-        SetSize(size);
+        _dropTransform.localScale = Vector3.one * initialSize;
+        _targetSize = initialSize;
+        SetSize(initialSize);
     }
 
 	/// <summary>
