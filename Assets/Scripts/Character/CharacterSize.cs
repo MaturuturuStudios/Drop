@@ -104,10 +104,6 @@ public class CharacterSize : MonoBehaviour {
     public void Update() {
         GradualModifySize();
     }
-
-    public void OnDrawGizmos() {
-        transform.localScale = Vector3.one * initialSize;
-    }
     #endregion
 
     #region Public Methods
