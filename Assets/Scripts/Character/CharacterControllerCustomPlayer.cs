@@ -14,6 +14,13 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// </summary>
 	public float jumpPressTolerance = 0.1f;
 
+	/// <summary>
+	/// Amount of friction applied to the perpendicular velocity while the
+	/// player is on a wind tube.
+	/// </summary>
+	[Range(0, 1)]
+	public float windTubeFriction = 0.05f;
+
 	#endregion
 
 	#region Properties
@@ -42,6 +49,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// If the character has been sent flying and it has not stopped yet.
 	/// </summary>
 	public bool IsFlying { get; private set; }
+
+	/// <summary>
+	/// The wind tube which the player is currently standing on.
+	/// </summary>
+	public WindTube CurrentWindTube { get; set; }
 
 	#endregion
 
@@ -102,8 +114,25 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		if (IsFlying && _stopFlyingWhenGrounded && _controller.State.IsGrounded)
 			StopFlying();
 
-		// Adds the force to the character controller
-		_controller.SetInputForce(HorizontalInput, VerticalInput);
+		if (CurrentWindTube == null)
+			// Sets the input force of the character controller
+			_controller.SetInputForce(HorizontalInput, VerticalInput);
+		else {
+			// The character is on a wind tube
+			Vector3 movementForce = Vector3.Project(_controller.Velocity, CurrentWindTube.transform.right);
+
+			// Adds a friction to the velocity
+			movementForce *= (1 - windTubeFriction);
+
+			// Adds the input force
+			Vector3 inputForce = new Vector3(HorizontalInput, VerticalInput, 0);
+			inputForce = Vector3.Project(inputForce, CurrentWindTube.transform.right);
+
+			// Applys the final force
+			Vector3 finalForce = Vector3.Project(_controller.Velocity, CurrentWindTube.transform.up);
+			finalForce += movementForce + inputForce;
+			_controller.SetForce(finalForce);
+		}
 
 		// Checks if the jump button has been recently pressed
 		if (JumpInput > 0 && _jumpReleased) {
