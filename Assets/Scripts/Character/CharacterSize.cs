@@ -76,13 +76,13 @@ public class CharacterSize : MonoBehaviour {
     #endregion
 
     #region Methods
-    #region Public Methods
+    #region "Inherited" Methods
     /// <summary>
     /// Initialization method.
     /// The character start with size one
     /// </summary>
-    void Awake() {
-        _layerCast = ( 1 << LayerMask.NameToLayer("Scene"));
+    public void Awake() {
+        _layerCast = (1 << LayerMask.NameToLayer("Scene"));
         _dropTransform = gameObject.transform;
         _ratioRadius = GetComponent<CharacterController>().radius;
 
@@ -98,12 +98,20 @@ public class CharacterSize : MonoBehaviour {
         SetSize(initialSize);
     }
 
-	/// <summary>
+    /// <summary>
     /// Check input and control the size
     /// </summary>
-	void Update() {
-		GradualModifySize();
-	}
+    public void Update() {
+        GradualModifySize();
+    }
+
+    public void OnDrawGizmos() {
+        transform.localScale = Vector3.one * initialSize;
+    }
+    #endregion
+
+    #region Public Methods
+
 
     /// <summary>
     /// Increment the size by one
