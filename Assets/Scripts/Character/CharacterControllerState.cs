@@ -25,6 +25,11 @@ public class CharacterControllerState {
 	public bool IsFalling { get; set; }
 
 	/// <summary>
+	/// If the character has been sent flying and it has not stopped yet.
+	/// </summary>
+	public bool IsFlying { get; set; }
+
+	/// <summary>
 	/// The object the character is grounded on.
 	/// </summary>
 	public GameObject GroundedObject { get; set; }
@@ -61,6 +66,7 @@ public class CharacterControllerState {
 	public void Reset() {
 		HasCollisions = false;
 		IsGrounded = false;
+		IsFalling = false;
 		IsFalling = false;
 		GroundedObject = null;
 		PlatformVelocity = Vector3.zero;

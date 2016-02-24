@@ -91,10 +91,6 @@ public class CharacterShoot : MonoBehaviour {
 
         ball.SetActive(true);
 
-		ball.GetComponent<CharacterControllerCustomPlayer>().SendFlying(st.GetComponent<CharacterShootTrajectory>().getvect());	
-
-		   
+		ball.GetComponent<CharacterControllerCustom>().SendFlying(st.getvect());
 	}
-	
-	
 }

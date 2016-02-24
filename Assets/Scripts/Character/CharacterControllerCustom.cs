@@ -87,14 +87,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private float _jumpingTime;
 
 	/// <summary>
-	/// Time since the last time the character wall jumped.
+	/// After been sent flying, specifies if the character will stop flying when
+	/// it hits a collider.
 	/// </summary>
-	private float _wallJumpingTime;
+	private bool _stopFlyingWhenHit;
 
 	/// <summary>
-	/// Flag that indicates if the character is wall jumping.
+	/// Time since the last time the character was sent flying.
 	/// </summary>
-	private bool _wallJumping;
+	private float _flyingTime;
 
 	/// <summary>
 	/// Stores the sliding state from the previous frame.
@@ -395,17 +396,20 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// Calculates the jump speed to reach the desired height
 			float jumpHeight = GetSize() * Parameters.wallJumpMagnitude;
 			float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
-			SetVerticalForceRelative(jumpSpeed);
 
 			// Adds enough horizontal force to the character to reach it's maximum speed
 			float sqrSize = Mathf.Sqrt(GetSize());
 			float wallJumpSpeed = Mathf.Sign(State.SlopeAngle) * Parameters.maxSpeed * sqrSize;
-			SetHorizontalForceRelative(wallJumpSpeed);
-
-			// Changes the character's parameters and sets the wall jumping flag
-			Parameters = CharacterControllerParameters.FlyingParameters;
-			_wallJumping = true;
-			_wallJumpingTime = Parameters.wallJumpFlyTime * sqrSize;
+			
+			// Rotates the force according to the gravity
+			float gravityAngle = Vector3.Angle(Parameters.Gravity, Vector3.down);
+			if (Vector3.Cross(Parameters.Gravity, Vector3.down).z < 0)
+				gravityAngle = -gravityAngle;
+			
+			// Sends the player flying using the wall jump speed
+			Vector3 finalVelocity = Quaternion.Euler(0, 0, -gravityAngle) * new Vector3(wallJumpSpeed, jumpSpeed, 0);
+			float flyTime = Parameters.wallJumpFlyTime * sqrSize;
+			SendFlying(finalVelocity, false, true, flyTime);
 		}
 
 		_jumpingTime = Parameters.jumpFrecuency;
@@ -437,6 +441,43 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Sends the character flying with a velocity. The character's current
+	/// velocity will be replaced by the new one. The character won't stop
+	/// and it will ignore the input.
+	/// </summary>
+	/// <param name="velocity">The new character's velocity</param>
+	/// <param name="useMass">If the velocity change should consider the character's mass</param>
+	/// <param name="restoreWhenGrounded">If the character should return to normal when hitting a collider</param>
+	public void SendFlying(Vector3 velocity, bool useMass = false, bool restoreWhenHit = true, float flyTime = float.MaxValue) {
+		// Stops the character
+		Stop();
+
+		// Adds the velocity to the character
+		ForceMode mode = useMass ? ForceMode.Impulse : ForceMode.VelocityChange;
+		AddForce(velocity, mode);
+
+		// Changes the character's parameters
+		Parameters = CharacterControllerParameters.FlyingParameters;
+
+		// Sets the flags
+		State.IsFlying = true;
+		_stopFlyingWhenHit = restoreWhenHit;
+		_flyingTime = flyTime;
+	}
+
+	/// <summary>
+	/// Stops the character from being flying. The character's parameters
+	/// will be restored to their default values.
+	/// </summary>
+	public void StopFlying() {
+		// Restores the character's parameters and sets down the flying flag
+		if (State.IsFlying) {
+			Parameters = null;
+			State.IsFlying = false;
+		}
+	}
+
 	#endregion
 
 	/// <summary>
@@ -446,11 +487,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void Update() {
 		// Decreases the timers
 		_jumpingTime -= Time.deltaTime;
-		_wallJumpingTime -= Time.deltaTime;
+		_flyingTime -= Time.deltaTime;
 
-		// If the wall jumping timer has expired, stops the wall jump
-		if (_wallJumpingTime < 0)
-			StopWallJumping();
+		// If the flying timer has expired, stops the flight
+		if (_flyingTime < 0)
+			StopFlying();
 
 		// Adds the gravity to the velocity. If sliding, multiply it by a drag factor.
 		float dragFactor = 1;
@@ -499,10 +540,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Stores if the character was sliding on the previous frame
 		_wasSliding = State.IsSliding;
 
-		// Resets the state, but keeps the platform's velocity 
+		// Resets the state, but keeps the platform's velocity and flying state
 		Vector3 platformVelocity = State.PlatformVelocity;
+		bool isFlying = State.IsFlying;
 		State.Reset();
 		State.PlatformVelocity = platformVelocity;
+		State.IsFlying = isFlying;
 
 		// Clamps the movement
 		movement.x = Mathf.Clamp(movement.x, -Parameters.maxVelocity.x, Parameters.maxVelocity.x);
@@ -548,7 +591,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void OnControllerColliderHit(ControllerColliderHit hit) {
 		// There has been collisions this frame. Stops the wall jumping
 		State.HasCollisions = true;
-		StopWallJumping();
+		StopFlying();
 
 		// Spheres have their normal inverted for whatever reason
 		Vector3 normal = hit.normal;
@@ -625,16 +668,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// <returns>The character's mass</returns>
 	public float GetTotalMass() {
 		return Parameters.baseMass * GetSize();
-	}
-
-	/// <summary>
-	/// If the character is wall jumping, restores it's parameters to their default values.
-	/// </summary>
-	private void StopWallJumping() {
-		if (_wallJumping) {
-			_wallJumping = false;
-			Parameters = null;
-		}
 	}
 
 	#endregion

@@ -178,8 +178,10 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	public void OnDrawGizmos() {
 		// Calls the configuration functions
-		Awake();
-		Update();
+		if (!Application.isPlaying) {
+			Awake();
+			Update();
+		}
 
 		// Defines the color of the gizmo
 		Color color = Color.cyan;

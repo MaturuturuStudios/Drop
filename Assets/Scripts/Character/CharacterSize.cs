@@ -90,7 +90,7 @@ public class CharacterSize : MonoBehaviour {
                                 .GetComponent<GameControllerIndependentControl>();
 
         //set the initial size
-        if(initialSize < 0) {
+        if(initialSize <= 0) {
             initialSize = 1;
         }
         _dropTransform.localScale = Vector3.one * initialSize;
@@ -104,6 +104,11 @@ public class CharacterSize : MonoBehaviour {
     public void Update() {
         GradualModifySize();
     }
+
+	public void OnDrawGizmos() {
+		if (!Application.isPlaying)
+			Awake();
+	}
     #endregion
 
     #region Public Methods

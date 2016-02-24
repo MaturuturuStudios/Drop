@@ -46,11 +46,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	public Vector3 FacingDirection { get; private set; }
 
 	/// <summary>
-	/// If the character has been sent flying and it has not stopped yet.
-	/// </summary>
-	public bool IsFlying { get; private set; }
-
-	/// <summary>
 	/// The wind tube which the player is currently standing on.
 	/// </summary>
 	public WindTube CurrentWindTube { get; set; }
@@ -63,12 +58,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// Reference to the entity's CharacterControllerCustom component.
 	/// </summary>
 	private CharacterControllerCustom _controller;
-
-	/// <summary>
-	/// After been sent flying, specifies if the character will stop flying when
-	/// it becomes grounded.
-	/// </summary>
-	private bool _stopFlyingWhenGrounded;
 
 	/// <summary>
 	/// Flag that indicates if the player has released the jump button.
@@ -109,10 +98,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 		// Checks where the player is facing
 		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
-
-		// If the character is flying and it's grounded, stops it from flying
-		if (IsFlying && _stopFlyingWhenGrounded && _controller.State.IsGrounded)
-			StopFlying();
 
 		if (CurrentWindTube == null)
 			// Sets the input force of the character controller
@@ -163,40 +148,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		// If it has to, hard stops the controller
 		if (hardStop)
 			_controller.Stop();
-	}
-
-	/// <summary>
-	/// Sends the character flying with a velocity. The character's current
-	/// velocity will be replaced by the new one. The character won't stop
-	/// and it will ignore the input.
-	/// </summary>
-	/// <param name="velocity">The new character's velocity</param>
-	/// <param name="useMass">If the velocity change should consider the character's mass</param>
-	/// <param name="restoreWhenGrounded">If the character should return to normal when grounded</param>
-	public void SendFlying(Vector3 velocity, bool useMass = false, bool restoreWhenGrounded = true) {
-		// Stops the character
-		_controller.Stop();
-
-		// Adds the velocity to the character
-		ForceMode mode = useMass ? ForceMode.Impulse : ForceMode.VelocityChange;
-		_controller.AddForce(velocity, mode);
-
-		// Changes the character's parameters
-		_controller.Parameters = CharacterControllerParameters.FlyingParameters;
-
-		// Sets the flags
-		IsFlying = true;
-		_stopFlyingWhenGrounded = restoreWhenGrounded;
-	}
-
-	/// <summary>
-	/// Stops the character from being flying. The character's parameters
-	/// will be restored to their default values.
-	/// </summary>
-	public void StopFlying() {
-		// Restores the character's parameters and sets down the flying flag
-		_controller.Parameters = null;
-		IsFlying = false;
 	}
 
 	#endregion
