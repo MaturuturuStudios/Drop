@@ -15,12 +15,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	public float jumpPressTolerance = 0.1f;
 
 	/// <summary>
-	/// The time the character will stick to a slope after releaseing
-	/// the direction button.
-	/// </summary>
-	public float slopeStickTolerance = 0.1f;
-
-	/// <summary>
 	/// Amount of friction applied to the perpendicular velocity while the
 	/// player is on a wind tube.
 	/// </summary>
@@ -75,16 +69,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// </summary>
 	private float _jumpPressTime;
 
-	/// <summary>
-	/// Flag that indicates if the player is stuck to a slope.
-	/// </summary>
-	private bool _isAlreadyStuck;
-
-	/// <summary>
-	/// Time since the character sticked to a slope.
-	/// </summary>
-	private float _slopeStickTime;
-
 	#endregion
 
 	#region Methods
@@ -111,37 +95,13 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	public void Update() {
 		// Decreses the timers
 		_jumpPressTime -= Time.deltaTime;
-		_slopeStickTime -= Time.deltaTime;
 
 		// Checks where the player is facing
 		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
 
-		if (CurrentWindTube == null) {
-			// If the character is on a slope, checks if the character is stuck to it
-			if (_controller.State.IsOnSlope) {
-				// Gets the direction of the slope
-				float slopeOrientationSign = -Mathf.Sign(Mathf.Sin(_controller.State.SlopeAngle));
-
-				// Checks if the slope orientation is the same as the horizontal speed
-				// If the horizontal speed and slope orientation have the same sign, their multiplication will be positive
-				if (!_isAlreadyStuck || HorizontalInput * slopeOrientationSign > 0) {
-					// Restarts the stick timer
-					_slopeStickTime = slopeStickTolerance;
-					_isAlreadyStuck = true;
-				}
-
-				// If the timer has not expired yet, inverses the input to keep the character stuck to the slope
-				if (_slopeStickTime > 0)
-					// Overrides the input with the orientation of the slope
-					HorizontalInput = slopeOrientationSign;
-			}
-			else {
-				_isAlreadyStuck = false;
-			}
-
+		if (CurrentWindTube == null)
 			// Sets the input force of the character controller
 			_controller.SetInputForce(HorizontalInput, VerticalInput);
-		}
 		else {
 			// The character is on a wind tube
 			Vector3 movementForce = Vector3.Project(_controller.Velocity, CurrentWindTube.transform.right);
