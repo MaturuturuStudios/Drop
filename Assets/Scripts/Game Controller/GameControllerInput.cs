@@ -33,6 +33,13 @@ public class GameControllerInput : MonoBehaviour {
 		float jumpInput = Input.GetAxis("Jump");
 		cccp.JumpInput = jumpInput;
 
+        //change drop input
+        if (Input.GetButtonDown("BackDrop"))
+            _switcher.ControlBackDrop();
+        if (Input.GetButtonDown("NextDrop"))
+            _switcher.ControlNextDrop();
+
+
         if ((Input.GetKeyDown(KeyCode.X))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Aim();
         if ((Input.GetKeyDown(KeyCode.Space))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Shoot();
 
@@ -71,10 +78,6 @@ public class GameControllerInput : MonoBehaviour {
             _switcher.SetControl(2);
         if (Input.GetKeyDown(KeyCode.Keypad4))
             _switcher.SetControl(3);
-        if (Input.GetKeyDown(KeyCode.Keypad5))
-            _switcher.ControlBackDrop();
-        if (Input.GetKeyDown(KeyCode.Keypad6))
-            _switcher.ControlNextDrop();
 
     }
 
