@@ -8,10 +8,12 @@ public class GameControllerInput : MonoBehaviour {
     private GameControllerIndependentControl _switcher;
     private bool _shootmodeON=false;
 
+
 	void Start() {
 		// Do nothing
 		_switcher = GetComponent<GameControllerIndependentControl>();
-	}
+
+    }
 
 	void Update() {
         //TODO
@@ -31,8 +33,8 @@ public class GameControllerInput : MonoBehaviour {
 		float jumpInput = Input.GetAxis("Jump");
 		cccp.JumpInput = jumpInput;
 
-
-   
+        if ((Input.GetKeyDown(KeyCode.X))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Aim();
+        if ((Input.GetKeyDown(KeyCode.Space))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Shoot();
 
         HasToChange();
         DebugAddDrops();

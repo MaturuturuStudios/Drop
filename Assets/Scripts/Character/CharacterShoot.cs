@@ -32,8 +32,51 @@ public class CharacterShoot : MonoBehaviour {
         return shootmode;
     }
 	//---------------------------------------	
+
+    public void Aim(){
+        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1))
+        {
+            if (shootmode == false)
+            {
+                shootmode = true;
+                st.enabled = true;
+
+                ccc.Parameters = CharacterControllerParameters.ShootingParameters;
+            }
+            else if ((shootmode == true))
+            {
+                shootmode = false;
+                st.QuitTrajectory();
+                st.enabled = false;
+                ccc.Parameters = null;
+            }
+        }
+
+
+    }
+    public void Shoot()
+    {
+        if ( (shootmode == true))
+        {
+
+            if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops)
+            {
+                throwBall();
+                lessize = GetComponent<CharacterSize>().GetSize();
+                lessize -= 1;
+                GetComponent<CharacterSize>().SetSize(lessize);
+                shootmode = false;
+                st.QuitTrajectory();
+                st.enabled = false;
+                //_gcic.SetControl(1);
+                _gcic.ControlNextDrop();
+            }
+        }
+
+
+    }
 	void Update (){
-        if ((Input.GetKeyDown(KeyCode.X) && ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize()>1))) {
+       /* if ((Input.GetKeyDown(KeyCode.X) && ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize()>1))) {
             if (shootmode == false){
                 shootmode = true;
                 st.enabled = true;
@@ -46,7 +89,7 @@ public class CharacterShoot : MonoBehaviour {
                 st.enabled = false;
                 ccc.Parameters = null;
             }       
-        }
+        }*/
         if ((lessize == 1) || ccc.State.IsGrounded == false){
             shootmode = false;
             st.QuitTrajectory();
@@ -56,18 +99,18 @@ public class CharacterShoot : MonoBehaviour {
         }
         
        
-        if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
+       /* if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
 			
 			if(_gcic.allCurrentCharacters.Capacity<_gcic.numOfDrops){
                 throwBall();
                 lessize = GetComponent<CharacterSize>().GetSize();
                 lessize -= 1;
                 GetComponent<CharacterSize>().SetSize(lessize);
-
+                shootmode = false;
                 //_gcic.SetControl(1);
                 _gcic.ControlNextDrop();
             }
-		}
+		}*/
         
         
 	}
@@ -85,8 +128,8 @@ public class CharacterShoot : MonoBehaviour {
 
 	private void throwBall(){
 
-        ball = _gcic.AddDrop();  
-
+        ball = _gcic.AddDrop();
+        ball.GetComponent<CharacterSize>().SetSize(1);
         prepareDropToFly();
 
         ball.SetActive(true);
