@@ -23,10 +23,10 @@ public class CameraController : MonoBehaviour {
     public float lookAtSpeed = 0.5f;
     public float cameraMovementSpeed = 0.2f;
     public float cameraMovementSpeedIdle = 0.01f;
+    public float cameraLookAtSpeedRatioSwitching = 1.25f;
 
     //Anim timmers
     public float idleWaitTime = 3.0f;
-    public float changeDropStepTime = 0.25f;
     //Timmers counters
     private float _idleCounter = 0;
     private float _changeDropCounter = 0;
@@ -40,6 +40,7 @@ public class CameraController : MonoBehaviour {
     private float size;
     private bool switchingDrop;
     private float switchingProgress;
+    public float secondsOfTransicion = 1.0f;
 
 
     /// <summary>
@@ -103,7 +104,7 @@ public class CameraController : MonoBehaviour {
 
         //if player has changed
         //if (switchingDrop && (_cameraState == CameraState.CHANGE_DROP || _lastCharacter != currentCharacter))
-        if (_lastCharacter != currentCharacter)
+        if (_lastCharacter != currentCharacter || switchingProgress > 0.0f)
         {
             //Calculate distance              
             Vector3 dist = _lastCharacter.transform.position - currentCharacter.transform.position;
@@ -174,8 +175,8 @@ public class CameraController : MonoBehaviour {
         Vector3 diffMovement = currentCharacter.transform.position + _offset - _lastPositionMovement;
 
         //Camera Bounds
-        float widthBound = 0;
-        float heightBound = 0;
+        float widthBound = 0.0f;
+        float heightBound = 0.0f;
         float speed = cameraMovementSpeedIdle;
         if (_cameraState == CameraState.IDLE)
         {
@@ -197,7 +198,9 @@ public class CameraController : MonoBehaviour {
 
                 Vector3 dist = _lastCharacter.transform.position - currentCharacter.transform.position;
 
-                speed = dist.magnitude / 60;
+                speed = dist.magnitude / 60 / secondsOfTransicion;
+                if (speed < cameraMovementSpeed)
+                    speed = cameraMovementSpeed;
             }
         }
 
@@ -205,14 +208,19 @@ public class CameraController : MonoBehaviour {
         float ratioXYMovement = Mathf.Abs(diffMovement.x) / Mathf.Abs(diffMovement.y);
         if (ratioXYMovement > 1)
             ratioXYMovement = 1;
+        //Calculate ratio of movement
+        float ratioYXMovement = Mathf.Abs(diffMovement.y) / Mathf.Abs(diffMovement.x);
+        if (ratioYXMovement > 1)
+            ratioYXMovement = 1;
 
         bool dropOut = false;
         //Actualize X position
         float movementX = currentCharacter.transform.position.x - widthBound - _cameraBoundary.transform.position.x;
+        //float movementX = currentCharacter.transform.position.x - _lastPositionMovement.x;
         //float movementX = currentCharacter.transform.position.x - widthBound + _offset - _lastPositionMovement.x;
         if (movementX > 0)
         {
-            if (movementX > (speed * ratioXYMovement * size))
+            if (movementX > (speed * ratioXYMovement * size) )
                 movementX = (speed * ratioXYMovement * size);
             objectiveMovement.x = _lastPositionMovement.x + movementX;
             dropOut = true;
@@ -226,25 +234,22 @@ public class CameraController : MonoBehaviour {
             dropOut = true;
         }
 
-        //Calculate ratio of movement
-        ratioXYMovement = Mathf.Abs(diffMovement.y) / Mathf.Abs(diffMovement.x);
-        if (ratioXYMovement > 1)
-            ratioXYMovement = 1;
 
-        //Actualize Y position
         float movementY = currentCharacter.transform.position.y - heightBound - _cameraBoundary.transform.position.y;
+        //Actualize Y position
+        //float movementY = currentCharacter.transform.position.y - _lastPositionMovement.y;
         if (movementY > 0)
         {
-            if (movementY > (speed * ratioXYMovement * size))
-                movementY = (speed * ratioXYMovement * size);
+            if (movementY > (speed * ratioYXMovement * size))
+                movementY = (speed * ratioYXMovement * size);
             objectiveMovement.y = _lastPositionMovement.y + movementY;
             dropOut = true;
         }
         movementY = currentCharacter.transform.position.y + heightBound - _cameraBoundary.transform.position.y;
-        if (movementY <= 0)
+        if (movementY < 0)
         {
-            if (movementY < (-speed * ratioXYMovement * size))
-                movementY = (-speed * ratioXYMovement * size);
+            if (movementY < (-speed * ratioYXMovement * size))
+                movementY = (-speed * ratioYXMovement * size);
             objectiveMovement.y = _lastPositionMovement.y + movementY;
             dropOut = true;
         }
@@ -283,8 +288,14 @@ public class CameraController : MonoBehaviour {
         {
             Vector3 dist = _lastCharacter.transform.position - currentCharacter.transform.position;
 
-            speed = dist.magnitude / 60;
+            speed = dist.magnitude / 60 / secondsOfTransicion;
+            if (speed < cameraMovementSpeed)
+                speed = cameraMovementSpeed;
         }
+
+
+        if (_cameraState == CameraState.CHANGE_DROP)
+            speed *= cameraLookAtSpeedRatioSwitching;
 
         //Get objective and if it is moving
         Vector3 objective = currentCharacter.transform.position;
