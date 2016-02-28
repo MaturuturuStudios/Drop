@@ -58,19 +58,18 @@ public class CharacterShoot : MonoBehaviour {
     {
         if ( (shootmode == true))
         {
-
-            if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops)
-            {
-                throwBall();
-                lessize = GetComponent<CharacterSize>().GetSize();
-                lessize -= 1;
-                GetComponent<CharacterSize>().SetSize(lessize);
-                shootmode = false;
-                st.QuitTrajectory();
-                st.enabled = false;
-                //_gcic.SetControl(1);
-                _gcic.ControlNextDrop();
-            }
+            //if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops) //Commented by toni, No longer pool needed
+            //{
+            throwBall();
+            lessize = GetComponent<CharacterSize>().GetSize();
+            lessize -= 1;
+            GetComponent<CharacterSize>().SetSize(lessize);
+            shootmode = false;
+            st.QuitTrajectory();
+            st.enabled = false;
+            //_gcic.SetControl(1);
+            //_gcic.ControlNextDrop();
+            //}
         }
 
 
@@ -128,7 +127,7 @@ public class CharacterShoot : MonoBehaviour {
 
 	private void throwBall(){
 
-        ball = _gcic.AddDrop();
+        ball = _gcic.AddDrop(true); //Added by toni, Now works
         ball.GetComponent<CharacterSize>().SetSize(1);
         prepareDropToFly();
 

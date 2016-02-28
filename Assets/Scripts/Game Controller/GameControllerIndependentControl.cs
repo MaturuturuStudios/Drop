@@ -7,10 +7,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public GameObject currentCharacter;
     public List<GameObject> allCurrentCharacters;
 
-    //Drops pool
-    public int numOfDrops = 10;
-    private List<GameObject> _DropsPool;
-
     //Drop prefab
     public GameObject PfDrop;
     /*
@@ -27,72 +23,26 @@ public class GameControllerIndependentControl : MonoBehaviour {
     }*/
 
     /// <summary>
-    /// Called on start script
-    /// </summary>
-    void Start(){
-
-        //fill the drops pool
-        _DropsPool = new List<GameObject>(allCurrentCharacters);
-        for (int i = allCurrentCharacters.Count - 1; i < numOfDrops; ++i)
-        {
-            GameObject drop = (GameObject)Instantiate(PfDrop);
-            drop.gameObject.name = "Drop (" + allCurrentCharacters.Count + ")";
-            drop.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
-            drop.SetActive(false);
-            _DropsPool.Add(drop);
-        }
-    }
-
-	void Update () {/*Nothing at the moment*/}
-
-    /// <summary>
-    /// Check the number of drops avaliable to take control of them Create by Robert
-    /// </summary>
-    public int NumberofDropsinPool()
-    {
-        return _DropsPool.Capacity;
-    }
-    /// <summary>
+    /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>
     public GameObject AddDrop(bool setControl = false, bool addToControlList = true)
     {
-        GameObject drop = null;
-        if (_DropsPool.Count > allCurrentCharacters.Count)
-        {
-            //Get a drop from the pool
-            drop = FindNextAvalaibleDrop();
+        //Create a drop
+        GameObject drop = (GameObject)Instantiate(PfDrop);
+        drop.gameObject.name = "Drop (" + allCurrentCharacters.Count + ")";
 
-            //Move the drop & enable it
-            Vector3 position = currentCharacter.transform.position;
-            //At the moment we put it on the same place as controled
-            drop.transform.position = new Vector3(position.x, position.y, position.z);
-            //drop.GetComponent<Renderer>().enabled = true; comment by dorian
-            drop.SetActive(true);
+        //Move the drop to players position
+        drop.transform.position = currentCharacter.transform.position;
 
-            //Set Control
-            if (setControl)
-                SetControl(allCurrentCharacters.Count - 1);
+        //Add to controled drop list
+        if (addToControlList)
+            allCurrentCharacters.Add(drop);
 
-            if (addToControlList)
-                allCurrentCharacters.Add(drop);
-
-        }
-        else
-        {
-            //add more drops
-            for (int i = allCurrentCharacters.Count - 1; i < numOfDrops; ++i)
-            {
-                GameObject clone = (GameObject)Instantiate(PfDrop);
-                clone.gameObject.name = "Drop (" + allCurrentCharacters.Count + ")";
-                clone.GetComponent<Renderer>().enabled = false;
-                clone.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
-                clone.SetActive(false);
-                _DropsPool.Add(clone);
-            }
-
-            drop = AddDrop(setControl, addToControlList);
-        }
+        //Set Control
+        if (setControl)
+            SetControl(drop);
+            
         return drop;
     }
 
@@ -111,23 +61,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
         drop.SetActive(false);
 
         currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-    }
-
-    /// <summary>
-    /// Remove a drop under player's control from list
-    /// </summary>
-    /// <param name="drop">drop to remove from control</param>
-    public void RemoveDropFromControlList(GameObject drop)
-    {
-        if (allCurrentCharacters.Count > 1)
-        {
-            //remove from control list
-            allCurrentCharacters.Remove(drop);
-
-            //Set Control
-            currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            SetControl(0);
-        }
     }
 
     /// <summary>
@@ -205,7 +138,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// <param name="drop">drop to control</param>
     public void SetControl(GameObject drop)
     {
-        int index = _DropsPool.IndexOf(drop);
+        int index = allCurrentCharacters.IndexOf(drop);
 
         if (index > -1)
             SetControl(index);
@@ -219,32 +152,4 @@ public class GameControllerIndependentControl : MonoBehaviour {
     {
         return allCurrentCharacters.Contains(drop);
     }
-
-    /// <summary>
-    /// Looks for the next drop available in the pool
-    /// </summary>
-    private GameObject FindNextAvalaibleDrop()
-    {
-        GameObject res = null;
-
-        int i = 0;
-
-        Debug.Log("_DropsPool.Count "+_DropsPool.Count.ToString());
-
-        for (; i < _DropsPool.Count && res == null; ++i)
-        {
-            Debug.Log("Pos "+i.ToString());
-            if (!allCurrentCharacters.Contains(_DropsPool[i]))
-            {
-                res = _DropsPool[i];
-
-                Debug.Log("Found "+ i.ToString());
-            }
-        }
-
-        Debug.Log("end "+i.ToString());
-
-        return res;
-    }
-
 }
