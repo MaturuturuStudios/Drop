@@ -9,6 +9,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
     //Drop prefab
     public GameObject PfDrop;
+    private int _dropNameCounter;
     /*
     //Camera 
     public CameraController _cameraController;
@@ -22,6 +23,11 @@ public class GameControllerIndependentControl : MonoBehaviour {
         _cameraController.SetObjective(currentCharacter);
     }*/
 
+    void Start()
+    {
+        _dropNameCounter = allCurrentCharacters.Count;
+    }
+
     /// <summary>
     /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
@@ -30,7 +36,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     {
         //Create a drop
         GameObject drop = (GameObject)Instantiate(PfDrop);
-        drop.gameObject.name = "Drop (" + allCurrentCharacters.Count + ")";
+        drop.gameObject.name = "Drop" + ++_dropNameCounter;
 
         //Move the drop to players position
         drop.transform.position = currentCharacter.transform.position;
@@ -55,12 +61,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
         //remove from control list
         allCurrentCharacters.Remove(drop);
 
-        //Set the drop out the scene
-        drop.transform.position = new Vector3(0.0f, -200.0f, 0.0f);
-        //Disactive drop
-        drop.SetActive(false);
-
-        currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
+        //Destroy drop
+        Destroy(drop);
     }
 
     /// <summary>
