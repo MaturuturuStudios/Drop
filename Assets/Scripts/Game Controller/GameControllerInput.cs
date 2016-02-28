@@ -6,14 +6,18 @@ public class GameControllerInput : MonoBehaviour {
 
     // Internal references
     private GameControllerIndependentControl _switcher;
-    private CameraController _cameraControler;
+    private CameraSwitcher _cameraSwitcher;
+    private CameraDebugController _cameraDebugControler;
     private bool _shootmodeON=false;
 
 	void Start() {
 		// Do nothing
 		_switcher = GetComponent<GameControllerIndependentControl>();
-        _cameraControler =  _switcher._cameraController;
-}
+        _cameraSwitcher = GameObject.FindGameObjectWithTag("CameraSet")
+                                .GetComponent<CameraSwitcher>();
+        _cameraDebugControler = GameObject.FindGameObjectWithTag("DebugCamera")
+                                .GetComponent<CameraDebugController>();
+    }
 
 	void Update() {
         //TODO
@@ -82,45 +86,66 @@ public class GameControllerInput : MonoBehaviour {
     private void DebugCamera()
     {
 
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            Debug.Log("Switch orthographic mode");
+            if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
+                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.GAME);
+            else
+                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.DEBUG);
+        }
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            Debug.Log("Switch debug mode");
-            if(_cameraControler.cameraMode == CameraController.CameraMode.DEBUG)
-                _cameraControler.cameraMode = CameraController.CameraMode.GAME;
+            Debug.Log("Switch travel mode");
+            if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.TRAVEL)
+                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.GAME);
             else
-                _cameraControler.cameraMode = CameraController.CameraMode.DEBUG;
+                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.TRAVEL);
         }
-        if (Input.GetKeyDown(KeyCode.F3))
+        if (Input.GetKeyDown(KeyCode.F3) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
         {
-            Debug.Log("Switch intro mode");
-            if (_cameraControler.cameraMode == CameraController.CameraMode.INTRO)
-                _cameraControler.cameraMode = CameraController.CameraMode.GAME;
-            else
-                _cameraControler.cameraMode = CameraController.CameraMode.INTRO;
+            Debug.Log("Back camera");
+            _cameraSwitcher.BackCamera();
         }
-        if (Input.GetKeyDown(KeyCode.U))
+        if (Input.GetKeyDown(KeyCode.F4) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
         {
-            Debug.Log("set camera near");
+            Debug.Log("Next camera");
+            _cameraSwitcher.NextCamera();
+
         }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            Debug.Log("set camera up");
-        }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            Debug.Log("set camera far");
-        }
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            Debug.Log("set camera to left");
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Debug.Log("set camera down");
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Debug.Log("set camera to right");
+        
+        if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG) {
+            Vector3 nextPosition = _cameraDebugControler.debugObjective.transform.position;
+            if (Input.GetKey(KeyCode.U))
+            {
+                Debug.Log("set camera near");
+                 _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.NEAR);
+            }
+            if (Input.GetKey(KeyCode.I))
+            {
+                Debug.Log("set camera up");
+                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.UP);
+            }
+            if (Input.GetKey(KeyCode.O))
+            {
+                Debug.Log("set camera far");
+                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.FAR);
+            }
+            if (Input.GetKey(KeyCode.J))
+            {
+                Debug.Log("set camera to left");
+                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.LEFT);
+            }
+            if (Input.GetKey(KeyCode.K))
+            {
+                Debug.Log("set camera down");
+                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.DOWN);
+            }
+            if (Input.GetKey(KeyCode.L))
+            {
+                Debug.Log("set camera to right");
+                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.RIGHT);
+            }
         }
 
 

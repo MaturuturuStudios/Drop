@@ -5,12 +5,7 @@ public class CameraController : MonoBehaviour {
 
     //Camera status
     enum CameraState { IDLE, MOVING, CHANGE_DROP };
-    private CameraState _cameraState;
-    
-    //Camera mode
-    public enum CameraMode { INTRO, GAME, DEBUG };
-    public CameraMode cameraMode = CameraMode.GAME;
-    
+    private CameraState _cameraState;    
 
     //Drop References
     public GameObject currentCharacter;
@@ -110,20 +105,22 @@ public class CameraController : MonoBehaviour {
     public ChangeDrop changeDrop;
     //Speed atributes
     //drop change transition progress
-    private float _changingProgress;
+    private float _changingProgress = 0.0f;
     //distance to swhitch drop
     private Vector3 _destinationPosition;
     private Vector3 _startPosition;
     private float _change_distance = 0.0f;
 
-
+    //Camera set reference
+    private CameraSwitcher cameraSwitcher;
 
     /// <summary>
     /// Called on start script
     /// </summary>
     void Start()
     {
-        _changingProgress = 0.0f;
+        //Get Camera Switcher
+        cameraSwitcher = transform.parent.GetComponent<CameraSwitcher>();
 
         //Calculate offset
         _offset = new Vector3(0.0f, offset.up, offset.far);
