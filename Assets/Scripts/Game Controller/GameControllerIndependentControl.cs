@@ -13,6 +13,18 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
     //Drop prefab
     public GameObject PfDrop;
+    /*
+    //Camera 
+    public CameraController _cameraController;
+
+    void Awake()
+    {
+        //Get the camera
+        _cameraController = GameObject.FindGameObjectWithTag("MainCamera")
+                                .GetComponent<CameraController>();
+        //Actualize camera objective
+        _cameraController.SetObjective(currentCharacter);
+    }*/
 
     /// <summary>
     /// Called on start script
@@ -24,8 +36,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         for (int i = allCurrentCharacters.Count - 1; i < numOfDrops; ++i)
         {
             GameObject drop = (GameObject)Instantiate(PfDrop);
-            drop.gameObject.name = "Drop (" + i + ")";
-            //drop.GetComponent<Renderer>().enabled = false; comment by dorian
+            drop.gameObject.name = "Drop (" + allCurrentCharacters.Count + ")";
             drop.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
             drop.SetActive(false);
             _DropsPool.Add(drop);
@@ -35,13 +46,13 @@ public class GameControllerIndependentControl : MonoBehaviour {
 	void Update () {/*Nothing at the moment*/}
 
     /// <summary>
-    /// Check the number of drops avaliable to take control of them Create by Robert you can delete it
+    /// Check the number of drops avaliable to take control of them Create by Robert
     /// </summary>
-    public int NumberofDropsinPool() {
+    public int NumberofDropsinPool()
+    {
         return _DropsPool.Capacity;
     }
     /// <summary>
-    /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>
     public GameObject AddDrop(bool setControl = false, bool addToControlList = true)
@@ -55,10 +66,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //Move the drop & enable it
             Vector3 position = currentCharacter.transform.position;
             //At the moment we put it on the same place as controled
-            drop.transform.position = new Vector3(position.x , position.y, position.z);
+            drop.transform.position = new Vector3(position.x, position.y, position.z);
             //drop.GetComponent<Renderer>().enabled = true; comment by dorian
             drop.SetActive(true);
-            //drop.GetComponent<CharacterControllerCustom>().ResetState();	// Comment by nacho: this is no longer needed
 
             //Set Control
             if (setControl)
@@ -67,6 +77,21 @@ public class GameControllerIndependentControl : MonoBehaviour {
             if (addToControlList)
                 allCurrentCharacters.Add(drop);
 
+        }
+        else
+        {
+            //add more drops
+            for (int i = allCurrentCharacters.Count - 1; i < numOfDrops; ++i)
+            {
+                GameObject clone = (GameObject)Instantiate(PfDrop);
+                clone.gameObject.name = "Drop (" + allCurrentCharacters.Count + ")";
+                clone.GetComponent<Renderer>().enabled = false;
+                clone.transform.position = new Vector3(0.0f + i, -200.0f, 0.0f);
+                clone.SetActive(false);
+                _DropsPool.Add(clone);
+            }
+
+            drop = AddDrop(setControl, addToControlList);
         }
         return drop;
     }
@@ -81,7 +106,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
         allCurrentCharacters.Remove(drop);
 
         //Set the drop out the scene
-        //drop.GetComponent<Renderer>().enabled = false; comment by dorian
         drop.transform.position = new Vector3(0.0f, -200.0f, 0.0f);
         //Disactive drop
         drop.SetActive(false);
@@ -102,7 +126,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            currentCharacter = allCurrentCharacters[0];
+            SetControl(0);
         }
     }
 
@@ -122,7 +146,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            currentCharacter = allCurrentCharacters[next_drop];
+            SetControl(next_drop);
+
+            //Actualize camera objective
+            //_cameraController.SetObjective(currentCharacter);
         }
     }
 
@@ -142,7 +169,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            currentCharacter = allCurrentCharacters[back_drop];
+            SetControl(back_drop);
+
+            //Actualize camera objective
+            //_cameraController.SetObjective(currentCharacter);
         }
     }
 
@@ -163,6 +193,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //Check if it is under control, if not add it
             if (!IsUnderControl(currentCharacter))
                 allCurrentCharacters.Add(currentCharacter);
+
+            //Actualize camera objective
+            //_cameraController.SetObjective(currentCharacter);
         }
     }
 
@@ -175,9 +208,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         int index = _DropsPool.IndexOf(drop);
 
         if (index > -1)
-        {
             SetControl(index);
-        }
     }
 
     /// <summary>
