@@ -6,16 +6,23 @@ public class CameraDebugController : MonoBehaviour {
     //Camera status
     public enum PhantomMovement {NONE = -1, LEFT, RIGHT, UP, DOWN, NEAR, FAR};
 
-    //Drop References
-    private GameObject _lastCharacter;
-
     //Camera movement attributes
     public float debugVelocity = 0.5f;
-
+    /// <summary>
+    /// Distance from player to camera
+    /// </summary>
+    [System.Serializable]
+    public class Offset
+    {
+        public float far = -15.0f;
+        public float up = 2.0f;
+    }
+    //Offset Attributes
+    public Offset offset;
     //Offset Reference
-    public Vector3 _offset = new Vector3(0.0f, 0.0f, -10.0f);
+    private Vector3 _offset;
 
-    //DEbu objective
+    //Debug objective
     public GameObject debugObjective;
 
     //Movement position control
@@ -43,14 +50,13 @@ public class CameraDebugController : MonoBehaviour {
 
         //Put phantom objective in its position
         debugObjective.transform.position = debugObjective.transform.position;
-        debugObjective.transform.localScale = new Vector3(1.0f, 1.0f, 0.1f);
+        debugObjective.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 
         //Set drop to its position
         transform.position = _offset;
 
         //Save references
         _lastPositionMovement = transform.position;
-        _lastCharacter = debugObjective;
     }
 
     /// <summary>
