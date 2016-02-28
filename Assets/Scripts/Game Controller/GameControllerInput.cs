@@ -6,12 +6,14 @@ public class GameControllerInput : MonoBehaviour {
 
     // Internal references
     private GameControllerIndependentControl _switcher;
+    private CameraController _cameraControler;
     private bool _shootmodeON=false;
 
 	void Start() {
 		// Do nothing
 		_switcher = GetComponent<GameControllerIndependentControl>();
-	}
+        _cameraControler =  _switcher._cameraController;
+}
 
 	void Update() {
         //TODO
@@ -35,6 +37,7 @@ public class GameControllerInput : MonoBehaviour {
    
 
         HasToChange();
+        DebugCamera();
         DebugAddDrops();
         DebugSize();
 	}
@@ -73,6 +76,53 @@ public class GameControllerInput : MonoBehaviour {
             _switcher.ControlBackDrop();
         if (Input.GetKeyDown(KeyCode.Keypad6))
             _switcher.ControlNextDrop();
+
+    }
+
+    private void DebugCamera()
+    {
+
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            Debug.Log("Switch debug mode");
+            if(_cameraControler.cameraMode == CameraController.CameraMode.DEBUG)
+                _cameraControler.cameraMode = CameraController.CameraMode.GAME;
+            else
+                _cameraControler.cameraMode = CameraController.CameraMode.DEBUG;
+        }
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            Debug.Log("Switch intro mode");
+            if (_cameraControler.cameraMode == CameraController.CameraMode.INTRO)
+                _cameraControler.cameraMode = CameraController.CameraMode.GAME;
+            else
+                _cameraControler.cameraMode = CameraController.CameraMode.INTRO;
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Debug.Log("set camera near");
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Debug.Log("set camera up");
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            Debug.Log("set camera far");
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            Debug.Log("set camera to left");
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Debug.Log("set camera down");
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Debug.Log("set camera to right");
+        }
+
 
     }
 

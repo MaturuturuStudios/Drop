@@ -6,11 +6,11 @@ public class CameraController : MonoBehaviour {
     //Camera status
     enum CameraState { IDLE, MOVING, CHANGE_DROP };
     private CameraState _cameraState;
-    /*
+    
     //Camera mode
     public enum CameraMode { INTRO, GAME, DEBUG };
     public CameraMode cameraMode = CameraMode.GAME;
-    */
+    
 
     //Drop References
     public GameObject currentCharacter;

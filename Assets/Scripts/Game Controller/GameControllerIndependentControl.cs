@@ -15,7 +15,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public GameObject PfDrop;
 
     //Camera 
-    CameraController _cameraController;
+    public CameraController _cameraController;
 
     void Awake()
     {
