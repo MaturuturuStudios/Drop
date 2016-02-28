@@ -40,8 +40,8 @@ public class GameControllerInput : MonoBehaviour {
             _switcher.ControlNextDrop();
 
 
-        if ((Input.GetKeyDown(KeyCode.X))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Aim();
-        if ((Input.GetKeyDown(KeyCode.Space))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Shoot();
+        if ((Input.GetButtonDown("Aim"))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Aim();
+        if ((Input.GetButtonDown("Fire"))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Shoot();
 
         HasToChange();
         DebugAddDrops();
