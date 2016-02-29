@@ -61,6 +61,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
         //remove from control list
         allCurrentCharacters.Remove(drop);
 
+        drop.SetActive(false);
+
         //Destroy drop
         Destroy(drop);
     }
