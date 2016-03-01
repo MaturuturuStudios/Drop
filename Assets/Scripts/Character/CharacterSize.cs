@@ -19,13 +19,13 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
     public float enlargeSpeed = 5f;
     /// <summary>
-    /// Prefab of the drop that will be spitted
-    /// </summary>
-    //public GameObject BallPrefab;
-    /// <summary>
     /// Impulse of the drop spitted when growing up
     /// </summary>
     public float impulseSpit = 20f;
+    /// <summary>
+    /// The time the drop will be still while spitting another drop
+    /// </summary>
+    public float motionlessTimeSpit = 0.5f;
     #endregion
 
     #region Custom private Enumerations
@@ -53,7 +53,15 @@ public class CharacterSize : MonoBehaviour {
     /// <summary>
     /// The direction where I spit the drop if I have to when growing up, zero if random
     /// </summary>
-    Vector3 _directionSpitDrop;
+    private Vector3 _directionSpitDrop;
+    /// <summary>
+    /// Set if the drop is in a still situation
+    /// </summary>
+    private bool _motionless = false;
+    /// <summary>
+    /// The remaining time of being still
+    /// </summary>
+    private float _motionlessTime = 0f;
     #endregion
 
     #region Private Attributes
@@ -73,6 +81,10 @@ public class CharacterSize : MonoBehaviour {
     /// Independent control to create or remove drops
     /// </summary>
     private GameControllerIndependentControl _independentControl;
+    /// <summary>
+    /// Controller of the drop
+    /// </summary>
+    private CharacterControllerCustom _controller;
     #endregion
 
     #region Methods
@@ -86,8 +98,13 @@ public class CharacterSize : MonoBehaviour {
         _dropTransform = gameObject.transform;
         _ratioRadius = GetComponent<CharacterController>().radius;
 
+        _controller = GetComponent<CharacterControllerCustom>();
         _independentControl = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
+
+        //set the motionless situation clear
+        _motionless = false;
+        _motionlessTime = 0;
 
         //set the initial size
         if(initialSize <= 0) {
@@ -103,8 +120,29 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
     public void Update() {
         GradualModifySize();
+
+        //the drop has to be quiet?
+        if (_motionless) {
+            //control the time
+            _motionlessTime -= Time.deltaTime;
+            //done?
+            if(_motionlessTime <= 0) {
+                //recover motion
+                _controller.Parameters = null;
+            }
+        }
+
+        if (_motionless && _motionlessTime <= 0) {
+            _motionless = false;
+            _controller.Parameters = null;
+        } else {
+            _motionlessTime -= Time.deltaTime;
+        }
     }
 
+    /// <summary>
+    /// Set the size when modify values on script
+    /// </summary>
 	public void OnDrawGizmos() {
 		if (!Application.isPlaying)
 			Awake();
@@ -145,7 +183,7 @@ public class CharacterSize : MonoBehaviour {
 		if(size > 0 && size != _targetSize) {
             _directionSpitDrop = spitDirection;
             //can't move
-            GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.GrowingParameters;
+            _controller.Parameters = CharacterControllerParameters.GrowingParameters;
 
             //set the new size
             _targetSize = size;
@@ -214,9 +252,9 @@ public class CharacterSize : MonoBehaviour {
                 SpitDrop(newScale, offset);
             }
 
-            //in my size! can move again.
-            if(_targettingSize == 0) 
-                GetComponent<CharacterControllerCustom>().Parameters = null;
+            //in my size! can move again if there's no time of being quiet
+            if(_targettingSize == 0 && !_motionless) 
+                _controller.Parameters = null;
             
         }
 	}
@@ -268,6 +306,10 @@ public class CharacterSize : MonoBehaviour {
     /// <param name="newScale">the scale which doesn't fit</param>
     /// <param name="newPosition">the position according to the scale</param>
 	private void SpitDrop(float newScale, Vector3 offsetCenter) {
+        //the principal drop has to be quiet during spitting
+        _motionless = true;
+        _motionlessTime = motionlessTimeSpit;
+
         //get the maximum size
         int finalSize = setMaximumSize(newScale, _dropTransform.position + offsetCenter);
         //calculate the extra drop I have to spit
