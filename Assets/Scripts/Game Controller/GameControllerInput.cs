@@ -85,70 +85,38 @@ public class GameControllerInput : MonoBehaviour {
 
     private void DebugCamera()
     {
-
+        //Switch debug mode
         if (Input.GetKeyDown(KeyCode.F1))
-        {
-            Debug.Log("Switch orthographic mode");
-            if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
-                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.GAME);
-            else
-                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.DEBUG);
-        }
+            _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.DEBUG);
+
+        //Switch travel mode
         if (Input.GetKeyDown(KeyCode.F2))
-        {
-            Debug.Log("Switch travel mode");
-            if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.TRAVEL)
-                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.GAME);
-            else
-                _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.TRAVEL);
-        }
+            _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.TRAVEL);
+
+        //Back camera
         if (Input.GetKeyDown(KeyCode.F3) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
-        {
-            Debug.Log("Back camera");
             _cameraSwitcher.BackCamera();
-        }
+
+        //Next Camera
         if (Input.GetKeyDown(KeyCode.F4) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
-        {
-            Debug.Log("Next camera");
             _cameraSwitcher.NextCamera();
-
-        }
         
-        if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG) {
-            Vector3 nextPosition = _cameraDebugControler.debugObjective.transform.position;
-            if (Input.GetKey(KeyCode.U))
-            {
-                Debug.Log("set camera near");
-                 _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.NEAR);
-            }
-            if (Input.GetKey(KeyCode.I))
-            {
-                Debug.Log("set camera up");
-                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.UP);
-            }
-            if (Input.GetKey(KeyCode.O))
-            {
-                Debug.Log("set camera far");
-                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.FAR);
-            }
-            if (Input.GetKey(KeyCode.J))
-            {
-                Debug.Log("set camera to left");
-                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.LEFT);
-            }
-            if (Input.GetKey(KeyCode.K))
-            {
-                Debug.Log("set camera down");
-                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.DOWN);
-            }
-            if (Input.GetKey(KeyCode.L))
-            {
-                Debug.Log("set camera to right");
-                _cameraDebugControler.SetPhantomMovement(CameraDebugController.PhantomMovement.RIGHT);
-            }
+        //Debug Camera Input
+        if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
+        {
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveVertical = Input.GetAxis("Vertical");// Y rotation?
+            float moveClose = 0.0f;
+            //At the moment I put it here I have to move it to L & R
+            if (Input.GetKey(KeyCode.Q))
+                moveClose += 1.0f;
+            if (Input.GetKey(KeyCode.E))
+                moveClose -= 1.0f;
+
+            Vector3 movement = new Vector3(moveHorizontal, moveVertical, moveClose);
+
+            _cameraDebugControler.SetPhantomMovement(movement);
         }
-
-
     }
 
     private void DebugAddDrops() {

@@ -51,18 +51,6 @@ public class CameraSwitcher : MonoBehaviour {
         }
     }
 
-    //Set camera mode
-    public void SetCameraMode(CameraMode newMode)
-    {
-        cameraMode = newMode;
-        if (cameraMode == CameraMode.GAME)
-        {
-            GameObject mainCamera = transform.Find("MainCamera").gameObject;
-            int index = camerasPool.IndexOf(mainCamera);
-            SetActiveCamera(index);
-        }
-    }
-
     //Set Active Camera
     private void SetActiveCamera(int cameraToActive)
     {
@@ -71,4 +59,27 @@ public class CameraSwitcher : MonoBehaviour {
             camerasPool[i].SetActive(false);
         camerasPool[cameraToActive].SetActive(true);
     }
+
+    //Set Active Camera
+    public void SetCameraMode(CameraMode newMode)
+    {
+        if (newMode == CameraMode.DEBUG)
+            if (cameraMode == CameraSwitcher.CameraMode.DEBUG)
+                newMode = CameraSwitcher.CameraMode.GAME;
+
+        if (newMode == CameraMode.TRAVEL)
+            if (cameraMode == CameraSwitcher.CameraMode.TRAVEL)
+                newMode = CameraSwitcher.CameraMode.GAME;
+
+        if (newMode == CameraMode.GAME)
+        {
+            GameObject mainCamera = transform.Find("MainCamera").gameObject;
+            int index = camerasPool.IndexOf(mainCamera);
+            SetActiveCamera(index);
+        }
+
+        cameraMode = newMode;
+    }
+
+
 }

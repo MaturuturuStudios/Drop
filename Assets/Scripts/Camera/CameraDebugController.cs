@@ -8,19 +8,9 @@ public class CameraDebugController : MonoBehaviour {
 
     //Camera movement attributes
     public float debugVelocity = 0.5f;
-    /// <summary>
-    /// Distance from player to camera
-    /// </summary>
-    [System.Serializable]
-    public class Offset
-    {
-        public float far = -15.0f;
-        public float up = 2.0f;
-    }
-    //Offset Attributes
-    public Offset offset;
+
     //Offset Reference
-    private Vector3 _offset;
+    public Vector3 _offset = new Vector3(0.0f, 0.0f, -10.0f);
 
     //Debug objective
     public GameObject debugObjective;
@@ -65,57 +55,10 @@ public class CameraDebugController : MonoBehaviour {
     void LateUpdate()
     {
         //Camera Movement
-        MoveCamera();
+        transform.position = debugObjective.transform.position + _offset;
 
         //LookAt player
         transform.LookAt(debugObjective.transform);
-    }
-
-    /// <summary>
-    /// Move the camera depending of the status
-    /// </summary>
-    private void MoveCamera()
-    {
-        //Set objective movement base & calculate diference from our position to obsective
-        Vector3 objectiveMovement = _lastPositionMovement;
-        Vector3 diffMovement = debugObjective.transform.position + _offset - _lastPositionMovement;
-
-        //Actualize X position
-        if (diffMovement.x > 0)
-        {
-            objectiveMovement.x += debugVelocity;
-        }
-        else if (diffMovement.x < 0)
-        {
-            objectiveMovement.x -= debugVelocity;
-        }
-
-        //Actualize Y position
-        if (diffMovement.y > 0)
-        {
-            objectiveMovement.y += debugVelocity;
-        }
-        else if (diffMovement.y < 0)
-        {
-            objectiveMovement.y -= debugVelocity;
-        }
-
-        //Actualize Z position
-        if (diffMovement.z > 0)
-        {
-            objectiveMovement.z += debugVelocity;
-        }
-        else if (diffMovement.z < 0)
-        {
-            objectiveMovement.z -= debugVelocity;
-        }
-
-        //Actualize the position of the camera && the boundary
-        debugObjective.transform.position = objectiveMovement - _offset;
-        transform.position = objectiveMovement;
-
-        //Save the last position
-        _lastPositionMovement = objectiveMovement;
     }
 
     /// <summary>
@@ -129,35 +72,10 @@ public class CameraDebugController : MonoBehaviour {
     /// <summary>
     /// Set the new position of the phantom
     /// </summary>
-    public void SetPhantomMovement(PhantomMovement newMovement)
+    public void SetPhantomMovement(Vector3 movement)
     {
-        Vector3 nextPosition = debugObjective.transform.position;
+        Vector3 nextPosition = movement;
 
-        if (newMovement == CameraDebugController.PhantomMovement.NEAR)
-        {
-            nextPosition.z += debugVelocity;
-        }
-        if (newMovement == CameraDebugController.PhantomMovement.FAR)
-        {
-            nextPosition.z -= debugVelocity;
-        }
-        if (newMovement == CameraDebugController.PhantomMovement.RIGHT)
-        {
-            nextPosition.x += debugVelocity;
-        }
-        if (newMovement == CameraDebugController.PhantomMovement.LEFT)
-        {
-            nextPosition.x -= debugVelocity;
-        }
-        if (newMovement == CameraDebugController.PhantomMovement.UP)
-        {
-            nextPosition.y += debugVelocity;
-        }
-        if (newMovement == CameraDebugController.PhantomMovement.DOWN)
-        {
-            nextPosition.y -= debugVelocity;
-        }
-
-        debugObjective.transform.position = nextPosition;
+        debugObjective.transform.position += nextPosition;
     }
 }
