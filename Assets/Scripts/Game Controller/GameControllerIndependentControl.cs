@@ -146,6 +146,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
         if (index > -1)
             SetControl(index);
+        else
+        {
+            index = allCurrentCharacters.Count;
+            allCurrentCharacters.Add(drop);
+            SetControl(index);
+        }
     }
 
     /// <summary>
