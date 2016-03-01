@@ -21,10 +21,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public CharacterControllerParameters Parameters {
 		get {
 			// If no override parameters have been specified, return the default parameters
-			return _overrideParameters ?? defaultParameters;
+			if (_overrideParameters.Count > 0)
+				return _overrideParameters.Peek();
+			else
+				return defaultParameters;
 		}
 		set {
-			_overrideParameters = value;
+			if (value != null)
+				_overrideParameters.Push(value);
+			else
+				_overrideParameters.Pop();
 		}
 	}
 
@@ -44,9 +50,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private Vector3 _velocity;
 
 	/// <summary>
-	/// Backing field for the Parameters property.
+	/// Stack of the parameters applied. Used by the Parameters property.
 	/// </summary>
-	private CharacterControllerParameters _overrideParameters;
+	private Stack<CharacterControllerParameters> _overrideParameters;
 
 	#endregion
 
@@ -123,6 +129,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void Awake() {
 		// Creates the original state
 		State = new CharacterControllerState();
+
+		// Initializes the parameter's stack
+		_overrideParameters = new Stack<CharacterControllerParameters>();
 
 		// Recovers the desired components
 		_transform = transform;
