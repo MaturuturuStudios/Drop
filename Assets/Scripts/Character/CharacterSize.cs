@@ -279,6 +279,7 @@ public class CharacterSize : MonoBehaviour {
         Vector3 position = _dropTransform.position + offsetCenter;
         position += _directionSpitDrop * finalRadius;
 
+        //check in which direction and position I will spit the drop
         Vector3 positionSpit = _dropTransform.position + offsetCenter;
         Vector3 spitDirection = getDirectionSpit(finalSize, numberDropsRemain, positionSpit, out positionSpit);
 
@@ -290,7 +291,6 @@ public class CharacterSize : MonoBehaviour {
         newDrop.transform.localScale = Vector3.one;
         newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
         //set a force
-        
         newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
         newDrop.GetComponent<CharacterControllerCustom>().AddForce(spitDirection*impulseSpit, ForceMode.VelocityChange);
         //for test, clarity on behaviour
@@ -325,7 +325,7 @@ public class CharacterSize : MonoBehaviour {
         //check if i can spit up
         Vector3 direction = Vector3.up + Vector3.right * side;
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
 
@@ -333,21 +333,21 @@ public class CharacterSize : MonoBehaviour {
         //if not, check at side
         direction = Vector3.right * side;
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
 
         //if not, check the other side at up
         direction = Vector3.up + Vector3.left * side;
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
 
         //if not, check at side
         direction = Vector3.left * side;
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
 
@@ -357,14 +357,14 @@ public class CharacterSize : MonoBehaviour {
         spitPosition = origin;
         direction = Vector3.right * side;
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
         Debug.Log(raycastHit.collider.gameObject.name);
 
         direction = Vector3.left * side;
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
         Debug.Log(raycastHit.collider.gameObject.name);
