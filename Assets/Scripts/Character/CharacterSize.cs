@@ -279,22 +279,102 @@ public class CharacterSize : MonoBehaviour {
         Vector3 position = _dropTransform.position + offsetCenter;
         position += _directionSpitDrop * finalRadius;
 
+        Vector3 positionSpit = _dropTransform.position + offsetCenter;
+        Vector3 spitDirection = getDirectionSpit(finalSize, numberDropsRemain, positionSpit, out positionSpit);
+
         //create the drop
-        GameObject newDrop = _independentControl.AddDrop();
+        GameObject newDrop = _independentControl.AddDrop(false);
 
         //set the position and size
-        newDrop.transform.position = position;
+        newDrop.transform.position = positionSpit;
         newDrop.transform.localScale = Vector3.one;
         newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
         //set a force
+        
         newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
-        newDrop.GetComponent<CharacterControllerCustom>().AddForce(_directionSpitDrop*impulseSpit, ForceMode.VelocityChange);
+        newDrop.GetComponent<CharacterControllerCustom>().AddForce(spitDirection*impulseSpit, ForceMode.VelocityChange);
         //for test, clarity on behaviour
         _directionSpitDrop = Vector3.zero;
 
         //set the final size
         SetSize(finalSize);
     }
+
+
+    /// Precondition: no hole widht can be less than the height of the closest border
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="numberDropsSpitted"></param>
+    /// <returns></returns>
+    private Vector3 getDirectionSpit(int finalSize, int numberDropsSpitted, Vector3 centerPosition, out Vector3 spitPosition) {
+        Vector3 result = Vector3.zero;
+        int side = 1;
+        //first, check which side, left or right, we have preference for the side where the drop was absorved
+        if (_directionSpitDrop != Vector3.zero && _directionSpitDrop.x < 0) {
+            side = -1;
+        }
+
+        //precalculate...
+        RaycastHit raycastHit;
+        Vector3 origin = centerPosition;
+        spitPosition = origin;
+        float distanceCast = (2 + numberDropsSpitted*2 + finalSize) * _ratioRadius;
+        float radiusSphereCast = numberDropsSpitted * _ratioRadius;
+
+        //check if i can spit up
+        Vector3 direction = Vector3.up + Vector3.right * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+            return direction;
+        }
+
+
+        //if not, check at side
+        direction = Vector3.right * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+            return direction;
+        }
+
+        //if not, check the other side at up
+        direction = Vector3.up + Vector3.left * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+            return direction;
+        }
+
+        //if not, check at side
+        direction = Vector3.left * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+            return direction;
+        }
+
+        //we are running out of options!
+        //check if we have at bottom some space
+        origin.y -= ((finalSize - numberDropsSpitted) * _ratioRadius);
+        spitPosition = origin;
+        direction = Vector3.right * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+            return direction;
+        }
+        Debug.Log(raycastHit.collider.gameObject.name);
+
+        direction = Vector3.left * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast)) {
+            return direction;
+        }
+        Debug.Log(raycastHit.collider.gameObject.name);
+
+        //TODO: uh-oh, this can lead to a bug!
+        return Vector3.zero;
+    }
+
+
+
 
     /// <summary>
     /// When the growth is blocked, set the maximum size posible
