@@ -39,7 +39,6 @@ public class CameraController : MonoBehaviour {
         public bool visible = true;
         //boundary attributes
         public float width = 5.0f;
-        public float height = 3.0f;
     }
     //Boudary Attributes
     public Boundary boundary;
@@ -138,7 +137,7 @@ public class CameraController : MonoBehaviour {
         //Activate boundary
         if (boundary.visible) {
             //Create new boundary
-            _cameraBoundary = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            _cameraBoundary = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _cameraBoundary.name = "CameraBoundary";
 
             //Delete colliders
@@ -153,7 +152,7 @@ public class CameraController : MonoBehaviour {
 
             //Put it in its position
             _cameraBoundary.transform.position = currentCharacter.transform.position;
-            _cameraBoundary.transform.localScale = new Vector3(boundary.width, boundary.height, 0.1f);
+            _cameraBoundary.transform.localScale = new Vector3(boundary.width, boundary.width, 0.1f);
         }
     }
 
@@ -191,7 +190,7 @@ public class CameraController : MonoBehaviour {
         if (boundary.visible)
         {
             _cameraBoundary.SetActive(true);
-            _cameraBoundary.transform.localScale = new Vector3(boundary.width * _size, boundary.height * _size, 0.1f);
+            _cameraBoundary.transform.localScale = new Vector3(boundary.width * _size, boundary.width * _size, 0.1f);
         }
         else
         {
@@ -211,9 +210,9 @@ public class CameraController : MonoBehaviour {
             if (_outOfLeftBounds)
                 _destinationPosition.x += -boundary.width * _size / 2;
             if (_outOfTopBound)
-                _destinationPosition.y += boundary.height * _size / 2;
+                _destinationPosition.y += boundary.width * _size / 2;
             if (_outOfBottomBound)
-                _destinationPosition.y += -boundary.height * _size / 2;
+                _destinationPosition.y += -boundary.width * _size / 2;
 
             //On changing drop
             if (_cameraState == CameraState.CHANGE_DROP)
@@ -283,14 +282,12 @@ public class CameraController : MonoBehaviour {
     private void MoveCamera()
     {
 
-
+        /*
         //Set objective movement base & calculate diference from our position to obsective
-        Vector3 objectiveMovement = _lastPositionMovement;
         Vector3 diffMovement = currentCharacter.transform.position + _offset - _lastPositionMovement;
 
         //Camera Bounds
         float widthBound = 0.0f;
-        float heightBound = 0.0f;
         _currentMovementSpeed = idle.movementSpeed * _size;
         _currentZMovementSpeed = _currentMovementSpeed;
         if (_cameraState == CameraState.IDLE)
@@ -304,7 +301,6 @@ public class CameraController : MonoBehaviour {
             if (!boundary.disableBoundaryLiberty)
             {
                 widthBound = (boundary.width * _size / 2);
-                heightBound = (boundary.height * _size / 2);
             }
             _currentZMovementSpeed = _currentMovementSpeed = movement.movementSpeed * _size;
             
@@ -325,67 +321,42 @@ public class CameraController : MonoBehaviour {
                 if (!changeDrop.directZMovement) _currentZMovementSpeed = Mathf.Sqrt(_currentZMovementSpeed * _changingProgress);
             }
         }
-
-        //Calculate ratio of movement
-        float ratioXYMovement = Mathf.Abs(diffMovement.x) / Mathf.Abs(diffMovement.y);
-        if (ratioXYMovement > 1)
-            ratioXYMovement = 1;
-        //Calculate ratio of movement
-        float ratioYXMovement = Mathf.Abs(diffMovement.y) / Mathf.Abs(diffMovement.x);
-        if (ratioYXMovement > 1)
-            ratioYXMovement = 1;
-
+        */
         _outOfBounds = false;
-        _outOfTopBound = false;
-        _outOfBottomBound = false;
-        _outOfLeftBounds = false;
-        _outOfRightBound = false;
 
-        //Actualize X position
-        float movementX = currentCharacter.transform.position.x - widthBound - _lastPositionMovement.x + _offset.x;
-        if (movementX > 0)
-        {
-            if (movementX > (_currentMovementSpeed * ratioXYMovement) )
-                movementX = (_currentMovementSpeed * ratioXYMovement);
-            if (movementX < 0.001f)
-                movementX = 0.001f;
-            objectiveMovement.x = _lastPositionMovement.x + movementX;
-            _outOfRightBound = _outOfBounds = true;
-        }
-        movementX = currentCharacter.transform.position.x + widthBound - _lastPositionMovement.x + _offset.x;
-        if (movementX < 0)
-        {
-            if (movementX < (-_currentMovementSpeed * ratioXYMovement))
-                movementX = (-_currentMovementSpeed * ratioXYMovement);
-            if (movementX > -0.001f)
-                movementX = -0.001f;
-            objectiveMovement.x = _lastPositionMovement.x + movementX;
-            _outOfLeftBounds = _outOfBounds = true;
-        }
+        //_currentMovementSpeed = movement.movementSpeed * _size;
+        _currentMovementSpeed = movement.movementSpeed;
+        Vector3 objectiveMovement = _lastPositionMovement;
 
-
-        //Actualize Y position
-        float movementY = currentCharacter.transform.position.y - heightBound - _lastPositionMovement.y + _offset.y;
-        if (movementY > 0)
+        Vector3 destination = currentCharacter.transform.position + _offset;
+        Vector3 diference = destination - transform.position;
+        Vector2 distMinusZ = new Vector2(diference.x, diference.y); 
+        float distance = distMinusZ.magnitude;
+        if (diference.z < 0.001f)
+            diference.z = 0.0f;
+        if (distance > boundary.width / 2 || diference.z != 0.0f)
         {
-            if (movementY > (_currentMovementSpeed * ratioYXMovement))
-                movementY = (_currentMovementSpeed * ratioYXMovement);
-            if (movementY < 0.001f)
-                movementY = 0.001f;
-            objectiveMovement.y = _lastPositionMovement.y + movementY;
-            _outOfTopBound = _outOfBounds = true;
-        }
-        movementY = currentCharacter.transform.position.y + heightBound - _lastPositionMovement.y + _offset.y;
-        if (movementY < 0)
-        {
-            if (movementY < (-_currentMovementSpeed * ratioYXMovement))
-                movementY = (-_currentMovementSpeed * ratioYXMovement);
-            if (movementY > -0.001f)
-                movementY = -0.001f;
-            objectiveMovement.y = _lastPositionMovement.y + movementY;
-            _outOfBottomBound = _outOfBounds = true;
-        }
+            if (distance < 0.01f)
+                distance = 0.01f;
 
+            //Rate movement
+            if (distance - boundary.width / 2  > (_currentMovementSpeed))
+            {
+                float getPercent = (_currentMovementSpeed / (distance - (boundary.width / 2)));
+                //diference *= getPercent;
+            }
+            else
+            {
+                diference *= Time.deltaTime;
+            }
+
+            float distance2 = diference.magnitude;
+            diference *= _currentMovementSpeed;
+
+            objectiveMovement = _lastPositionMovement + (diference );
+            _outOfBounds = true;
+        }
+        /*
         //Actualize Z position
         if (diffMovement.z > _currentZMovementSpeed)
         {
@@ -394,7 +365,7 @@ public class CameraController : MonoBehaviour {
         else if (diffMovement.z < -_currentZMovementSpeed)
         {
             objectiveMovement.z -= _currentZMovementSpeed;
-        }
+        }*/
 
         //Actualize the position of the camera && the boundary
         if(boundary.visible)
@@ -419,10 +390,11 @@ public class CameraController : MonoBehaviour {
             else
                 speed = _currentMovementSpeed * changeDrop.lookAtSpeedRatioSwitching;
         }
+
         //Get objective and if it is moving
         Vector3 objective = currentCharacter.transform.position;
         Vector3 diff = currentCharacter.transform.position - _lastObjective;
-
+        /*
         //Ratio for diagonal looking
         float ratioXY = Mathf.Abs(diff.x) / Mathf.Abs(diff.y);
         if (ratioXY > 1)
@@ -451,7 +423,7 @@ public class CameraController : MonoBehaviour {
         else if (diff.y < -speed)
         {
             objective.y = _lastObjective.y - (speed * ratioXY);
-        }
+        }*/
 
         //Set position lookAt to camera
         transform.LookAt(objective);
