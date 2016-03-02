@@ -230,7 +230,6 @@ public class CharacterSize : MonoBehaviour {
                 newScale = _dropTransform.localScale.x + Time.deltaTime * speed * _shrinkOrEnlarge;
             
 
-
             //control if i have space enough and repositioning it
             Vector3 offset = Vector3.zero;
             float newRadius = newScale * _ratioRadius;
@@ -344,11 +343,14 @@ public class CharacterSize : MonoBehaviour {
     }
 
 
-    /// Precondition: no hole widht can be less than the height of the closest border
     /// <summary>
-    /// 
+    /// Precondition: no hole widht can be less than the height of the closest border
+    /// Get the direction in which the drop should be spitted
     /// </summary>
-    /// <param name="numberDropsSpitted"></param>
+    /// <param name="finalSize">The size/number of the drop spitting the remains</param>
+    /// <param name="numberDropsSpitted">Size/number of drops being spit</param>
+    /// <param name="centerPosition">Center of the main drop</param>
+    /// <param name="spitPosition">position where spitted drop should start</param>
     /// <returns>Vector with the direction to spit out</returns>
     private Vector3 getDirectionSpit(int finalSize, int numberDropsSpitted, Vector3 centerPosition, out Vector3 spitPosition) {
         Vector3 result = Vector3.zero;
@@ -364,12 +366,16 @@ public class CharacterSize : MonoBehaviour {
         spitPosition = origin;
         float distanceCast = (2 + numberDropsSpitted*2 + finalSize) * _ratioRadius;
         float radiusSphereCast = numberDropsSpitted * _ratioRadius;
+        float limitDisplacement = _ratioRadius * finalSize * 0.5f;
+        //clamp and get the x component
+        float displacement = Mathf.Sqrt(Mathf.Clamp(_ratioRadius * 0.5f * (numberDropsSpitted - 1), 0, limitDisplacement));
 
         //check if i can spit up
-
         Vector3 direction = new Vector3(Mathf.Sin(Mathf.Deg2Rad * 30*side), Mathf.Cos(Mathf.Deg2Rad * 30), 0);
-        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+        Vector3 offset = Vector3.left * side * displacement;
+        Debug.DrawRay(origin+offset, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin+offset, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            spitPosition = origin + offset;
             return direction;
         }
 
@@ -383,8 +389,10 @@ public class CharacterSize : MonoBehaviour {
 
         //if not, check the other side at up
         direction = new Vector3(Mathf.Sin(Mathf.Deg2Rad * -30*side), Mathf.Cos(Mathf.Deg2Rad * -30), 0);
-        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
-        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+        offset = Vector3.right * side * displacement;
+        Debug.DrawRay(origin+offset, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin+offset, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            spitPosition = origin + offset;
             return direction;
         }
 
@@ -404,16 +412,14 @@ public class CharacterSize : MonoBehaviour {
         if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
-        Debug.Log(raycastHit.collider.gameObject.name);
 
         direction = Vector3.left * side;
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
         if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
         }
-        Debug.Log(raycastHit.collider.gameObject.name);
 
-        //TODO: uh-oh, this can lead to a bug!
+        //TODO: uh-oh, this can lead to a bug! the drop will be inside of the main drop
         return Vector3.zero;
     }
 
