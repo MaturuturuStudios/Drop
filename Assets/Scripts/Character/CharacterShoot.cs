@@ -34,7 +34,7 @@ public class CharacterShoot : MonoBehaviour {
 	//---------------------------------------	
 
     public void Aim(){
-        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1))
+        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<9))
         {
             if (shootmode == false)
             {
@@ -48,7 +48,7 @@ public class CharacterShoot : MonoBehaviour {
                 shootmode = false;
                 st.QuitTrajectory();
                 st.enabled = false;
-                ccc.Parameters = null;
+                ccc.Parameters = CharacterControllerParameters.ShootingEnd;
             }
         }
 
@@ -60,13 +60,19 @@ public class CharacterShoot : MonoBehaviour {
         {
             //if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops) //Commented by toni, No longer pool needed
             //{
-            throwBall();
-            lessize = GetComponent<CharacterSize>().GetSize();
-            lessize -= 1;
-            GetComponent<CharacterSize>().SetSize(lessize);
+            ccc.Parameters = CharacterControllerParameters.ShootingEnd;
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
+
+            lessize = GetComponent<CharacterSize>().GetSize();
+            lessize -= 1;
+            GetComponent<CharacterSize>().SetSize(lessize);
+
+            throwBall();
+            
+            
+            
             //_gcic.SetControl(1);
             //_gcic.ControlNextDrop();
             //}
@@ -88,14 +94,14 @@ public class CharacterShoot : MonoBehaviour {
                 st.enabled = false;
                 ccc.Parameters = null;
             }       
-        }*/
+        }
         if ((lessize == 1) || ccc.State.IsGrounded == false){
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
             
              //ccc.Parameters = null;                      
-        }
+        }*/
         
        
        /* if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){

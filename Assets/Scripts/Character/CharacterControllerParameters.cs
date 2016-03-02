@@ -299,5 +299,15 @@ public class CharacterControllerParameters {
 		accelerationOnAir = 0
 	};
 
-	#endregion
+    /// <summary>
+	/// Parameters used at the end of the shoot ADDED BY ROBERT.
+	/// </summary>
+	public static readonly CharacterControllerParameters ShootingEnd = new CharacterControllerParameters()
+    {
+        movementBehaviour = MovementBehaviour.CanMoveAnywhere,
+        jumpBehaviour = JumpBehaviour.CanJumpAnywhere,
+        accelerationOnGround = float.MaxValue
+    };
+
+    #endregion
 }
