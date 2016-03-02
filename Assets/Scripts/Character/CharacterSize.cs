@@ -241,7 +241,7 @@ public class CharacterSize : MonoBehaviour {
                 _dropTransform.position += offset;
                 //set the new size to the character
                 _dropTransform.localScale = new Vector3(newScale, newScale, newScale);
-                
+
 
             } else {
                 //this line is needed. If spitDrop set the size equal to actual size of character
@@ -332,9 +332,10 @@ public class CharacterSize : MonoBehaviour {
         newDrop.transform.position = positionSpit;
         newDrop.transform.localScale = Vector3.one;
         newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
-        //set a force
+        //set a force modified by the size of drop
         newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
-        newDrop.GetComponent<CharacterControllerCustom>().AddForce(spitDirection*impulseSpit, ForceMode.VelocityChange);
+        newDrop.GetComponent<CharacterControllerCustom>()
+            .AddForce(spitDirection*impulseSpit*Mathf.Sqrt(numberDropsRemain), ForceMode.VelocityChange);
         //for test, clarity on behaviour
         _directionSpitDrop = Vector3.zero;
 
@@ -348,7 +349,7 @@ public class CharacterSize : MonoBehaviour {
     /// 
     /// </summary>
     /// <param name="numberDropsSpitted"></param>
-    /// <returns></returns>
+    /// <returns>Vector with the direction to spit out</returns>
     private Vector3 getDirectionSpit(int finalSize, int numberDropsSpitted, Vector3 centerPosition, out Vector3 spitPosition) {
         Vector3 result = Vector3.zero;
         int side = 1;
@@ -365,7 +366,8 @@ public class CharacterSize : MonoBehaviour {
         float radiusSphereCast = numberDropsSpitted * _ratioRadius;
 
         //check if i can spit up
-        Vector3 direction = Vector3.up + Vector3.right * side;
+
+        Vector3 direction = new Vector3(Mathf.Sin(Mathf.Deg2Rad * 30*side), Mathf.Cos(Mathf.Deg2Rad * 30), 0);
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
         if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
@@ -380,7 +382,7 @@ public class CharacterSize : MonoBehaviour {
         }
 
         //if not, check the other side at up
-        direction = Vector3.up + Vector3.left * side;
+        direction = new Vector3(Mathf.Sin(Mathf.Deg2Rad * -30*side), Mathf.Cos(Mathf.Deg2Rad * -30), 0);
         Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
         if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
             return direction;
