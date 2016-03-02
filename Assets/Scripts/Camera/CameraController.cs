@@ -2,16 +2,10 @@
 using System.Collections;
 
 public class CameraController : MonoBehaviour {
-
-    //Camera status
-    enum CameraState { IDLE, MOVING, CHANGE_DROP };
-    private CameraState _cameraState;    
-
+    
     //Drop References
     public GameObject currentCharacter;
     private GameObject _lastCharacter;
-    //Drop size reference
-    private float _size;
 
     /// <summary>
     /// Distance from player to camera
@@ -28,13 +22,11 @@ public class CameraController : MonoBehaviour {
     private Vector3 _offset;
 
     /// <summary>
-    /// Player liberty area movement
+    /// Camera reference position with player
     /// </summary>
     [System.Serializable]
     public class Boundary
     {
-        //camera allways fixed in same x & y+_offset as player
-        public bool disableBoundaryLiberty = false;
         //set the boundary visible
         public bool visible = true;
         //boundary attributes
@@ -43,93 +35,34 @@ public class CameraController : MonoBehaviour {
     //Boudary Attributes
     public Boundary boundary;
     private GameObject _cameraBoundary;
-    //Bounds control
-    private bool _outOfBounds;
-    private bool _outOfTopBound;
-    private bool _outOfBottomBound;
-    private bool _outOfLeftBounds;
-    private bool _outOfRightBound;
 
     /// <summary>
-    /// Camera options when it is moving
+    /// Camera options
     /// </summary>
     [System.Serializable]
     public class Movement
     {
-        //Camera movement attributes
-        public float lookAtPlayerSpeed = 0.5f;
-        public float movementSpeed = 0.2f;
+        public float smooth = 2.0f;
+        public float zSmooth = 1.0f;
+        public float lookAtSmooth = 3.0f;
     }
-    //Boudary Attributes
     public Movement movement;
-    //Movement speed control
-    private float _currentMovementSpeed;
-    private float _currentZMovementSpeed;
     //Movement position control
     private Vector3 _lastPositionMovement;
     //Look at position control
     private Vector3 _lastObjective;
-
-
-    /// <summary>
-    /// Camera options when it is idle
-    /// </summary>
-    [System.Serializable]
-    public class Idle
-    {
-        //On end change drop event set idle state
-        public bool onSwichEndIdle = false;
-        //Camera movement attributes
-        public float movementSpeed = 0.01f;
-        //Time waiting for set idle state
-        public float waitTime = 3.0f;
-    }
-    //Boudary Attributes
-    public Idle idle;
-    //Wait time counter
-    private float _idleCounter = 0;
-
-    /// <summary>
-    /// Camera options when we are changing drop
-    /// </summary>
-    [System.Serializable]
-    public class ChangeDrop
-    {
-        //make the movement in z direct
-        public bool directZMovement = false;
-        //Seconds of duration between changing drop
-        public float secondsOfTransicion = 0.5f;
-        public float lookAtSpeedRatioSwitching = 1.25f;
-    }
-    public ChangeDrop changeDrop;
-    //Speed atributes
-    //drop change transition progress
-    private float _changingProgress = 0.0f;
-    //distance to swhitch drop
-    private Vector3 _destinationPosition;
-    private Vector3 _startPosition;
-    private float _change_distance = 0.0f;
-
-    //Camera set reference
-    private CameraSwitcher cameraSwitcher;
 
     /// <summary>
     /// Called on start script
     /// </summary>
     void Start()
     {
-        //Get Camera Switcher
-        cameraSwitcher = transform.parent.GetComponent<CameraSwitcher>();
-
         //Calculate offset
         _offset = new Vector3(0.0f, offset.up, offset.far);
         //Set drop to its position
         transform.position = currentCharacter.transform.position + new Vector3(-4.0f, 25.0f, -55.0f);
 
-        //Set camera status
-        _cameraState = CameraState.MOVING;
-
-        //Saver references
+        //Set references
         _lastObjective = currentCharacter.transform.position;
         _lastPositionMovement = transform.position;
         _lastCharacter = currentCharacter;
@@ -183,252 +116,54 @@ public class CameraController : MonoBehaviour {
     private void ActualizeState()
     {
         //Get drop size
-        _size = currentCharacter.GetComponent<CharacterSize>().GetSize();
+        float size = currentCharacter.GetComponent<CharacterSize>().GetSize();
 
         //Actualize ofset and boundary depends of the size
-        _offset = new Vector3(0.0f, offset.up + _size, offset.far - (_size * 5));
-        if (boundary.visible)
-        {
+        _offset = new Vector3(0.0f, offset.up + size, offset.far - (size * 5));
+
+        if (boundary.visible){
             _cameraBoundary.SetActive(true);
-            _cameraBoundary.transform.localScale = new Vector3(boundary.width * _size, boundary.width * _size, 0.1f);
+            _cameraBoundary.transform.localScale = new Vector3(boundary.width * size, boundary.width * size, 0.1f);
         }
         else
-        {
             _cameraBoundary.SetActive(false);
-        }
 
-        //Set new destination position
-        _destinationPosition = currentCharacter.transform.position + _offset;
-        Vector3 dist = transform.position - _destinationPosition;
-
-        //is out of bounds range
-        if (_outOfBounds)
-        {
-            //Check side
-            if (_outOfRightBound)
-                _destinationPosition.x += boundary.width * _size / 2;
-            if (_outOfLeftBounds)
-                _destinationPosition.x += -boundary.width * _size / 2;
-            if (_outOfTopBound)
-                _destinationPosition.y += boundary.width * _size / 2;
-            if (_outOfBottomBound)
-                _destinationPosition.y += -boundary.width * _size / 2;
-
-            //On changing drop
-            if (_cameraState == CameraState.CHANGE_DROP)
-            {
-                _changingProgress = (_change_distance - dist.magnitude) / _change_distance;
-                _idleCounter = 0.0f;
-            }
-            else
-            {
-
-                //On camera idle state 
-                if (_lastObjective == currentCharacter.transform.position && _cameraState == CameraState.IDLE)
-                {
-                    _idleCounter += Time.deltaTime;
-                    if (_idleCounter > idle.waitTime)
-                        _cameraState = CameraState.IDLE;
-                }
-                else
-                {
-                    //We are moving
-                    _idleCounter = 0.0f;
-                    _cameraState = CameraState.MOVING;
-                }
-            }
-
-        }
-        else
-        {
-            //On change drop end event
-            if (_cameraState == CameraState.CHANGE_DROP)
-            {
-                _cameraState = CameraState.MOVING;
-                if (idle.onSwichEndIdle)
-                   _cameraState = CameraState.IDLE;
-                _changingProgress = 0.0f;
-                _idleCounter = 0.0f;
-            }
-
-            //On camera idle state 
-            if (_lastObjective == currentCharacter.transform.position)
-            {
-                _idleCounter += Time.deltaTime;
-                if (_idleCounter > idle.waitTime)
-                    _cameraState = CameraState.IDLE;
-            }
-
-        }
-
-        //On change drop start event
-        if (_lastCharacter != currentCharacter)
-        {
-            _cameraState = CameraState.CHANGE_DROP;
-
-            _change_distance = dist.magnitude;
-            _startPosition = transform.position;
-
-            _changingProgress = 0.0f;
-
-        }
-        
         _lastCharacter = currentCharacter;
     }
 
     /// <summary>
-    /// Move the camera depending of the status
+    /// Move the camera to offset position of the player gradually
     /// </summary>
     private void MoveCamera()
     {
-
-        /*
-        //Set objective movement base & calculate diference from our position to obsective
-        Vector3 diffMovement = currentCharacter.transform.position + _offset - _lastPositionMovement;
-
-        //Camera Bounds
-        float widthBound = 0.0f;
-        _currentMovementSpeed = idle.movementSpeed * _size;
-        _currentZMovementSpeed = _currentMovementSpeed;
-        if (_cameraState == CameraState.IDLE)
-        {
-            Debug.Log("idle");
-            //No Camera bounds
-        }
-        else
-        {
-            //Actualize Camera bounds
-            if (!boundary.disableBoundaryLiberty)
-            {
-                widthBound = (boundary.width * _size / 2);
-            }
-            _currentZMovementSpeed = _currentMovementSpeed = movement.movementSpeed * _size;
-            
-            if (_cameraState == CameraState.MOVING)
-                Debug.Log("Moving");
-            if (_cameraState == CameraState.CHANGE_DROP)
-            {
-                Debug.Log("ChangeDrop");
-
-                Vector3 dist = _startPosition - _destinationPosition;
-
-                _currentMovementSpeed = dist.magnitude / 60 / changeDrop.secondsOfTransicion;
-               
-                if (_currentMovementSpeed < movement.movementSpeed)
-                    _currentMovementSpeed = movement.movementSpeed;
-
-                _currentZMovementSpeed = Mathf.Abs(_startPosition.z - _destinationPosition.z) / 60 / changeDrop.secondsOfTransicion;
-                if (!changeDrop.directZMovement) _currentZMovementSpeed = Mathf.Sqrt(_currentZMovementSpeed * _changingProgress);
-            }
-        }
-        */
-        _outOfBounds = false;
-
-        //_currentMovementSpeed = movement.movementSpeed * _size;
-        _currentMovementSpeed = movement.movementSpeed;
-        Vector3 objectiveMovement = _lastPositionMovement;
-
         Vector3 destination = currentCharacter.transform.position + _offset;
-        Vector3 diference = destination - transform.position;
-        Vector2 distMinusZ = new Vector2(diference.x, diference.y); 
-        float distance = distMinusZ.magnitude;
-        if (diference.z < 0.001f)
-            diference.z = 0.0f;
-        if (distance > boundary.width / 2 || diference.z != 0.0f)
-        {
-            if (distance < 0.01f)
-                distance = 0.01f;
 
-            //Rate movement
-            if (distance - boundary.width / 2  > (_currentMovementSpeed))
-            {
-                float getPercent = (_currentMovementSpeed / (distance - (boundary.width / 2)));
-                //diference *= getPercent;
-            }
-            else
-            {
-                diference *= Time.deltaTime;
-            }
+        //Need to use something better than size
+        Vector3 objMov = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
+        objMov.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
 
-            float distance2 = diference.magnitude;
-            diference *= _currentMovementSpeed;
+        if (boundary.visible)
+            _cameraBoundary.transform.position = objMov - _offset;
 
-            objectiveMovement = _lastPositionMovement + (diference );
-            _outOfBounds = true;
-        }
-        /*
-        //Actualize Z position
-        if (diffMovement.z > _currentZMovementSpeed)
-        {
-            objectiveMovement.z += _currentZMovementSpeed;
-        }
-        else if (diffMovement.z < -_currentZMovementSpeed)
-        {
-            objectiveMovement.z -= _currentZMovementSpeed;
-        }*/
-
-        //Actualize the position of the camera && the boundary
-        if(boundary.visible)
-            _cameraBoundary.transform.position = objectiveMovement - _offset;
-        transform.position = objectiveMovement;
+        transform.position = objMov;
 
         //Save the last position
-        _lastPositionMovement = objectiveMovement;
+        _lastPositionMovement = objMov;
     }
 
     /// <summary>
-    /// Makes the camera look to the player's position
+    /// Makes the camera look to the player's position gradually
     /// </summary>
     private void LookAt()
     {
-        //Speed
-        float speed = movement.lookAtPlayerSpeed;
+        Vector3 destination = currentCharacter.transform.position;
 
-        if (_cameraState == CameraState.CHANGE_DROP) {
-            if (boundary.disableBoundaryLiberty)
-                speed = _currentMovementSpeed;
-            else
-                speed = _currentMovementSpeed * changeDrop.lookAtSpeedRatioSwitching;
-        }
-
-        //Get objective and if it is moving
-        Vector3 objective = currentCharacter.transform.position;
-        Vector3 diff = currentCharacter.transform.position - _lastObjective;
-        /*
-        //Ratio for diagonal looking
-        float ratioXY = Mathf.Abs(diff.x) / Mathf.Abs(diff.y);
-        if (ratioXY > 1)
-            ratioXY = 1;
-
-        //if player moved on X
-        if (diff.x > speed)
-        {
-            objective.x = _lastObjective.x + (speed * ratioXY);
-        }
-        else if (diff.x < -speed)
-        {
-            objective.x = _lastObjective.x - (speed * ratioXY);
-        }
-
-        //Ratio for diagonal looking
-        ratioXY = Mathf.Abs(diff.y) / Mathf.Abs(diff.x);
-        if (ratioXY > 1)
-            ratioXY = 1;
-
-        //if player moved on Y
-        if (diff.y > speed)
-        {
-            objective.y = _lastObjective.y + (speed * ratioXY);
-        }
-        else if (diff.y < -speed)
-        {
-            objective.y = _lastObjective.y - (speed * ratioXY);
-        }*/
+        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * movement.lookAtSmooth);
 
         //Set position lookAt to camera
-        transform.LookAt(objective);
+        transform.LookAt(destination);
         
-        _lastObjective = objective;
+        _lastObjective = destination;
     }
 
     /// <summary>
