@@ -52,7 +52,7 @@ public class CameraSwitcher : MonoBehaviour {
     }
 
     //Set Active Camera
-    private void SetActiveCamera(int cameraToActive)
+    public void SetActiveCamera(int cameraToActive)
     {
         _currentCamera = cameraToActive;
         for (int i = 0; i < camerasPool.Count; ++i)

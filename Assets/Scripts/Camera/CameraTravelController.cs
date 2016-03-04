@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class CameraTravelController : MonoBehaviour {
+public class CameraTravelController : MonoBehaviour
+{
+    // Internal references
+    private CameraSwitcher _cameraSwitcher;
+    private Camera _mainCamera;
 
     //Drop References
-    public GameObject currentCharacter;
-    private GameObject _lastCharacter;
+    private Objective currentObjective;
 
     //Camera status
     enum CameraTravelState { START, PLAY, PAUSE, STOP };
@@ -29,25 +32,11 @@ public class CameraTravelController : MonoBehaviour {
     [System.Serializable]
     public class Objective
     {
-        public Movement movement = new Movement(3.5f, 4.5f, 0.0f);
-        public Vector3 position = new Vector3(3.5f, 4.5f, 0.0f);
-        public Vector3 _offset = new Vector3(0.0f, 4.5f, -15.0f);
-        public int size = 1;
+        public Movement movement = new Movement(2.0f, 1.0f, 2.5f);
+        public Vector3 position = new Vector3(3.5f, 4.5f, 0F);
+        public Vector3 lookAtPosition = new Vector3(0F, 0F, 0F);
+        public float waitTime = 2;
     }
-
-    /// <summary>
-    /// Distance from player to camera
-    /// </summary>
-    [System.Serializable]
-    public class Offset
-    {
-        public float far = -15.0f;
-        public float up = 2.0f;
-    }
-    //Offset Attributes
-    public Offset offset;
-    //Offset Reference
-    private Vector3 _offset;
 
     /// <summary>
     /// Camera reference position with player
@@ -58,7 +47,7 @@ public class CameraTravelController : MonoBehaviour {
         //set the boundary visible
         public bool visible = true;
         //boundary attributes
-        public float width = 3.0f;
+        public float width = 5.0f;
     }
     //Boudary Attributes
     public Boundary boundary;
@@ -74,13 +63,14 @@ public class CameraTravelController : MonoBehaviour {
         public float zSmooth = 1.0f;
         public float lookAtSmooth = 3.0f;
 
-        public Movement(float smooth, float zSmooth, float lookAtSmooth) {
+        public Movement(float smooth, float zSmooth, float lookAtSmooth)
+        {
             this.smooth = smooth;
             this.zSmooth = zSmooth;
             this.lookAtSmooth = lookAtSmooth;
         }
     }
-    public Movement movement;
+
     //Movement position control
     private Vector3 _lastPositionMovement;
     //Look at position control
@@ -91,37 +81,19 @@ public class CameraTravelController : MonoBehaviour {
     /// </summary>
     void Start()
     {
-        //Calculate offset
-        _offset = new Vector3(0.0f, offset.up, offset.far);
+        _cameraSwitcher = GameObject.FindGameObjectWithTag("CameraSet")
+                                .GetComponent<CameraSwitcher>();
+
+        _mainCamera = GameObject.FindGameObjectWithTag("MainCamera")
+                                .GetComponent<Camera>();
+
+        currentObjective = objectivesList.Objectives[0];
         //Set drop to its position
-        transform.position = currentCharacter.transform.position + new Vector3(-4.0f, 25.0f, -55.0f);
+        transform.position = objectivesList.startPosition;
 
         //Set references
-        _lastObjective = currentCharacter.transform.position;
-        _lastPositionMovement = transform.position;
-        _lastCharacter = currentCharacter;
-
-        //Activate boundary
-        if (boundary.visible)
-        {
-            //Create new boundary
-            _cameraBoundary = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            _cameraBoundary.name = "CameraBoundary";
-
-            //Delete colliders
-            Destroy(_cameraBoundary.GetComponent<Collider>());
-
-            //paint it
-            Color color = Color.blue;
-            color.a = 0.1f;
-            Material material = new Material(Shader.Find("Transparent/Diffuse"));
-            material.color = color;
-            _cameraBoundary.GetComponent<Renderer>().material = material;
-
-            //Put it in its position
-            _cameraBoundary.transform.position = currentCharacter.transform.position;
-            _cameraBoundary.transform.localScale = new Vector3(boundary.width, boundary.width, 0.1f);
-        }
+        _lastObjective = currentObjective.lookAtPosition;
+        _lastPositionMovement = objectivesList.startPosition;
     }
 
     /// <summary>
@@ -145,41 +117,44 @@ public class CameraTravelController : MonoBehaviour {
         LookAt();
     }
 
+    float waitTime = 0F;
     /// <summary>
     /// Actualize the camera status
     /// </summary>
     private void ActualizeState()
     {
-        //Get drop size
-        float size = currentCharacter.GetComponent<CharacterSize>().GetSize();
+        //look for change to the next drop
+        Vector3 diff = currentObjective.position - transform.position;
 
-        //Actualize ofset and boundary depends of the size
-        _offset = new Vector3(0.0f, offset.up + size, offset.far - (size * 5));
-
-        if (boundary.visible)
-        {
-            _cameraBoundary.SetActive(true);
-            _cameraBoundary.transform.localScale = new Vector3(boundary.width * size, boundary.width * size, 0.1f);
-        }
+        if (diff.magnitude < 1F)
+            waitTime += Time.deltaTime;
         else
-            _cameraBoundary.SetActive(false);
+            waitTime = 0F;
 
-        _lastCharacter = currentCharacter;
+        if (waitTime > currentObjective.waitTime)
+        {
+            int index = objectivesList.Objectives.IndexOf(currentObjective);
+            if (++index == objectivesList.Objectives.Count) { 
+                index = 0;
+                _mainCamera.transform.position = transform.position;
+                _mainCamera.transform.rotation = transform.rotation;
+                _cameraSwitcher.SetActiveCamera(1);
+            }
+            currentObjective = objectivesList.Objectives[index];
+        }
     }
 
+    Vector3 objMov;
     /// <summary>
     /// Move the camera to offset position of the player gradually
     /// </summary>
     private void MoveCamera()
     {
-        Vector3 destination = currentCharacter.transform.position + _offset;
+        Vector3 destination = currentObjective.position;
 
         //Need to use something better than size
-        Vector3 objMov = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
-        objMov.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
-
-        if (boundary.visible)
-            _cameraBoundary.transform.position = objMov - _offset;
+        objMov = Vector2.Lerp(transform.position, destination, Time.deltaTime * currentObjective.movement.smooth);
+        objMov.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * currentObjective.movement.zSmooth);
 
         transform.position = objMov;
 
@@ -192,21 +167,14 @@ public class CameraTravelController : MonoBehaviour {
     /// </summary>
     private void LookAt()
     {
-        Vector3 destination = currentCharacter.transform.position;
+        Quaternion lookingAt = transform.rotation;
 
-        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * movement.lookAtSmooth);
+        Vector3 destination = currentObjective.lookAtPosition;
 
-        //Set position lookAt to camera
+        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * currentObjective.movement.lookAtSmooth);
+
         transform.LookAt(destination);
 
         _lastObjective = destination;
-    }
-
-    /// <summary>
-    /// Set the objective of the camera
-    /// </summary>
-    public void SetObjective(GameObject objective)
-    {
-        currentCharacter = objective;
     }
 }

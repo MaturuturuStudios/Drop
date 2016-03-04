@@ -136,7 +136,6 @@ public class GameControllerInput : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Keypad8))
             _switcher.KillDrop(_switcher.currentCharacter);
-        
-
     }
+
 }

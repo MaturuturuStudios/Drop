@@ -5,7 +5,6 @@ public class CameraController : MonoBehaviour {
     
     //Drop References
     public GameObject currentCharacter;
-    private GameObject _lastCharacter;
 
     /// <summary>
     /// Distance from player to camera
@@ -65,7 +64,6 @@ public class CameraController : MonoBehaviour {
         //Set references
         _lastObjective = currentCharacter.transform.position;
         _lastPositionMovement = transform.position;
-        _lastCharacter = currentCharacter;
 
         //Activate boundary
         if (boundary.visible) {
@@ -127,8 +125,6 @@ public class CameraController : MonoBehaviour {
         }
         else
             _cameraBoundary.SetActive(false);
-
-        _lastCharacter = currentCharacter;
     }
 
     Vector3 objMov;
