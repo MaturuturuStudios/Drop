@@ -438,7 +438,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			case CharacterControllerParameters.JumpBehaviour.CanJumpAnywhere:
 				return true;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpOnSlope:
-				return State.IsGrounded || State.IsOnSlope;
+                return State.IsGrounded || State.IsOnSlope;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpSliding:
 				return State.IsGrounded || State.IsSliding;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpOnGround:
@@ -631,26 +631,33 @@ public class CharacterControllerCustom : MonoBehaviour {
 			SetVerticalForceRelative(0);
 		}
 		else {
-			// The collider is considered a slope
+			// The character is not grounded
 			State.IsGrounded = false;
-			State.IsOnSlope = true;
 			State.GroundedObject = null;
 
 			// Projects the speed to the normal's perpendicular
 			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 
-			// Check if the character is sliding along a wall
-			if (State.IsFalling && Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
-				// The character is now sliding
-				State.IsSliding = true;
+			// Check if the character is on a slope
+			if (Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
+				// The collider is considered a slope
+				State.IsOnSlope = true;
 
-				// If the character wasn't sliding, stops it
-				if (!_wasSliding)
-					Stop();
+				if (State.IsFalling) {
+					// The character is now sliding
+					State.IsSliding = true;
+
+					// If the character wasn't sliding, stops it
+					if (!_wasSliding)
+						Stop();
+				}
+				else {
+					State.IsSliding = false;
+				}
 			}
 			else {
-				State.IsSliding = false;
+				State.IsOnSlope = false;
 			}
 		}
 	}

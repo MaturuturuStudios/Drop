@@ -175,8 +175,8 @@ public class SmarterSphereDeform2 : MonoBehaviour {
 				if (Mathf.Abs(angle) <= angleBetweenRays) {
 					// Calculates the weight of the vertex
 					float zFactor = 1 - zDistance / sphereCollider.radius;
-                    _deformationWeights[i][j] = (1 - angle / angleBetweenRays) * Mathf.Sqrt(zFactor);
-				}
+                    _deformationWeights[i][j] = Mathf.Sqrt((1 - angle / angleBetweenRays) * zFactor);
+                }
 				else
 					_deformationWeights[i][j] = 0;
             }
