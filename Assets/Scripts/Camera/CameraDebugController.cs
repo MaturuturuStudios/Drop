@@ -9,73 +9,43 @@ public class CameraDebugController : MonoBehaviour {
     //Camera movement attributes
     public float debugVelocity = 0.5f;
 
-    //Offset Reference
-    public Vector3 _offset = new Vector3(0.0f, 0.0f, -10.0f);
-
-    //Debug objective
-    public GameObject debugObjective;
-
     //Movement position control
     private Vector3 _lastPositionMovement;
-   
+
+    public float speedH = 2.0f;
+    public float speedV = 2.0f;
+
+    private float yaw = 0.0f;
+    private float pitch = 0.0f;
 
     /// <summary>
     /// Called on start script
     /// </summary>
     void Start()
     {
-        //Create phantom objective
-        debugObjective = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        debugObjective.name = "PhantomDrop";
-
-        //Delete phantom objective colliders
-        Destroy(debugObjective.GetComponent<Collider>());
-
-        //paint phantom objective
-        Color color = Color.white;
-        color.a = 0.1f;
-        Material material = new Material(Shader.Find("Transparent/Diffuse"));
-        material.color = color;
-        debugObjective.GetComponent<Renderer>().material = material;
-
-        //Put phantom objective in its position
-        debugObjective.transform.position = debugObjective.transform.position;
-        debugObjective.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-
-        //Set drop to its position
-        transform.position = _offset;
-
-        //Save references
-        _lastPositionMovement = transform.position;
-    }
-
-    /// <summary>
-    /// Update the camera atributes
-    /// </summary>
-    void LateUpdate()
-    {
-        //Camera Movement
-        transform.position = debugObjective.transform.position + _offset;
-
-        //LookAt player
-        transform.LookAt(debugObjective.transform);
+        //Set camera to start position //maybe at player + offset position
+        transform.position = new Vector3(0.0f, 0.0f, -10.0f);
     }
 
     /// <summary>
     /// Set the new position of the phantom
     /// </summary>
-    public void SetPhantomPosition(Vector3 newPosition)
+    public void SetMovement(Vector3 movement)
     {
-        debugObjective.transform.position = newPosition;
+
+        Vector3 nextPosition = transform.rotation * movement;
+
+        transform.position += nextPosition;
     }
 
     /// <summary>
     /// Set the new position of the phantom
     /// </summary>
-    public void SetPhantomMovement(Vector3 movement)
+    public void SetLookAt (float mouseAxisX, float mouseAxisY)
     {
-        Vector3 nextPosition = movement;
+        yaw += debugVelocity * Input.GetAxis("Mouse X");
+        pitch -= debugVelocity * Input.GetAxis("Mouse Y");
 
-        debugObjective.transform.position += nextPosition;
+        transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
     }
 }

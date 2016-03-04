@@ -131,6 +131,7 @@ public class CameraController : MonoBehaviour {
         _lastCharacter = currentCharacter;
     }
 
+    Vector3 objMov;
     /// <summary>
     /// Move the camera to offset position of the player gradually
     /// </summary>
@@ -139,7 +140,7 @@ public class CameraController : MonoBehaviour {
         Vector3 destination = currentCharacter.transform.position + _offset;
 
         //Need to use something better than size
-        Vector3 objMov = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
+        objMov = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
         objMov.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
 
         if (boundary.visible)
@@ -156,13 +157,14 @@ public class CameraController : MonoBehaviour {
     /// </summary>
     private void LookAt()
     {
+        Quaternion lookingAt = transform.rotation;
+
         Vector3 destination = currentCharacter.transform.position;
 
         destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * movement.lookAtSmooth);
 
-        //Set position lookAt to camera
         transform.LookAt(destination);
-        
+
         _lastObjective = destination;
     }
 
