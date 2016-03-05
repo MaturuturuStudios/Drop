@@ -44,6 +44,13 @@ public class SmarterSphereDeform : MonoBehaviour {
 	/// </summary>
 	public float chamfScale = 1;
 
+	/// <summary>
+	/// If enabled, the planar deformation will compensate the chamf
+	/// deformation. Note that this will prevent the entity from keeping
+	/// its volume.
+	/// </summary>
+	public bool compensateChamf = true;
+
 	#endregion
 
 	#region Private Attributes
@@ -175,8 +182,8 @@ public class SmarterSphereDeform : MonoBehaviour {
 				if (Mathf.Abs(angle) <= angleBetweenRays) {
 					// Calculates the weight of the vertex
 					float zFactor = 1 - zDistance / sphereCollider.radius;
-                    _deformationWeights[i][j] = (1 - angle / angleBetweenRays) * Mathf.Sqrt(zFactor);
-				}
+                    _deformationWeights[i][j] = Mathf.Sqrt((1 - angle / angleBetweenRays) * zFactor);
+                }
 				else
 					_deformationWeights[i][j] = 0;
             }
@@ -188,33 +195,42 @@ public class SmarterSphereDeform : MonoBehaviour {
 	/// </summary>
 	private void Deform() {
 		// Initializes the arrays
-		Vector3[] modifiedVertices = (Vector3[]) _originalVertices.Clone();
+		Vector3[] modifiedVertices = (Vector3[])_originalVertices.Clone();
 
 		// Calculates the needed information
 		Vector3 center = _transform.TransformPoint(sphereCollider.center);
 		float rayDistance = sphereCollider.radius * _transform.lossyScale.x;
 
 		// Casts the rays
+		Vector3[] deformations = new Vector3[numberOfRays];
 		for (int i = 0; i < numberOfRays; i++) {
 			// If the ray didn't hit anything, skips it
 			RaycastHit hitInfo;
 			Vector3 transformedDirection = _transform.TransformDirection(_rayDirections[i]);
-            if (!Physics.Raycast(center, transformedDirection, out hitInfo, rayDistance, layer))
+			if (!Physics.Raycast(center, transformedDirection, out hitInfo, rayDistance, layer)) {
+				deformations[i] = Vector3.zero;
 				continue;
+			}
 			Debug.DrawRay(center, transformedDirection * rayDistance, Color.blue);
 
 			// Calculates the deformation
-			Vector3 deformation = transformedDirection * (hitInfo.distance - rayDistance);
-            deformation = Vector3.Project(deformation, hitInfo.normal);
+			deformations[i] = transformedDirection * (hitInfo.distance - rayDistance);
+            deformations[i] = Vector3.Project(deformations[i], hitInfo.normal);
 
-			// For each vertex, calculates the deformation to apply
-			DeformVertices(i, deformation, ref modifiedVertices);
+			// For each vertex, calculates the chamf deformation to apply
+			DeformChamfVertices(i, deformations[i], ref modifiedVertices);
         }
+
+		// For each vertex, calculates the planar deformation to apply
+		for (int i = 0; i < numberOfRays; i++)
+			if (deformations[i] != Vector3.zero)
+				DeformPlanarVertices(i, deformations[i], ref modifiedVertices);
 
 		// Moves the vertices to their desired position
 		Vector3[] newVertices = new Vector3[modifiedVertices.Length];
-		for (int i = 0; i < newVertices.Length; i++)
-			newVertices[i] = Vector3.Lerp(_modifiedMesh.vertices[i], modifiedVertices[i], deformationSpeed * Time.deltaTime);
+		Vector3[] lastFrameVertices = _modifiedMesh.vertices;
+        for (int i = 0; i < newVertices.Length; i++)
+			newVertices[i] = Vector3.Lerp(lastFrameVertices[i], modifiedVertices[i], deformationSpeed * Time.deltaTime);
 
 		// Reassignates the vertices and recalculates the normals of the vertices
 		_modifiedMesh.vertices = newVertices;
@@ -222,36 +238,47 @@ public class SmarterSphereDeform : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Calculates the deformation derived from a single ray.
+	/// Calculates the chamf deformation derived from a single ray, perpendicular
+	/// to the deformation distance.
 	/// </summary>
 	/// <param name="rayIndex">Index of the ray causing the deformation</param>
 	/// <param name="deformation">Deformation performed by the ray</param>
 	/// <param name="vertexToModify">A reference to the vertices to modify</param>
-	private void DeformVertices(int rayIndex, Vector3 deformation, ref Vector3[] vertexToModify) {
-		// Precalculates some information
-		float raysFactor = Mathf.Sqrt(numberOfRays);
+	private void DeformChamfVertices(int rayIndex, Vector3 deformation, ref Vector3[] vertexToModify) {
+		// Precalculates some data
+		float deformationFactor = deformation.magnitude * chamfScale;
+		deformationFactor /= sphereCollider.radius * _transform.lossyScale.x * Mathf.Sqrt(numberOfRays);
 
 		// For each vertex, calculates it's deformation
 		for (int i = 0; i < vertexToModify.Length; i++) {
-			// Calculates the global vertex position
-			Vector3 vertexGlobalPosition = _transform.TransformPoint(_originalVertices[i]);
-			Vector3 vertexDistance = vertexGlobalPosition - _transform.TransformPoint(_deformationPoints[rayIndex]);
+			// Calculates the distance to the deformation point
+			Vector3 vertexDistance = _transform.TransformVector(_originalVertices[i] - _deformationPoints[rayIndex]);
+			Vector3 distanceProjection = Vector3.ProjectOnPlane(vertexDistance, deformation);
+
+			// Applys the chamf to the vertex
+			vertexToModify[i] += _transform.InverseTransformVector(distanceProjection * deformationFactor);
+		}
+	}
+
+	/// <summary>
+	/// Calculates the deformation on the deformation direction derived
+	/// from a single ray, compensating the chamf.
+	/// </summary>
+	/// <param name="rayIndex">Index of the ray causing the deformation</param>
+	/// <param name="deformation">Deformation performed by the ray</param>
+	/// <param name="vertexToModify">A reference to the vertices to modify</param>
+	private void DeformPlanarVertices(int rayIndex, Vector3 deformation, ref Vector3[] vertexToModify) {
+		// For each vertex, calculates it's deformation
+		for (int i = 0; i < vertexToModify.Length; i++) {
+			// Calculates the chamf compensation
+			Vector3 chamfDistance = Vector3.zero;
+			if (compensateChamf) {
+				chamfDistance = _transform.TransformVector(_originalVertices[i] - vertexToModify[i]);
+				chamfDistance = Vector3.Project(chamfDistance, deformation);
+			}
 
 			// Adds the deformation to the vertex
-			Vector3 appliedDeformation = deformation * _deformationWeights[rayIndex][i];
-			
-			// Applys the chamf to the vertex
-			Vector3 distanceProjection = Vector3.ProjectOnPlane(vertexDistance, deformation);
-			Vector3 offset = distanceProjection.normalized;
-			offset *= distanceProjection.magnitude;
-			offset /= sphereCollider.radius * _transform.lossyScale.x;
-            offset *= deformation.magnitude;
-			offset /= raysFactor;
-			offset *= chamfScale;
-			appliedDeformation += offset;
-
-			// Returns the vertex coordinates to local ones
-			vertexToModify[i] += _transform.InverseTransformVector(appliedDeformation);
+			vertexToModify[i] += _transform.InverseTransformVector(deformation + chamfDistance) * _deformationWeights[rayIndex][i];
 		}
 	}
 
