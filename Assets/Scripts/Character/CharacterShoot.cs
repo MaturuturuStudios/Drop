@@ -94,14 +94,14 @@ public class CharacterShoot : MonoBehaviour {
                 st.enabled = false;
                 ccc.Parameters = null;
             }       
-        }
-        if ((lessize == 1) || ccc.State.IsGrounded == false){
+        }*/
+        if ( ccc.State.IsGrounded == false){
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
             
              //ccc.Parameters = null;                      
-        }*/
+        }
         
        
        /* if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
