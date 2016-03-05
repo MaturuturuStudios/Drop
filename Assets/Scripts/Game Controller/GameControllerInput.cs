@@ -84,7 +84,7 @@ public class GameControllerInput : MonoBehaviour {
     private void DebugAddDrops() {
 
         if(Input.GetKeyDown(KeyCode.Keypad7)) {
-            GameObject drop = _switcher.AddDrop(true);
+            GameObject drop = _switcher.CreateDrop(true);
             Debug.Log("add drop");
         }
         

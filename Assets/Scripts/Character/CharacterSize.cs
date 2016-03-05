@@ -325,7 +325,7 @@ public class CharacterSize : MonoBehaviour {
         Vector3 spitDirection = getDirectionSpit(finalSize, numberDropsRemain, positionSpit, out positionSpit);
 
         //create the drop
-        GameObject newDrop = _independentControl.AddDrop(false);
+        GameObject newDrop = _independentControl.CreateDrop(false);
 
         //set the position and size
         newDrop.transform.position = positionSpit;

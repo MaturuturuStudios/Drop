@@ -11,7 +11,8 @@ public class CharacterShoot : MonoBehaviour {
 	private bool  isBallThrown;
     private int lessize=0;
     private int falling = 0;
-    private bool shootmode = false;
+    //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
+    public bool shootmode = false;
     
 
     CharacterControllerCustom ccc;
@@ -133,7 +134,7 @@ public class CharacterShoot : MonoBehaviour {
 
 	private void throwBall(){
 
-        ball = _gcic.AddDrop(true); //Added by toni, Now works
+        ball = _gcic.CreateDrop(true); //AddDrop -> CreateDrop
         ball.GetComponent<CharacterSize>().SetSize(1);
         prepareDropToFly();
 
