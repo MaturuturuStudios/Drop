@@ -170,7 +170,7 @@ public class DebugController : MonoBehaviour {
 
 	public void DestroyCurrentlyControlledCharacter() {
 		// Destroys the currently controlled character
-		_independentControl.KillDrop(_independentControl.currentCharacter);
+		_independentControl.DestroyDrop(_independentControl.currentCharacter);
 	}
 
 	private void ShowCharacterCollisions(GameObject currentCharacter) {
