@@ -112,13 +112,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Set Control to new drop
             currentCharacter = allCurrentCharacters[index];
-
-            //Check if it is under control, if not add it
-            if (!IsUnderControl(currentCharacter))
-                allCurrentCharacters.Add(currentCharacter);
-
-            //Actualize camera objective
-            //_cameraController.SetObjective(currentCharacter);
         }
     }
 
