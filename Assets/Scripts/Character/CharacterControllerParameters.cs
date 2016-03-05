@@ -153,7 +153,7 @@ public class CharacterControllerParameters {
 	/// The acceleration of the character while floating. This affects the time the character takes
 	/// to achieve maximum speed.
 	/// </summary>
-	public float accelerationOnAir = 5;
+	public float accelerationOnAir = 3;
 
 	/// <summary>
 	/// The amount of stickiness to apply to the character while moving down a slope.
@@ -179,7 +179,7 @@ public class CharacterControllerParameters {
 	/// Defines the precission when comparing angles. Higher values result in more reliable movement
 	/// but can produce errors.
 	/// </summary>
-	public float angleThereshold = 0.01f;
+	public float angleThereshold = 0.1f;
 
 	/// <summary>
 	/// Defines in which situations the character will be able to jump.
@@ -200,7 +200,7 @@ public class CharacterControllerParameters {
 	/// <summary>
 	/// Jumping factor applied when wall jumping.
 	/// </summary>
-	public float wallJumpMagnitude = 1;
+	public float wallJumpMagnitude = 2;
 
 	/// <summary>
 	/// Amount of time the character will be uncontrollable after performing a wall jump.

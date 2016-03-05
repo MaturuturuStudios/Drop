@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System;
-using System.Linq;
 using System.Collections.Generic;
 
 /// <summary>
@@ -40,6 +38,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	public Vector3 Velocity { get { return _velocity; } }
 
+	/// <summary>
+	/// List of the colliders which this controller collided with on the last frame.
+	/// </summary>
+	public List<Collider> Collisions { get { return _collisions; } }
+
 	#endregion
 
 	#region Backing Fields
@@ -53,6 +56,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// Stack of the parameters applied. Used by the Parameters property.
 	/// </summary>
 	private Stack<CharacterControllerParameters> _overrideParameters;
+
+	/// <summary>
+	/// Backing field for the Collisions property.
+	/// </summary>
+	private List<Collider> _collisions;
 
 	#endregion
 
@@ -130,8 +138,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Creates the original state
 		State = new CharacterControllerState();
 
-		// Initializes the parameter's stack
+		// Initializes the parameter's stack and collisions list
 		_overrideParameters = new Stack<CharacterControllerParameters>();
+		_collisions = new List<Collider>();
 
 		// Recovers the desired components
 		_transform = transform;
@@ -556,6 +565,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		State.PlatformVelocity = platformVelocity;
 		State.IsFlying = isFlying;
 
+		// Resets the collisions list
+		_collisions.Clear();
+
 		// Clamps the movement
 		movement.x = Mathf.Clamp(movement.x, -Parameters.maxVelocity.x, Parameters.maxVelocity.x);
 		movement.y = Mathf.Clamp(movement.y, -Parameters.maxVelocity.y, Parameters.maxVelocity.y);
@@ -600,6 +612,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void OnControllerColliderHit(ControllerColliderHit hit) {
 		// There has been collisions this frame. Stops the wall jumping
 		State.HasCollisions = true;
+		_collisions.Add(hit.collider);
 		StopFlying();
 
 		// Spheres have their normal inverted for whatever reason
