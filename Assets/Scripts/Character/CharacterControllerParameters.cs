@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
+using System.Text;
 
 /// <summary>
 /// The parameters of the character controller. They store how the character should behave.
@@ -190,7 +190,7 @@ public class CharacterControllerParameters {
 	/// Amount of time beetween jumps. The character will not be able to jump after this time period
 	/// has passed.
 	/// </summary>
-	public float jumpFrecuency = 0.25f;
+	public float jumpFrequency = 0.25f;
 
 	/// <summary>
 	/// Jumping factor. Defines the height that should be achieved at the peek of the jump.
@@ -250,12 +250,12 @@ public class CharacterControllerParameters {
 		clone.maxSpeed = maxSpeed;
 		clone.accelerationOnGround = accelerationOnGround;
 		clone.accelerationOnAir = accelerationOnAir;
-		clone.maxWallSlideAngle = maxWallSlideAngle;
 		clone.slopeStickiness = slopeStickiness;
+		clone.maxWallSlideAngle = maxWallSlideAngle;
         clone.slidingDragFactor = slidingDragFactor;
 		clone.angleThereshold = angleThereshold;
         clone.jumpBehaviour = jumpBehaviour;
-		clone.jumpFrecuency = jumpFrecuency;
+		clone.jumpFrequency = jumpFrequency;
 		clone.jumpMagnitude = jumpMagnitude;
 		clone.wallJumpMagnitude = wallJumpMagnitude;
 		clone.wallJumpFlyTime = wallJumpFlyTime;
@@ -266,6 +266,38 @@ public class CharacterControllerParameters {
 		clone.zClamp = zClamp;
 
 		return clone;
+	}
+
+	/// <summary>
+	/// Overrides the ToString method with a more detailed information string.
+	/// </summary>
+	/// <returns>Detailed information about the parameters</returns>
+	override public String ToString() {
+		StringBuilder sb = new StringBuilder();
+		sb.Append("Mov. Control: ").Append(movementControl.ToString()).Append("\n");
+		sb.Append("Mov. Behaviour: ").Append(movementBehaviour.ToString()).Append("\n");
+		sb.Append("Rel. to Gravity?: ").Append(relativeToGravity).Append("\n");
+		sb.Append("Max Speed: ").Append(maxSpeed).Append("\n");
+		sb.Append("Ground Accel.: ").Append(accelerationOnGround).Append("\n");
+		sb.Append("Air Accel.: ").Append(accelerationOnAir).Append("\n");
+		sb.Append("Slope Stickiness: ").Append(slopeStickiness).Append("\n");
+		sb.Append("Wall Slide Angle: ").Append(maxWallSlideAngle).Append("\n");
+		sb.Append("Slide Drag Fact.: ").Append(slidingDragFactor).Append("\n");
+		sb.Append("Angle Thereshold: ").Append(angleThereshold).Append("\n");
+		sb.Append("Jump Bheaviour: ").Append(jumpBehaviour.ToString()).Append("\n");
+		sb.Append("Jump Frequency: ").Append(jumpFrequency).Append("\n");
+		sb.Append("Jump Magnitude: ").Append(jumpMagnitude).Append("\n");
+		sb.Append("WallJ. Magnitude: ").Append(wallJumpMagnitude).Append("\n");
+		sb.Append("WallJ. Fly Time: ").Append(wallJumpFlyTime).Append("\n");
+		sb.Append("Base Mass: ").Append(baseMass).Append("\n");
+		sb.Append("Custom Gravity?: ").Append(useCustomGravity).Append("\n");
+		sb.Append("Custom Gravity: ").Append(customGravity).Append("\n");
+		sb.Append("Max Velocity: (")
+			.Append(maxVelocity.x.ToString("E2")).Append(", ")
+			.Append(maxVelocity.y.ToString("E2")).Append(", ")
+			.Append(maxVelocity.z.ToString("E2")).Append(")\n");
+		sb.Append("Z Clamp?: ").Append(zClamp);
+		return sb.ToString();
 	}
 
 	#endregion

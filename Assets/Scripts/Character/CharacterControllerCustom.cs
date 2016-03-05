@@ -421,7 +421,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			SendFlying(finalVelocity, false, true, flyTime);
 		}
 
-		_jumpingTime = Parameters.jumpFrecuency;
+		_jumpingTime = Parameters.jumpFrequency;
 	}
 
 	/// <summary>
