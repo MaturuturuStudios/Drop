@@ -8,7 +8,9 @@ public class JumpMushroom : MonoBehaviour
 
     private Vector3 velo;
 
-    public float Jumpforce = 50;
+    public float minJump = 1;
+    public float maxJump = 2;
+    public float Jumpforce = 10;
 
     public bool KeepVerticalSpeed = true;
 
@@ -35,11 +37,17 @@ public class JumpMushroom : MonoBehaviour
                 //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
                     
                 velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
+                velo.y = velo.y * -1;
 
-                if (velo.y < 1)
-                    velo.y = 1;
+               // Debug.Log("LOOOOOOOOOOOOOOOOOOOOL " + velo.y);
 
-                if(KeepVerticalSpeed== false)
+                if (velo.y < minJump)
+                    velo.y = minJump;
+
+                if (velo.y > maxJump)
+                    velo.y = maxJump;
+
+                if (KeepVerticalSpeed== false)
                      cccp.GetComponent<CharacterControllerCustom>().SetVerticalForce(0);
 
                 //cccp.GetComponent<CharacterControllerCustom>().AddForceRelative(FacingDirection*Jumpforce, ForceMode.VelocityChange);
