@@ -85,7 +85,7 @@ public class CharacterControllerState {
 		sb.Append("Is Grounded: ").Append(IsGrounded).Append("\n");
 		sb.Append("Is Falling: ").Append(IsFalling).Append("\n");
 		sb.Append("Is Flying: ").Append(IsFlying).Append("\n");
-		sb.Append("Grounded Object: ").Append(GroundedObject.name).Append("\n");
+		sb.Append("Grounded Object: ").Append(GroundedObject != null ? GroundedObject.name : null).Append("\n");
 		sb.Append("Platform Velocity: ").Append(PlatformVelocity).Append("\n");
 		sb.Append("Is On Slope: ").Append(IsOnSlope).Append("\n");
 		sb.Append("Is Sliding: ").Append(IsSliding).Append("\n");
