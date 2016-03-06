@@ -124,7 +124,7 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	public void DestroyCurrentlyControlledCharacter() {
 		// Destroys the currently controlled character
-		_independentControl.DestroyDrop(_independentControl.currentCharacter);
+		_independentControl.DestroyDrop(_independentControl.currentCharacter, true);
 	}
 
 	#endregion
