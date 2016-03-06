@@ -347,9 +347,13 @@ public class CharacterSize : MonoBehaviour {
         newDrop.transform.localScale = Vector3.one;
         newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
         //set a force modified by the size of drop
-        newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
-        newDrop.GetComponent<CharacterControllerCustom>()
-            .AddForce(spitDirection*impulseSpit*Mathf.Sqrt(numberDropsRemain), ForceMode.VelocityChange);
+        //newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
+        //newDrop.GetComponent<CharacterControllerCustom>()
+        //    .AddForce(spitDirection*impulseSpit*Mathf.Sqrt(numberDropsRemain), ForceMode.VelocityChange);
+
+        CharacterControllerCustom newDropController = newDrop.GetComponent<CharacterControllerCustom>();
+        newDropController.SendFlying(spitDirection * impulseSpit * Mathf.Sqrt(numberDropsRemain), false);
+
         //for test, clarity on behaviour
         _directionSpitDrop = Vector3.zero;
 
@@ -368,7 +372,6 @@ public class CharacterSize : MonoBehaviour {
     /// <param name="spitPosition">position where spitted drop should start</param>
     /// <returns>Vector with the direction to spit out</returns>
     private Vector3 getDirectionSpit(int finalSize, int numberDropsSpitted, Vector3 centerPosition, out Vector3 spitPosition) {
-        Vector3 result = Vector3.zero;
         int side = 1;
         //first, check which side, left or right, we have preference for the side where the drop was absorved
         if (_directionSpitDrop != Vector3.zero && _directionSpitDrop.x < 0) {
