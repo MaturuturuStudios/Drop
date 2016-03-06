@@ -64,7 +64,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// <param name="drop">drop to remove from control & scene</param>
     public void DestroyDrop(GameObject drop, bool setControl = false) {
 
-        if (allCurrentCharacters.Count > 1) {
+        if (!IsUnderControl (drop) || allCurrentCharacters.Count > 1) {
             //Set control to the next drop if it was the one under control
             if (setControl && currentCharacter == drop)
                 ControlNextDrop();
