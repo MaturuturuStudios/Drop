@@ -4,10 +4,19 @@ public class GameControllerInput : MonoBehaviour {
 
     // Internal references
     private GameControllerIndependentControl _switcher;
+    private CameraSwitcher _cameraSwitcher;
+    private CameraDebugController _cameraDebugControler;
+    private Camera _camera;
 
-	void Start() {
-		// Retrives the independent control component
-		_switcher = GetComponent<GameControllerIndependentControl>();
+    void Start() {
+        // Retrives the independent control component
+        _switcher = GetComponent<GameControllerIndependentControl>();
+        _cameraSwitcher = GameObject.FindGameObjectWithTag("CameraSet")
+                                .GetComponent<CameraSwitcher>();
+        _camera = _cameraSwitcher.transform.FindChild("MainCamera")
+                                .GetComponent<Camera>();
+        _cameraDebugControler = _cameraSwitcher.transform.FindChild("DebugCamera")
+                                .GetComponent<CameraDebugController>();
     }
 
 	void Update() {
@@ -49,5 +58,43 @@ public class GameControllerInput : MonoBehaviour {
 			shootComponent.Aim();
         if (Input.GetButtonDown("Fire"))
 			shootComponent.Shoot();
-	}
+
+        // Debug Camera input
+        DebugCamera();
+    }
+
+
+    private void DebugCamera() {
+        //Switch debug mode
+        if (Input.GetKeyDown(KeyCode.F1))
+            _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.DEBUG);
+
+        //Back camera
+        if (Input.GetKeyDown(KeyCode.F2) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
+            _cameraSwitcher.BackCamera();
+
+        //Next Camera
+        if (Input.GetKeyDown(KeyCode.F3) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
+            _cameraSwitcher.NextCamera();
+
+        //Debug Camera Input
+        if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG) {
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveClose = Input.GetAxis("Vertical");// Y rotation?
+            float moveVertical = 0.0f;
+            //At the moment I put it here I have to move it to L & R
+            if (Input.GetKey(KeyCode.Q))
+                moveVertical += 1.0f;
+            if (Input.GetKey(KeyCode.E))
+                moveVertical -= 1.0f;
+
+            Vector3 movement = new Vector3(moveHorizontal, moveVertical, moveClose);
+
+            _cameraDebugControler.SetMovement(movement);
+
+            float mouseAxisX = Input.GetAxis("Mouse X");
+            float mouseAxisY = Input.GetAxis("Mouse Y");
+            _cameraDebugControler.SetLookAt(mouseAxisX, mouseAxisY);
+        }
+    }
 }
