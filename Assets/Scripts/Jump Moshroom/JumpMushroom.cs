@@ -4,31 +4,45 @@ using System.Collections;
 public class JumpMushroom : MonoBehaviour
 {
    
-    public Vector3 upforce;
+    private Vector3 FacingDirection;
+
+    private Vector3 velo;
+
+    public float Jumpforce = 50;
+
+    public bool KeepVerticalSpeed = true;
+
     // Use this for initialization
     void Start()
     {
-        upforce.x = 0;
-        upforce.y = 50;
-        upforce.z = 0;
+
+        FacingDirection = Vector3.up;
+        velo.x = 0;
+        velo.z = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        //FacingDirection = new Vector3(transform.position.x, transform.position.y, 0).normalized;
+        FacingDirection = transform.rotation * FacingDirection;
     }
     public void OnTriggerEnter(Collider other)
     {
         CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
+        if ((cccp != null)) {
+            if ((cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsGrounded == false) || (cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsFalling == true)){
+                //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
+                    
+                velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
 
-        if ((cccp !=null) && (cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsGrounded==false) || (cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsFalling == true)){
-            //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
-            // CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();     
-            float vel = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;
-            // other.GetComponent<CharacterControllerCustom>().SetVerticalSpeed(0);
-            cccp.GetComponent<CharacterControllerCustom>().AddForce(upforce, ForceMode.VelocityChange);
-            
+                if(KeepVerticalSpeed== false)
+                     cccp.GetComponent<CharacterControllerCustom>().SetVerticalForce(0);
+
+                 //cccp.GetComponent<CharacterControllerCustom>().AddForceRelative(FacingDirection*Jumpforce, ForceMode.VelocityChange);
+                //Vector3 finalVelocity = Quaternion.Euler(0, FacingDirection.y, 0) * new Vector3(0, velocity.y, 0);
+                cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * Jumpforce),false,true,0.5f);
+            }
         }
     }
 
