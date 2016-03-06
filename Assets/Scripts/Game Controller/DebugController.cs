@@ -64,6 +64,11 @@ public class DebugController : MonoBehaviour {
 	public Text parametersText;
 
 	/// <summary>
+	/// The color to tint the character currently under control.
+	/// </summary>
+	public Color characterColor = Color.blue;
+
+	/// <summary>
 	/// The color to tint the colliders the character collides with.
 	/// </summary>
 	public Color collisionColor = Color.red;
@@ -83,6 +88,16 @@ public class DebugController : MonoBehaviour {
 	/// game controller.
 	/// </summary>
 	private GameControllerIndependentControl _independentControl;
+
+	/// <summary>
+	/// Reference to the character currently under control.
+	/// </summary>
+	private GameObject _currentCharacter;
+
+	/// <summary>
+	/// The original color of the currently controlled character.
+	/// </summary>
+	private Color _savedCharacterColor;
 
 	#endregion
 
@@ -124,7 +139,7 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	public void DestroyCurrentlyControlledCharacter() {
 		// Destroys the currently controlled character
-		_independentControl.DestroyDrop(_independentControl.currentCharacter, true);
+		_independentControl.DestroyDrop(_independentControl.currentCharacter);
 	}
 
 	#endregion
@@ -138,8 +153,11 @@ public class DebugController : MonoBehaviour {
 		// Initializes the collisions list
 		_collidersColors = new Dictionary<Collider, Color>();
 
-		// Looks for the indpendent controller component
+		// Looks for the independent controller component
 		_independentControl = FindObjectOfType<GameControllerIndependentControl>();
+
+		// Initializes the current character
+		_currentCharacter = null;
     }
 	
 	/// <summary>
@@ -160,22 +178,43 @@ public class DebugController : MonoBehaviour {
 		// Checks if the debug mod is active
 		debugPanel.SetActive(debugMode);
 		//Cursor.visible = debugMode;	Still not necessary
-		if (!debugMode)
-			return;
+		if (!debugMode) {
+			RestoreCharacterColor();
+            return;
+		}
 
-		// Retrieves the current character
-		GameObject currentCharacter = _independentControl.currentCharacter;
+		// Checks if the current character has changed and retrieves it
+		if (_currentCharacter != _independentControl.currentCharacter) {
+			// Restores last current character's color
+			RestoreCharacterColor();
+
+			// Updates the current character and changes it's color
+			_currentCharacter = _independentControl.currentCharacter;
+			Material characterMaterial = _currentCharacter.GetComponentInChildren<Renderer>().material;
+			_savedCharacterColor = characterMaterial.GetColor("_Color");
+			characterMaterial.SetColor("_Color", characterColor);
+		}
 
 		// Updates the texts
-		ShowCharacterInformation(currentCharacter);
-		ShowCharacterState(currentCharacter);
-		ShowCharacterParameters(currentCharacter);
+		ShowCharacterInformation();
+		ShowCharacterState();
+		ShowCharacterParameters();
 
 		// Manages the events
-		ManageSizeChange(currentCharacter);
+		ManageSizeChange();
 		ManageCharacterCreation();
-		ShowCharacterCollisions(currentCharacter);
+		ManageCharacterSelection();
+		ShowCharacterCollisions();
 	}
+
+	/// <summary>
+	/// Restores current character's color
+	/// </summary>
+	private void RestoreCharacterColor() {
+		if (_currentCharacter != null)
+			_currentCharacter.GetComponentInChildren<Renderer>().material.SetColor("_Color", _savedCharacterColor);
+		_currentCharacter = null;
+    }
 
 	#region Show Information Methods
 
@@ -183,8 +222,7 @@ public class DebugController : MonoBehaviour {
 	/// Updates the GUI text with the basic information of the current
 	/// character.
 	/// </summary>
-	/// <param name="currentCharacter">The current character</param>
-	private void ShowCharacterInformation(GameObject currentCharacter) {
+	private void ShowCharacterInformation() {
 		// Displays the text
 		informationText.gameObject.SetActive(showInformation);
         if (!showInformation)
@@ -195,32 +233,32 @@ public class DebugController : MonoBehaviour {
 
 		// Name
 		sb.Append("- Name: ");
-		sb.Append(currentCharacter.name);
+		sb.Append(_currentCharacter.name);
 		sb.Append("\n");
 
 		// Size
 		sb.Append("- Size: ");
-		sb.Append(currentCharacter.GetComponent<CharacterSize>().GetSize());
+		sb.Append(_currentCharacter.GetComponent<CharacterSize>().GetSize());
 		sb.Append("\n");
 
 		// Velocity
 		sb.Append("- Velocity: ");
-		sb.Append(currentCharacter.GetComponent<CharacterControllerCustom>().Velocity);
+		sb.Append(_currentCharacter.GetComponent<CharacterControllerCustom>().Velocity);
 		sb.Append("\n");
 
 		// Mass
 		sb.Append("- Mass: ");
-		sb.Append(currentCharacter.GetComponent<CharacterControllerCustom>().GetTotalMass());
+		sb.Append(_currentCharacter.GetComponent<CharacterControllerCustom>().GetTotalMass());
 		sb.Append("\n");
 
 		// Gravity
 		sb.Append("- Gravity: ");
-		sb.Append(currentCharacter.GetComponent<CharacterControllerCustom>().Parameters.Gravity);
+		sb.Append(_currentCharacter.GetComponent<CharacterControllerCustom>().Parameters.Gravity);
 		sb.Append("\n");
 
 		// Shooting state
 		sb.Append("- Shooting?: ");
-		sb.Append(currentCharacter.GetComponent<CharacterShoot>().isShooting());
+		sb.Append(_currentCharacter.GetComponent<CharacterShoot>().isShooting());
 
 		// Sets the text
 		informationText.text = sb.ToString();
@@ -230,30 +268,28 @@ public class DebugController : MonoBehaviour {
 	/// Updates the GUI text with the state information of the current
 	/// character.
 	/// </summary>
-	/// <param name="currentCharacter">The current character</param>
-	private void ShowCharacterState(GameObject currentCharacter) {
+	private void ShowCharacterState() {
 		// Displays the text
 		stateText.gameObject.SetActive(showState);
 		if (!showState)
 			return;
 
 		// Sets the text
-		stateText.text = currentCharacter.GetComponent<CharacterControllerCustom>().State.ToString();
+		stateText.text = _currentCharacter.GetComponent<CharacterControllerCustom>().State.ToString();
 	}
 
 	/// <summary>
 	/// Updates the GUI text with the parameters information of the current
 	/// character.
 	/// </summary>
-	/// <param name="currentCharacter">The current character</param>
-	private void ShowCharacterParameters(GameObject currentCharacter) {
+	private void ShowCharacterParameters() {
 		// Displays the text
 		parametersText.gameObject.SetActive(showParameters);
 		if (!showParameters)
 			return;
 
 		// Sets the text
-		parametersText.text = currentCharacter.GetComponent<CharacterControllerCustom>().Parameters.ToString();
+		parametersText.text = _currentCharacter.GetComponent<CharacterControllerCustom>().Parameters.ToString();
 	}
 
 	#endregion
@@ -264,9 +300,9 @@ public class DebugController : MonoBehaviour {
 	/// Reads the input and resizes the current character.
 	/// </summary>
 	/// <param name="currentCharacter">The current character</param>
-	private void ManageSizeChange(GameObject currentCharacter) {
+	private void ManageSizeChange() {
 		// Retrieves the character's size component
-		CharacterSize sizeComponent = currentCharacter.GetComponent<CharacterSize>();
+		CharacterSize sizeComponent = _currentCharacter.GetComponent<CharacterSize>();
 
 		// Handles the incremental size input
 		if (Input.GetKeyDown(KeyCode.KeypadPlus))
@@ -298,13 +334,34 @@ public class DebugController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Reads the input and selects a character.
+	/// </summary>
+	private void ManageCharacterSelection() {
+		// Checks if the creation button has been pressed
+		if (!Input.GetMouseButtonDown(0))
+			return;
+
+		// Finds out the position to select the character
+		Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		position.z = 0;
+
+		// Finds the first player's character in that position
+		Collider[] collidersOnPosition = Physics.OverlapSphere(position, 0);
+		foreach (Collider collider in collidersOnPosition)
+			if (collider.CompareTag("Player")) {
+				_independentControl.SetControl(collider.gameObject);
+				break;
+			}
+	}
+
+	/// <summary>
 	/// Changes the color of every game object the current character
 	/// has collided with this frame.
 	/// </summary>
 	/// <param name="currentCharacter">The current character</param>
-	private void ShowCharacterCollisions(GameObject currentCharacter) {
+	private void ShowCharacterCollisions() {
 		// Retrieves the character's controller component
-		CharacterControllerCustom controllerComponent = currentCharacter.GetComponent<CharacterControllerCustom>();
+		CharacterControllerCustom controllerComponent = _currentCharacter.GetComponent<CharacterControllerCustom>();
 
 		// Changes the material of the collisions game object
 		foreach (Collider collider in controllerComponent.Collisions)
