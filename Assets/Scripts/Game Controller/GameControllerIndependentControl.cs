@@ -31,7 +31,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>
-    public GameObject CreateDrop(bool setControl = false/*, bool addToControlList = true*/) {
+    public GameObject CreateDrop(bool setControl = false, bool addToControlList = true) {
         //Create a drop
         GameObject drop = (GameObject)Instantiate(PfDrop);
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
@@ -40,8 +40,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
         drop.transform.position = currentCharacter.transform.position;
 
         //Add to controled drop list
-        //if (addToControlList)
-        // allCurrentCharacters.Add(drop);
+        if (addToControlList)
+         allCurrentCharacters.Add(drop);
 
         //Set Control
         if (setControl)

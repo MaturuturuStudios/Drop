@@ -62,6 +62,10 @@ public class CharacterSize : MonoBehaviour {
     /// The remaining time of being still
     /// </summary>
     private float _motionlessTime = 0f;
+    /// <sumary>
+    /// Control if the parameters state was set.
+    /// </sumary>
+    private bool _setState;
     #endregion
 
     #region Private Attributes
@@ -102,6 +106,8 @@ public class CharacterSize : MonoBehaviour {
         _independentControl = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
 
+        _setState = false;
+
         //set the motionless situation clear
         _motionless = false;
         _motionlessTime = 0;
@@ -126,15 +132,19 @@ public class CharacterSize : MonoBehaviour {
             //control the time
             _motionlessTime -= Time.deltaTime;
             //done?
-            if(_motionlessTime <= 0) {
+            if(_motionlessTime <= 0 && _setState) {
                 //recover motion
                 _controller.Parameters = null;
+                _setState = false;
             }
         }
 
         if (_motionless && _motionlessTime <= 0) {
             _motionless = false;
-            _controller.Parameters = null;
+            if(_setState){
+            	_controller.Parameters = null;
+            	_setState = false;
+        	}
         } else {
             _motionlessTime -= Time.deltaTime;
         }
@@ -183,7 +193,10 @@ public class CharacterSize : MonoBehaviour {
 		if(size > 0 && size != _targetSize) {
             _directionSpitDrop = spitDirection;
             //can't move
-            _controller.Parameters = CharacterControllerParameters.GrowingParameters;
+            if(!_setState){
+            	_controller.Parameters = CharacterControllerParameters.GrowingParameters;
+            	_setState = true;
+        	}
 
             //set the new size
             _targetSize = size;
@@ -252,8 +265,10 @@ public class CharacterSize : MonoBehaviour {
             }
 
             //in my size! can move again if there's no time of being quiet
-            if(_targettingSize == 0 && !_motionless) 
+            if(_targettingSize == 0 && !_motionless && _setState) {
                 _controller.Parameters = null;
+                _setState = false;
+            }
             
         }
 	}

@@ -49,5 +49,27 @@ public class GameControllerInput : MonoBehaviour {
 			shootComponent.Aim();
         if (Input.GetButtonDown("Fire"))
 			shootComponent.Shoot();
+
+			DebugSize();
 	}
+
+	/// <summary>
+    /// Control the size
+    /// </summary>
+    private void DebugSize() {
+        if(Input.GetKeyDown(KeyCode.KeypadPlus))
+            _switcher.currentCharacter.GetComponent<CharacterSize>().IncrementSize();
+
+        if(Input.GetKeyDown(KeyCode.KeypadMinus))
+            _switcher.currentCharacter.GetComponent<CharacterSize>().DecrementSize();
+
+        //Some number pressed? we use 1-9 as range 1-9
+        bool done = false;
+        for(int i = 1; i < 10 && !done; i++) {
+            if(Input.GetKeyDown("" + i)) {
+                _switcher.currentCharacter.GetComponent<CharacterSize>().SetSize(i);
+                done = true;
+            }
+        }
+    }
 }
