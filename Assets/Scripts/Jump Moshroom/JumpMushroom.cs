@@ -25,7 +25,7 @@ public class JumpMushroom : MonoBehaviour
     void Update()
     {
         //FacingDirection = new Vector3(transform.position.x, transform.position.y, 0).normalized;
-        FacingDirection = transform.rotation * FacingDirection;
+        FacingDirection = (transform.rotation * FacingDirection);
     }
     public void OnTriggerEnter(Collider other)
     {
@@ -36,12 +36,16 @@ public class JumpMushroom : MonoBehaviour
                     
                 velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
 
+                if (velo.y < 1)
+                    velo.y = 1;
+
                 if(KeepVerticalSpeed== false)
                      cccp.GetComponent<CharacterControllerCustom>().SetVerticalForce(0);
 
-                 //cccp.GetComponent<CharacterControllerCustom>().AddForceRelative(FacingDirection*Jumpforce, ForceMode.VelocityChange);
+                //cccp.GetComponent<CharacterControllerCustom>().AddForceRelative(FacingDirection*Jumpforce, ForceMode.VelocityChange);
                 //Vector3 finalVelocity = Quaternion.Euler(0, FacingDirection.y, 0) * new Vector3(0, velocity.y, 0);
-                cccp.GetComponent<CharacterControllerCustom>().SendFlying(((FacingDirection) * Jumpforce),false,true,0.5f);
+                
+                cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection*velo.y * Jumpforce),false,true,0.5f);
             }
         }
     }
