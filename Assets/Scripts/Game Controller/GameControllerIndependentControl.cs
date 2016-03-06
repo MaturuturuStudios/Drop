@@ -58,8 +58,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
         if (allCurrentCharacters.Count > 1) {
             //Set control to the next drop if it was under control
-            if (allCurrentCharacters.IndexOf(currentCharacter) > -1)
-                ControlNextDrop();
+            //if (allCurrentCharacters.IndexOf(currentCharacter) > -1)
+            //    ControlNextDrop();
 
             //remove from control list
             allCurrentCharacters.Remove(drop);
