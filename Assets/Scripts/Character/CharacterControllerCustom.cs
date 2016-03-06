@@ -613,7 +613,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// There has been collisions this frame. Stops the wall jumping
 		State.HasCollisions = true;
 		_collisions.Add(hit.collider);
-		StopFlying();
+		if (_stopFlyingWhenHit)
+			StopFlying();
 
 		// Spheres have their normal inverted for whatever reason
 		Vector3 normal = hit.normal;
