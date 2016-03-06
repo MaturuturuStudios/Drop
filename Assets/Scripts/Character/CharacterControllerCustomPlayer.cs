@@ -118,6 +118,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 		if (CurrentWindTube == null) {
 			// If the character is on a slope, checks if the character is stuck to it
+			float newHorizontalInput = HorizontalInput;
 			if (_controller.State.IsOnSlope) {
 				// Gets the direction of the slope
 				float slopeOrientationSign = -Mathf.Sign(Mathf.Sin(_controller.State.SlopeAngle));
@@ -133,14 +134,14 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 				// If the timer has not expired yet, inverses the input to keep the character stuck to the slope
 				if (_slopeStickTime > 0)
 					// Overrides the input with the orientation of the slope
-					HorizontalInput = slopeOrientationSign;
+					newHorizontalInput = slopeOrientationSign;
 			}
 			else {
 				_isAlreadyStuck = false;
 			}
 
 			// Sets the input force of the character controller
-			_controller.SetInputForce(HorizontalInput, VerticalInput);
+			_controller.SetInputForce(newHorizontalInput, VerticalInput);
 		}
 		else {
 			// The character is on a wind tube
