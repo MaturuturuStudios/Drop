@@ -365,7 +365,7 @@ public class DebugController : MonoBehaviour {
 
 		// Changes the material of the collisions game object
 		foreach (Collider collider in controllerComponent.Collisions)
-			if (!_collidersColors.ContainsKey(collider)) {
+			if (collider != null && !_collidersColors.ContainsKey(collider)) {
 				Material material = collider.GetComponent<Renderer>().material;
 				_collidersColors.Add(collider, material.GetColor("_Color"));
 				material.SetColor("_Color", collisionColor);
