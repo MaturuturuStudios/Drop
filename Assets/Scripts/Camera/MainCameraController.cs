@@ -46,8 +46,6 @@ public class MainCameraController : MonoBehaviour {
         public float lookAtSmooth = 3.0f;
     }
     public Movement movement;
-    //Movement position control
-    private Vector3 _lastPositionMovement;
     //Look at position control
     private Vector3 _lastObjective;
 
@@ -69,7 +67,6 @@ public class MainCameraController : MonoBehaviour {
 
         //Set references
         _lastObjective = currentCharacter.transform.position;
-        _lastPositionMovement = transform.position;
         
         //Create new boundary
         _cameraBoundary = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -154,9 +151,6 @@ public class MainCameraController : MonoBehaviour {
             _cameraBoundary.transform.position = objMov - _offset;
 
         transform.position = objMov;
-
-        //Save the last position
-        _lastPositionMovement = objMov;
     }
 
     /// <summary>
@@ -164,8 +158,6 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private void LookAt()
     {
-        Quaternion lookingAt = transform.rotation;
-
         Vector3 destination = currentCharacter.transform.position;
 
         destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * movement.lookAtSmooth);

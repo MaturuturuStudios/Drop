@@ -69,9 +69,6 @@ public class CameraTravelController : MonoBehaviour
             this.lookAtSmooth = lookAtSmooth;
         }
     }
-
-    //Movement position control
-    private Vector3 _lastPositionMovement;
     //Look at position control
     private Vector3 _lastObjective;
 
@@ -91,7 +88,6 @@ public class CameraTravelController : MonoBehaviour
 
         //Set references
         _lastObjective = currentObjective.lookAtPosition;
-        _lastPositionMovement = objectivesList.startPosition;
     }
 
     /// <summary>
@@ -160,7 +156,6 @@ public class CameraTravelController : MonoBehaviour
         transform.position = objMov;
 
         //Save the last position
-        _lastPositionMovement = objMov;
     }
 
     /// <summary>
