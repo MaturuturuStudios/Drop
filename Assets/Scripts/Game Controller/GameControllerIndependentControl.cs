@@ -119,7 +119,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// </summary>
     /// <param name="index">Index of drop in the allCurentCharacters list</param>
     public void SetControl(int index) {
-        bool shootmode = currentCharacter.GetComponent<CharacterShoot>().shootmode;
+        bool shootmode = currentCharacter.GetComponent<CharacterShoot>().isShooting();
         if (index < allCurrentCharacters.Count && index > -1 && !shootmode) {
             //Try to stop abandoned drop
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();

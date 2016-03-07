@@ -11,8 +11,7 @@ public class CharacterShoot : MonoBehaviour {
 	private bool  isBallThrown;
     private int lessize=0;
     private int falling = 0;
-    //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
-    public bool shootmode = false;
+    private bool shootmode = false;
     
 
     CharacterControllerCustom ccc;
@@ -49,7 +48,7 @@ public class CharacterShoot : MonoBehaviour {
                 shootmode = false;
                 st.QuitTrajectory();
                 st.enabled = false;
-                ccc.Parameters = CharacterControllerParameters.ShootingEnd;
+				ccc.Parameters = null;	 // This is the right way to restore the character's parameters
             }
         }
 
@@ -61,8 +60,8 @@ public class CharacterShoot : MonoBehaviour {
         {
             //if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops) //Commented by toni, No longer pool needed
             //{
-            ccc.Parameters = CharacterControllerParameters.ShootingEnd;
-            shootmode = false;
+            ccc.Parameters = null;   // This is the right way to restore the character's parameters
+			shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
 
