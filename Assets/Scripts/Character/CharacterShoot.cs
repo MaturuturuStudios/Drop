@@ -11,7 +11,8 @@ public class CharacterShoot : MonoBehaviour {
 	private bool  isBallThrown;
     private int lessize=0;
     private int falling = 0;
-    private bool shootmode = false;
+    //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
+    public bool shootmode = false;
     
 
     CharacterControllerCustom ccc;
@@ -34,7 +35,7 @@ public class CharacterShoot : MonoBehaviour {
 	//---------------------------------------	
 
     public void Aim(){
-        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1))
+        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<9))
         {
             if (shootmode == false)
             {
@@ -48,7 +49,7 @@ public class CharacterShoot : MonoBehaviour {
                 shootmode = false;
                 st.QuitTrajectory();
                 st.enabled = false;
-                ccc.Parameters = null;
+                ccc.Parameters = CharacterControllerParameters.ShootingEnd;
             }
         }
 
@@ -60,13 +61,19 @@ public class CharacterShoot : MonoBehaviour {
         {
             //if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops) //Commented by toni, No longer pool needed
             //{
-            throwBall();
-            lessize = GetComponent<CharacterSize>().GetSize();
-            lessize -= 1;
-            GetComponent<CharacterSize>().SetSize(lessize);
+            ccc.Parameters = CharacterControllerParameters.ShootingEnd;
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
+
+            lessize = GetComponent<CharacterSize>().GetSize();
+            lessize -= 1;
+            GetComponent<CharacterSize>().SetSize(lessize);
+
+            throwBall();
+            
+            
+            
             //_gcic.SetControl(1);
             //_gcic.ControlNextDrop();
             //}
@@ -89,7 +96,7 @@ public class CharacterShoot : MonoBehaviour {
                 ccc.Parameters = null;
             }       
         }*/
-        if ((lessize == 1) || ccc.State.IsGrounded == false){
+        if ( ccc.State.IsGrounded == false){
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
@@ -127,7 +134,7 @@ public class CharacterShoot : MonoBehaviour {
 
 	private void throwBall(){
 
-        ball = _gcic.AddDrop(true); //Added by toni, Now works
+        ball = _gcic.CreateDrop(true); //AddDrop -> CreateDrop
         ball.GetComponent<CharacterSize>().SetSize(1);
         prepareDropToFly();
 

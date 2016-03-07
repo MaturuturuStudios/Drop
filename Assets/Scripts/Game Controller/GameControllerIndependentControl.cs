@@ -10,45 +10,51 @@ public class GameControllerIndependentControl : MonoBehaviour {
     //Drop prefab
     public GameObject PfDrop;
     private int _dropNameCounter;
-    /*
-    //Camera 
-    public CameraController _cameraController;
+    
+    //Cameras
+    public MainCameraController _cameraController;
+    public Camera _fixedCameras;
+    public List<FixedCameraController> _fixedCameraControllers;
 
     void Awake()
     {
         //Get the camera
-        _cameraController = GameObject.FindGameObjectWithTag("MainCamera")
-                                .GetComponent<CameraController>();
+        _cameraController = Camera.main.GetComponent<MainCameraController>();
+        for (int i = 0; i < Camera.allCamerasCount; ++i)
+            if (Camera.allCameras[i].CompareTag("FixedCamera"))
+                _fixedCameraControllers.Add(Camera.allCameras[i]
+                    .GetComponent<FixedCameraController>());
+
+    }
+
+    void Start() {
+        _dropNameCounter = allCurrentCharacters.Count;
         //Actualize camera objective
         _cameraController.SetObjective(currentCharacter);
-    }*/
-
-    void Start()
-    {
-        _dropNameCounter = allCurrentCharacters.Count;
+        for ( int i = 0; i < _fixedCameraControllers.Count; ++i)
+                _fixedCameraControllers[i].SetObjective(currentCharacter);
     }
 
     /// <summary>
     /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>
-    public GameObject AddDrop(bool setControl = false, bool addToControlList = true)
-    {
+    public GameObject CreateDrop(bool setControl = false, bool addToControlList = true) {
         //Create a drop
         GameObject drop = (GameObject)Instantiate(PfDrop);
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
-
-        //Move the drop to players position
-        drop.transform.position = currentCharacter.transform.position;
 
         //Add to controled drop list
         if (addToControlList)
             allCurrentCharacters.Add(drop);
 
+        //Move the drop to players position
+        drop.transform.position = currentCharacter.transform.position;
+
         //Set Control
         if (setControl)
             SetControl(drop);
-            
+
         return drop;
     }
 
@@ -56,22 +62,27 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Remove a drop under player's control from list and set it out of the scene
     /// </summary>
     /// <param name="drop">drop to remove from control & scene</param>
-    public void KillDrop(GameObject drop)
-    {
-        //remove from control list
-        allCurrentCharacters.Remove(drop);
+    public void DestroyDrop(GameObject drop, bool setControl = false) {
 
-        //Destroy drop
-        Destroy(drop);
+        if (!IsUnderControl (drop) || allCurrentCharacters.Count > 1) {
+            //Set control to the next drop if it was the one under control
+            if (setControl && currentCharacter == drop)
+                ControlNextDrop();
+            //remove from control list
+            allCurrentCharacters.Remove(drop);
+
+            drop.SetActive(false);
+
+            //Destroy drop
+            Destroy(drop);
+        }
     }
 
     /// <summary>
     /// Sets the control to the next drop in list
     /// </summary>
-    public void ControlNextDrop()
-    {
-        if (allCurrentCharacters.Count > 1)
-        {
+    public void ControlNextDrop() {
+        if (allCurrentCharacters.Count > 1) {
             //Get next index
             int next_drop = allCurrentCharacters.IndexOf(currentCharacter) + 1;
 
@@ -82,19 +93,14 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
             SetControl(next_drop);
-
-            //Actualize camera objective
-            //_cameraController.SetObjective(currentCharacter);
         }
     }
 
     /// <summary>
     /// Sets the control to the previous drop in list
     /// </summary>
-    public void ControlBackDrop()
-    {
-        if (allCurrentCharacters.Count > 1)
-        {
+    public void ControlBackDrop() {
+        if (allCurrentCharacters.Count > 1) {
             //Get prev index
             int back_drop = allCurrentCharacters.IndexOf(currentCharacter) - 1;
 
@@ -105,9 +111,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //Set Control
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
             SetControl(back_drop);
-
-            //Actualize camera objective
-            //_cameraController.SetObjective(currentCharacter);
         }
     }
 
@@ -115,22 +118,19 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Sets the control to an specific drop
     /// </summary>
     /// <param name="index">Index of drop in the allCurentCharacters list</param>
-    public void SetControl(int index)
-    {
-        if (index < allCurrentCharacters.Count && index > -1)
-        {
+    public void SetControl(int index) {
+        bool shootmode = currentCharacter.GetComponent<CharacterShoot>().shootmode;
+        if (index < allCurrentCharacters.Count && index > -1 && !shootmode) {
             //Try to stop abandoned drop
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
 
             //Set Control to new drop
             currentCharacter = allCurrentCharacters[index];
 
-            //Check if it is under control, if not add it
-            if (!IsUnderControl(currentCharacter))
-                allCurrentCharacters.Add(currentCharacter);
-
             //Actualize camera objective
-            //_cameraController.SetObjective(currentCharacter);
+            _cameraController.SetObjective(currentCharacter);
+            for (int i = 0; i < _fixedCameraControllers.Count; ++i)
+                _fixedCameraControllers[i].SetObjective(currentCharacter);
         }
     }
 
@@ -138,20 +138,23 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Set the control to the given drop if is on the list of drops under player's control
     /// </summary>
     /// <param name="drop">drop to control</param>
-    public void SetControl(GameObject drop)
-    {
+    public void SetControl(GameObject drop) {
         int index = allCurrentCharacters.IndexOf(drop);
 
         if (index > -1)
             SetControl(index);
+        else {
+            index = allCurrentCharacters.Count;
+            allCurrentCharacters.Add(drop);
+            SetControl(index);
+        }
     }
 
     /// <summary>
     /// Checks if a drops under player's control
     /// </summary>
     /// <param name="drop">drop to check control</param>
-    public bool IsUnderControl(GameObject drop)
-    {
+    public bool IsUnderControl(GameObject drop) {
         return allCurrentCharacters.Contains(drop);
     }
 }

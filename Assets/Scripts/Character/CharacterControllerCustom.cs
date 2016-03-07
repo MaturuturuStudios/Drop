@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System;
-using System.Linq;
 using System.Collections.Generic;
 
 /// <summary>
@@ -21,10 +19,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public CharacterControllerParameters Parameters {
 		get {
 			// If no override parameters have been specified, return the default parameters
-			return _overrideParameters ?? defaultParameters;
+			if (_overrideParameters.Count > 0)
+				return _overrideParameters.Peek();
+			else
+				return defaultParameters;
 		}
 		set {
-			_overrideParameters = value;
+			if (value != null)
+				_overrideParameters.Push(value);
+			else
+				_overrideParameters.Pop();
 		}
 	}
 
@@ -33,6 +37,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// velocity each frame.
 	/// </summary>
 	public Vector3 Velocity { get { return _velocity; } }
+
+	/// <summary>
+	/// List of the colliders which this controller collided with on the last frame.
+	/// </summary>
+	public List<Collider> Collisions { get { return _collisions; } }
 
 	#endregion
 
@@ -44,9 +53,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private Vector3 _velocity;
 
 	/// <summary>
-	/// Backing field for the Parameters property.
+	/// Stack of the parameters applied. Used by the Parameters property.
 	/// </summary>
-	private CharacterControllerParameters _overrideParameters;
+	private Stack<CharacterControllerParameters> _overrideParameters;
+
+	/// <summary>
+	/// Backing field for the Collisions property.
+	/// </summary>
+	private List<Collider> _collisions;
 
 	#endregion
 
@@ -123,6 +137,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void Awake() {
 		// Creates the original state
 		State = new CharacterControllerState();
+
+		// Initializes the parameter's stack and collisions list
+		_overrideParameters = new Stack<CharacterControllerParameters>();
+		_collisions = new List<Collider>();
 
 		// Recovers the desired components
 		_transform = transform;
@@ -412,7 +430,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			SendFlying(finalVelocity, false, true, flyTime);
 		}
 
-		_jumpingTime = Parameters.jumpFrecuency;
+		_jumpingTime = Parameters.jumpFrequency;
 	}
 
 	/// <summary>
@@ -429,7 +447,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			case CharacterControllerParameters.JumpBehaviour.CanJumpAnywhere:
 				return true;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpOnSlope:
-				return State.IsGrounded || State.IsOnSlope;
+                return State.IsGrounded || State.IsOnSlope;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpSliding:
 				return State.IsGrounded || State.IsSliding;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpOnGround:
@@ -547,6 +565,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		State.PlatformVelocity = platformVelocity;
 		State.IsFlying = isFlying;
 
+		// Resets the collisions list
+		_collisions.Clear();
+
 		// Clamps the movement
 		movement.x = Mathf.Clamp(movement.x, -Parameters.maxVelocity.x, Parameters.maxVelocity.x);
 		movement.y = Mathf.Clamp(movement.y, -Parameters.maxVelocity.y, Parameters.maxVelocity.y);
@@ -591,7 +612,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public void OnControllerColliderHit(ControllerColliderHit hit) {
 		// There has been collisions this frame. Stops the wall jumping
 		State.HasCollisions = true;
-		StopFlying();
+		_collisions.Add(hit.collider);
+		if (_stopFlyingWhenHit)
+			StopFlying();
 
 		// Spheres have their normal inverted for whatever reason
 		Vector3 normal = hit.normal;
@@ -622,26 +645,33 @@ public class CharacterControllerCustom : MonoBehaviour {
 			SetVerticalForceRelative(0);
 		}
 		else {
-			// The collider is considered a slope
+			// The character is not grounded
 			State.IsGrounded = false;
-			State.IsOnSlope = true;
 			State.GroundedObject = null;
 
 			// Projects the speed to the normal's perpendicular
 			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
 
-			// Check if the character is sliding along a wall
-			if (State.IsFalling && Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
-				// The character is now sliding
-				State.IsSliding = true;
+			// Check if the character is on a slope
+			if (Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
+				// The collider is considered a slope
+				State.IsOnSlope = true;
 
-				// If the character wasn't sliding, stops it
-				if (!_wasSliding)
-					Stop();
+				if (State.IsFalling) {
+					// The character is now sliding
+					State.IsSliding = true;
+
+					// If the character wasn't sliding, stops it
+					if (!_wasSliding)
+						Stop();
+				}
+				else {
+					State.IsSliding = false;
+				}
 			}
 			else {
-				State.IsSliding = false;
+				State.IsOnSlope = false;
 			}
 		}
 	}

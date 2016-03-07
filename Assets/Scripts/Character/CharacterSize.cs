@@ -19,13 +19,13 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
     public float enlargeSpeed = 5f;
     /// <summary>
-    /// Prefab of the drop that will be spitted
-    /// </summary>
-    //public GameObject BallPrefab;
-    /// <summary>
     /// Impulse of the drop spitted when growing up
     /// </summary>
     public float impulseSpit = 20f;
+    /// <summary>
+    /// The time the drop will be still while spitting another drop
+    /// </summary>
+    public float motionlessTimeSpit = 0.5f;
     #endregion
 
     #region Custom private Enumerations
@@ -53,7 +53,19 @@ public class CharacterSize : MonoBehaviour {
     /// <summary>
     /// The direction where I spit the drop if I have to when growing up, zero if random
     /// </summary>
-    Vector3 _directionSpitDrop;
+    private Vector3 _directionSpitDrop;
+    /// <summary>
+    /// Set if the drop is in a still situation
+    /// </summary>
+    private bool _motionless = false;
+    /// <summary>
+    /// The remaining time of being still
+    /// </summary>
+    private float _motionlessTime = 0f;
+    /// <sumary>
+    /// Control if the parameters state was set.
+    /// </sumary>
+    private bool _setState;
     #endregion
 
     #region Private Attributes
@@ -73,6 +85,10 @@ public class CharacterSize : MonoBehaviour {
     /// Independent control to create or remove drops
     /// </summary>
     private GameControllerIndependentControl _independentControl;
+    /// <summary>
+    /// Controller of the drop
+    /// </summary>
+    private CharacterControllerCustom _controller;
     #endregion
 
     #region Methods
@@ -86,8 +102,15 @@ public class CharacterSize : MonoBehaviour {
         _dropTransform = gameObject.transform;
         _ratioRadius = GetComponent<CharacterController>().radius;
 
+        _controller = GetComponent<CharacterControllerCustom>();
         _independentControl = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
+
+        _setState = false;
+
+        //set the motionless situation clear
+        _motionless = false;
+        _motionlessTime = 0;
 
         //set the initial size
         if(initialSize <= 0) {
@@ -103,8 +126,33 @@ public class CharacterSize : MonoBehaviour {
     /// </summary>
     public void Update() {
         GradualModifySize();
+
+        //the drop has to be quiet?
+        if (_motionless) {
+            //control the time
+            _motionlessTime -= Time.deltaTime;
+            //done?
+            if(_motionlessTime <= 0 && _setState) {
+                //recover motion
+                _controller.Parameters = null;
+                _setState = false;
+            }
+        }
+
+        if (_motionless && _motionlessTime <= 0) {
+            _motionless = false;
+            if(_setState){
+            	_controller.Parameters = null;
+            	_setState = false;
+        	}
+        } else {
+            _motionlessTime -= Time.deltaTime;
+        }
     }
 
+    /// <summary>
+    /// Set the size when modify values on script
+    /// </summary>
 	public void OnDrawGizmos() {
 		if (!Application.isPlaying)
 			Awake();
@@ -145,7 +193,10 @@ public class CharacterSize : MonoBehaviour {
 		if(size > 0 && size != _targetSize) {
             _directionSpitDrop = spitDirection;
             //can't move
-            GetComponent<CharacterControllerCustom>().Parameters = CharacterControllerParameters.GrowingParameters;
+            if(!_setState){
+            	_controller.Parameters = CharacterControllerParameters.GrowingParameters;
+            	_setState = true;
+        	}
 
             //set the new size
             _targetSize = size;
@@ -192,7 +243,6 @@ public class CharacterSize : MonoBehaviour {
                 newScale = _dropTransform.localScale.x + Time.deltaTime * speed * _shrinkOrEnlarge;
             
 
-
             //control if i have space enough and repositioning it
             Vector3 offset = Vector3.zero;
             float newRadius = newScale * _ratioRadius;
@@ -203,7 +253,7 @@ public class CharacterSize : MonoBehaviour {
                 _dropTransform.position += offset;
                 //set the new size to the character
                 _dropTransform.localScale = new Vector3(newScale, newScale, newScale);
-                
+
 
             } else {
                 //this line is needed. If spitDrop set the size equal to actual size of character
@@ -214,9 +264,11 @@ public class CharacterSize : MonoBehaviour {
                 SpitDrop(newScale, offset);
             }
 
-            //in my size! can move again.
-            if(_targettingSize == 0) 
-                GetComponent<CharacterControllerCustom>().Parameters = null;
+            //in my size! can move again if there's no time of being quiet
+            if(_targettingSize == 0 && !_motionless && _setState) {
+                _controller.Parameters = null;
+                _setState = false;
+            }
             
         }
 	}
@@ -268,6 +320,10 @@ public class CharacterSize : MonoBehaviour {
     /// <param name="newScale">the scale which doesn't fit</param>
     /// <param name="newPosition">the position according to the scale</param>
 	private void SpitDrop(float newScale, Vector3 offsetCenter) {
+        //the principal drop has to be quiet during spitting
+        _motionless = true;
+        _motionlessTime = motionlessTimeSpit;
+
         //get the maximum size
         int finalSize = setMaximumSize(newScale, _dropTransform.position + offsetCenter);
         //calculate the extra drop I have to spit
@@ -279,22 +335,114 @@ public class CharacterSize : MonoBehaviour {
         Vector3 position = _dropTransform.position + offsetCenter;
         position += _directionSpitDrop * finalRadius;
 
+        //check in which direction and position I will spit the drop
+        Vector3 positionSpit = _dropTransform.position + offsetCenter;
+        Vector3 spitDirection = getDirectionSpit(finalSize, numberDropsRemain, positionSpit, out positionSpit);
+
         //create the drop
-        GameObject newDrop = _independentControl.AddDrop();
+        GameObject newDrop = _independentControl.CreateDrop(false);
 
         //set the position and size
-        newDrop.transform.position = position;
+        newDrop.transform.position = positionSpit;
         newDrop.transform.localScale = Vector3.one;
         newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
-        //set a force
-        newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
-        newDrop.GetComponent<CharacterControllerCustom>().AddForce(_directionSpitDrop*impulseSpit, ForceMode.VelocityChange);
+        //set a force modified by the size of drop
+        //newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
+        //newDrop.GetComponent<CharacterControllerCustom>()
+        //    .AddForce(spitDirection*impulseSpit*Mathf.Sqrt(numberDropsRemain), ForceMode.VelocityChange);
+
+        CharacterControllerCustom newDropController = newDrop.GetComponent<CharacterControllerCustom>();
+        newDropController.SendFlying(spitDirection * impulseSpit * Mathf.Sqrt(numberDropsRemain), false);
+
         //for test, clarity on behaviour
         _directionSpitDrop = Vector3.zero;
 
         //set the final size
         SetSize(finalSize);
     }
+
+
+    /// <summary>
+    /// Precondition: no hole widht can be less than the height of the closest border
+    /// Get the direction in which the drop should be spitted
+    /// </summary>
+    /// <param name="finalSize">The size/number of the drop spitting the remains</param>
+    /// <param name="numberDropsSpitted">Size/number of drops being spit</param>
+    /// <param name="centerPosition">Center of the main drop</param>
+    /// <param name="spitPosition">position where spitted drop should start</param>
+    /// <returns>Vector with the direction to spit out</returns>
+    private Vector3 getDirectionSpit(int finalSize, int numberDropsSpitted, Vector3 centerPosition, out Vector3 spitPosition) {
+        int side = 1;
+        //first, check which side, left or right, we have preference for the side where the drop was absorved
+        if (_directionSpitDrop != Vector3.zero && _directionSpitDrop.x < 0) {
+            side = -1;
+        }
+
+        //precalculate...
+        RaycastHit raycastHit;
+        Vector3 origin = centerPosition;
+        spitPosition = origin;
+        float distanceCast = (2 + numberDropsSpitted*2 + finalSize) * _ratioRadius;
+        float radiusSphereCast = numberDropsSpitted * _ratioRadius;
+        float limitDisplacement = _ratioRadius * finalSize * 0.5f;
+        //clamp and get the x component
+        float displacement = Mathf.Sqrt(Mathf.Clamp(_ratioRadius * 0.5f * (numberDropsSpitted - 1), 0, limitDisplacement));
+
+        //check if i can spit up
+        Vector3 direction = new Vector3(Mathf.Sin(Mathf.Deg2Rad * 30*side), Mathf.Cos(Mathf.Deg2Rad * 30), 0);
+        Vector3 offset = Vector3.left * side * displacement;
+        Debug.DrawRay(origin+offset, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin+offset, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            spitPosition = origin + offset;
+            return direction;
+        }
+
+
+        //if not, check at side
+        direction = Vector3.right * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            return direction;
+        }
+
+        //if not, check the other side at up
+        direction = new Vector3(Mathf.Sin(Mathf.Deg2Rad * -30*side), Mathf.Cos(Mathf.Deg2Rad * -30), 0);
+        offset = Vector3.right * side * displacement;
+        Debug.DrawRay(origin+offset, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin+offset, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            spitPosition = origin + offset;
+            return direction;
+        }
+
+        //if not, check at side
+        direction = Vector3.left * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            return direction;
+        }
+
+        //we are running out of options!
+        //check if we have at bottom some space
+        origin.y -= ((finalSize - numberDropsSpitted) * _ratioRadius);
+        spitPosition = origin;
+        direction = Vector3.right * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            return direction;
+        }
+
+        direction = Vector3.left * side;
+        Debug.DrawRay(origin, direction * distanceCast, Color.green, 2);
+        if (!Physics.SphereCast(origin, radiusSphereCast, direction, out raycastHit, distanceCast, _layerCast.value)) {
+            return direction;
+        }
+
+        //TODO: uh-oh, this can lead to a bug! the drop will be inside of the main drop
+        return Vector3.zero;
+    }
+
+
+
 
     /// <summary>
     /// When the growth is blocked, set the maximum size posible

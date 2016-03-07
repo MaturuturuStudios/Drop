@@ -10,7 +10,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private List<GameObject> trajectoryPoints;
     private CharacterControllerCustom ccc;
     private  CharacterShoot s;
-    private Vector3 vel;
+    private Vector3 vel,aiming;
     private float power = 25;
 
     // Use this for initialization
@@ -60,9 +60,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
         }*/
 
         float angle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
-        transform.eulerAngles = new Vector3(0, 0, angle);
+       // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
-        setTrajectoryPoints(transform.position, vel);
+         setTrajectoryPoints(transform.position, vel);
+        
     }
     public void QuitTrajectory() {
         for (int i = 0; i < numOfTrajectoryPoints; i++)
@@ -92,6 +93,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 2);
             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100 );
+           // trajectoryPoints[i].transform.position = pos;
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
             trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
