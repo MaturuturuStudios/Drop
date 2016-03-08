@@ -395,9 +395,13 @@ public class DebugController : MonoBehaviour {
 	/// Sends the input to the active camera if it's a free camera.
 	/// </summary>
 	private void ManageFreeCamera() {
-		// Looks if the active camera is a free camera.
+		// Looks if the active camera is a free camera
 		FreeCameraController freeCamera = Camera.main.GetComponent<FreeCameraController>();
 		if (freeCamera == null)
+			return;
+
+		// Free cameras are only controlled while holding the LShift key
+		if (!Input.GetKey(KeyCode.LeftShift))
 			return;
 
 		// Disables game controller's input component
@@ -425,10 +429,7 @@ public class DebugController : MonoBehaviour {
 
 		// Moves the camera
 		freeCamera.Move(movement);
-
-		// If the shift key is pressed, rotates the camera
-		if (Input.GetKey(KeyCode.LeftShift))
-			freeCamera.Rotate(rotation);
+		freeCamera.Rotate(rotation);
 	}
 
 	/// <summary>
