@@ -1,37 +1,65 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Control all about pause menu
+/// </summary>
 public class PauseMenu : MonoBehaviour {
-
+    #region Private Attributes
+    /// <summary>
+    /// The menu navigator
+    /// </summary>
     private MenuNavigator _menuNavigator;
+    #endregion
 
+    #region Methods
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag("Menus")
                                 .GetComponent<MenuNavigator>();
     }
 
+    /// <summary>
+    /// Quit the pause
+    /// </summary>
     public void ContinueGame() {
-        _menuNavigator.pauseGame(false);
+        _menuNavigator.PauseGame(false);
     }
 
+    /// <summary>
+    /// Quit the actual game and return to the main menu
+    /// </summary>
     public void ReturnToMainMenu() {
-        _menuNavigator.closeMenu();
-        _menuNavigator.openMenu(MenuNavigator.Menu.MAIN_MENU);
+        //TODO: need to control other actions as save game, quit the actual scene...
+        _menuNavigator.CloseMenu();
+        _menuNavigator.OpenMenu(MenuNavigator.Menu.MAIN_MENU);
     }
 
+    /// <summary>
+    /// Open the map and levels menu
+    /// </summary>
     public void LoadLevel() {
-        _menuNavigator.openMenu(MenuNavigator.Menu.MAP_LEVEL_MENU);
+        _menuNavigator.OpenMenu(MenuNavigator.Menu.MAP_LEVEL_MENU);
     }
 
+    /// <summary>
+    /// Show the option menu
+    /// </summary>
     public void Options() {
-        _menuNavigator.openMenu(MenuNavigator.Menu.OPTION_MENU);
+        _menuNavigator.OpenMenu(MenuNavigator.Menu.OPTION_MENU);
     }
 
+    /// <summary>
+    /// Show the credits
+    /// </summary>
     public void Credits() {
-        _menuNavigator.openMenu(MenuNavigator.Menu.CREDIT_MENU);
+        _menuNavigator.OpenMenu(MenuNavigator.Menu.CREDITS_MENU);
     }
 
+    /// <summary>
+    /// Quit the game
+    /// </summary>
     public void ExitGame() {
         _menuNavigator.ExitGame();
     }
+    #endregion
 }

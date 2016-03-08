@@ -28,7 +28,7 @@ public class GameControllerInput : MonoBehaviour {
 
 	void Update() {
         if (Input.GetKeyDown(KeyCode.P)) {
-            _ui.pauseGame();
+            _ui.PauseGame();
         }
 
         if (!_ui.IsMenuActive()) {
