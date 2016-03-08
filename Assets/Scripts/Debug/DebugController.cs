@@ -30,8 +30,7 @@ public class DebugController : MonoBehaviour {
 	/// visible.
 	/// </summary>
 	public bool showState = false;
-
-
+	
 	/// <summary>
 	/// If the character's parameters information should be visible while on
 	/// debug mode. If enabled on the editor this information will start
@@ -40,10 +39,35 @@ public class DebugController : MonoBehaviour {
 	public bool showParameters = false;
 
 	/// <summary>
+	/// If the panel with the information adn controls of the debug cameras
+	/// should be visible while on debug mode. If enabled on the editor this
+	/// information will start visible.
+	/// </summary>
+	public bool showCamerasPanel = false;
+
+	/// <summary>
 	/// Reference to the debug panel. Configured on the prefab. Should not
 	/// be modified on the editor.
 	/// </summary>
 	public GameObject debugPanel;
+
+	/// <summary>
+	/// Reference to the cameras panel. Configured on the prefab. Should not
+	/// be modified on the editor.
+	/// </summary>
+	public GameObject camerasPanel;
+
+	/// <summary>
+	/// Reference to the cameras panel main button. Configured on the prefab.
+	/// Should not be modified on the editor.
+	/// </summary>
+	public GameObject camerasPanelButton;
+
+	/// <summary>
+	/// Prefab object of a camera's panel. Configured on the prefab. Should not
+	/// be modified on the editor.
+	/// </summary>
+	public GameObject cameraPanelPrefab;
 
 	/// <summary>
 	/// Reference to the information text component. Configured on the prefab.
@@ -101,6 +125,12 @@ public class DebugController : MonoBehaviour {
 	private DebugCameraSwitcher _cameraSwitcher;
 
 	/// <summary>
+	/// Dictionary containing the information text associated to each of
+	/// the debug cameras.
+	/// </summary>
+	private Dictionary<Camera, GameObject> _camerasInformationTexts;
+
+	/// <summary>
 	/// Reference to the character currently under control.
 	/// </summary>
 	private GameObject _currentCharacter;
@@ -146,6 +176,13 @@ public class DebugController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Hides or unhides the camera's information panel.
+	/// </summary>
+	public void ToggleShowCamerasPanel() {
+		showCamerasPanel = !showCamerasPanel;
+	}
+
+	/// <summary>
 	/// Destroy the current controlled character.
 	/// </summary>
 	public void DestroyCurrentlyControlledCharacter() {
@@ -161,8 +198,9 @@ public class DebugController : MonoBehaviour {
 	/// Initializes the script.
 	/// </summary>
 	void Start() {
-		// Initializes the collisions list
+		// Initializes the lists
 		_collidersColors = new Dictionary<Collider, Color>();
+		_camerasInformationTexts = new Dictionary<Camera, GameObject>();
 
 		// Looks for the independent controller component
 		_independentControl = FindObjectOfType<GameControllerIndependentControl>();
@@ -175,6 +213,28 @@ public class DebugController : MonoBehaviour {
 
 		// Initializes the current character
 		_currentCharacter = null;
+
+		// Adds the cameras to the camera panel
+		for (int i = 0; i < _cameraSwitcher.GetCameras().Count; i++) {
+			Camera camera = _cameraSwitcher.GetCameras()[i];
+
+			// Creates the panel
+			GameObject cameraPanel = Instantiate(cameraPanelPrefab);
+			cameraPanel.transform.SetParent(camerasPanel.transform);
+
+			// Sets the event of the button
+			Button cameraButton = cameraPanel.transform.GetComponentInChildren<Button>();
+			int iVal = i;
+			cameraButton.onClick.AddListener(() => { _cameraSwitcher.SetActiveCamera(iVal); });
+
+			// Sets the text of the button
+			Text nameText = cameraButton.GetComponentInChildren<Text>();
+			nameText.text = camera.name;
+
+			// Stores the information text
+			GameObject informationText = cameraPanel.transform.Find("Camera Information Text").gameObject;
+			_camerasInformationTexts.Add(camera, informationText);
+		}
     }
 	
 	/// <summary>
@@ -197,6 +257,8 @@ public class DebugController : MonoBehaviour {
 
 		// Checks if the debug mode is active
 		debugPanel.SetActive(debugMode);
+		camerasPanelButton.SetActive(debugMode);
+		camerasPanel.SetActive(debugMode && showCamerasPanel);
 		//Cursor.visible = debugMode;	Still not necessary
 		if (!debugMode) {
 			RestoreCharacterColor();
@@ -389,6 +451,60 @@ public class DebugController : MonoBehaviour {
 		// Previous camera
 		if (Input.GetKeyDown(KeyCode.F3))
 			_cameraSwitcher.PreviousCamera();
+
+		if (!showCamerasPanel)
+			return;
+
+		// Shows the information about the active camera
+		foreach (KeyValuePair<Camera, GameObject> entry in _camerasInformationTexts)
+			if (entry.Key == _cameraSwitcher.GetActiveCamera()) {
+				// Activates the text
+				entry.Value.SetActive(true);
+
+				// Creates the string builder
+				StringBuilder sb = new StringBuilder();
+				Camera cam = _cameraSwitcher.GetActiveCamera();
+
+				// Camera Type
+				sb.Append("- Camera Type: ");
+				string type;
+				if (cam.GetComponent<MainCameraController>() != null)
+					type = "Main Camera";
+				else if (cam.GetComponent<FreeCameraController>() != null)
+					type = "Free Camera";
+				else if (cam.GetComponent<FollowPath>() != null)
+					type = "Travelling Camera";
+				else if (cam.GetComponent<MainCameraController>() != null)
+					type = "Main Camera";
+				else
+					type = "Fixed Camera";
+				sb.Append(type);
+				sb.Append("\n");
+
+				// Projection Type
+				sb.Append("- Projection Type: ");
+				sb.Append(cam.orthographic ? "Ortographic" : "Perspective");
+				sb.Append("\n");
+
+				// Position
+				sb.Append("- Position: ");
+				sb.Append(cam.transform.position);
+				sb.Append("\n");
+
+				// Rotation
+				sb.Append("- Rotation: ");
+				sb.Append(cam.transform.eulerAngles);
+				sb.Append("\n");
+
+				// Field Of View
+				sb.Append("- Field Of View: ");
+				sb.Append(cam.fieldOfView);
+
+				// Sets the text
+				entry.Value.GetComponent<Text>().text = sb.ToString();
+			}
+			else
+				entry.Value.SetActive(false);
 	}
 
 	/// <summary>

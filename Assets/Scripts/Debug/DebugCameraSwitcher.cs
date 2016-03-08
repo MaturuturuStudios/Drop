@@ -27,7 +27,7 @@ public class DebugCameraSwitcher : MonoBehaviour {
 	/// this object is active on.
 	/// Stores all the cameras.
 	/// </summary>
-	void Start () {
+	void Awake () {
 		// Adds the main camera to the list of cameras
 		_cameras = new List<Camera>();
 		Camera mainCamera = FindObjectOfType<MainCameraController>().GetComponent<Camera>();
@@ -41,6 +41,22 @@ public class DebugCameraSwitcher : MonoBehaviour {
 		// Sets the camera to the default one
 		SetActiveCamera(0);
     }
+
+	/// <summary>
+	/// Returns the active camera.
+	/// </summary>
+	/// <returns>Active camera</returns>
+	public Camera GetActiveCamera() {
+		return _cameras[_currentCameraIndex];
+	}
+
+	/// <summary>
+	/// Returns the list of cameras.
+	/// </summary>
+	/// <returns>List of cameras</returns>
+	public List<Camera> GetCameras() {
+		return _cameras;
+	}
 	
 	/// <summary>
 	/// Swtiches to the next camera in the list.
