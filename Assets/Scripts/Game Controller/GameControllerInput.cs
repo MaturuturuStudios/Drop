@@ -1,28 +1,32 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 public class GameControllerInput : MonoBehaviour {
 
     // Internal references
     private GameControllerIndependentControl _switcher;
-    private bool _shootmodeON=false;
+    private CameraSwitcher _cameraSwitcher;
+    private CameraDebugController _cameraDebugControler;
+    private Camera _camera;
 
-
-	void Start() {
-		// Do nothing
-		_switcher = GetComponent<GameControllerIndependentControl>();
-
+    void Start() {
+        // Retrives the independent control component
+        _switcher = GetComponent<GameControllerIndependentControl>();
+        _cameraSwitcher = GameObject.FindGameObjectWithTag("CameraSet")
+                                .GetComponent<CameraSwitcher>();
+        _camera = _cameraSwitcher.transform.FindChild("MainCamera")
+                                .GetComponent<Camera>();
+        _cameraDebugControler = _cameraSwitcher.transform.FindChild("DebugCamera")
+                                .GetComponent<CameraDebugController>();
     }
 
 	void Update() {
-        //TODO
-        // if you put it in this line in Start() you can't change of drop, you lose the reference
-        // I have to take over of here and actualize it when control is changed in GameControllerIndependentControl
+        // Retrieves current character's components
 		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+		CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
+        bool shootmode = _switcher.currentCharacter.GetComponent<CharacterShoot>().isShooting();
 
-		// Horizontal input
-		float hInput = Input.GetAxis("Horizontal");
+        // Horizontal input
+        float hInput = Input.GetAxis("Horizontal");
 		cccp.HorizontalInput = hInput;
 
 		// Vertical input
@@ -33,65 +37,92 @@ public class GameControllerInput : MonoBehaviour {
 		float jumpInput = Input.GetAxis("Jump");
 		cccp.JumpInput = jumpInput;
 
-        //change drop input
-        if (Input.GetButtonDown("BackDrop"))
-            _switcher.ControlBackDrop();
-        if (Input.GetButtonDown("NextDrop"))
+        // Change controlled character
+        // Handles the next and back input
+        if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") > 0)
             _switcher.ControlNextDrop();
+        if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") < 0)
+            _switcher.ControlBackDrop();
 
-
-        if ((Input.GetButtonDown("Aim"))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Aim();
-        if ((Input.GetButtonDown("Fire"))) _switcher.currentCharacter.GetComponent<CharacterShoot>().Shoot();
-
-        HasToChange();
-        DebugAddDrops();
-        DebugSize();
-	}
-
-    /// <summary>
-    /// Control the size
-    /// </summary>
-    private void DebugSize() {
-        if(Input.GetKeyDown(KeyCode.KeypadPlus))
-            _switcher.currentCharacter.GetComponent<CharacterSize>().IncrementSize();
-
-        if(Input.GetKeyDown(KeyCode.KeypadMinus))
-            _switcher.currentCharacter.GetComponent<CharacterSize>().DecrementSize();
-
-        //Some number pressed? we use 1-9 as range 1-9
-        bool done = false;
-        for(int i = 1; i < 10 && !done; i++) {
-            if(Input.GetKeyDown("" + i)) {
-                _switcher.currentCharacter.GetComponent<CharacterSize>().SetSize(i);
-                done = true;
-            }
-        }
-    }
-
-    private void HasToChange() {
-
-        if (Input.GetKeyDown(KeyCode.Keypad1))
+            // Handles the direct access input
+            if (Input.GetButtonDown("SelectDrop1"))
             _switcher.SetControl(0);
-        if (Input.GetKeyDown(KeyCode.Keypad2))
+        if (Input.GetButtonDown("SelectDrop2"))
             _switcher.SetControl(1);
-        if (Input.GetKeyDown(KeyCode.Keypad3))
+        if (Input.GetButtonDown("SelectDrop3"))
             _switcher.SetControl(2);
-        if (Input.GetKeyDown(KeyCode.Keypad4))
+        if (Input.GetButtonDown("SelectDrop4"))
             _switcher.SetControl(3);
+        if (Input.GetButtonDown("SelectDrop5"))
+            _switcher.SetControl(4);
+
+		// Handle shoot input
+        if (Input.GetButtonDown("Action"))
+            if(shootmode)
+                shootComponent.Shoot();
+        if (Input.GetButtonDown("ShootMode"))
+            shootComponent.Aim();
+
+        // Debug Camera input
+        DebugCamera();
+
+        ///NOT SETTED CONTROLS
+        //Shoot mode pointer inputs
+        if (Input.GetAxis("LookAtDir") != 0)
+            Debug.Log("LookAtDir");
+        if (Input.GetAxis("ShootCounter") != 0)
+            Debug.Log("ShootCounter");
+
+        //Camera whatching arround
+        if (Input.GetAxis("CamHorizontal") != 0)
+            Debug.Log("CamHorizontal");
+        if (Input.GetAxis("CamHorizontal") != 0)
+            Debug.Log("CamHorizontal");
+
+        //Sluice action
+        if (Input.GetButtonDown("Sluice"))
+            Debug.Log("Sluice");
+
+        //Start button
+        if (Input.GetButtonDown("Start"))
+            Debug.Log("Start");
+
+        //Select button
+        if (Input.GetButtonDown("Back"))
+            Debug.Log("Back");
 
     }
 
-    private void DebugAddDrops() {
 
-        if(Input.GetKeyDown(KeyCode.Keypad7)) {
-            GameObject drop = _switcher.CreateDrop(true);
-            Debug.Log("add drop");
+    private void DebugCamera() {
+        //Switch debug mode
+        if (Input.GetKeyDown(KeyCode.F1))
+            _cameraSwitcher.SetCameraMode(CameraSwitcher.CameraMode.DEBUG);
+
+        //Back camera
+        if (Input.GetKeyDown(KeyCode.F2) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
+            _cameraSwitcher.BackCamera();
+
+        //Next Camera
+        if (Input.GetKeyDown(KeyCode.F3) && _cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG)
+            _cameraSwitcher.NextCamera();
+
+        //Debug Camera Input
+        if (_cameraSwitcher.cameraMode == CameraSwitcher.CameraMode.DEBUG) {
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveClose = Input.GetAxis("Vertical");
+            float moveVertical = 0.0f;
+            //At the moment I put it here I have to move it to L & R
+            if (Input.GetAxis("SelectDrop") != 0)
+                moveVertical += Input.GetAxis("SelectDrop");
+
+            Vector3 movement = new Vector3(moveHorizontal, moveVertical, moveClose);
+
+            _cameraDebugControler.SetMovement(movement);
+
+            float mouseAxisX = Input.GetAxis("Mouse X");
+            float mouseAxisY = Input.GetAxis("Mouse Y");
+            _cameraDebugControler.SetLookAt(mouseAxisX, mouseAxisY);
         }
-        
-
-        if (Input.GetKeyDown(KeyCode.Keypad8))
-            _switcher.KillDrop(_switcher.currentCharacter);
-        
-
     }
 }

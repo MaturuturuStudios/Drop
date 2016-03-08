@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
+using System.Text;
 
 /// <summary>
 /// Contains information about the state of the character controller on the last frame.
@@ -67,12 +67,30 @@ public class CharacterControllerState {
 		HasCollisions = false;
 		IsGrounded = false;
 		IsFalling = false;
-		IsFalling = false;
+		IsFlying = false;
 		GroundedObject = null;
 		PlatformVelocity = Vector3.zero;
 		IsOnSlope = false;
 		IsSliding = false;
 		SlopeAngle = 0;
+	}
+
+	/// <summary>
+	/// Overrides the ToString method with a more detailed information string.
+	/// </summary>
+	/// <returns>Detailed information about the state</returns>
+	override public String ToString() {
+		StringBuilder sb = new StringBuilder();
+		sb.Append("Has Collisions: ").Append(HasCollisions).Append("\n");
+		sb.Append("Is Grounded: ").Append(IsGrounded).Append("\n");
+		sb.Append("Is Falling: ").Append(IsFalling).Append("\n");
+		sb.Append("Is Flying: ").Append(IsFlying).Append("\n");
+		sb.Append("Grounded Object: ").Append(GroundedObject != null ? GroundedObject.name : null).Append("\n");
+		sb.Append("Platform Velocity: ").Append(PlatformVelocity).Append("\n");
+		sb.Append("Is On Slope: ").Append(IsOnSlope).Append("\n");
+		sb.Append("Is Sliding: ").Append(IsSliding).Append("\n");
+		sb.Append("Slope Angle: ").Append(SlopeAngle);
+		return sb.ToString();
 	}
 
 	#endregion

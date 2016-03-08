@@ -60,7 +60,7 @@ public class CharacterFusion : MonoBehaviour {
         }
 
         //remove the other drop
-        _independentControl.KillDrop(anotherDrop);
+        _independentControl.DestroyDrop(anotherDrop);
 
         //increment size of the actual drop
         _characterSize.SetSize(totalSize, directionSpitDrop);
