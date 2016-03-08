@@ -14,9 +14,10 @@ public class GameControllerInput : MonoBehaviour {
         // Retrieves current character's components
 		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 		CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
+        bool shootmode = _switcher.currentCharacter.GetComponent<CharacterShoot>().isShooting();
 
-		// Horizontal input
-		float hInput = Input.GetAxis("Horizontal");
+        // Horizontal input
+        float hInput = Input.GetAxis("Horizontal");
 		cccp.HorizontalInput = hInput;
 
 		// Vertical input
@@ -28,26 +29,55 @@ public class GameControllerInput : MonoBehaviour {
 		cccp.JumpInput = jumpInput;
 
         // Change controlled character
-		// Handles the next and back input
-        if (Input.GetButtonDown("BackDrop"))
-            _switcher.ControlBackDrop();
-        if (Input.GetButtonDown("NextDrop"))
+        // Handles the next and back input
+        if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") > 0)
             _switcher.ControlNextDrop();
+        if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") < 0)
+            _switcher.ControlBackDrop();
 
-		// Handles the direct access input
-		if (Input.GetKeyDown(KeyCode.Keypad1))
-			_switcher.SetControl(0);
-		if (Input.GetKeyDown(KeyCode.Keypad2))
-			_switcher.SetControl(1);
-		if (Input.GetKeyDown(KeyCode.Keypad3))
-			_switcher.SetControl(2);
-		if (Input.GetKeyDown(KeyCode.Keypad4))
-			_switcher.SetControl(3);
+            // Handles the direct access input
+            if (Input.GetButtonDown("SelectDrop1"))
+            _switcher.SetControl(0);
+        if (Input.GetButtonDown("SelectDrop2"))
+            _switcher.SetControl(1);
+        if (Input.GetButtonDown("SelectDrop3"))
+            _switcher.SetControl(2);
+        if (Input.GetButtonDown("SelectDrop4"))
+            _switcher.SetControl(3);
+        if (Input.GetButtonDown("SelectDrop5"))
+            _switcher.SetControl(4);
 
 		// Handle shoot input
-		if (Input.GetButtonDown("Aim"))
-			shootComponent.Aim();
-        if (Input.GetButtonDown("Fire"))
-			shootComponent.Shoot();
+        if (Input.GetButtonDown("Action"))
+            if(shootmode)
+                shootComponent.Shoot();
+        if (Input.GetButtonDown("ShootMode"))
+            shootComponent.Aim();
+
+        ///NOT SETTED CONTROLS
+        //Shoot mode pointer inputs
+        if (Input.GetAxis("LookAtDir") != 0)
+            Debug.Log("LookAtDir");
+        if (Input.GetAxis("ShootCounter") != 0)
+            Debug.Log("ShootCounter");
+
+        //Camera whatching arround
+        if (Input.GetAxis("CamHorizontal") != 0)
+            Debug.Log("CamHorizontal");
+        if (Input.GetAxis("CamHorizontal") != 0)
+            Debug.Log("CamHorizontal");
+
+        //Sluice action
+        if (Input.GetButtonDown("Sluice"))
+            Debug.Log("Sluice");
+
+        //Start button
+        if (Input.GetButtonDown("Start"))
+            Debug.Log("Start");
+
+        //Select button
+        if (Input.GetButtonDown("Back"))
+            Debug.Log("Back");
+
     }
 }

@@ -11,7 +11,8 @@ public class CharacterShoot : MonoBehaviour {
 	private bool  isBallThrown;
     private int lessize=0;
     private int falling = 0;
-    private bool shootmode = false;
+    //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
+    public bool shootmode = false;
     
 
     CharacterControllerCustom ccc;
@@ -23,7 +24,6 @@ public class CharacterShoot : MonoBehaviour {
 
         ccc = GetComponent<CharacterControllerCustom>();
         st= GetComponent<CharacterShootTrajectory>();
-        //gc = GetComponent<GameControllerIndependentControl>(); //Comentado por toni
 
         _gcic = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
@@ -48,7 +48,7 @@ public class CharacterShoot : MonoBehaviour {
                 shootmode = false;
                 st.QuitTrajectory();
                 st.enabled = false;
-				ccc.Parameters = null;	 // This is the right way to restore the character's parameters
+                ccc.Parameters = null;
             }
         }
 
@@ -60,8 +60,9 @@ public class CharacterShoot : MonoBehaviour {
         {
             //if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops) //Commented by toni, No longer pool needed
             //{
-            ccc.Parameters = null;   // This is the right way to restore the character's parameters
-			shootmode = false;
+            
+            ccc.Parameters = null;
+            shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
 
@@ -70,55 +71,25 @@ public class CharacterShoot : MonoBehaviour {
             GetComponent<CharacterSize>().SetSize(lessize);
 
             throwBall();
-            
-            
-            
-            //_gcic.SetControl(1);
-            //_gcic.ControlNextDrop();
+
             //}
         }
 
 
     }
 	void Update (){
-       /* if ((Input.GetKeyDown(KeyCode.X) && ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize()>1))) {
-            if (shootmode == false){
-                shootmode = true;
-                st.enabled = true;
-                
-                ccc.Parameters = CharacterControllerParameters.ShootingParameters;
-            }else if((shootmode== true))
-            {
-                shootmode = false;
-                st.QuitTrajectory();
-                st.enabled = false;
-                ccc.Parameters = null;
-            }       
-        }*/
-        if ( ccc.State.IsGrounded == false){
+       
+        if ((shootmode== true) && ccc.State.IsGrounded == false){
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
-            
-             //ccc.Parameters = null;                      
+            // ccc.Parameters = CharacterControllerParameters.ShootingTube;
+            ccc.Parameters = null;                      
         }
-        
-       
-       /* if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
-			
-			if(_gcic.allCurrentCharacters.Capacity<_gcic.numOfDrops){
-                throwBall();
-                lessize = GetComponent<CharacterSize>().GetSize();
-                lessize -= 1;
-                GetComponent<CharacterSize>().SetSize(lessize);
-                shootmode = false;
-                //_gcic.SetControl(1);
-                _gcic.ControlNextDrop();
-            }
-		}*/
-        
-        
-	}
+ 
+
+
+        }
 	//---------------------------------------	
 	// When ball is thrown, it will create new ball
 	//---------------------------------------	

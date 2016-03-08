@@ -19,7 +19,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
         //Get the camera
         _cameraController = GetComponentInChildren<MainCameraController>();
 
-    }
+		//Actualize camera objective
+		_cameraController.SetObjective(currentCharacter);
+		for (int i = 0; i < _fixedCameraControllers.Count; ++i)
+			_fixedCameraControllers[i].SetObjective(currentCharacter);
+
+	}
 
     void Start() {
         _dropNameCounter = allCurrentCharacters.Count;
