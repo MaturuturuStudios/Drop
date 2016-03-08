@@ -56,6 +56,11 @@ public class GameControllerInput : MonoBehaviour {
         if (Input.GetButtonDown("SelectDrop5"))
             _switcher.SetControl(4);
 
+		// Robert Handle shoot input To delete
+		if (Input.GetButtonDown("Aim"))
+			shootComponent.Aim();
+		if (Input.GetButtonDown("Fire"))
+			shootComponent.Shoot();
 		// Handle shoot input
         if (Input.GetButtonDown("Action"))
             if(shootmode)
