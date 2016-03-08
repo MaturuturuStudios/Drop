@@ -25,14 +25,15 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 _fixedCameraControllers.Add(Camera.allCameras[i]
                     .GetComponent<FixedCameraController>());
 
-    }
+		//Actualize camera objective
+		_cameraController.SetObjective(currentCharacter);
+		for (int i = 0; i < _fixedCameraControllers.Count; ++i)
+			_fixedCameraControllers[i].SetObjective(currentCharacter);
+
+	}
 
     void Start() {
         _dropNameCounter = allCurrentCharacters.Count;
-        //Actualize camera objective
-        _cameraController.SetObjective(currentCharacter);
-        for ( int i = 0; i < _fixedCameraControllers.Count; ++i)
-                _fixedCameraControllers[i].SetObjective(currentCharacter);
     }
 
     /// <summary>
