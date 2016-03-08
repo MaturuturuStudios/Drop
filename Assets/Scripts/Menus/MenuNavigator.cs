@@ -41,7 +41,7 @@ public class MenuNavigator : MonoBehaviour {
     public MenuInstance MapLevelMenu = new MenuInstance(Menu.MAP_LEVEL_MENU);
     public MenuInstance CreditMenu = new MenuInstance(Menu.CREDIT_MENU);
     #endregion
-
+    
     private Stack<MenuInstance> _menuPanel;
 
     #region Methods
@@ -50,6 +50,10 @@ public class MenuNavigator : MonoBehaviour {
         if (StartWithMenu != Menu.NONE) {
             openMenu(StartWithMenu);
         }
+    }
+    
+    public bool IsMenuActive() {
+        return _menuPanel.Count > 0;
     }
     
 
@@ -114,6 +118,28 @@ public class MenuNavigator : MonoBehaviour {
         if (_menuPanel.Count == 0) {
             closeMenu();
         }
+    }
+
+    public void pauseGame() {
+        pauseGame(!IsMenuActive());
+    }
+
+    public void pauseGame(bool paused) {
+        if (paused) {
+            Time.timeScale = 0;
+            openMenu(MenuNavigator.Menu.PAUSE_MENU);
+
+        } else {
+            closeMenu();
+            Time.timeScale = 1;
+        }
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public void ExitGame() {
+
     }
     #endregion
 }

@@ -8,7 +8,7 @@ public class MainMenu : MonoBehaviour {
     private MenuNavigator _menuNavigator;
 
     public void Awake() {
-        _menuNavigator= GameObject.FindGameObjectWithTag("Menus")
+        _menuNavigator = GameObject.FindGameObjectWithTag("Menus")
                                 .GetComponent<MenuNavigator>();
     }
 
@@ -27,7 +27,7 @@ public class MainMenu : MonoBehaviour {
 
     //TODO
     public void ExitGame() {
-
+        _menuNavigator.ExitGame();
     }
 
     public void Options() {

@@ -8,6 +8,9 @@ public class GameControllerInput : MonoBehaviour {
     private CameraDebugController _cameraDebugControler;
     private Camera _camera;
 
+    private MenuNavigator _ui;
+    private bool pause;
+
     void Start() {
         // Retrives the independent control component
         _switcher = GetComponent<GameControllerIndependentControl>();
@@ -17,50 +20,61 @@ public class GameControllerInput : MonoBehaviour {
                                 .GetComponent<Camera>();
         _cameraDebugControler = _cameraSwitcher.transform.FindChild("DebugCamera")
                                 .GetComponent<CameraDebugController>();
+
+
+        _ui = GameObject.FindGameObjectWithTag("Menus")
+                                .GetComponent<MenuNavigator>();
     }
 
 	void Update() {
-        // Retrieves current character's components
-		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
-		CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
+        if (Input.GetKeyDown(KeyCode.P)) {
+            _ui.pauseGame();
+        }
 
-		// Horizontal input
-		float hInput = Input.GetAxis("Horizontal");
-		cccp.HorizontalInput = hInput;
+        if (!_ui.IsMenuActive()) {
+            // Retrieves current character's components
+            CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+            CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
 
-		// Vertical input
-		float vInput = Input.GetAxis("Vertical");
-		cccp.VerticalInput = vInput;
+            // Horizontal input
+            float hInput = Input.GetAxis("Horizontal");
+            cccp.HorizontalInput = hInput;
 
-		// Jump input
-		float jumpInput = Input.GetAxis("Jump");
-		cccp.JumpInput = jumpInput;
+            // Vertical input
+            float vInput = Input.GetAxis("Vertical");
+            cccp.VerticalInput = vInput;
 
-        // Change controlled character
-		// Handles the next and back input
-        if (Input.GetButtonDown("BackDrop"))
-            _switcher.ControlBackDrop();
-        if (Input.GetButtonDown("NextDrop"))
-            _switcher.ControlNextDrop();
+            // Jump input
+            float jumpInput = Input.GetAxis("Jump");
+            cccp.JumpInput = jumpInput;
 
-		// Handles the direct access input
-		if (Input.GetKeyDown(KeyCode.Keypad1))
-			_switcher.SetControl(0);
-		if (Input.GetKeyDown(KeyCode.Keypad2))
-			_switcher.SetControl(1);
-		if (Input.GetKeyDown(KeyCode.Keypad3))
-			_switcher.SetControl(2);
-		if (Input.GetKeyDown(KeyCode.Keypad4))
-			_switcher.SetControl(3);
+            // Change controlled character
+            // Handles the next and back input
+            if (Input.GetButtonDown("BackDrop"))
+                _switcher.ControlBackDrop();
+            if (Input.GetButtonDown("NextDrop"))
+                _switcher.ControlNextDrop();
 
-		// Handle shoot input
-		if (Input.GetButtonDown("Aim"))
-			shootComponent.Aim();
-        if (Input.GetButtonDown("Fire"))
-			shootComponent.Shoot();
+            // Handles the direct access input
+            if (Input.GetKeyDown(KeyCode.Keypad1))
+                _switcher.SetControl(0);
+            if (Input.GetKeyDown(KeyCode.Keypad2))
+                _switcher.SetControl(1);
+            if (Input.GetKeyDown(KeyCode.Keypad3))
+                _switcher.SetControl(2);
+            if (Input.GetKeyDown(KeyCode.Keypad4))
+                _switcher.SetControl(3);
 
-        // Debug Camera input
-        DebugCamera();
+            // Handle shoot input
+            if (Input.GetButtonDown("Aim"))
+                shootComponent.Aim();
+            if (Input.GetButtonDown("Fire"))
+                shootComponent.Shoot();
+
+            // Debug Camera input
+            DebugCamera();
+
+        }
     }
 
 
