@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// Moves an entity according to a MovingPlatformPathDefinition script.
+/// Moves an entity according to a PathDefinition script.
 /// </summary>
-public class MovingPlatformFollowPath : MonoBehaviour {
+public class FollowPath : MonoBehaviour {
 
 	#region Custom Enumerations
 
 	/// <summary>
-	/// Defines how will the platform move to the next point in the path.
+	/// Defines how will the entity move to the next point in the path.
 	/// </summary>
 	public enum FollowType {
 
@@ -26,7 +26,7 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Defines how the platform looks for the next point in the path.
+	/// Defines how the entity looks for the next point in the path.
 	/// </summary>
 	public enum PathType {
 
@@ -47,29 +47,34 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 	#region Public Attributes
 
 	/// <summary>
-	/// Defines how will the platform move to the next point in the path.
+	/// Defines how will the entity move to the next point in the path.
 	/// </summary>
 	public FollowType followType = FollowType.MoveTowards;
 
 	/// <summary>
-	/// Defines how the platform looks for the next point in the path.
+	/// Defines how the entity looks for the next point in the path.
 	/// </summary>
 	public PathType pathType = PathType.BackAndForward;
 
 	/// <summary>
-	/// A reference to the path this platform will follow.
+	/// A reference to the path this entity will follow.
 	/// </summary>
-	public MovingPlatformPathDefinition path;
+	public PathDefinition path;
 
 	/// <summary>
-	/// Speed of the platform.
+	/// Speed of the entity.
 	/// </summary>
 	public float speed = 10;
 
 	/// <summary>
-	/// Distance tolerance for the platform to look a new point in the path.
+	/// Distance tolerance for the entity to look for a new point in the path.
 	/// </summary>
 	public float maxDistanceToGoal = 0.1f;
+
+	/// <summary>
+	/// If enabled, the entity will also rotate to fit the point's rotation.
+	/// </summary>
+	public bool useOrientation = false;
 
 	#endregion
 
@@ -79,11 +84,6 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 	/// Enumerator of the path.
 	/// </summary>
 	private IEnumerator<Transform> _pathEnumerator;
-
-	/// <summary>
-	/// A reference to the entity's rigidbody.
-	/// </summary>
-	private Rigidbody _rigidbody;
 
 	/// <summary>
 	/// A reference to the entity's transform.
@@ -96,7 +96,7 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 
 	/// <summary>
 	/// Unity's method called at the first frame this entity is enabled.
-	/// Recovers all the desired components and initialices the platform.
+	/// Retrieves all the desired components and initialices the platform.
 	/// </summary>
 	public void Start() {
 		// A path is required
@@ -105,8 +105,7 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 			return;
 		}
 
-		// Recovers the rigidbody component and the transform
-		_rigidbody = GetComponent<Rigidbody>();
+		// Recovers the transform component
 		_transform = transform;
 
 		// Selects the current path type
@@ -137,16 +136,27 @@ public class MovingPlatformFollowPath : MonoBehaviour {
 		if (_pathEnumerator == null || _pathEnumerator.Current == null)
 			return;
 
+		// Saves the original position
+		Vector3 originalPosition = _transform.position;
+
 		// Moves the entity using the right function
 		switch (followType) {
 			case FollowType.MoveTowards:
-				_rigidbody.MovePosition(Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime));
+				_transform.position = Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
 				break;
 			case FollowType.Lerp:
-				_rigidbody.MovePosition(Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime));
+				_transform.position = Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
 				break;
 			default:
 				return;
+		}
+
+		// Rotates the entity
+		if (useOrientation) {
+			float traveledDistance = (_transform.position - originalPosition).magnitude;
+			float remainingDistance = (_pathEnumerator.Current.position - originalPosition).magnitude;
+			if (remainingDistance > 0.01f)
+				_transform.rotation = Quaternion.Lerp(_transform.rotation, _pathEnumerator.Current.rotation, traveledDistance / remainingDistance);
 		}
 
 		// Checks if the entity is close enough to the target point

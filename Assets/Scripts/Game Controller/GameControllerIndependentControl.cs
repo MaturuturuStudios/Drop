@@ -12,23 +12,11 @@ public class GameControllerIndependentControl : MonoBehaviour {
     private int _dropNameCounter;
     
     //Cameras
-    public MainCameraController _cameraController;
-    public Camera _fixedCameras;
-    public List<FixedCameraController> _fixedCameraControllers;
+    private MainCameraController _cameraController;
 
-    void Awake()
-    {
+    void Awake() {
         //Get the camera
-        _cameraController = Camera.main.GetComponent<MainCameraController>();
-        for (int i = 0; i < Camera.allCamerasCount; ++i)
-            if (Camera.allCameras[i].CompareTag("FixedCamera"))
-                _fixedCameraControllers.Add(Camera.allCameras[i]
-                    .GetComponent<FixedCameraController>());
-
-		//Actualize camera objective
-		_cameraController.SetObjective(currentCharacter);
-		for (int i = 0; i < _fixedCameraControllers.Count; ++i)
-			_fixedCameraControllers[i].SetObjective(currentCharacter);
+        _cameraController = GetComponentInChildren<MainCameraController>();
 
 	}
 
@@ -42,7 +30,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// <param name="setControl">Set the control to the drop</param>
     public GameObject CreateDrop(bool setControl = false, bool addToControlList = true) {
         //Create a drop
-        GameObject drop = (GameObject)Instantiate(PfDrop);
+        GameObject drop = Instantiate(PfDrop);
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
 
         //Add to controled drop list
@@ -128,10 +116,8 @@ public class GameControllerIndependentControl : MonoBehaviour {
             //Set Control to new drop
             currentCharacter = allCurrentCharacters[index];
 
-            //Actualize camera objective
+            //Update camera objective
             _cameraController.SetObjective(currentCharacter);
-            for (int i = 0; i < _fixedCameraControllers.Count; ++i)
-                _fixedCameraControllers[i].SetObjective(currentCharacter);
         }
     }
 

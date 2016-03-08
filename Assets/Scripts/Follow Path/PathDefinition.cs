@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Defines the path an entity will follow using the MovingPlatformFollowPath script.
 /// </summary>
-public class MovingPlatformPathDefinition : MonoBehaviour {
+public class PathDefinition : MonoBehaviour {
 
 	#region Public Attributes
 
@@ -80,7 +80,8 @@ public class MovingPlatformPathDefinition : MonoBehaviour {
             return;
 
         for (int i = 1; i < points.Length; i++)
-            Gizmos.DrawLine(points[i - 1].position, points[i].position);
+			if (points[i - 1] != null && points[i] != null)
+				Gizmos.DrawLine(points[i - 1].position, points[i].position);
     }
 
 	#endregion

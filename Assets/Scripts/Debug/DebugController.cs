@@ -30,8 +30,7 @@ public class DebugController : MonoBehaviour {
 	/// visible.
 	/// </summary>
 	public bool showState = false;
-
-
+	
 	/// <summary>
 	/// If the character's parameters information should be visible while on
 	/// debug mode. If enabled on the editor this information will start
@@ -40,10 +39,35 @@ public class DebugController : MonoBehaviour {
 	public bool showParameters = false;
 
 	/// <summary>
+	/// If the panel with the information adn controls of the debug cameras
+	/// should be visible while on debug mode. If enabled on the editor this
+	/// information will start visible.
+	/// </summary>
+	public bool showCamerasPanel = false;
+
+	/// <summary>
 	/// Reference to the debug panel. Configured on the prefab. Should not
 	/// be modified on the editor.
 	/// </summary>
 	public GameObject debugPanel;
+
+	/// <summary>
+	/// Reference to the cameras panel. Configured on the prefab. Should not
+	/// be modified on the editor.
+	/// </summary>
+	public GameObject camerasPanel;
+
+	/// <summary>
+	/// Reference to the cameras panel main button. Configured on the prefab.
+	/// Should not be modified on the editor.
+	/// </summary>
+	public GameObject camerasPanelButton;
+
+	/// <summary>
+	/// Prefab object of a camera's panel. Configured on the prefab. Should not
+	/// be modified on the editor.
+	/// </summary>
+	public GameObject cameraPanelPrefab;
 
 	/// <summary>
 	/// Reference to the information text component. Configured on the prefab.
@@ -88,6 +112,23 @@ public class DebugController : MonoBehaviour {
 	/// game controller.
 	/// </summary>
 	private GameControllerIndependentControl _independentControl;
+
+	/// <summary>
+	/// Reference to the input component from the scene's game controller.
+	/// </summary>
+	private GameControllerInput _input;
+
+	/// <summary>
+	/// Reference to the camera switcher component from the debug
+	/// controller's children.
+	/// </summary>
+	private DebugCameraSwitcher _cameraSwitcher;
+
+	/// <summary>
+	/// Dictionary containing the information text associated to each of
+	/// the debug cameras.
+	/// </summary>
+	private Dictionary<Camera, GameObject> _camerasInformationTexts;
 
 	/// <summary>
 	/// Reference to the character currently under control.
@@ -135,6 +176,13 @@ public class DebugController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Hides or unhides the camera's information panel.
+	/// </summary>
+	public void ToggleShowCamerasPanel() {
+		showCamerasPanel = !showCamerasPanel;
+	}
+
+	/// <summary>
 	/// Destroy the current controlled character.
 	/// </summary>
 	public void DestroyCurrentlyControlledCharacter() {
@@ -150,14 +198,43 @@ public class DebugController : MonoBehaviour {
 	/// Initializes the script.
 	/// </summary>
 	void Start() {
-		// Initializes the collisions list
+		// Initializes the lists
 		_collidersColors = new Dictionary<Collider, Color>();
+		_camerasInformationTexts = new Dictionary<Camera, GameObject>();
 
 		// Looks for the independent controller component
 		_independentControl = FindObjectOfType<GameControllerIndependentControl>();
 
+		// Looks for the input component
+		_input = FindObjectOfType<GameControllerInput>();
+
+		// Looks for the camera switcher component
+		_cameraSwitcher = GetComponentInChildren<DebugCameraSwitcher>();
+
 		// Initializes the current character
 		_currentCharacter = null;
+
+		// Adds the cameras to the camera panel
+		for (int i = 0; i < _cameraSwitcher.GetCameras().Count; i++) {
+			Camera camera = _cameraSwitcher.GetCameras()[i];
+
+			// Creates the panel
+			GameObject cameraPanel = Instantiate(cameraPanelPrefab);
+			cameraPanel.transform.SetParent(camerasPanel.transform);
+
+			// Sets the event of the button
+			Button cameraButton = cameraPanel.transform.GetComponentInChildren<Button>();
+			int iVal = i;
+			cameraButton.onClick.AddListener(() => { _cameraSwitcher.SetActiveCamera(iVal); });
+
+			// Sets the text of the button
+			Text nameText = cameraButton.GetComponentInChildren<Text>();
+			nameText.text = camera.name;
+
+			// Stores the information text
+			GameObject informationText = cameraPanel.transform.Find("Camera Information Text").gameObject;
+			_camerasInformationTexts.Add(camera, informationText);
+		}
     }
 	
 	/// <summary>
@@ -175,11 +252,17 @@ public class DebugController : MonoBehaviour {
 			entry.Key.GetComponent<Renderer>().material.SetColor("_Color", entry.Value);
 		_collidersColors.Clear();
 
-		// Checks if the debug mod is active
+		// Reenables the controller's input component
+		_input.enabled = true;
+
+		// Checks if the debug mode is active
 		debugPanel.SetActive(debugMode);
+		camerasPanelButton.SetActive(debugMode);
+		camerasPanel.SetActive(debugMode && showCamerasPanel);
 		//Cursor.visible = debugMode;	Still not necessary
 		if (!debugMode) {
 			RestoreCharacterColor();
+			_cameraSwitcher.SetActiveCamera(0);
             return;
 		}
 
@@ -204,6 +287,10 @@ public class DebugController : MonoBehaviour {
 		ManageSizeChange();
 		ManageCharacterCreation();
 		ManageCharacterSelection();
+		ManageCameraChange();
+		ManageFreeCamera();
+
+		// Shows the character's collisions
 		ShowCharacterCollisions();
 	}
 
@@ -327,10 +414,12 @@ public class DebugController : MonoBehaviour {
 		// Spawns the character
 		GameObject newDrop = _independentControl.CreateDrop(true);
 
-		// Finds out the position to spawn the new character
-		Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		position.z = 0;
-		newDrop.transform.position = position;
+		// Finds the position to spawn the character
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Plane plane = new Plane(Vector3.back, Vector3.zero);
+		float distance;
+		if (plane.Raycast(ray, out distance))
+			newDrop.transform.position = ray.GetPoint(distance);
 	}
 
 	/// <summary>
@@ -341,17 +430,122 @@ public class DebugController : MonoBehaviour {
 		if (!Input.GetMouseButtonDown(0))
 			return;
 
-		// Finds out the position to select the character
-		Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		position.z = 0;
-
-		// Finds the first player's character in that position
-		Collider[] collidersOnPosition = Physics.OverlapSphere(position, 0);
-		foreach (Collider collider in collidersOnPosition)
-			if (collider.CompareTag("Player")) {
-				_independentControl.SetControl(collider.gameObject);
+		// Casts a ray from the camera to look for the character
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit[] hits = Physics.RaycastAll(ray);
+		foreach (RaycastHit hit in hits)
+			if (hit.collider.CompareTag("Player")) {
+				_independentControl.SetControl(hit.collider.gameObject);
 				break;
 			}
+	}
+
+	/// <summary>
+	/// Reads the input and changes to the right camera.
+	/// </summary>
+	private void ManageCameraChange() {
+		// Next Camera
+		if (Input.GetKeyDown(KeyCode.F2))
+			_cameraSwitcher.NextCamera();
+
+		// Previous camera
+		if (Input.GetKeyDown(KeyCode.F3))
+			_cameraSwitcher.PreviousCamera();
+
+		if (!showCamerasPanel)
+			return;
+
+		// Shows the information about the active camera
+		foreach (KeyValuePair<Camera, GameObject> entry in _camerasInformationTexts)
+			if (entry.Key == _cameraSwitcher.GetActiveCamera()) {
+				// Activates the text
+				entry.Value.SetActive(true);
+
+				// Creates the string builder
+				StringBuilder sb = new StringBuilder();
+				Camera cam = _cameraSwitcher.GetActiveCamera();
+
+				// Camera Type
+				sb.Append("- Camera Type: ");
+				string type;
+				if (cam.GetComponent<MainCameraController>() != null)
+					type = "Main Camera";
+				else if (cam.GetComponent<FreeCameraController>() != null)
+					type = "Free Camera";
+				else if (cam.GetComponent<FollowPath>() != null)
+					type = "Travelling Camera";
+				else if (cam.GetComponent<MainCameraController>() != null)
+					type = "Main Camera";
+				else
+					type = "Fixed Camera";
+				sb.Append(type);
+				sb.Append("\n");
+
+				// Projection Type
+				sb.Append("- Projection Type: ");
+				sb.Append(cam.orthographic ? "Ortographic" : "Perspective");
+				sb.Append("\n");
+
+				// Position
+				sb.Append("- Position: ");
+				sb.Append(cam.transform.position);
+				sb.Append("\n");
+
+				// Rotation
+				sb.Append("- Rotation: ");
+				sb.Append(cam.transform.eulerAngles);
+				sb.Append("\n");
+
+				// Field Of View
+				sb.Append("- Field Of View: ");
+				sb.Append(cam.fieldOfView);
+
+				// Sets the text
+				entry.Value.GetComponent<Text>().text = sb.ToString();
+			}
+			else
+				entry.Value.SetActive(false);
+	}
+
+	/// <summary>
+	/// Sends the input to the active camera if it's a free camera.
+	/// </summary>
+	private void ManageFreeCamera() {
+		// Looks if the active camera is a free camera
+		FreeCameraController freeCamera = Camera.main.GetComponent<FreeCameraController>();
+		if (freeCamera == null)
+			return;
+
+		// Free cameras are only controlled while holding the LShift key
+		if (!Input.GetKey(KeyCode.LeftShift))
+			return;
+
+		// Disables game controller's input component
+		_input.enabled = false;
+
+		// Creates the input's movement vector
+		Vector3 movement = new Vector3();
+		movement.x = Input.GetAxis("Horizontal");
+		movement.y = 0;
+		if (Input.GetKey(KeyCode.Space))
+			movement.y++;
+		if (Input.GetKey(KeyCode.X))
+			movement.y--;
+		movement.z = Input.GetAxis("Vertical");
+
+		// Creates the input
+		Vector3 rotation = new Vector3();
+		rotation.x = Input.GetAxis("Mouse Y");
+		rotation.y = Input.GetAxis("Mouse X");
+		rotation.z = 0;
+		if (Input.GetKey(KeyCode.Q))
+			rotation.z++;
+		if (Input.GetKey(KeyCode.E))
+			rotation.z--;
+
+		// Moves the camera
+		freeCamera.Move(movement);
+		freeCamera.Rotate(rotation);
 	}
 
 	/// <summary>
