@@ -18,9 +18,14 @@ public class FreeCameraController : MonoBehaviour {
 	public float rotationSpeed = 10;
 
 	/// <summary>
-	/// If enabled, the vertical rotation will be inverted.
+	/// If enabled, the vertical rotation (X) will be inverted.
 	/// </summary>
 	public bool invertVerticalRotation = true;
+
+	/// <summary>
+	/// Amount of rotation in the Z axis.
+	/// </summary>
+	public float zRotationScale = 0.25f;
 
 	#endregion
 
@@ -55,9 +60,10 @@ public class FreeCameraController : MonoBehaviour {
     /// Rotates the camera.
     /// </summary>
     public void Rotate(Vector3 rotation) {
-		// Inverts the vertical rotation
+		// Inverts the X rotation and scales the Z rotation
 		if (invertVerticalRotation)
 			rotation.x = -rotation.x;
+		rotation.z *= zRotationScale;
 
 		// Does the actual rotation
 		_transform.localEulerAngles = _transform.localEulerAngles + rotation * rotationSpeed;

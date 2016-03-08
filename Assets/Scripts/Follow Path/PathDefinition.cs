@@ -80,7 +80,8 @@ public class PathDefinition : MonoBehaviour {
             return;
 
         for (int i = 1; i < points.Length; i++)
-            Gizmos.DrawLine(points[i - 1].position, points[i].position);
+			if (points[i - 1] != null && points[i] != null)
+				Gizmos.DrawLine(points[i - 1].position, points[i].position);
     }
 
 	#endregion

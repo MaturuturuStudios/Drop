@@ -200,6 +200,7 @@ public class DebugController : MonoBehaviour {
 		//Cursor.visible = debugMode;	Still not necessary
 		if (!debugMode) {
 			RestoreCharacterColor();
+			_cameraSwitcher.SetActiveCamera(0);
             return;
 		}
 
@@ -381,13 +382,13 @@ public class DebugController : MonoBehaviour {
 	/// Reads the input and changes to the right camera.
 	/// </summary>
 	private void ManageCameraChange() {
-		// Previous camera
-		if (Input.GetKeyDown(KeyCode.F2))
-			_cameraSwitcher.PreviousCamera();
-
 		// Next Camera
-		if (Input.GetKeyDown(KeyCode.F3))
+		if (Input.GetKeyDown(KeyCode.F2))
 			_cameraSwitcher.NextCamera();
+
+		// Previous camera
+		if (Input.GetKeyDown(KeyCode.F3))
+			_cameraSwitcher.PreviousCamera();
 	}
 
 	/// <summary>
@@ -425,8 +426,8 @@ public class DebugController : MonoBehaviour {
 		// Moves the camera
 		freeCamera.Move(movement);
 
-		// If the middle button is pressed, rotates the camera
-		if (Input.GetMouseButton(2))
+		// If the shift key is pressed, rotates the camera
+		if (Input.GetKey(KeyCode.LeftShift))
 			freeCamera.Rotate(rotation);
 	}
 

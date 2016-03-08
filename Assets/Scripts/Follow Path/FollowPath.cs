@@ -86,11 +86,6 @@ public class FollowPath : MonoBehaviour {
 	private IEnumerator<Transform> _pathEnumerator;
 
 	/// <summary>
-	/// A reference to the entity's rigidbody.
-	/// </summary>
-	private Rigidbody _rigidbody;
-
-	/// <summary>
 	/// A reference to the entity's transform.
 	/// </summary>
 	private Transform _transform;
@@ -110,8 +105,7 @@ public class FollowPath : MonoBehaviour {
 			return;
 		}
 
-		// Recovers the rigidbody component and the transform
-		_rigidbody = GetComponent<Rigidbody>();
+		// Recovers the transform component
 		_transform = transform;
 
 		// Selects the current path type
@@ -142,16 +136,27 @@ public class FollowPath : MonoBehaviour {
 		if (_pathEnumerator == null || _pathEnumerator.Current == null)
 			return;
 
+		// Saves the original position
+		Vector3 originalPosition = _transform.position;
+
 		// Moves the entity using the right function
 		switch (followType) {
 			case FollowType.MoveTowards:
-				_rigidbody.MovePosition(Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime));
+				_transform.position = Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
 				break;
 			case FollowType.Lerp:
-				_rigidbody.MovePosition(Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime));
+				_transform.position = Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
 				break;
 			default:
 				return;
+		}
+
+		// Rotates the entity
+		if (useOrientation) {
+			float traveledDistance = (_transform.position - originalPosition).magnitude;
+			float remainingDistance = (_pathEnumerator.Current.position - originalPosition).magnitude;
+			if (remainingDistance > 0.01f)
+				_transform.rotation = Quaternion.Lerp(_transform.rotation, _pathEnumerator.Current.rotation, traveledDistance / remainingDistance);
 		}
 
 		// Checks if the entity is close enough to the target point
