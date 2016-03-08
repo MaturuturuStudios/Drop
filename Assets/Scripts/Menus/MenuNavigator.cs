@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using UnityEngine.SceneManagement;
+
 /// <summary>
 /// Control the flow between menus and specials action taken between thems
 /// </summary>
@@ -41,6 +43,11 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Public Attributes
+    /// <summary>
+    /// Which scene is the starting point of the application/main menu
+    /// </summary>
+    /// TODO: make an editor to drag and drop a Scene 
+    public string startSceneMainMenu;
     /// <summary>
     /// When scene start, should open which menu?
     /// </summary>
@@ -167,6 +174,10 @@ public class MenuNavigator : MonoBehaviour {
 
     //Region of methods with special/specific actions when pushed or poped from stack
     #region Specifics menu actions
+    public void MainMenu() {
+        SceneManager.LoadScene(startSceneMainMenu, LoadSceneMode.Single);
+    }
+
     /// <summary>
     /// Pause or unpause the game, depending if exists a menu
     /// If is any menu, close all of them, if not, pause it and show the menu

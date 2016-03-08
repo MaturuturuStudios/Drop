@@ -10,7 +10,8 @@ public class MainMenu : MonoBehaviour {
     /// <summary>
     /// Scene to be opened when starting a new game
     /// </summary>
-    public Scene NewGameScene;
+    /// TODO: editor for drag scenes
+    public string NewGameScene;
     #endregion
 
     #region Private Attributes
@@ -30,7 +31,7 @@ public class MainMenu : MonoBehaviour {
     /// Start a new game
     /// </summary>
     public void NewGame() {
-        SceneManager.LoadScene(NewGameScene.name, LoadSceneMode.Single);
+        SceneManager.LoadScene(NewGameScene, LoadSceneMode.Single);
     }
 
     /// <summary>

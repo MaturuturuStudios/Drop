@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Control all about pause menu
@@ -30,8 +29,10 @@ public class PauseMenu : MonoBehaviour {
     /// </summary>
     public void ReturnToMainMenu() {
         //TODO: need to control other actions as save game, quit the actual scene...
-        _menuNavigator.CloseMenu();
-        _menuNavigator.OpenMenu(MenuNavigator.Menu.MAIN_MENU);
+        //this script or menuNavigator?
+        //unpause just in case
+        _menuNavigator.PauseGame(false);
+        _menuNavigator.MainMenu();
     }
 
     /// <summary>
