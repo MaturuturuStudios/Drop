@@ -27,6 +27,12 @@ public class FreeCameraController : MonoBehaviour {
 	/// </summary>
 	public float zRotationScale = 0.25f;
 
+	/// <summary>
+	/// Amount of degrees the camera will be able to rate on the
+	/// vertical axis (X);
+	/// </summary>
+	public float maxRotationDegrees = 89;
+
 	#endregion
 
 	#region Private Attributes
@@ -35,6 +41,12 @@ public class FreeCameraController : MonoBehaviour {
 	/// Reference to the entity's transform component.
 	/// </summary>
 	private Transform _transform;
+
+	/// <summary>
+	/// Stores the vertical rotation (X) of the camera, since euler
+	/// degrees doesn't work reliably on this axis.
+	/// </summary>
+	private float _rotationX;
 
 	#endregion
 
@@ -47,6 +59,9 @@ public class FreeCameraController : MonoBehaviour {
 	void Start() {
 		// Retrieves the desired components
 		_transform = transform;
+
+		// Initializes te vertical rotation
+		_rotationX = 0;
     }
 
     /// <summary>
@@ -65,8 +80,18 @@ public class FreeCameraController : MonoBehaviour {
 			rotation.x = -rotation.x;
 		rotation.z *= zRotationScale;
 
+		// Sets the vertical rotation
+		_rotationX += rotation.x * rotationSpeed;
+		_rotationX = Mathf.Clamp(_rotationX, -maxRotationDegrees, maxRotationDegrees);
+
+		// Creates the new rotation
+		Vector3 newRotation = _transform.localEulerAngles;
+		newRotation.x = _rotationX;
+		newRotation.y += rotation.y * rotationSpeed;
+		newRotation.z += rotation.z * rotationSpeed;
+
 		// Does the actual rotation
-		_transform.localEulerAngles = _transform.localEulerAngles + rotation * rotationSpeed;
+		_transform.localEulerAngles = newRotation;
     }
 
 	#endregion

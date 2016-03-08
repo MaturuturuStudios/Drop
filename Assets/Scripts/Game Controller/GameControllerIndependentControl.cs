@@ -14,15 +14,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
     //Cameras
     private MainCameraController _cameraController;
 
-    void Awake()
-    {
+    void Awake() {
         //Get the camera
         _cameraController = GetComponentInChildren<MainCameraController>();
-
-		//Actualize camera objective
-		_cameraController.SetObjective(currentCharacter);
-		for (int i = 0; i < _fixedCameraControllers.Count; ++i)
-			_fixedCameraControllers[i].SetObjective(currentCharacter);
 
 	}
 
