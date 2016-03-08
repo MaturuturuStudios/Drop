@@ -30,9 +30,11 @@ public class MenuNavigator : MonoBehaviour {
         }
 
         public void disable() {
+            if (panel == null) return;
             panel.SetActive(false);
         }
         public void enable() {
+            if (panel == null) return;
             panel.SetActive(true);
         }
     }
