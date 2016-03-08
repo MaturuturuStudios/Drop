@@ -3,8 +3,8 @@ using System.Collections;
 
 public class MainCameraController : MonoBehaviour {
     
-    //Drop References
-    public GameObject currentCharacter;
+    // Target of the camera
+    private GameObject target;
 
     /// <summary>
     /// Distance from player to camera
@@ -54,21 +54,38 @@ public class MainCameraController : MonoBehaviour {
     //Look at position control
     public Vector3 startPosition = new Vector3(-4.0f, 25.0f, -55.0f);
 
-    void OnEnable() {
-        //Set camera< to its position
+	/// <summary>
+	/// Reference to the independent control component from the scene's
+	/// game controller.
+	/// </summary>
+	private GameControllerIndependentControl _independentControl;
+
+	void OnEnable() {
+        //Set camera to its position
         transform.position = startPosition;
     }
+
+	/// <summary>
+	/// Unity's method called when this entity is created, even
+	/// if it is disabled.
+	/// </summary>
+	void Awake() {
+		// Looks for the independent controller component
+		_independentControl = FindObjectOfType<GameControllerIndependentControl>();
+
+		// Sets the camera's target to the current character
+		RestoreTarget();
+	}
 
     /// <summary>
     /// Called on start script
     /// </summary>
-    void Start()
-    {
-        //Calculate offset
-        _offset = new Vector3(0.0f, offset.up, offset.far);
+    void Start() {
+		//Calculate offset
+		_offset = new Vector3(0.0f, offset.up, offset.far);
 
         //Set references
-        _lastObjective = currentCharacter.transform.position;
+        _lastObjective = target.transform.position;
         _lastPositionMovement = transform.position;
         
         //Create new boundary
@@ -86,11 +103,11 @@ public class MainCameraController : MonoBehaviour {
         _cameraBoundary.GetComponent<Renderer>().material = material;
 
         //Put it in its position
-        _cameraBoundary.transform.position = currentCharacter.transform.position;
+        _cameraBoundary.transform.position = target.transform.position;
         _cameraBoundary.transform.localScale = new Vector3(boundary.width, boundary.width, 0.1f);
 
         //Get drop size
-        float size = currentCharacter.GetComponent<CharacterSize>().GetSize();
+        float size = target.GetComponent<CharacterSize>().GetSize();
 
         if (boundary.visible) {
             _cameraBoundary.SetActive(true);
@@ -104,8 +121,8 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     void Update()
     {
-        // Actualize status
-        ActualizeState();
+        // Update status
+        UpdateState();
     }
 
     /// <summary>
@@ -121,14 +138,14 @@ public class MainCameraController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Actualize the camera status
+    /// Update the camera status
     /// </summary>
-    private void ActualizeState()
+    private void UpdateState()
     {
         //Get drop size
-        float size = currentCharacter.GetComponent<CharacterSize>().GetSize();
+        float size = target.GetComponent<CharacterSize>().GetSize();
 
-        //Actualize ofset and boundary depends of the size
+        //Update ofset and boundary depends of the size
         _offset = new Vector3(0.0f, offset.up + size, offset.far - (size * 5));
 
         if (boundary.visible) {
@@ -144,7 +161,7 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private void MoveCamera()
     {
-        Vector3 destination = currentCharacter.transform.position + _offset;
+        Vector3 destination = target.transform.position + _offset;
 
         //Need to use something better than size
         objMov = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
@@ -166,7 +183,7 @@ public class MainCameraController : MonoBehaviour {
     {
         Quaternion lookingAt = transform.rotation;
 
-        Vector3 destination = currentCharacter.transform.position;
+        Vector3 destination = target.transform.position;
 
         destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * movement.lookAtSmooth);
 
@@ -180,6 +197,14 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public void SetObjective(GameObject objective)
     {
-        currentCharacter = objective;
+		target = objective;
     }
+
+	/// <summary>
+	/// Restores the target of the camera to the currently controlled
+	/// character.
+	/// </summary>
+	public void RestoreTarget() {
+		SetObjective(_independentControl.currentCharacter);
+	}
 }

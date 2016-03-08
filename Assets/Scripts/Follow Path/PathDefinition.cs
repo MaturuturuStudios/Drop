@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Defines the path an entity will follow using the MovingPlatformFollowPath script.
 /// </summary>
-public class MovingPlatformPathDefinition : MonoBehaviour {
+public class PathDefinition : MonoBehaviour {
 
 	#region Public Attributes
 
