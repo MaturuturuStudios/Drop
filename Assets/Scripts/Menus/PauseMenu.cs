@@ -43,6 +43,13 @@ public class PauseMenu : MonoBehaviour {
     }
 
     /// <summary>
+    /// Open the map and levels menu
+    /// </summary>
+    public void RestartLevel() {
+        //TODO
+    }
+
+    /// <summary>
     /// Show the option menu
     /// </summary>
     public void Options() {
