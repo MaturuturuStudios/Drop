@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class CharacterShootTrajectory : MonoBehaviour {
 
+    
+
     public GameObject TrajectoryPointPrefeb;
     public int numOfTrajectoryPoints = 30;
 
@@ -13,24 +15,32 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private Vector3 vel,aiming;
     private float power = 25;
 
+ 
+
     // Use this for initialization
-    void Start () {
-        this.enabled = false;
-
-        vel.x = 5;
-        vel.y = 5;
-
-        ccc = GetComponent<CharacterControllerCustom>();
-        s= GetComponent<CharacterShoot>();
-
-        trajectoryPoints = new List<GameObject>();
+    void Awake() {
         
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
-            GameObject dot = (GameObject)Instantiate(TrajectoryPointPrefeb);
-            dot.GetComponent<Renderer>().enabled = false;
-            trajectoryPoints.Insert(i, dot);
-        }
+
+            this.enabled = false;
+
+            vel.x = 5;
+            vel.y = 5;
+
+            ccc = GetComponent<CharacterControllerCustom>();
+            s = GetComponent<CharacterShoot>();
+
+            trajectoryPoints = new List<GameObject>();
+
+            for (int i = 0; i < numOfTrajectoryPoints; i++)
+            {
+                GameObject dot = (GameObject)Instantiate(TrajectoryPointPrefeb);
+                dot.GetComponent<Renderer>().enabled = false;
+                dot.transform.parent = ccc.transform;
+                trajectoryPoints.Insert(i, dot);
+            }
+
+         
+
     }
 
 	// Update is called once per frame
