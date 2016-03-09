@@ -18,12 +18,15 @@ public class CharacterShoot : MonoBehaviour {
     CharacterControllerCustom ccc;
     CharacterShootTrajectory st;
     GameControllerIndependentControl _gcic;
+    CharacterSize size;
 
     //---------------------------------------	
     void Start (){
 
         ccc = GetComponent<CharacterControllerCustom>();
         st= GetComponent<CharacterShootTrajectory>();
+        size= GetComponent<CharacterSize>();
+        //gc = GetComponent<GameControllerIndependentControl>(); //Comentado por toni
 
         _gcic = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
@@ -48,6 +51,7 @@ public class CharacterShoot : MonoBehaviour {
                 shootmode = false;
                 st.QuitTrajectory();
                 st.enabled = false;
+                // ccc.Parameters = CharacterControllerParameters.ShootingEnd;
                 ccc.Parameters = null;
             }
         }
@@ -60,7 +64,7 @@ public class CharacterShoot : MonoBehaviour {
         {
             //if (_gcic.allCurrentCharacters.Capacity < _gcic.numOfDrops) //Commented by toni, No longer pool needed
             //{
-            
+            //ccc.Parameters = CharacterControllerParameters.ShootingEnd;
             ccc.Parameters = null;
             shootmode = false;
             st.QuitTrajectory();
@@ -71,22 +75,54 @@ public class CharacterShoot : MonoBehaviour {
             GetComponent<CharacterSize>().SetSize(lessize);
 
             throwBall();
-
+            
+            
+            
+            //_gcic.SetControl(1);
+            //_gcic.ControlNextDrop();
             //}
         }
 
 
     }
 	void Update (){
-       
-        if ((shootmode== true) && ccc.State.IsGrounded == false){
+       /* if ((Input.GetKeyDown(KeyCode.X) && ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize()>1))) {
+            if (shootmode == false){
+                shootmode = true;
+                st.enabled = true;
+                
+                ccc.Parameters = CharacterControllerParameters.ShootingParameters;
+            }else if((shootmode== true))
+            {
+                shootmode = false;
+                st.QuitTrajectory();
+                st.enabled = false;
+                ccc.Parameters = null;
+            }       
+        }*/
+        if ((shootmode== true) && (ccc.State.IsGrounded == false || size.GetSize()==1))
+        {
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
             // ccc.Parameters = CharacterControllerParameters.ShootingTube;
             ccc.Parameters = null;                      
         }
- 
+        
+
+
+            /* if ((Input.GetKeyDown(KeyCode.Space)) && (shootmode==true)){
+
+                 if(_gcic.allCurrentCharacters.Capacity<_gcic.numOfDrops){
+                     throwBall();
+                     lessize = GetComponent<CharacterSize>().GetSize();
+                     lessize -= 1;
+                     GetComponent<CharacterSize>().SetSize(lessize);
+                     shootmode = false;
+                     //_gcic.SetControl(1);
+                     _gcic.ControlNextDrop();
+                 }
+             }*/
 
 
         }

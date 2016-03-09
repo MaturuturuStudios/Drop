@@ -53,11 +53,11 @@ public class GameControllerInput : MonoBehaviour {
 		if (Input.GetButtonDown("Fire"))
 			shootComponent.Shoot();
 		// Handle shoot input
-        if (Input.GetButtonDown("Action"))
+       /* if (Input.GetButtonDown("Action"))
             if(shootmode)
                 shootComponent.Shoot();
         if (Input.GetButtonDown("ShootMode"))
-            shootComponent.Aim();
+            shootComponent.Aim();*/
 
         ///NOT SETTED CONTROLS
         //Shoot mode pointer inputs
