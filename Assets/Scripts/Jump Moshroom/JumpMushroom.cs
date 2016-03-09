@@ -35,11 +35,13 @@ public class JumpMushroom : MonoBehaviour
         if ((cccp != null)) {
             if ((cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsGrounded == false) || (cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsFalling == true)){
                 //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
-                    
-                velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
+
+                cccp.gameObject.GetComponent<CharacterControllerCustom>().StopFlying();
+
+               velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
                 velo.y = velo.y * -1;
 
-                Debug.Log("LOOOOOOOOOOOOOOOOOOOOL " + velo.y);
+                //Debug.Log("LOOOOOOOOOOOOOOOOOOOOL " + velo.y);
 
                 if (velo.y < minJump)
                     velo.y = minJump;
