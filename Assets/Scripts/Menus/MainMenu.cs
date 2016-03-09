@@ -59,7 +59,7 @@ public class MainMenu : MonoBehaviour {
     /// Show the options
     /// </summary>
     public void Options() {
-        _menuNavigator.OpenMenu(MenuNavigator.Menu.CREDITS_MENU);
+        _menuNavigator.OpenMenu(MenuNavigator.Menu.OPTION_MENU);
     }
     #endregion
 
