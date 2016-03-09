@@ -18,34 +18,6 @@ public class DebugController : MonoBehaviour {
 	public bool debugMode = false;
 
 	/// <summary>
-	/// If the important information about the character should be visible
-	/// while on debug mode. If enabled on the editor this information 
-	/// will start visible.
-	/// </summary>
-	public bool showInformation = false;
-
-	/// <summary>
-	/// If the character's state information should be visible while on
-	/// debug mode. If enabled on the editor this information will start
-	/// visible.
-	/// </summary>
-	public bool showState = false;
-	
-	/// <summary>
-	/// If the character's parameters information should be visible while on
-	/// debug mode. If enabled on the editor this information will start
-	/// visible.
-	/// </summary>
-	public bool showParameters = false;
-
-	/// <summary>
-	/// If the panel with the information adn controls of the debug cameras
-	/// should be visible while on debug mode. If enabled on the editor this
-	/// information will start visible.
-	/// </summary>
-	public bool showCamerasPanel = false;
-
-	/// <summary>
 	/// Reference to the debug panel. Configured on the prefab. Should not
 	/// be modified on the editor.
 	/// </summary>
@@ -155,31 +127,10 @@ public class DebugController : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Hides or unhides the current character's basic information.
+	/// Hides or unhides an UI element from the debug menu.
 	/// </summary>
-	public void ToggleShowInformation() {
-		showInformation = !showInformation;
-	}
-
-	/// <summary>
-	/// Hides or unhides the current character's state information.
-	/// </summary>
-	public void ToggleShowState() {
-		showState = !showState;
-	}
-
-	/// <summary>
-	/// Hides or unhides the current character's parameters information.
-	/// </summary>
-	public void ToggleShowParameters() {
-		showParameters = !showParameters;
-	}
-
-	/// <summary>
-	/// Hides or unhides the camera's information panel.
-	/// </summary>
-	public void ToggleShowCamerasPanel() {
-		showCamerasPanel = !showCamerasPanel;
+	public void ToggleUIElement(GameObject element) {
+		element.SetActive(!element.activeInHierarchy);
 	}
 
 	/// <summary>
@@ -221,6 +172,7 @@ public class DebugController : MonoBehaviour {
 			// Creates the panel
 			GameObject cameraPanel = Instantiate(cameraPanelPrefab);
 			cameraPanel.transform.SetParent(camerasPanel.transform);
+			cameraPanel.transform.SetSiblingIndex(i);
 
 			// Sets the event of the button
 			Button cameraButton = cameraPanel.transform.GetComponentInChildren<Button>();
@@ -258,7 +210,6 @@ public class DebugController : MonoBehaviour {
 		// Checks if the debug mode is active
 		debugPanel.SetActive(debugMode);
 		camerasPanelButton.SetActive(debugMode);
-		camerasPanel.SetActive(debugMode && showCamerasPanel);
 		//Cursor.visible = debugMode;	Still not necessary
 		if (!debugMode) {
 			RestoreCharacterColor();
@@ -287,6 +238,8 @@ public class DebugController : MonoBehaviour {
 		ManageSizeChange();
 		ManageCharacterCreation();
 		ManageCharacterSelection();
+		ManageCharacterMovement();
+		ManageCharacterDestruction();
 		ManageCameraChange();
 		ManageFreeCamera();
 
@@ -310,11 +263,6 @@ public class DebugController : MonoBehaviour {
 	/// character.
 	/// </summary>
 	private void ShowCharacterInformation() {
-		// Displays the text
-		informationText.gameObject.SetActive(showInformation);
-        if (!showInformation)
-			return;
-
 		// Creates the string builder
 		StringBuilder sb = new StringBuilder();
 
@@ -356,11 +304,6 @@ public class DebugController : MonoBehaviour {
 	/// character.
 	/// </summary>
 	private void ShowCharacterState() {
-		// Displays the text
-		stateText.gameObject.SetActive(showState);
-		if (!showState)
-			return;
-
 		// Sets the text
 		stateText.text = _currentCharacter.GetComponent<CharacterControllerCustom>().State.ToString();
 	}
@@ -370,11 +313,6 @@ public class DebugController : MonoBehaviour {
 	/// character.
 	/// </summary>
 	private void ShowCharacterParameters() {
-		// Displays the text
-		parametersText.gameObject.SetActive(showParameters);
-		if (!showParameters)
-			return;
-
 		// Sets the text
 		parametersText.text = _currentCharacter.GetComponent<CharacterControllerCustom>().Parameters.ToString();
 	}
@@ -426,7 +364,7 @@ public class DebugController : MonoBehaviour {
 	/// Reads the input and selects a character.
 	/// </summary>
 	private void ManageCharacterSelection() {
-		// Checks if the creation button has been pressed
+		// Checks if the selection button has been pressed
 		if (!Input.GetMouseButtonDown(0))
 			return;
 
@@ -441,6 +379,36 @@ public class DebugController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Reads the input and moves the character.
+	/// </summary>
+	private void ManageCharacterMovement() {
+		// Checks if the movement button has been pressed
+		if (!Input.GetMouseButton(2))
+			return;
+
+		// Finds the position to move the character to
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Plane plane = new Plane(Vector3.back, Vector3.zero);
+		float distance;
+		if (plane.Raycast(ray, out distance)) {
+			_independentControl.currentCharacter.GetComponent<CharacterControllerCustom>().Stop();
+            _independentControl.currentCharacter.transform.position = ray.GetPoint(distance);
+		}
+	}
+
+	/// <summary>
+	/// Reads the input and destroyes the current character.
+	/// </summary>
+	private void ManageCharacterDestruction() {
+		// Checks if the destruction button has been pressed
+		if (!Input.GetKeyDown(KeyCode.Delete))
+			return;
+
+		// Destroys the character
+		DestroyCurrentlyControlledCharacter();
+	}
+
+	/// <summary>
 	/// Reads the input and changes to the right camera.
 	/// </summary>
 	private void ManageCameraChange() {
@@ -451,9 +419,6 @@ public class DebugController : MonoBehaviour {
 		// Previous camera
 		if (Input.GetKeyDown(KeyCode.F3))
 			_cameraSwitcher.PreviousCamera();
-
-		if (!showCamerasPanel)
-			return;
 
 		// Shows the information about the active camera
 		foreach (KeyValuePair<Camera, GameObject> entry in _camerasInformationTexts)
