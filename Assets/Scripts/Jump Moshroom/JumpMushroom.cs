@@ -7,9 +7,9 @@ public class JumpMushroom : MonoBehaviour{
 
     private Vector3 velo;
     
-    public float minheight ;
+    public float minheight =1;
     public float maxheight=20;
-    public float height;
+    public float height=1;
     public float Jumpforce;
 
     public bool KeepVerticalSpeed = true;
@@ -27,8 +27,8 @@ public class JumpMushroom : MonoBehaviour{
         velo.x = 0;
         velo.z = 0;
 
-        minheight = 1;
-        maxheight = 20;
+        //minheight = 1;
+        //maxheight = 20;
     }
 
     // Update is called once per frame
