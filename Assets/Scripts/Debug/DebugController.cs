@@ -337,7 +337,7 @@ public class DebugController : MonoBehaviour {
 
 		// Handles the direct size input
 		for (int i = 1; i < 10; i++)
-			if (Input.GetKeyDown(i.ToString()))
+			if (Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), "Keypad" + i, true)))
 				sizeComponent.SetSize(i);
 	}
 
