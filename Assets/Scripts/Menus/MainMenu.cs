@@ -31,7 +31,9 @@ public class MainMenu : MonoBehaviour {
     /// Start a new game
     /// </summary>
     public void NewGame() {
-        SceneManager.LoadScene(NewGameScene, LoadSceneMode.Single);
+        Debug.Log("Llega");
+        _menuNavigator.ChangeScene(NewGameScene);
+        //SceneManager.LoadScene(NewGameScene, LoadSceneMode.Single);
     }
 
     /// <summary>

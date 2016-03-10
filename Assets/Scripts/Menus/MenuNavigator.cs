@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-using UnityEngine.SceneManagement;
+
 
 /// <summary>
 /// Control the flow between menus and specials action taken between thems
@@ -84,6 +84,8 @@ public class MenuNavigator : MonoBehaviour {
     /// The stack of menus
     /// </summary>
     private Stack<MenuInstance> _menuPanel;
+
+    private SceneFadeInOut _fading;
     #endregion
 
     #region Methods
@@ -92,6 +94,8 @@ public class MenuNavigator : MonoBehaviour {
         if (startWithMenu != Menu.NONE) {
             OpenMenu(startWithMenu);
         }
+
+        _fading = GetComponent<SceneFadeInOut>();
     }
     
     /// <summary>
@@ -172,10 +176,14 @@ public class MenuNavigator : MonoBehaviour {
         }
     }
 
+    public void ChangeScene(string nameScene) {
+        _fading.ChangeScene(nameScene);
+    }
+    
     //Region of methods with special/specific actions when pushed or poped from stack
     #region Specifics menu actions
     public void MainMenu() {
-        SceneManager.LoadScene(startSceneMainMenu, LoadSceneMode.Single);
+        ChangeScene(startSceneMainMenu);
     }
 
     /// <summary>
