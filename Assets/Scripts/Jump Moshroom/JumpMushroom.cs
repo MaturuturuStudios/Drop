@@ -47,12 +47,12 @@ public class JumpMushroom : MonoBehaviour{
                velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
                velo.y = velo.y * -1;
 
-               Debug.Log("velocidad burbuja " + velo.y);
+            //   Debug.Log("velocidad burbuja " + velo.y);
                
                 velocidad = Mathf.Sqrt(2* velo.y * height);
                 //velocidad=velocidad*velo.y;
 
-                Debug.Log("velocidad burbuja dependiendo de la altura" + velocidad);
+               // Debug.Log("velocidad burbuja dependiendo de la altura" + velocidad);
 
                 if (KeepVerticalSpeed== false)
                      cccp.GetComponent<CharacterControllerCustom>().SetVerticalForce(0);
