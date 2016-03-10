@@ -47,17 +47,11 @@ public class GameControllerInput : MonoBehaviour {
         if (Input.GetButtonDown("SelectDrop5"))
             _switcher.SetControl(4);
 
-		// Robert Handle shoot input To delete
-		if (Input.GetButtonDown("Aim"))
+		//Handle shoot input To delete
+		if (Input.GetButtonDown("Action"))
 			shootComponent.Aim();
-		if (Input.GetButtonDown("Fire"))
+		if (Input.GetButtonDown("ShootMode"))
 			shootComponent.Shoot();
-		// Handle shoot input
-       /* if (Input.GetButtonDown("Action"))
-            if(shootmode)
-                shootComponent.Shoot();
-        if (Input.GetButtonDown("ShootMode"))
-            shootComponent.Aim();*/
 
         ///NOT SETTED CONTROLS
         //Shoot mode pointer inputs
@@ -69,8 +63,8 @@ public class GameControllerInput : MonoBehaviour {
         //Camera whatching arround
         if (Input.GetAxis("CamHorizontal") != 0)
             Debug.Log("CamHorizontal");
-        if (Input.GetAxis("CamHorizontal") != 0)
-            Debug.Log("CamHorizontal");
+        if (Input.GetAxis("CamVertical") != 0)
+            Debug.Log("CamVertical");
 
         //Sluice action
         if (Input.GetButtonDown("Sluice"))

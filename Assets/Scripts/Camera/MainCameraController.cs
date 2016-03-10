@@ -143,7 +143,7 @@ public class MainCameraController : MonoBehaviour {
         float size = target.GetComponent<CharacterSize>().GetSize();
 
         //Update ofset and boundary depends of the size
-        _offset = new Vector3(0.0f, offset.up + size, offset.far - (size * 5));
+        _offset = new Vector3(0.0f, offset.up * size, (size * offset.far));
 
         if (boundary.visible) {
             _cameraBoundary.SetActive(true);
