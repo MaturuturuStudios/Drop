@@ -7,15 +7,18 @@ public class JumpMushroom : MonoBehaviour{
 
     private Vector3 velo;
 
-    public float minJump = 1;
-    public float maxJump = 2;
-    public float Jumpforce = 10;
+    public float minheight = 1;
+    public float maxheight = 20;
+    public float height;
+    public float Jumpforce = 2;
 
     public bool KeepVerticalSpeed = true;
     public bool lostcontrol = true;
     public bool temporaly;
     public float time;
-    
+    private float velocidad;
+
+    public CharacterControllerParameters parameters;
 
     // Use this for initialization
     void Start() {
@@ -32,7 +35,8 @@ public class JumpMushroom : MonoBehaviour{
     }
     public void OnTriggerEnter(Collider other) {
         CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
-        CharacterControllerCustom parameters = other.gameObject.GetComponent<CharacterControllerCustom>();
+        CharacterControllerCustom state = other.gameObject.GetComponent<CharacterControllerCustom>();
+       // CharacterControllerCustom  parameters = other.gameObject.GetComponent<CharacterControllerCustom>();
 
         if ((cccp != null)) {
             if ((cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsGrounded == false) || (cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsFalling == true)){
@@ -43,13 +47,12 @@ public class JumpMushroom : MonoBehaviour{
                velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
                velo.y = velo.y * -1;
 
-                //Debug.Log("LOOOOOOOOOOOOOOOOOOOOL " + velo.y);
+               Debug.Log("velocidad burbuja " + velo.y);
+               
+                velocidad = Mathf.Sqrt(2* velo.y * height);
+                //velocidad=velocidad*velo.y;
 
-                if (velo.y < minJump)
-                    velo.y = minJump;
-
-                if (velo.y > maxJump)
-                    velo.y = maxJump;
+                Debug.Log("velocidad burbuja dependiendo de la altura" + velocidad);
 
                 if (KeepVerticalSpeed== false)
                      cccp.GetComponent<CharacterControllerCustom>().SetVerticalForce(0);
@@ -59,12 +62,12 @@ public class JumpMushroom : MonoBehaviour{
 
                 if (lostcontrol == true) {
                     if(time==0.0f)
-                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velo.y * Jumpforce));
+                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velocidad * Jumpforce));
                     else
-                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velo.y * Jumpforce), false, true, time);
+                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velocidad * Jumpforce), false, true, time);
                 }
                 if (lostcontrol == false) {
-                    cccp.GetComponent<CharacterControllerCustom>().AddForce(FacingDirection * velo.y * Jumpforce, ForceMode.VelocityChange);
+                    cccp.GetComponent<CharacterControllerCustom>().AddForce(FacingDirection * velo.y  * Jumpforce, ForceMode.VelocityChange);
                     //parameters.Parameters = CharacterControllerParameters.FlyingParameters;
                 }
             }

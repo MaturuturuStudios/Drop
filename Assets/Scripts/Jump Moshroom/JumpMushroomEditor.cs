@@ -16,14 +16,15 @@ public class JumpMushroomEditor : Editor {
 
         var myScript = target as JumpMushroom;
 
-        myScript.minJump = EditorGUILayout.FloatField("Min Jump",myScript.minJump);
-        myScript.maxJump = EditorGUILayout.FloatField("Max Jump", myScript.maxJump);
+        myScript.minheight = EditorGUILayout.FloatField("Min Height",myScript.minheight);
+        myScript.maxheight = EditorGUILayout.FloatField("Max Height", myScript.maxheight);
+        myScript.height = EditorGUILayout.Slider("Height", myScript.height, myScript.minheight, myScript.maxheight);
         myScript.Jumpforce = EditorGUILayout.FloatField("Jump Force", myScript.Jumpforce);
         myScript.KeepVerticalSpeed = GUILayout.Toggle(myScript.KeepVerticalSpeed, "Keep Vertical Speed ");
 
         myScript.lostcontrol = GUILayout.Toggle(myScript.lostcontrol, "Lost Control");
 
-        
+       
 
         if (myScript.KeepVerticalSpeed)
             myScript.KeepVerticalSpeed = true;
