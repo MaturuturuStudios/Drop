@@ -5,16 +5,13 @@ using UnityEditor;
 [CustomEditor(typeof(JumpMushroom))]
 public class JumpMushroomEditor : Editor {
 
+   
     override public void OnInspectorGUI(){
 
-        /*
-         public float minJump = 1;
-    public float maxJump = 2;
-    public float Jumpforce = 10;
-
-    public bool KeepVerticalSpeed = true;*/
 
         var myScript = target as JumpMushroom;
+
+        
 
         myScript.minheight = EditorGUILayout.FloatField("Min Height",myScript.minheight);
         myScript.maxheight = EditorGUILayout.FloatField("Max Height", myScript.maxheight);

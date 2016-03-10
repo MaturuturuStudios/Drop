@@ -6,11 +6,11 @@ public class JumpMushroom : MonoBehaviour{
     private Vector3 FacingDirection;
 
     private Vector3 velo;
-
-    public float minheight = 1;
-    public float maxheight = 20;
+    
+    public float minheight ;
+    public float maxheight=20;
     public float height;
-    public float Jumpforce = 2;
+    public float Jumpforce;
 
     public bool KeepVerticalSpeed = true;
     public bool lostcontrol = true;
@@ -26,6 +26,9 @@ public class JumpMushroom : MonoBehaviour{
         FacingDirection = Vector3.up;
         velo.x = 0;
         velo.z = 0;
+
+        minheight = 1;
+        maxheight = 20;
     }
 
     // Update is called once per frame
