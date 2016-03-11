@@ -49,9 +49,9 @@ public class GameControllerInput : MonoBehaviour {
 
 		//Handle shoot input To delete
 		if (Input.GetButtonDown("Action"))
-			shootComponent.Aim();
+            shootComponent.Shoot();
 		if (Input.GetButtonDown("ShootMode"))
-			shootComponent.Shoot();
+            shootComponent.Aim();
 
         ///NOT SETTED CONTROLS
         //Shoot mode pointer inputs
