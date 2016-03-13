@@ -17,7 +17,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private Vector3 vel,aiming;
     private float power = 25;
 
-   
+    
 
     private RaycastHit hit;
     private Vector3 fwd,aux;
@@ -25,7 +25,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private GameObject sphere;
     private float delay = 2,next;
     // Use this for initialization
-    void Start() {
+    void Awake() {
 
        
 
@@ -34,7 +34,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.GetComponent<Collider>().enabled = false;
-        
+        sphere.GetComponent<Renderer>().enabled = false;
 
         vel.x = 5;
         vel.y = 5;
@@ -57,6 +57,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
           
        }
+        
         StartCoroutine(Example());
 
 
@@ -102,6 +103,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
         }
         sphere.GetComponent<Renderer>().enabled = false;
+        StopCoroutine(Example());
     }
 
     public Vector3 getvect() {
@@ -154,8 +156,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
 
     public void setvisibility() {
-        float dis = 10;
-        
+        float dis = 0;
+        sphere.GetComponent<Renderer>().enabled = true;
 
         for (int i = 0; i < numOfTrajectoryPoints-1 && !colisiondetected; i++) {
             
