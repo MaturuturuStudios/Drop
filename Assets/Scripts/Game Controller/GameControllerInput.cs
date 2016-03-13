@@ -70,10 +70,10 @@ public class GameControllerInput : MonoBehaviour {
                 Debug.Log("ShootCounter");
 
             //Camera whatching arround
-            if (Input.GetAxis("CamHorizontal") != 0)
-                Debug.Log("CamHorizontal");
-            if (Input.GetAxis("CamVertical") != 0)
-                Debug.Log("CamVertical");
+            //if (Input.GetAxis("CamHorizontal") != 0)
+            //    Debug.Log("CamHorizontal");
+            //if (Input.GetAxis("CamVertical") != 0)
+            //    Debug.Log("CamVertical");
 
             //Sluice action
             if (Input.GetButtonDown("Sluice"))
