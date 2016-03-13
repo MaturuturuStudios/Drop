@@ -13,8 +13,8 @@ public class CharacterShoot : MonoBehaviour {
     private int falling = 0;
     //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
     public bool shootmode = false;
-    
 
+    CharacterController c;
     CharacterControllerCustom ccc;
     CharacterShootTrajectory st;
     GameControllerIndependentControl _gcic;
@@ -22,7 +22,7 @@ public class CharacterShoot : MonoBehaviour {
 
     //---------------------------------------	
     void Start (){
-
+        c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
         st= GetComponent<CharacterShootTrajectory>();
         size= GetComponent<CharacterSize>();
@@ -134,7 +134,8 @@ public class CharacterShoot : MonoBehaviour {
     {
         Vector3 pos = transform.position;
         pos.z = 1;
-        ball.transform.position = pos;
+        ball.transform.position = this.transform.position + st.getvect().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
+        //ball.transform.position = pos;
 		ball.SetActive(false);
     }
 

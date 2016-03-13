@@ -160,8 +160,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 sphere.transform.position = trajectoryPoints[jk].transform.position;
                 Debug.Log(" zasca " + trajectoryPoints[jk].transform.position);
             }
-            if (jk == numOfTrajectoryPoints-1)
+            if (jk == numOfTrajectoryPoints - 1)
+            {
                 jk = 0;
+                Debug.Log(" end " + trajectoryPoints[jk].transform.position);
+            }
             else jk++;
             
             yield return new WaitForSeconds(0.09f);
