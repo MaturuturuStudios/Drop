@@ -4,14 +4,13 @@ public class GameControllerInput : MonoBehaviour {
 
     // Internal references
     private GameControllerIndependentControl _switcher;
-
+    //menu navigator of the scene
     private MenuNavigator _ui;
-    private bool pause;
 
     void Start() {
         // Retrives the independent control component
         _switcher = GetComponent<GameControllerIndependentControl>();
-
+        
         _ui = GameObject.FindGameObjectWithTag("Menus").GetComponent<MenuNavigator>();
     }
 
@@ -20,7 +19,7 @@ public class GameControllerInput : MonoBehaviour {
         if (Input.GetButtonDown("Start"))
             _ui.PauseGame();
 
-        if (!_ui.IsMenuActive()) {
+        if (_ui==null || !_ui.IsMenuActive()) {
             // Retrieves current character's components
             CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
             CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
@@ -80,16 +79,12 @@ public class GameControllerInput : MonoBehaviour {
             if (Input.GetButtonDown("Sluice"))
                 Debug.Log("Sluice");
 
-            //Start button
-            if (Input.GetButtonDown("Start"))
-                Debug.Log("Start");
-
             //Select button
             if (Input.GetButtonDown("Back"))
                 Debug.Log("Back");
 
 
-        } else {
+        } else if(_ui!=null){
             //Select button
             if (Input.GetButtonDown("Back")) {
                 _ui.ComeBack();
