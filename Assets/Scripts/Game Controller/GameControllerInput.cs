@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameControllerInput : MonoBehaviour {
 
@@ -82,8 +83,9 @@ public class GameControllerInput : MonoBehaviour {
         if (Input.GetButtonDown("Back"))
             Debug.Log("Back");
 
-        _ui = GameObject.FindGameObjectWithTag("Menus")
-                                .GetComponent<MenuNavigator>();
+        if(SceneManager.GetActiveScene().name == "StartScene")
+           _ui = GameObject.FindGameObjectWithTag("Menus")
+                                    .GetComponent<MenuNavigator>();
     }
 
     
