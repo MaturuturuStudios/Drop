@@ -8,7 +8,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
     public GameObject TrajectoryPointPrefeb;
     public int numOfTrajectoryPoints = 30;
-
+    private int jk = 0;
 
     private List<GameObject> trajectoryPoints;
     private List<GameObject> bolas;
@@ -16,7 +16,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private  CharacterShoot s;
     private Vector3 vel,aiming;
     private float power = 25;
-
+    private bool stopcourutine=false;
     
 
     private RaycastHit hit;
@@ -58,13 +58,23 @@ public class CharacterShootTrajectory : MonoBehaviour {
           
        }
         
-        StartCoroutine(Example());
+        
 
 
     }
-
-	// Update is called once per frame
-	void Update () {
+    public void OnEnable() {
+        stopcourutine = true;
+        StartCoroutine(Example());
+        Debug.Log("entra");
+    }
+    public void OnDisable()
+    {
+        stopcourutine = false;
+        StopCoroutine(Example());
+        Debug.Log("PARANDOOOOO");
+    }
+    // Update is called once per frame
+    void Update () {
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
@@ -120,33 +130,41 @@ public class CharacterShootTrajectory : MonoBehaviour {
         float velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
         float angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
         float fTime = 0;
-        
+        float oldx = 0;
+        float oldy =0;
+        bool notsame = false;
         
         fTime += 0.1f;
-        for (int i = 0; i < numOfTrajectoryPoints; i++) {
+        for (int i = 0; i < numOfTrajectoryPoints && !notsame; i++) {
             float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
             float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
+            // if (oldx == pos.x && oldy == pos.y)
+            //  notsame = true;
             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100 );
             // trajectoryPoints[i].transform.position = pos;
             //bolas[i].GetComponent<Renderer>().enabled = false;
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
             trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
-
-       }
+            oldx = pos.x;
+            oldy = pos.y;
+            //Debug.Log(" zasca " + trajectoryPoints[i]);
+        }
     }
     public IEnumerator Example()
     {
-        for (int i = 0;  ; i++)
+       while(true)
         {
-            if(trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
-                sphere.transform.position = trajectoryPoints[i].transform.position;
-
-            if (i == numOfTrajectoryPoints - 1)
-                i = 0;
-
-            yield return null;
+            if (trajectoryPoints[jk].GetComponent<Renderer>().enabled == true){
+                sphere.transform.position = trajectoryPoints[jk].transform.position;
+                Debug.Log(" zasca " + trajectoryPoints[jk].transform.position);
+            }
+            if (jk == numOfTrajectoryPoints-1)
+                jk = 0;
+            else jk++;
+            
+            yield return new WaitForSeconds(0.09f);
         }
             
         
@@ -157,6 +175,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
     public void setvisibility() {
         float dis = 0;
+        //sphere.transform.position = trajectoryPoints[1].transform.position;
         sphere.GetComponent<Renderer>().enabled = true;
 
         for (int i = 0; i < numOfTrajectoryPoints-1 && !colisiondetected; i++) {
@@ -170,11 +189,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
             if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, dis))
             {
                 colisiondetected = true;
-                for (int j = i; j < numOfTrajectoryPoints - 1 ; j++) {
+                for (int j = i; j < numOfTrajectoryPoints-1 ; j++) {
                     trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
-                    trajectoryPoints[numOfTrajectoryPoints-1].GetComponent<Renderer>().enabled = false;
+                    
                 }
-                
+                trajectoryPoints[numOfTrajectoryPoints-1].GetComponent<Renderer>().enabled = false;
             }
 
             Debug.DrawRay(trajectoryPoints[i].transform.position, fwd * dis, Color.green);
