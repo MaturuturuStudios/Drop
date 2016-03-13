@@ -9,22 +9,32 @@ public class CharacterShootTrajectory : MonoBehaviour {
     public GameObject TrajectoryPointPrefeb;
     public int numOfTrajectoryPoints = 30;
 
+
     private List<GameObject> trajectoryPoints;
+    private List<GameObject> bolas;
     private CharacterControllerCustom ccc;
     private  CharacterShoot s;
     private Vector3 vel,aiming;
     private float power = 25;
 
-    
+   
+
     private RaycastHit hit;
     private Vector3 fwd,aux;
     private bool colisiondetected = false;
+    private GameObject sphere;
+    private float delay = 2,next;
     // Use this for initialization
     void Start() {
-        
 
+       
+
+        next = Time.time + delay;
         this.enabled = false;
 
+        sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere.GetComponent<Collider>().enabled = false;
+        
 
         vel.x = 5;
         vel.y = 5;
@@ -34,18 +44,21 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         trajectoryPoints = new List<GameObject>();
 
+
         for (int i = 0; i < numOfTrajectoryPoints; i++) {
-        GameObject dot = (GameObject)Instantiate(TrajectoryPointPrefeb);
-        dot.GetComponent<Renderer>().enabled = false;
-        //dot.tag = ("Trajectory"+i);
-        dot.transform.parent = ccc.transform;
+            GameObject dot = (GameObject)Instantiate(TrajectoryPointPrefeb);
+            dot.GetComponent<Renderer>().enabled = false;
+            //dot.tag = ("Trajectory"+i);
+            dot.transform.parent = ccc.transform;
 
 
-        trajectoryPoints.Insert(i, dot);
+            trajectoryPoints.Insert(i, dot);
+
+
           
        }
+        StartCoroutine(Example());
 
-         
 
     }
 
@@ -81,6 +94,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         
         setTrajectoryPoints(transform.position, vel);
         setvisibility();
+        
     }
     public void QuitTrajectory() {
         for (int i = 0; i < numOfTrajectoryPoints; i++)
@@ -112,21 +126,40 @@ public class CharacterShootTrajectory : MonoBehaviour {
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100 );
             // trajectoryPoints[i].transform.position = pos;
-
+            //bolas[i].GetComponent<Renderer>().enabled = false;
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
             trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
 
        }
     }
+    public IEnumerator Example()
+    {
+        for (int i = 0;  ; i++)
+        {
+            if(trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
+                sphere.transform.position = trajectoryPoints[i].transform.position;
+
+            if (i == numOfTrajectoryPoints - 1)
+                i = 0;
+
+            yield return null;
+        }
+            
+        
+    }
+  
+   
+
 
     public void setvisibility() {
         float dis = 10;
+        
 
         for (int i = 0; i < numOfTrajectoryPoints-1 && !colisiondetected; i++) {
             
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-
+            
             fwd = trajectoryPoints[i].transform.TransformDirection(Vector3.right);
            
             dis = Mathf.Sqrt((((trajectoryPoints[i + 1].transform.position.x - trajectoryPoints[i].transform.position.x) * (trajectoryPoints[i + 1].transform.position.x - trajectoryPoints[i].transform.position.x)) + ((trajectoryPoints[i + 1].transform.position.y - trajectoryPoints[i].transform.position.y) * (trajectoryPoints[i + 1].transform.position.y - trajectoryPoints[i].transform.position.y))));
@@ -142,8 +175,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
             }
 
             Debug.DrawRay(trajectoryPoints[i].transform.position, fwd * dis, Color.green);
+            
         }
         colisiondetected = false;
+        
     }
 
 }
