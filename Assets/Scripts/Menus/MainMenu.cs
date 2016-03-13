@@ -12,6 +12,9 @@ public class MainMenu : MonoBehaviour {
     /// </summary>
     /// TODO: editor for drag scenes
     public string NewGameScene;
+    /// <summary>
+    /// The option to be selected
+    /// </summary>
     public GameObject firstSelected;
     #endregion
 
@@ -44,12 +47,6 @@ public class MainMenu : MonoBehaviour {
         }
     }
 
-    private IEnumerator Select() {
-        EventSystem.current.SetSelectedGameObject(null);
-        yield return null;
-        EventSystem.current.SetSelectedGameObject(firstSelected);
-    }
-
     /// <summary>
     /// Start a new game
     /// </summary>
@@ -61,7 +58,7 @@ public class MainMenu : MonoBehaviour {
     /// Load a previous game
     /// </summary>
     public void LoadGame() {
-        //TODO
+        //TODO: open the menu level
     }
 
     /// <summary>

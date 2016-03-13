@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-
-
 /// <summary>
 /// Control the flow between menus and specials action taken between thems
 /// </summary>
@@ -43,6 +41,9 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Public Attributes
+    /// <summary>
+    /// Seconds waiting before the reaction of a button/text action
+    /// </summary>
     public float secondsReaction=0.2f;
     /// <summary>
     /// Which scene is the starting point of the application/main menu
@@ -85,32 +86,33 @@ public class MenuNavigator : MonoBehaviour {
     /// The stack of menus
     /// </summary>
     private Stack<MenuInstance> _menuPanel;
-
+    /// <summary>
+    /// Reference to the fading scenes
+    /// </summary>
     private SceneFadeInOut _fading;
-
+    /// <summary>
+    /// Variable to know if I have to open a menu
+    /// </summary>
     private Menu openMenu;
     #endregion
 
     #region Methods
     public void Awake() {
         _menuPanel = new Stack<MenuInstance>();
+        //open a menu if indicated
         if (startWithMenu != Menu.NONE) {
             OpenMenu(startWithMenu);
         }
-
+        //get the fading
         _fading = GetComponent<SceneFadeInOut>();
     }
 
     public void Update() {
+        //if is some menu to open, open it
         if (openMenu != Menu.NONE) {
             OpenMenu(openMenu);
             openMenu = Menu.NONE;
         }
-    }
-
-    private IEnumerator waitReaction(Menu menu) {
-        yield return WaitForRealSeconds(secondsReaction);
-        openMenu = menu;
     }
 
     /// <summary>
@@ -205,6 +207,30 @@ public class MenuNavigator : MonoBehaviour {
         StartCoroutine(ComeBackWait());
     }
 
+    
+
+    /// <summary>
+    /// Change the scene with fading
+    /// </summary>
+    /// <param name="nameScene">The next scene</param>
+    public void ChangeScene(string nameScene) {
+        _fading.ChangeScene(nameScene);
+    }
+
+    /// <summary>
+    /// Change to the given menu waiting few seconds before that
+    /// </summary>
+    /// <param name="menu">menu to open</param>
+    /// <returns></returns>
+    private IEnumerator waitReaction(Menu menu) {
+        yield return WaitForRealSeconds(secondsReaction);
+        openMenu = menu;
+    }
+
+    /// <summary>
+    /// Come back as a routine
+    /// </summary>
+    /// <returns>IEnumerator</returns>
     private IEnumerator ComeBackWait() {
         yield return WaitForRealSeconds(secondsReaction);
         MenuInstance panel = _menuPanel.Pop();
@@ -220,10 +246,6 @@ public class MenuNavigator : MonoBehaviour {
 
     }
 
-    public void ChangeScene(string nameScene) {
-        _fading.ChangeScene(nameScene);
-    }
-    
     //Region of methods with special/specific actions when pushed or poped from stack
     #region Specifics menu actions
     public void MainMenu() {
