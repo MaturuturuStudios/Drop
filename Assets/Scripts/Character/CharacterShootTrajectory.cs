@@ -101,6 +101,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         {
             trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
         }
+        sphere.GetComponent<Renderer>().enabled = false;
     }
 
     public Vector3 getvect() {
