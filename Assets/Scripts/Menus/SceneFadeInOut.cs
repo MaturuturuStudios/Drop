@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class SceneFadeInOut : MonoBehaviour {
+    public float delayStartChangeSeconds = 1.0f;
     public Texture2D fadeOutTexture;    // the texture that will overlay the screen. This can be a black image or a loading graphic
     public float fadeSpeed = 0.8f;      // the fading speed
 
@@ -15,8 +16,10 @@ public class SceneFadeInOut : MonoBehaviour {
     }
 
     private IEnumerator NextScene(string nameScene) {
+        yield return MenuNavigator.WaitForRealSeconds(delayStartChangeSeconds);
+
         float fadeTime = BeginFade(1);
-        yield return new WaitForSeconds(fadeTime);
+        yield return MenuNavigator.WaitForRealSeconds(fadeTime);
 
         SceneManager.LoadScene(nameScene, LoadSceneMode.Single);
     }

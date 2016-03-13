@@ -43,6 +43,7 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Public Attributes
+    public float secondsReaction=0.2f;
     /// <summary>
     /// Which scene is the starting point of the application/main menu
     /// </summary>
@@ -86,6 +87,8 @@ public class MenuNavigator : MonoBehaviour {
     private Stack<MenuInstance> _menuPanel;
 
     private SceneFadeInOut _fading;
+
+    private Menu openMenu;
     #endregion
 
     #region Methods
@@ -97,15 +100,50 @@ public class MenuNavigator : MonoBehaviour {
 
         _fading = GetComponent<SceneFadeInOut>();
     }
-    
+
+    public void Update() {
+        if (openMenu != Menu.NONE) {
+            OpenMenu(openMenu);
+            openMenu = Menu.NONE;
+        }
+    }
+
+    private IEnumerator waitReaction(Menu menu) {
+        yield return WaitForRealSeconds(secondsReaction);
+        openMenu = menu;
+    }
+
+    /// <summary>
+    /// Coroutine
+    /// Wait for seconds when the time scale is set to zero and need to wait that seconds anyway
+    /// TODO: move to a global script functions
+    /// </summary>
+    /// <param name="delay">seconds to wait</param>
+    /// <returns>Ienumerator</returns>
+    public static IEnumerator WaitForRealSeconds(float delay) {
+        float start = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup < start + delay) {
+            yield return null;
+        }
+    }
+
     /// <summary>
     /// Open the main menu or a specified menu, adding it to the stack.
     /// Advice: this only open the menu and does not perform any special action like pausing the game,
     /// if so, you must use the concrete methods for it.
     /// </summary>
     /// <param name="menu">The menu to open</param>
-    public void OpenMenu(Menu menu) {
+    /// <param name="delayReaction">if want the delay for the change panel (not used the first time the menu is opened)</param>
+    public void OpenMenu(Menu menu, bool delayReaction = true) {
         MenuInstance last = null;
+        
+        if (openMenu == Menu.NONE && delayReaction) {
+            //retrieve the last menu
+            if (_menuPanel.Count > 0) {
+                StartCoroutine(waitReaction(menu));
+                return;
+            }
+        }
 
         //retrieve the last menu
         if (_menuPanel.Count > 0) {
@@ -164,7 +202,12 @@ public class MenuNavigator : MonoBehaviour {
     /// Close the menu if there is no more menus on stack
     /// </summary>
     public void ComeBack() {
-        MenuInstance panel=_menuPanel.Pop();
+        StartCoroutine(ComeBackWait());
+    }
+
+    private IEnumerator ComeBackWait() {
+        yield return WaitForRealSeconds(secondsReaction);
+        MenuInstance panel = _menuPanel.Pop();
         panel.disable();
 
         //if no more menus, close it
@@ -174,6 +217,7 @@ public class MenuNavigator : MonoBehaviour {
             panel = _menuPanel.Peek();
             panel.enable();
         }
+
     }
 
     public void ChangeScene(string nameScene) {

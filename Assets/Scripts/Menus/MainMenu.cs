@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Control all about the main menu
@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour {
     /// </summary>
     /// TODO: editor for drag scenes
     public string NewGameScene;
+    public GameObject firstSelected;
     #endregion
 
     #region Private Attributes
@@ -19,6 +20,10 @@ public class MainMenu : MonoBehaviour {
     /// Menu navigator
     /// </summary>
     private MenuNavigator _menuNavigator;
+    /// <summary>
+    /// Control if I have to select a default option
+    /// </summary>
+    private bool _selectOption;
     #endregion
 
     #region Methods
@@ -27,13 +32,29 @@ public class MainMenu : MonoBehaviour {
                                 .GetComponent<MenuNavigator>();
     }
 
+    public void OnEnable() {
+        _selectOption = true;
+    }
+    
+    public void Update() {
+        if (_selectOption) {
+            _selectOption = false;
+            //select the option
+            EventSystem.current.SetSelectedGameObject(firstSelected);
+        }
+    }
+
+    private IEnumerator Select() {
+        EventSystem.current.SetSelectedGameObject(null);
+        yield return null;
+        EventSystem.current.SetSelectedGameObject(firstSelected);
+    }
+
     /// <summary>
     /// Start a new game
     /// </summary>
     public void NewGame() {
-        Debug.Log("Llega");
         _menuNavigator.ChangeScene(NewGameScene);
-        //SceneManager.LoadScene(NewGameScene, LoadSceneMode.Single);
     }
 
     /// <summary>

@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class OptionsMenu : MonoBehaviour {
     #region Public Attributes
+    public GameObject firstSelected;
+
     public GameObject graphics;
     public GameObject audioOptions;
     public GameObject input;
@@ -11,44 +14,62 @@ public class OptionsMenu : MonoBehaviour {
     #endregion
 
     #region Private Attributes
-
-    private GameObject actualPanel;
+    private GameObject _actualPanel;
+    /// <summary>
+    /// Control if I have to select a default option
+    /// </summary>
+    private bool _selectOption;
     #endregion
 
     #region Methods
     public void Awake() {
-        actualPanel = graphics;
+        _actualPanel = graphics;
+    }
+
+    public void OnEnable() {
+        _selectOption = true;
+    }
+
+    public void Update() {
+        if (_selectOption) {
+            _selectOption = false;
+            //select the option
+            EventSystem.current.SetSelectedGameObject(firstSelected);
+        }
+    }
+
+    public static IEnumerator WaitForRealSeconds(float delay) {
+        float start = Time.realtimeSinceStartup;
+        while (Time.realtimeSinceStartup < start + delay) {
+            yield return null;
+        }
+    }
+
+    private void ChangePanel(GameObject panel) {
+        _actualPanel.SetActive(false);
+        _actualPanel = panel;
+        _actualPanel.SetActive(true);
     }
 
     #region Options
     public void Graphics() {
-        actualPanel.SetActive(false);
-        actualPanel = graphics;
-        actualPanel.SetActive(true);
+        ChangePanel(graphics);
     }
 
     public void AudioOption() {
-        actualPanel.SetActive(false);
-        actualPanel = audioOptions;
-        actualPanel.SetActive(true);
+        ChangePanel(audioOptions);
     }
 
     public void Input() {
-        actualPanel.SetActive(false);
-        actualPanel = input;
-        actualPanel.SetActive(true);
+        ChangePanel(input);
     }
 
     public void Language() {
-        actualPanel.SetActive(false);
-        actualPanel = language;
-        actualPanel.SetActive(true);
+        ChangePanel(language);
     }
 
     public void Help() {
-        actualPanel.SetActive(false);
-        actualPanel = help;
-        actualPanel.SetActive(true);
+        ChangePanel(help);
     }
     #endregion
 
