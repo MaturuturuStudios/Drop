@@ -13,7 +13,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private List<GameObject> trajectoryPoints;
     private List<GameObject> bolas;
     private CharacterControllerCustom ccc;
+    private CharacterController c;
     private  CharacterShoot s;
+    
     private Vector3 vel,aiming;
     private float power = 25;
     private bool stopcourutine=false;
@@ -22,8 +24,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private RaycastHit hit;
     private Vector3 fwd,aux;
     private bool colisiondetected = false;
-    private GameObject sphere;
+    private GameObject sphere,ball;
     private float delay = 2,next;
+    private float oldx, oldy;
     // Use this for initialization
     void Awake() {
 
@@ -32,6 +35,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         next = Time.time + delay;
         this.enabled = false;
 
+       
+
         sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.GetComponent<Collider>().enabled = false;
         sphere.GetComponent<Renderer>().enabled = false;
@@ -39,6 +44,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         vel.x = 5;
         vel.y = 5;
 
+        c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
         s = GetComponent<CharacterShoot>();
 
@@ -102,8 +108,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         float angle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
-        
-        setTrajectoryPoints(transform.position, vel);
+        Vector3 pos = this.transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
+        setTrajectoryPoints(pos, vel);
         setvisibility();
         
     }
@@ -160,12 +166,17 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 sphere.transform.position = trajectoryPoints[jk].transform.position;
                 Debug.Log(" zasca " + trajectoryPoints[jk].transform.position);
             }
-            if (jk == numOfTrajectoryPoints - 1)
+            if ((jk == numOfTrajectoryPoints - 1) || ((oldx== trajectoryPoints[jk].transform.position.x) && (oldy == trajectoryPoints[jk].transform.position.y)))
             {
                 jk = 0;
                 Debug.Log(" end " + trajectoryPoints[jk].transform.position);
             }
-            else jk++;
+            else
+            {
+                oldx = trajectoryPoints[jk].transform.position.x;
+                oldy = trajectoryPoints[jk].transform.position.y;
+                jk++;
+            }
             
             yield return new WaitForSeconds(0.09f);
         }
