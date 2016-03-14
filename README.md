@@ -1,8 +1,8 @@
 # Drop
-Drop game
+Drop is an awesome relaxing game of puzzles.
 
 ##Objetive 
-Your goal is complete the level with the maximum number of drops
+Your goal is complete the level with the maximum number of drops.
 
 ##Controls
 | Action                        | Axis          | Keys in keyboard          | Keys in gamepad          |
