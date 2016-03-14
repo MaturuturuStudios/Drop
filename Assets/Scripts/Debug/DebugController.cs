@@ -41,11 +41,17 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	public GameObject cameraPanelPrefab;
 
-	/// <summary>
-	/// Reference to the information text component. Configured on the prefab.
-	/// Should not be modified on the editor.
-	/// </summary>
-	public Text informationText;
+ 	/// <summary>
+  	/// Reference to the information text component. Configured on the prefab.
+  	/// Should not be modified on the editor.
+  	/// </summary>
+ 	public Text generalInformation;
+
+    /// <summary>
+    /// Reference to the information text component. Configured on the prefab.
+    /// Should not be modified on the editor.
+    /// </summary>
+    public Text informationText;
 
 	/// <summary>
 	/// Reference to the state text component. Configured on the prefab.
@@ -112,17 +118,21 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	private Color _savedCharacterColor;
 
-	#endregion
+    /// <summary>
+     /// Delta time used in fps calculation
+     /// </summary>
+     float deltaTime = 0.0f;
+    #endregion
 
-	#region Methods
+    #region Methods
 
-	#region Public GUI Methods
+    #region Public GUI Methods
 
-	/// <summary>
-	/// Toggles the debug mode, which displays important information and
-	/// allows some extra operations.
-	/// </summary>
-	public void ToggleDebugMode() {
+    /// <summary>
+    /// Toggles the debug mode, which displays important information and
+    /// allows some extra operations.
+    /// </summary>
+    public void ToggleDebugMode() {
 		debugMode = !debugMode;
 	}
 
@@ -229,8 +239,9 @@ public class DebugController : MonoBehaviour {
 			characterMaterial.SetColor("_Color", characterColor);
 		}
 
-		// Updates the texts
-		ShowCharacterInformation();
+        // Updates the texts
+        ShowGeneralInformation();
+        ShowCharacterInformation();
 		ShowCharacterState();
 		ShowCharacterParameters();
 
@@ -256,13 +267,30 @@ public class DebugController : MonoBehaviour {
 		_currentCharacter = null;
     }
 
-	#region Show Information Methods
+    #region Show Information Methods
 
-	/// <summary>
-	/// Updates the GUI text with the basic information of the current
-	/// character.
-	/// </summary>
-	private void ShowCharacterInformation() {
+    /// <summary>
+    /// Show basic and general information like fps
+    /// </summary>
+    private void ShowGeneralInformation() {
+        StringBuilder sb = new StringBuilder();
+
+        //fps
+        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+        float msec = deltaTime * 1000.0f;
+        float fps = 1.0f / deltaTime;
+        sb.AppendFormat("{0:0.0} ms ({1:0.} fps)", msec, fps);
+        
+
+        generalInformation.text = sb.ToString();
+
+    }
+
+    /// <summary>
+    /// Updates the GUI text with the basic information of the current
+    /// character.
+    /// </summary>
+    private void ShowCharacterInformation() {
 		// Creates the string builder
 		StringBuilder sb = new StringBuilder();
 
