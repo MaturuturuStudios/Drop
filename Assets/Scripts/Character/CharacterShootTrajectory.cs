@@ -8,6 +8,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
     public GameObject TrajectoryPointPrefeb;
     public int numOfTrajectoryPoints = 30;
+    public float particletrajectoryspeed = 0.08f;
     private int jk = 0;
 
     private List<GameObject> trajectoryPoints;
@@ -167,22 +168,24 @@ public class CharacterShootTrajectory : MonoBehaviour {
         {
             if (trajectoryPoints[jk].GetComponent<Renderer>().enabled == true){
                 sphere.transform.position = trajectoryPoints[jk].transform.position;
-                //Debug.Log(" zasca " + trajectoryPoints[jk].transform.position);
+                // Debug.Log(" zasca " + trajectoryPoints[jk].transform.position);       
+
             }
-            if ((jk == numOfTrajectoryPoints - 1) || ((oldx== trajectoryPoints[jk].transform.position.x) && (oldy == trajectoryPoints[jk].transform.position.y)))
+            if ((jk == numOfTrajectoryPoints - 1))
             {
                 jk = 0;
-                sphere.transform.position = trajectoryPoints[jk].transform.position;
-                // Debug.Log(" end " + trajectoryPoints[jk].transform.position);
+                //sphere.transform.position = trajectoryPoints[jk].transform.position;
+                // Debug.Log(" end " + numOfTrajectoryPoints);
             }
-            else
+            if (trajectoryPoints[jk].GetComponent<Renderer>().enabled == false)
             {
-                oldx = trajectoryPoints[jk].transform.position.x;
-                oldy = trajectoryPoints[jk].transform.position.y;
-                jk++;
+                jk = -1;
             }
             
-            yield return new WaitForSeconds(0.05f);
+            
+            jk++;
+            
+            yield return new WaitForSeconds(particletrajectoryspeed);
         }
             
         
