@@ -41,11 +41,17 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	public GameObject cameraPanelPrefab;
 
-	/// <summary>
+    /// <summary>
 	/// Reference to the information text component. Configured on the prefab.
 	/// Should not be modified on the editor.
 	/// </summary>
-	public Text informationText;
+	public Text generalInformation;
+
+    /// <summary>
+    /// Reference to the information text component. Configured on the prefab.
+    /// Should not be modified on the editor.
+    /// </summary>
+    public Text informationText;
 
 	/// <summary>
 	/// Reference to the state text component. Configured on the prefab.
@@ -112,17 +118,22 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	private Color _savedCharacterColor;
 
-	#endregion
+    /// <summary>
+    /// Delta time used in fps calculation
+    /// </summary>
+    float deltaTime = 0.0f;
 
-	#region Methods
+    #endregion
 
-	#region Public GUI Methods
+    #region Methods
 
-	/// <summary>
-	/// Toggles the debug mode, which displays important information and
-	/// allows some extra operations.
-	/// </summary>
-	public void ToggleDebugMode() {
+    #region Public GUI Methods
+
+    /// <summary>
+    /// Toggles the debug mode, which displays important information and
+    /// allows some extra operations.
+    /// </summary>
+    public void ToggleDebugMode() {
 		debugMode = !debugMode;
 	}
 
@@ -229,7 +240,8 @@ public class DebugController : MonoBehaviour {
 			characterMaterial.SetColor("_Color", characterColor);
 		}
 
-		// Updates the texts
+        // Updates the texts
+        ShowGeneralInformation();
 		ShowCharacterInformation();
 		ShowCharacterState();
 		ShowCharacterParameters();
@@ -257,6 +269,35 @@ public class DebugController : MonoBehaviour {
     }
 
 	#region Show Information Methods
+
+    private void ShowGeneralInformation() {
+        StringBuilder sb = new StringBuilder();
+
+        //fps
+        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+        float msec = deltaTime * 1000.0f;
+        float fps = 1.0f / deltaTime;
+        sb.AppendFormat("{0:0.0} ms ({1:0.} fps)", msec, fps);
+
+        //number of triangles and vertexs
+        int totalVertexes = 0;
+        int totalTriangles = 0;
+        foreach (MeshFilter mf in FindObjectsOfType(typeof(MeshFilter))){
+            Renderer rd = mf.GetComponent<Renderer>();
+            if (rd.isVisible) {
+                totalVertexes += mf.mesh.vertexCount;
+                totalTriangles += mf.mesh.triangles.Length;
+            }
+        }
+        sb.Append("\n");
+        sb.Append("Total vertex: ");
+        sb.Append(totalVertexes);
+        sb.Append("\n");
+        sb.Append("Total triangles: ");
+        sb.Append(totalTriangles);
+
+        generalInformation.text = sb.ToString();
+    }
 
 	/// <summary>
 	/// Updates the GUI text with the basic information of the current
