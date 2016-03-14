@@ -21,7 +21,7 @@ public class CharacterShoot : MonoBehaviour {
     CharacterSize size;
 
     //---------------------------------------	
-    void Start (){
+    void Awake (){
         c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
         st= GetComponent<CharacterShootTrajectory>();
@@ -34,6 +34,7 @@ public class CharacterShoot : MonoBehaviour {
     public bool isShooting(){
         return shootmode;
     }
+   
 	//---------------------------------------	
 
     public void Aim(){
@@ -133,8 +134,8 @@ public class CharacterShoot : MonoBehaviour {
     private void prepareDropToFly()
     {
         Vector3 pos = transform.position;
-        // ball.transform.position = this.transform.position + st.getvect().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
-        ball.transform.position = pos;
+         ball.transform.position = this.transform.position + st.getvect().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
+       // ball.transform.position = pos;
 	    ball.SetActive(false);
     }
 
