@@ -14,7 +14,7 @@ public class JumpMushroom : MonoBehaviour{
 
     public bool KeepVerticalSpeed = true;
     public bool lostcontrol = true;
-    public bool temporaly;
+    public bool temporaly=true;
     public float time;
     private float velocidad;
 

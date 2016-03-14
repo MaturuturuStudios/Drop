@@ -72,14 +72,14 @@ public class CharacterShootTrajectory : MonoBehaviour {
     public void OnEnable() {
         stopcourutine = false;
         StartCoroutine(Example());
-        Debug.Log("entra");
+        //Debug.Log("entra");
     }
     public void OnDisable()
     {
         stopcourutine = false;
         stopcourutine = true;
         StopCoroutine(Example());
-        Debug.Log("PARANDOOOOO");
+        //Debug.Log("PARANDOOOOO");
     }
     // Update is called once per frame
     void Update () {
