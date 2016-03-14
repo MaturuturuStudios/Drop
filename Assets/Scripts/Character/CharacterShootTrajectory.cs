@@ -69,13 +69,14 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
     }
     public void OnEnable() {
-        stopcourutine = true;
+        stopcourutine = false;
         StartCoroutine(Example());
         Debug.Log("entra");
     }
     public void OnDisable()
     {
         stopcourutine = false;
+        stopcourutine = true;
         StopCoroutine(Example());
         Debug.Log("PARANDOOOOO");
     }
@@ -119,6 +120,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
         }
         sphere.GetComponent<Renderer>().enabled = false;
+        stopcourutine = true;
         StopCoroutine(Example());
     }
 
@@ -160,16 +162,18 @@ public class CharacterShootTrajectory : MonoBehaviour {
     }
     public IEnumerator Example()
     {
-       while(true)
+        sphere.transform.position = trajectoryPoints[0].transform.position;
+        while (!stopcourutine)
         {
             if (trajectoryPoints[jk].GetComponent<Renderer>().enabled == true){
                 sphere.transform.position = trajectoryPoints[jk].transform.position;
-                Debug.Log(" zasca " + trajectoryPoints[jk].transform.position);
+                //Debug.Log(" zasca " + trajectoryPoints[jk].transform.position);
             }
             if ((jk == numOfTrajectoryPoints - 1) || ((oldx== trajectoryPoints[jk].transform.position.x) && (oldy == trajectoryPoints[jk].transform.position.y)))
             {
                 jk = 0;
-                Debug.Log(" end " + trajectoryPoints[jk].transform.position);
+                sphere.transform.position = trajectoryPoints[jk].transform.position;
+                // Debug.Log(" end " + trajectoryPoints[jk].transform.position);
             }
             else
             {
@@ -178,7 +182,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 jk++;
             }
             
-            yield return new WaitForSeconds(0.09f);
+            yield return new WaitForSeconds(0.05f);
         }
             
         
