@@ -7,15 +7,15 @@ public class JumpMushroom : MonoBehaviour{
 
     private Vector3 velo;
     
-    public float minheight;
-    public float maxheight;
-    public float height;
-    public float Jumpforce;
+    public float minheight=1;
+    public float maxheight=20;
+    public float height=10;
+    public float Jumpforce=2;
 
     public bool KeepVerticalSpeed = true;
     public bool lostcontrol = true;
     public bool temporaly=true;
-    public float time;
+    public float time=0.1f;
     private float velocidad;
 
     
@@ -23,18 +23,12 @@ public class JumpMushroom : MonoBehaviour{
     public CharacterControllerParameters parameters;
 
     // Use this for initialization
-    public void Awake() {
+    public void Start() {
         
         FacingDirection = Vector3.up;
         velo.x = 0;
         velo.z = 0;
-
-        minheight = 1;
-        maxheight = 20;
-        height = 10;
-        Jumpforce = 2;
-
-      
+ 
     }
 
     // Update is called once per frame
@@ -65,12 +59,8 @@ public class JumpMushroom : MonoBehaviour{
                velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
                velo.y = velo.y * -1;
 
-                //   Debug.Log("velocidad burbuja " + velo.y);
-
-
-                //velocidad=velocidad*velo.y;
-
-                // Debug.Log("velocidad burbuja dependiendo de la altura" + velocidad);
+                if (height < minheight) height = minheight;
+                if (height > maxheight) height = maxheight;
 
                 if (KeepVerticalSpeed == false) {
                     
@@ -81,8 +71,7 @@ public class JumpMushroom : MonoBehaviour{
 
                     velocidad = Mathf.Sqrt(2 * velo.y * height);
                 }
-                //cccp.GetComponent<CharacterControllerCustom>().AddForceRelative(FacingDirection*Jumpforce, ForceMode.VelocityChange);
-                //Vector3 finalVelocity = Quaternion.Euler(0, FacingDirection.y, 0) * new Vector3(0, velocity.y, 0);
+                
 
                 if (lostcontrol == true) {
                     if(time==0.0f)

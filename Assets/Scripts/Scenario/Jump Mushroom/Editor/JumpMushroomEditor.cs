@@ -3,15 +3,16 @@ using System.Collections;
 using UnityEditor;
 
 [CustomEditor(typeof(JumpMushroom))]
+[CanEditMultipleObjects]
 public class JumpMushroomEditor : Editor {
 
    
-    override public void OnInspectorGUI(){
+    public override  void OnInspectorGUI(){
 
 
         var myScript = target as JumpMushroom;
 
-        
+        EditorUtility.SetDirty(target);
 
         myScript.minheight = EditorGUILayout.FloatField("Min Height",myScript.minheight);
         myScript.maxheight = EditorGUILayout.FloatField("Max Height", myScript.maxheight);
