@@ -29,12 +29,16 @@ public class GameEndController : MonoBehaviour {
         }
     }
 
-    void OnTriggerEnter(){
-        // Activate counter
-        end = true;
+    void OnTriggerEnter(Collider other){
 
-        //Show message
-        gameOverText.text = phrase;
+        //only ends game with player
+        if (other.tag == "Player"){
+            // Activate counter
+            end = true;
+
+            //Show message
+            gameOverText.text = phrase;
+        }
     }
 
 }
