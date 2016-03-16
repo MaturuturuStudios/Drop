@@ -53,6 +53,7 @@ public class GameEndController : MonoBehaviour {
 	/// <summary>
     /// Activated when player enters on the trigger
     /// </summary>
+    /// <param name="other">Collider who enters in the trigger</param>
     void OnTriggerEnter(Collider other){
         //only ends game with player
         if (other.tag == "Player"){

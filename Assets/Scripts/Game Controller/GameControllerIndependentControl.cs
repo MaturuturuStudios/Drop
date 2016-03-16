@@ -3,24 +3,40 @@ using System.Collections.Generic;
 
 public class GameControllerIndependentControl : MonoBehaviour {
 
-    //Control atributes
+    /// <summary>
+    /// Current character controlled
+    /// </summary>
     public GameObject currentCharacter;
+    /// <summary>
+    /// All current characters controlled list
+    /// </summary>
     public List<GameObject> allCurrentCharacters;
 
-    //Drop prefab
+
+	/// <summary>
+    /// Drop prefab reference
+    /// </summary>
     public GameObject PfDrop;
+	//Drop name number when dinamically create it
     private int _dropNameCounter;
     
-    //Cameras
+    //Camera reference
     private MainCameraController _cameraController;
-
+	
+    /// <summary>
+    /// Unity's method called when this entity is created, even if it is disabled.
+    /// </summary>
     void Awake() {
         //Get the camera
         _cameraController = GetComponentInChildren<MainCameraController>();
 
 	}
-
+	
+    /// <summary>
+    /// Unity's method called on start script only one time
+    /// </summary>
     void Start() {
+		//Get the mext drop number
         _dropNameCounter = allCurrentCharacters.Count;
     }
 
@@ -28,9 +44,11 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>
+    /// <param name="addToControlList">Set the created drop to the controlled drops list</param>
     public GameObject CreateDrop(bool setControl = false, bool addToControlList = true) {
         //Create a drop
         GameObject drop = Instantiate(PfDrop);
+		//Set the name to the object
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
 
         //Add to controled drop list
@@ -51,15 +69,16 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Remove a drop under player's control from list and set it out of the scene
     /// </summary>
     /// <param name="drop">drop to remove from control & scene</param>
-    public void DestroyDrop(GameObject drop, bool setControl = false) {
-
+    /// <param name="setControlNextDrop">On drop deleted set the control to next drop</param>
+    public void DestroyDrop(GameObject drop, bool setControlNextDrop = false) {
         if (!IsUnderControl (drop) || allCurrentCharacters.Count > 1) {
             //Set control to the next drop if it was the one under control
-            if (setControl && currentCharacter == drop)
+            if (setControlNextDrop && currentCharacter == drop)
                 ControlNextDrop();
             //remove from control list
             allCurrentCharacters.Remove(drop);
 
+			//Disactive drop because it isn't destroy untill end of frame
             drop.SetActive(false);
 
             //Destroy drop

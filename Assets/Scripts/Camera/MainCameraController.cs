@@ -205,6 +205,7 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Set the objective of the camera
     /// </summary>
+    /// <param name="objective">GameObject who is the target of the camera</param>
     public void SetObjective(GameObject objective) {
         target = objective;
     }
