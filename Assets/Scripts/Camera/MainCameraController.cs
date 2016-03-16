@@ -3,41 +3,66 @@ using System.Collections;
 
 public class MainCameraController : MonoBehaviour {
 
-    // Target of the camera
+    // Target of the camera, it use to be the player
     private GameObject target;
 
-    /// <summary>
-    /// Distance from player to camera
+	/// <summary>
+    /// Distance from player to camera X position will be allways the same
     /// </summary>
+    //Offset Variable
+    public Offset offset;
+	//  Offset Class
     [System.Serializable]
     public class Offset {
         public float far = -15.0f;
         public float up = 2.0f;
     }
-    //Offset Attributes
-    public Offset offset;
     //Offset Reference
     private Vector3 _offset;
 
     /// <summary>
-    /// Camera options
+    /// The position where camera will be at the beggining of the game
     /// </summary>
-    [System.Serializable]
-    public class Movement {
-        public float smooth = 2.0f;
-        public float zSmooth = 1.0f;
-        public float lookAtSmooth = 3.0f;
-    }
-    public Movement movement;
-    //Look at position control
-    private Vector3 _lastObjective;
-
-    //Look at position control
     public Vector3 startPosition = new Vector3(-4.0f, 25.0f, -55.0f);
+	
+    /// <summary>
+    /// Camera movement configuration options
+    /// </summary>
+    public Movement movement;
+    [System.Serializable]
+	//  Movement Class
+    public class Movement {
+		//Smooth on XY movement
+        public float smooth = 2.0f;
+		//Smooth on Z movement
+        public float zSmooth = 1.0f;
+    }
+    // Movement position control
+    private Vector3 _lastObjective;
+	
+    /// <summary>
+    /// Camera look at configuration options
+    /// </summary>
+    public LookAt lookAt;
+    [System.Serializable]
+	//  Movement Class
+    public class LookAt {
+		// Enable/Disable Look at player liberty
+		public bool lookAtLiberty = true;
+		//Look at movement smooth
+        public float lookAtSmooth = 2.5f;
+		//Look arround movement smooth
+		public float lookArroundSmooth = 10F;
+    }
+    //Look Arround Offset
+    private Vector3 _lookArroundOffset;
 
     /// <summary>
-    /// Camera liberty rang
+    /// Camera liberty movement bounds
     /// </summary>
+    //	Bounds Attributes
+    public Bounds bounds;
+	//  Bounds Class
     [System.Serializable]
     public class Bounds {
         public float top = 100.0f;
@@ -45,37 +70,19 @@ public class MainCameraController : MonoBehaviour {
         public float left = -100.0f;
         public float right = 100.0f;
     }
-    //Bounds Attributes
-    public Bounds bounds;
-    //private bounds references
-    private Vector3 objMov;
+    ///private bounds references
+	//bounds exceded controll
     private float excededX = 0F;
     private float excededY = 0F;
 
-    //Camera liberty on bounds exceded
-    public bool lookAtLiberty = true;
-
-    //Look Arround Offset
-    private Vector3 _lookArroundOffset;
-    public float lookArroundSmooth = 10F;
-
-    /// <summary>
-    /// Reference to the independent control component from the scene's
-    /// game controller.
-    /// </summary>
+    // Reference to the independent control component from the scene's game controller.
     private GameControllerIndependentControl _independentControl;
 
     //Reference to current caracter size
     private float _dropSize;
 
-    void OnEnable() {
-        //Set camera to its position
-        transform.position = startPosition;
-    }
-
     /// <summary>
-    /// Unity's method called when this entity is created, even
-    /// if it is disabled.
+    /// Unity's method called when this entity is created, even if it is disabled.
     /// </summary>
     void Awake() {
         // Looks for the independent controller component
@@ -86,7 +93,15 @@ public class MainCameraController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Called on start script
+    /// Unity's method called when this entity is enabled.
+    /// </summary>
+    void OnEnable() {
+        //Set camera to its position
+        transform.position = startPosition;
+    }
+	
+    /// <summary>
+    /// Called on start script only one time
     /// </summary>
     void Start() {
         //Calculate offset
@@ -130,10 +145,12 @@ public class MainCameraController : MonoBehaviour {
     /// Move the camera to offset position of the player gradually
     /// </summary>
     private void MoveCamera() {
+		//Calculate destination
         Vector3 destination = target.transform.position + _offset;
 
+		//Reset bounds exceded to recalculate
         excededX = excededY = 0;
-        //Calcule if it is out of bounds
+        //Calculate if it is out of bounds
         if (destination.x > bounds.right) {
             excededX = destination.x - bounds.right;
             destination.x = bounds.right;
@@ -150,28 +167,35 @@ public class MainCameraController : MonoBehaviour {
             destination.y = bounds.down;
         }
 
-        //Need to use something better than size
-        objMov = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
-        objMov.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
+		//Calculate next position
+		Vector3 newPosition;
+        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
+        newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
 
-        transform.position = objMov;
+		//Set the position to the camera
+        transform.position = newPosition;
     }
 
     /// <summary>
     /// Makes the camera look to the player's position gradually
     /// </summary>
     private void LookAt() {
+		//Calculate objective of the camera
         Vector3 destination = target.transform.position + _lookArroundOffset;
 
-        if (lookAtLiberty) {
+		//If there isn't liberty looking at, block it
+        if (lookAt.lookAtLiberty) {
             destination.x -= excededX;
             destination.y -= excededY;
         }
 
-        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * movement.lookAtSmooth);
+		//Calculate the look at position of the camera
+        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAt.lookAtSmooth);
 
+		//Set the look at attribute
         transform.LookAt(destination);
 
+		//save the last position for future calculations
         _lastObjective = destination;
     }
 
@@ -183,18 +207,17 @@ public class MainCameraController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Restores the target of the camera to the currently controlled
-    /// character.
+    /// Restores the target of the camera to the currently controlled character.
     /// </summary>
     public void RestoreTarget() {
         SetObjective(_independentControl.currentCharacter);
     }
 
     /// <summary>
-    /// Restores the target of the camera to the currently controlled
-    /// character.
+    /// Set the look arround offset
     /// </summary>
     public void LookArround(float OffsetX, float OffsetY) {
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth * _dropSize;
+		//Setting look arround values depending of the input
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize;
     }
 }
