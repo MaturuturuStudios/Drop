@@ -65,6 +65,9 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private GameControllerIndependentControl _independentControl;
 
+    //Reference to current caracter size
+    private float _dropSize;
+
     void OnEnable() {
         //Set camera to its position
         transform.position = startPosition;
@@ -117,10 +120,10 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private void UpdateState() {
         //Get drop size
-        float size = target.GetComponent<CharacterSize>().GetSize();
+        _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
         //Update ofset and boundary depends of the size
-        _offset = new Vector3(0.0f, offset.up * size, (size * offset.far));
+        _offset = new Vector3(0.0f, offset.up * _dropSize, (_dropSize * offset.far));
     }
 
     /// <summary>
@@ -192,6 +195,6 @@ public class MainCameraController : MonoBehaviour {
     /// character.
     /// </summary>
     public void LookArround(float OffsetX, float OffsetY) {
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth;
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth * _dropSize;
     }
 }
