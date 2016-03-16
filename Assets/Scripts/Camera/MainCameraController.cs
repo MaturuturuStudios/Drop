@@ -53,7 +53,11 @@ public class MainCameraController : MonoBehaviour {
     private float excededY = 0F;
 
     //Camera liberty on bounds exceded
-    public bool loockAtLiberty = true;
+    public bool lookAtLiberty = true;
+
+    //Look Arround Offset
+    private Vector3 _lookArroundOffset;
+    public float lookArroundSmooth = 10F;
 
     /// <summary>
     /// Reference to the independent control component from the scene's
@@ -134,15 +138,13 @@ public class MainCameraController : MonoBehaviour {
             excededX = destination.x - bounds.left;
             destination.x = bounds.left;
         }
-        //Get drop size
-        float size = target.GetComponent<CharacterSize>().GetSize();
 
         if (destination.y > bounds.top) {
             excededY = destination.y - bounds.top;
             destination.y = bounds.top;
         } else if (destination.y < bounds.down) {
             excededY = destination.y - bounds.down;
-            destination.y = bounds.down * size;
+            destination.y = bounds.down;
         }
 
         //Need to use something better than size
@@ -156,9 +158,9 @@ public class MainCameraController : MonoBehaviour {
     /// Makes the camera look to the player's position gradually
     /// </summary>
     private void LookAt() {
-        Vector3 destination = target.transform.position;
+        Vector3 destination = target.transform.position + _lookArroundOffset;
 
-        if (loockAtLiberty) {
+        if (lookAtLiberty) {
             destination.x -= excededX;
             destination.y -= excededY;
         }
@@ -183,5 +185,13 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public void RestoreTarget() {
         SetObjective(_independentControl.currentCharacter);
+    }
+
+    /// <summary>
+    /// Restores the target of the camera to the currently controlled
+    /// character.
+    /// </summary>
+    public void LookArround(float OffsetX, float OffsetY) {
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth;
     }
 }

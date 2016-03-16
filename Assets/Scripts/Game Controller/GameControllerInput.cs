@@ -4,13 +4,15 @@ public class GameControllerInput : MonoBehaviour {
 
     // Internal references
     private GameControllerIndependentControl _switcher;
+    private MainCameraController _mainCameraController;
     //menu navigator of the scene
     private MenuNavigator _ui;
 
     void Start() {
         // Retrives the independent control component
         _switcher = GetComponent<GameControllerIndependentControl>();
-        
+        _mainCameraController = GetComponentInChildren<MainCameraController>();
+
         _ui = GameObject.FindGameObjectWithTag("Menus").GetComponent<MenuNavigator>();
     }
 
@@ -56,6 +58,11 @@ public class GameControllerInput : MonoBehaviour {
             if (Input.GetButtonDown("SelectDrop5"))
                 _switcher.SetControl(4);
 
+            //Camera looking arround
+            float hLookInput = Input.GetAxis("CamHorizontal");
+            float vLookInput = Input.GetAxis("CamVertical");
+            _mainCameraController.LookArround(hLookInput, vLookInput);
+
             //Handle shoot input To delete
             if (Input.GetButtonDown("Action"))
                 shootComponent.Shoot();
@@ -68,12 +75,6 @@ public class GameControllerInput : MonoBehaviour {
                 Debug.Log("LookAtDir");
             if (Input.GetAxis("ShootCounter") != 0)
                 Debug.Log("ShootCounter");
-
-            //Camera whatching arround
-            //if (Input.GetAxis("CamHorizontal") != 0)
-            //    Debug.Log("CamHorizontal");
-            //if (Input.GetAxis("CamVertical") != 0)
-            //    Debug.Log("CamVertical");
 
             //Sluice action
             if (Input.GetButtonDown("Sluice"))
