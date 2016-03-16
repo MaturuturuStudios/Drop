@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Controller for main camera.
+/// </summary>
 public class MainCameraController : MonoBehaviour {
 
     // Target of the camera, it use to be the player
@@ -101,7 +104,7 @@ public class MainCameraController : MonoBehaviour {
     }
 	
     /// <summary>
-    /// Called on start script only one time
+    /// Unity's method called on start script only one time
     /// </summary>
     void Start() {
         //Calculate offset
@@ -120,7 +123,7 @@ public class MainCameraController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Update the camera atributes
+    /// Update the camera phisics
     /// </summary>
     void LateUpdate() {
         //Camera Movement
