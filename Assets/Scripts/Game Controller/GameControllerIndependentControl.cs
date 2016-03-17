@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class GameControllerIndependentControl : MonoBehaviour {
 
+    #region Attributes
     /// <summary>
     /// Current character controlled
     /// </summary>
@@ -22,7 +23,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
     
     //Camera reference
     private MainCameraController _cameraController;
-	
+    #endregion
+
+    #region Methods
     /// <summary>
     /// Unity's method called when this entity is created, even if it is disabled.
     /// </summary>
@@ -163,4 +166,5 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public bool IsUnderControl(GameObject drop) {
         return allCurrentCharacters.Contains(drop);
     }
+    #endregion
 }

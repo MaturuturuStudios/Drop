@@ -7,6 +7,7 @@ using UnityEngine.UI;
 /// </summary>
 public class GameEndController : MonoBehaviour {
 
+    #region Attributes
     /// <summary>
     /// End Game configuration options
     /// </summary>
@@ -26,8 +27,10 @@ public class GameEndController : MonoBehaviour {
 	
     //On trigger enter control
     private bool end = false;
-	
-	/// <summary>
+    #endregion
+
+    #region Methods
+    /// <summary>
     /// Unity's method called on start script only one time
     /// </summary>
     void Start(){
@@ -64,5 +67,5 @@ public class GameEndController : MonoBehaviour {
             endGame.gameOverText.text = endGame.phrase;
         }
     }
-
+    #endregion
 }

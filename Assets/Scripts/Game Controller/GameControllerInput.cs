@@ -2,12 +2,15 @@
 
 public class GameControllerInput : MonoBehaviour {
 
+    #region Attributes
     // Internal references
     private GameControllerIndependentControl _switcher;
     private MainCameraController _mainCameraController;
     //menu navigator of the scene
     private MenuNavigator _ui;
+    #endregion
 
+    #region Methods
     void Start() {
         // Retrives the independent control component
         _switcher = GetComponent<GameControllerIndependentControl>();
@@ -96,4 +99,5 @@ public class GameControllerInput : MonoBehaviour {
             }
         }
     }
+    #endregion
 }

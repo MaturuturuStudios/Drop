@@ -6,6 +6,7 @@ using System.Collections;
 /// </summary>
 public class MainCameraController : MonoBehaviour {
 
+    #region Attributes
     // Target of the camera, it use to be the player
     private GameObject target;
 
@@ -83,7 +84,9 @@ public class MainCameraController : MonoBehaviour {
 
     //Reference to current caracter size
     private float _dropSize;
+    #endregion
 
+    #region Methods
     /// <summary>
     /// Unity's method called when this entity is created, even if it is disabled.
     /// </summary>
@@ -224,4 +227,5 @@ public class MainCameraController : MonoBehaviour {
 		//Setting look arround values depending of the input
         _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize;
     }
+    #endregion
 }
