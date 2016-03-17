@@ -15,12 +15,12 @@ public class GameEndController : MonoBehaviour {
     [System.Serializable]
 	//  Movement Class
     public class EndGame {
-		//wait time showing message untill scene is changed
-		float waitTime = 3F;
-		//UI text object reference
-		Text gameOverText;
-		//Displayed phrase
-		string phrase = "Level Complete!";
+        //wait time showing message untill scene is changed
+        public float waitTime = 3F;
+        //UI text object reference
+        public Text gameOverText;
+        //Displayed phrase
+        public string phrase = "Level Complete!";
     }
     //time elapsed since trigger called
     private float _timeElapsed = 0F;

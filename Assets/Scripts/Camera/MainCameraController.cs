@@ -47,10 +47,10 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Camera look at configuration options
     /// </summary>
-    public LookAt lookAt;
+    public LookingAt lookAt;
     [System.Serializable]
 	//  Movement Class
-    public class LookAt {
+    public class LookingAt {
 		// Enable/Disable Look at player liberty
 		public bool lookAtLiberty = true;
 		//Look at movement smooth
