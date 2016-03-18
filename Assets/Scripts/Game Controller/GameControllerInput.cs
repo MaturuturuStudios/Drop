@@ -8,6 +8,10 @@ public class GameControllerInput : MonoBehaviour {
     private MainCameraController _mainCameraController;
     //menu navigator of the scene
     private MenuNavigator _ui;
+    /// <summary>
+    /// Control if the trigger is pressed for only call change drop one time
+    /// </summary>
+    private bool _triggerPressed = false;
     #endregion
 
     #region Methods
@@ -44,10 +48,22 @@ public class GameControllerInput : MonoBehaviour {
 
             // Change controlled character
             // Handles the next and back input
+            //if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") > 0)
             if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") > 0)
-                _switcher.ControlNextDrop();
+                    _switcher.ControlNextDrop();
+            //if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") < 0)
             if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") < 0)
+                    _switcher.ControlBackDrop();
+
+            // Control that triggers are pressed only one time
+            if (!_triggerPressed && Input.GetAxis("SelectDropAlt") > 0) {
+                _switcher.ControlNextDrop();
+                _triggerPressed = true;
+            } else if (!_triggerPressed && Input.GetAxis("SelectDropAlt") < 0) {
                 _switcher.ControlBackDrop();
+                _triggerPressed = true;
+            } else if (Input.GetAxis("SelectDropAlt") == 0)
+                _triggerPressed = false;
 
             // Handles the direct access input
             if (Input.GetButtonDown("SelectDrop1"))
