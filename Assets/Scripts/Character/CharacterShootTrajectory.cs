@@ -202,22 +202,26 @@ public class CharacterShootTrajectory : MonoBehaviour {
         for (int i = 0; i < numOfTrajectoryPoints-1 && !colisiondetected; i++) {
             
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
+
+            //fwd = trajectoryPoints[i].transform.TransformDirection(Vector3.right);
             
-            fwd = trajectoryPoints[i].transform.TransformDirection(Vector3.right);
-           
-            dis = Mathf.Sqrt((((trajectoryPoints[i + 1].transform.position.x - trajectoryPoints[i].transform.position.x) * (trajectoryPoints[i + 1].transform.position.x - trajectoryPoints[i].transform.position.x)) + ((trajectoryPoints[i + 1].transform.position.y - trajectoryPoints[i].transform.position.y) * (trajectoryPoints[i + 1].transform.position.y - trajectoryPoints[i].transform.position.y))));
-            
+            fwd = trajectoryPoints[i + 1].transform.position - trajectoryPoints[i].transform.position;
+
+            // dis = Mathf.Sqrt((Mathf.Pow(trajectoryPoints[i + 1].transform.position.x - trajectoryPoints[i].transform.position.x,2)  + Mathf.Pow(trajectoryPoints[i + 1].transform.position.y - trajectoryPoints[i].transform.position.y,2)));
+
+            dis = fwd.magnitude;
+
             if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, dis))
             {
                 colisiondetected = true;
-                for (int j = i; j < numOfTrajectoryPoints-1 ; j++) {
+                for (int j = i+1; j < numOfTrajectoryPoints-1 ; j++) {
                     trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
                     
                 }
                 trajectoryPoints[numOfTrajectoryPoints-1].GetComponent<Renderer>().enabled = false;
             }
 
-            Debug.DrawRay(trajectoryPoints[i].transform.position, fwd * dis, Color.green);
+            Debug.DrawRay(trajectoryPoints[i].transform.position, fwd , Color.green);
             
         }
         colisiondetected = false;
