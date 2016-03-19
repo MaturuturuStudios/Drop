@@ -144,6 +144,7 @@ public class MainCameraController : MonoBehaviour {
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
         //Update ofset and boundary depends of the size
+        if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
         _offset = new Vector3(0.0f, offset.up * _dropSize, (_dropSize * offset.far));
     }
 
