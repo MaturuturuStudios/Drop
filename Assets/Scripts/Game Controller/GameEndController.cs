@@ -22,14 +22,38 @@ public class GameEndController : MonoBehaviour {
         //Displayed phrase
         public string phrase = "Level Complete!";
     }
-    //time elapsed since trigger called
+    /// <summary>
+    ///time elapsed since trigger called
+    /// </summary>
     private float _timeElapsed = 0F;
-	
-    //On trigger enter control
+    
+    /// <summary>
+    ///On trigger enter control
+    /// </summary>
     private bool end = false;
+
+    /// <summary>
+    /// Reference to the entity's transform component.
+    /// </summary>
+    private Transform _transform;
+
+    /// <summary>
+    /// Reference to the collider where the wind force will be applied.
+    /// </summary>
+    private BoxCollider _collider;
     #endregion
 
     #region Methods
+    /// <summary>
+    /// Unity's method called when the entity is created.
+    /// Recovers the desired componentes of the entity.
+    /// </summary>
+    public void Awake() {
+        // Retrieves the components of the entity.
+        _transform = transform;
+        _collider = gameObject.GetComponent<BoxCollider>();
+    }
+
     /// <summary>
     /// Unity's method called on start script only one time
     /// </summary>
@@ -48,8 +72,11 @@ public class GameEndController : MonoBehaviour {
             _timeElapsed += Time.deltaTime;
 
             //Load Menu
-            if (_timeElapsed > endGame.waitTime)
-                SceneManager.LoadScene("StartScene");
+            if (_timeElapsed > endGame.waitTime) {
+                MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag("Menus")
+                                     .GetComponent<MenuNavigator>();
+                _menuNavigator.ChangeScene("StartScene");
+            }
         }
     }
 
@@ -63,9 +90,41 @@ public class GameEndController : MonoBehaviour {
             // Activate counter
             end = true;
 
+            GameObject currentCharacter = FindObjectOfType<GameControllerIndependentControl>().currentCharacter;
+            CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+            //Stop player
+            cccp.Stop(true);
+            cccp.enabled = false;
+           //currentCharacter.SetActive(false);
+
             //Show message
             endGame.gameOverText.text = endGame.phrase;
         }
+    }
+
+
+
+    /// <summary>
+    /// Unity's method called by the editor in order to draw the gizmos.
+    /// Draws the volume on the editor.
+    /// </summary>
+    public void OnDrawGizmos() {
+        // Calls the configuration functions
+        if (!Application.isPlaying) {
+            Awake();
+            Update();
+        }
+
+        // Defines the color of the gizmo
+        Color color = Color.red;
+        color.a = 0.25f;
+        Gizmos.color = color;
+
+        // Draws the cube
+        Gizmos.matrix = transform.localToWorldMatrix;
+        Vector3 pos = Vector3.up;
+        pos.y -= _collider.size.y;
+        Gizmos.DrawCube(pos , _collider.size);
     }
     #endregion
 }
