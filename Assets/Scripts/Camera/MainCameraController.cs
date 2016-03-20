@@ -10,24 +10,13 @@ public class MainCameraController : MonoBehaviour {
     // Target of the camera, it use to be the player
     private GameObject target;
 
-	/// <summary>
+    /// <summary>
     /// Distance from player to camera X position will be allways the same
     /// </summary>
     //Offset Variable
-    public Offset offset;
-	//  Offset Class
-    [System.Serializable]
-    public class Offset {
-        public float far = -15.0f;
-        public float up = 2.0f;
-    }
+    public Vector3 offset = new Vector3(0F, -2F, -15F);
     //Offset Reference
     private Vector3 _offset;
-
-    /// <summary>
-    /// The position where camera will be at the beggining of the game
-    /// </summary>
-    public Vector3 startPosition = new Vector3(-4.0f, 25.0f, -55.0f);
 	
     /// <summary>
     /// Camera movement configuration options
@@ -70,7 +59,7 @@ public class MainCameraController : MonoBehaviour {
     [System.Serializable]
     public class Bounds {
         public float top = 100.0f;
-        public float down = -100.0f;
+        public float bottom = -100.0f;
         public float left = -100.0f;
         public float right = 100.0f;
     }
@@ -97,21 +86,13 @@ public class MainCameraController : MonoBehaviour {
         // Sets the camera's target to the current character
         RestoreTarget();
     }
-
-    /// <summary>
-    /// Unity's method called when this entity is enabled.
-    /// </summary>
-    void OnEnable() {
-        //Set camera to its position
-        transform.position = startPosition;
-    }
 	
     /// <summary>
     /// Unity's method called on start script only one time
     /// </summary>
     void Start() {
         //Calculate offset
-        _offset = new Vector3(0.0f, offset.up, offset.far);
+        _offset = new Vector3(offset.x, offset.y, offset.z);
 
         //Set references
         _lastObjective = target.transform.position;
@@ -145,7 +126,7 @@ public class MainCameraController : MonoBehaviour {
 
         //Update ofset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
-        _offset = new Vector3(0.0f, offset.up * _dropSize, (_dropSize * offset.far));
+            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
     }
 
     /// <summary>
@@ -169,9 +150,9 @@ public class MainCameraController : MonoBehaviour {
         if (destination.y > bounds.top) {
             excededY = destination.y - bounds.top;
             destination.y = bounds.top;
-        } else if (destination.y < bounds.down) {
-            excededY = destination.y - bounds.down;
-            destination.y = bounds.down;
+        } else if (destination.y < bounds.bottom) {
+            excededY = destination.y - bounds.bottom;
+            destination.y = bounds.bottom;
         }
 
 		//Calculate next position
@@ -227,6 +208,17 @@ public class MainCameraController : MonoBehaviour {
     public void LookArround(float OffsetX, float OffsetY) {
 		//Setting look arround values depending of the input
         _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize;
+    }
+
+    /// <summary>
+    /// Draws the movement bounds on the editor.
+    /// </summary>
+    public void OnDrawGizmos() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.right, bounds.top, 0));
+        Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.left, bounds.bottom, 0));
+        Gizmos.DrawLine(new Vector3(bounds.left, bounds.bottom, 0), new Vector3(bounds.right, bounds.bottom, 0));
+        Gizmos.DrawLine(new Vector3(bounds.right, bounds.bottom, 0), new Vector3(bounds.right, bounds.top, 0));
     }
     #endregion
 }
