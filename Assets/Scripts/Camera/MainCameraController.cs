@@ -228,5 +228,16 @@ public class MainCameraController : MonoBehaviour {
 		//Setting look arround values depending of the input
         _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize;
     }
+
+    /// <summary>
+    /// Draws the movement bounds on the editor.
+    /// </summary>
+    public void OnDrawGizmos() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.right, bounds.top, 0));
+        Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.left, bounds.down, 0));
+        Gizmos.DrawLine(new Vector3(bounds.left, bounds.down, 0), new Vector3(bounds.right, bounds.down, 0));
+        Gizmos.DrawLine(new Vector3(bounds.right, bounds.down, 0), new Vector3(bounds.right, bounds.top, 0));
+    }
     #endregion
 }
