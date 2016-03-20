@@ -8,24 +8,26 @@ public class JumpMushroom : MonoBehaviour{
     private Vector3 velo;
     
     public float minheight=1;
-    public float maxheight=20;
-    public float height=10;
+    public float maxheight=10;
+    
     public float Jumpforce=2;
 
     public bool KeepVerticalSpeed = true;
     public bool lostcontrol = true;
     public bool temporaly=true;
     public float time=0.1f;
-    private float velocidad;
-
-    
-
+    private float velocity,vel;
+    private float height;
+    private BoxCollider _collider;
+    private bool firstiem = false;
+    //public float width = 1f;
     public CharacterControllerParameters parameters;
 
     // Use this for initialization
-    public void Start() {
+    public void Awake() {
         
         FacingDirection = Vector3.up;
+        _collider = gameObject.GetComponent<BoxCollider>();
         velo.x = 0;
         velo.z = 0;
  
@@ -36,57 +38,92 @@ public class JumpMushroom : MonoBehaviour{
         //FacingDirection = new Vector3(transform.position.x, transform.position.y, 0).normalized;
         FacingDirection = (transform.rotation * FacingDirection);
 
+        // _collider.size = new Vector3(width / 2, maxheight / 2, 0.5f);
+
+        // Sets the center of the collider
+        // _collider.center = new Vector3(0, length / 4, 0);
+
     }
     public void OnTriggerEnter(Collider other) {
 
         Rigidbody rb = other.attachedRigidbody;
         if (rb != null) {
-            velocidad = Mathf.Sqrt(2 * rb.velocity.magnitude * height);
-            rb.AddForce((FacingDirection * velocidad * Jumpforce), ForceMode.VelocityChange);
+            velocity = Mathf.Sqrt(2 * Physics.gravity.magnitude * maxheight);
+            rb.AddForce((FacingDirection * velocity * Jumpforce), ForceMode.VelocityChange);
             
         }
 
         CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
-       // CharacterControllerCustom state = other.gameObject.GetComponent<CharacterControllerCustom>();
+        CharacterControllerCustom ccc = other.gameObject.GetComponent<CharacterControllerCustom>();
        // CharacterControllerCustom  parameters = other.gameObject.GetComponent<CharacterControllerCustom>();
 
         if ((cccp != null)) {
+            
             if ((cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsGrounded == false) || (cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsFalling == true)){
                 //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
 
-                cccp.gameObject.GetComponent<CharacterControllerCustom>().StopFlying();
+ 
+                velo = cccp.GetComponent<CharacterControllerCustom>().Velocity;
+                vel = Vector3.Magnitude(Vector3.Project(velo, transform.up));
+                 
+                cccp.gameObject.GetComponent<CharacterControllerCustom>().Stop();
 
-               velo.y = cccp.GetComponent<CharacterControllerCustom>().Velocity.y;//getvertical
-               velo.y = velo.y * -1;
+                
+                height = (vel * vel) / (2 * parameters.Gravity.magnitude);
+
+                //Debug.Log("VELOCITY "+vel);
+                
+
 
                 if (height < minheight) height = minheight;
                 if (height > maxheight) height = maxheight;
 
-                if (KeepVerticalSpeed == false) {
-                    
-                     velocidad = Mathf.Sqrt(2 * parameters.Gravity.magnitude* height);
-                }
+                Debug.Log("HEIGHT calculada" + height);
+                //velocidad = Mathf.Sqrt(2 * velo.y  * maxheight);  to ricochet
+
+                velocity = Mathf.Sqrt(2 * parameters.Gravity.magnitude  * height);
+
                 if (KeepVerticalSpeed == true)
                 {
-
-                    velocidad = Mathf.Sqrt(2 * velo.y * height);
+                    velocity += Vector3.Magnitude(Vector3.Project(ccc.Velocity, transform.right));
+                    
                 }
-                
 
                 if (lostcontrol == true) {
                     if(time==0.0f)
-                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velocidad * Jumpforce));
+                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velocity * Jumpforce));
                     else
-                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velocidad * Jumpforce), false, true, time);
+                        cccp.GetComponent<CharacterControllerCustom>().SendFlying((FacingDirection * velocity * Jumpforce), false, true, time);
                 }
                 if (lostcontrol == false) {
-                    cccp.GetComponent<CharacterControllerCustom>().AddForce(FacingDirection * velocidad * Jumpforce, ForceMode.VelocityChange);
+                    cccp.GetComponent<CharacterControllerCustom>().AddForce(FacingDirection * velocity * Jumpforce, ForceMode.VelocityChange);
                     //parameters.Parameters = CharacterControllerParameters.FlyingParameters;
                 }
             }
+            
         }
     }
     public void OnTriggerExit(Collider other) {
+        
     }
 
+    public void OnDrawGizmos()
+    {
+        if (!Application.isPlaying)
+        {
+            Awake();
+            Update();
+        }
+
+        float altura = maxheight - minheight;
+        Color color = Color.yellow;
+        color.a = 0.25f;
+        Gizmos.color = color;
+        Vector3 aux =  this.transform.position ;
+        
+        // Draws the cube
+        Gizmos.matrix = transform.localToWorldMatrix;
+        Gizmos.DrawCube(new Vector3(0, altura / 2, 0f), new Vector3(0.5f, altura, 0.5f));
     }
+
+}
