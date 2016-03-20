@@ -10,7 +10,7 @@ public class JumpMushroom : MonoBehaviour{
     public float minheight=1;
     public float maxheight=10;
     
-    public float Jumpforce=2;
+    public float Jumpforce=1;
 
     public bool KeepVerticalSpeed = true;
     public bool lostcontrol = true;
@@ -78,7 +78,7 @@ public class JumpMushroom : MonoBehaviour{
                 if (height < minheight) height = minheight;
                 if (height > maxheight) height = maxheight;
 
-                Debug.Log("HEIGHT calculada" + height);
+                
                 //velocidad = Mathf.Sqrt(2 * velo.y  * maxheight);  to ricochet
 
                 velocity = Mathf.Sqrt(2 * parameters.Gravity.magnitude  * height);
