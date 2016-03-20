@@ -21,7 +21,7 @@ public class JumpMushroomEditor : Editor {
         myScript.maxheight = EditorGUILayout.FloatField("Max Height", myScript.maxheight);
        
         myScript.Jumpforce = EditorGUILayout.FloatField("Jump Force", myScript.Jumpforce);
-        myScript.KeepVerticalSpeed = GUILayout.Toggle(myScript.KeepVerticalSpeed, "Keep Vertical Speed ");
+        myScript.KeepVerticalSpeed = GUILayout.Toggle(myScript.KeepVerticalSpeed, "Keep Perpendicular Speed ");
 
         myScript.lostcontrol = GUILayout.Toggle(myScript.lostcontrol, "Lost Control");
 
