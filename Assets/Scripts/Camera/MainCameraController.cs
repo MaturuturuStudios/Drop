@@ -49,7 +49,6 @@ public class MainCameraController : MonoBehaviour {
     }
     //Look Arround Offset
     private Vector3 _lookArroundOffset;
-    private Vector3 _lookArroundPosition;
     
     /// <summary>
     /// Camera liberty movement bounds
@@ -159,11 +158,11 @@ public class MainCameraController : MonoBehaviour {
 
 		//Calculate next position
 		Vector3 newPosition;
-        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
+        newPosition = Vector2.Lerp(transform.position, destination + _lookArroundPosition, Time.deltaTime * movement.smooth);
         newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
 
         //Set the position to the camera
-        transform.position = newPosition;// + _lookArroundPosition;
+        transform.position = newPosition;
     }
 
     /// <summary>
@@ -212,7 +211,6 @@ public class MainCameraController : MonoBehaviour {
     public void LookArround(float OffsetX, float OffsetY) {
         //Setting look arround values depending of the input
         _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize;
-        _lookArroundPosition = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize / 25;
     }
 
     /// <summary>
