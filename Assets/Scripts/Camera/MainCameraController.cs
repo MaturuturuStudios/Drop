@@ -142,15 +142,20 @@ public class MainCameraController : MonoBehaviour {
         
         //Calculate if it is out of bounds
         float aux = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
-        if (destination.x > bounds.right - aux)
-            excededX = destination.x = bounds.right - aux;
-        else if (destination.x < bounds.left + aux) 
+        if (destination.x < bounds.left + aux)
             excededX = destination.x = bounds.left + aux;
-
-        if (destination.y < bounds.bottom + aux/2) 
-            excededY = destination.y = bounds.bottom + aux/2;
-        else if (destination.y > bounds.top - aux/2) 
-            excededY = destination.y = bounds.top - aux/2;
+        else if (destination.x > bounds.right - aux) {
+            excededX = destination.x = bounds.right - aux;
+            if (excededX < bounds.left + aux)
+                excededX = destination.x = bounds.left + aux;
+        }
+        if (destination.y < bounds.bottom + aux / 2)
+            excededY = destination.y = bounds.bottom + aux / 2;
+        else if (destination.y > bounds.top - aux / 2) {
+            excededY = destination.y = bounds.top - aux / 2;
+            if (excededY < bounds.bottom + aux / 2)
+                excededY = destination.y = bounds.bottom + aux / 2;
+        }
 
 		//Calculate next position
 		Vector3 newPosition;
