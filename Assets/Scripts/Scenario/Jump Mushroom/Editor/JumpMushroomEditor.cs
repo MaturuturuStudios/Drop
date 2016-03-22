@@ -14,11 +14,14 @@ public class JumpMushroomEditor : Editor {
 
         EditorUtility.SetDirty(target);
 
+        //myScript.length = EditorGUILayout.FloatField("Collider Length", myScript.length);
+        //myScript.width = EditorGUILayout.FloatField("Collider Width", myScript.width);
+
         myScript.minheight = EditorGUILayout.FloatField("Min Height",myScript.minheight);
         myScript.maxheight = EditorGUILayout.FloatField("Max Height", myScript.maxheight);
-        myScript.height = EditorGUILayout.Slider("Height", myScript.height, myScript.minheight, myScript.maxheight);
+       
         myScript.Jumpforce = EditorGUILayout.FloatField("Jump Force", myScript.Jumpforce);
-        myScript.KeepVerticalSpeed = GUILayout.Toggle(myScript.KeepVerticalSpeed, "Keep Vertical Speed ");
+        myScript.KeepVerticalSpeed = GUILayout.Toggle(myScript.KeepVerticalSpeed, "Keep Perpendicular Speed ");
 
         myScript.lostcontrol = GUILayout.Toggle(myScript.lostcontrol, "Lost Control");
 
@@ -36,7 +39,7 @@ public class JumpMushroomEditor : Editor {
         }
         if (myScript.temporaly) {
 
-            myScript.time = EditorGUILayout.Slider("Time", myScript.time, 0.1f, 1f);
+            myScript.time = EditorGUILayout.FloatField("Time", myScript.time);
 
         }
         if (myScript.temporaly==false)
