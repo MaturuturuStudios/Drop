@@ -142,8 +142,8 @@ public class MainCameraController : MonoBehaviour {
         
         //Calculate if it is out of bounds
         float aux = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
-        if (destination.x > bounds.right + aux)
-            excededX = destination.x = bounds.right + aux;
+        if (destination.x > bounds.right - aux)
+            excededX = destination.x = bounds.right - aux;
         else if (destination.x < bounds.left + aux) 
             excededX = destination.x = bounds.left + aux;
 
