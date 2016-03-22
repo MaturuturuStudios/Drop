@@ -136,7 +136,10 @@ public class MainCameraController : MonoBehaviour {
 		//Calculate destination
         Vector3 destination = target.transform.position + _offset;
 
-		//Reset bounds exceded to recalculate
+        //Add Loook around offset
+        destination += _lookArroundOffset;
+
+        //Reset bounds exceded to recalculate
         excededX = excededY = 0;
         
         //Calculate if it is out of bounds
@@ -158,7 +161,7 @@ public class MainCameraController : MonoBehaviour {
 
 		//Calculate next position
 		Vector3 newPosition;
-        newPosition = Vector2.Lerp(transform.position, destination + _lookArroundPosition, Time.deltaTime * movement.smooth);
+        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
         newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
 
         //Set the position to the camera
@@ -172,13 +175,15 @@ public class MainCameraController : MonoBehaviour {
 		//Calculate objective of the camera
         Vector3 destination = target.transform.position;
 
+        //Add Loook around offset
+        destination += _lookArroundOffset;
+
         //If there isn't liberty looking at, block it
         if (lookAt.lookAtFixedOnBounds && excededX != 0) 
             destination.x = excededX;
         if (lookAt.lookAtFixedOnBounds && excededY != 0) 
             destination.y = excededY;
 
-        destination += _lookArroundOffset;
 
         //Calculate the look at position of the camera
         destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAt.lookAtSmooth);
