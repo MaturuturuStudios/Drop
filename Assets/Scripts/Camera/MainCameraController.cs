@@ -14,7 +14,7 @@ public class MainCameraController : MonoBehaviour {
     /// Distance from player to camera X position will be allways the same
     /// </summary>
     //Offset Variable
-    public Vector3 offset = new Vector3(0F, -2F, -15F);
+    public Vector3 offset = new Vector3(0F, 2F, -15F);
     //Offset Reference
     private Vector3 _offset;
 	
@@ -40,8 +40,8 @@ public class MainCameraController : MonoBehaviour {
     [System.Serializable]
 	//  Movement Class
     public class LookingAt {
-		// Enable/Disable Look at player liberty
-		public bool lookAtLiberty = true;
+		// Enable/Disable Look at player liberty when bound reached
+		public bool lookAtFixedOnBounds = true;
 		//Look at movement smooth
         public float lookAtSmooth = 2.5f;
 		//Look arround movement smooth
@@ -49,15 +49,16 @@ public class MainCameraController : MonoBehaviour {
     }
     //Look Arround Offset
     private Vector3 _lookArroundOffset;
-
+    private Vector3 _lookArroundPosition;
+    
     /// <summary>
     /// Camera liberty movement bounds
     /// </summary>
     //	Bounds Attributes
-    public Bounds bounds;
+    public Boundary bounds;
 	//  Bounds Class
     [System.Serializable]
-    public class Bounds {
+    public class Boundary {
         public float top = 100.0f;
         public float bottom = -100.0f;
         public float left = -100.0f;
@@ -138,30 +139,26 @@ public class MainCameraController : MonoBehaviour {
 
 		//Reset bounds exceded to recalculate
         excededX = excededY = 0;
+        
         //Calculate if it is out of bounds
-        if (destination.x > bounds.right) {
-            excededX = destination.x - bounds.right;
-            destination.x = bounds.right;
-        } else if (destination.x < bounds.left) {
-            excededX = destination.x - bounds.left;
-            destination.x = bounds.left;
-        }
+        float aux = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
+        if (destination.x > bounds.right + aux)
+            excededX = destination.x = bounds.right + aux;
+        else if (destination.x < bounds.left + aux) 
+            excededX = destination.x = bounds.left + aux;
 
-        if (destination.y > bounds.top) {
-            excededY = destination.y - bounds.top;
-            destination.y = bounds.top;
-        } else if (destination.y < bounds.bottom) {
-            excededY = destination.y - bounds.bottom;
-            destination.y = bounds.bottom;
-        }
+        if (destination.y < bounds.bottom + aux/2) 
+            excededY = destination.y = bounds.bottom + aux/2;
+        else if (destination.y > bounds.top - aux/2) 
+            excededY = destination.y = bounds.top - aux/2;
 
 		//Calculate next position
 		Vector3 newPosition;
         newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
         newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
 
-		//Set the position to the camera
-        transform.position = newPosition;
+        //Set the position to the camera
+        transform.position = newPosition;// + _lookArroundPosition;
     }
 
     /// <summary>
@@ -169,15 +166,17 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private void LookAt() {
 		//Calculate objective of the camera
-        Vector3 destination = target.transform.position + _lookArroundOffset;
+        Vector3 destination = target.transform.position;
 
-		//If there isn't liberty looking at, block it
-        if (lookAt.lookAtLiberty) {
-            destination.x -= excededX;
-            destination.y -= excededY;
-        }
+        //If there isn't liberty looking at, block it
+        if (lookAt.lookAtFixedOnBounds && excededX != 0) 
+            destination.x = excededX;
+        if (lookAt.lookAtFixedOnBounds && excededY != 0) 
+            destination.y = excededY;
 
-		//Calculate the look at position of the camera
+        destination += _lookArroundOffset;
+
+        //Calculate the look at position of the camera
         destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAt.lookAtSmooth);
 
 		//Set the look at attribute
@@ -206,8 +205,9 @@ public class MainCameraController : MonoBehaviour {
     /// Set the look arround offset
     /// </summary>
     public void LookArround(float OffsetX, float OffsetY) {
-		//Setting look arround values depending of the input
+        //Setting look arround values depending of the input
         _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize;
+        _lookArroundPosition = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize / 25;
     }
 
     /// <summary>
