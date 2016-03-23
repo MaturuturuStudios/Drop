@@ -7,6 +7,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
     
 
     public GameObject TrajectoryPointPrefeb;
+    public GameObject TrajectorySizeIndicator;
+    public GameObject TrajectoryParticlePrefeb;
     public int numOfTrajectoryPoints = 30;
     public float particletrajectoryspeed = 0.08f;
     private int jk = 0;
@@ -19,6 +21,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
     
     private Vector3 vel,aiming;
     private float power = 25;
+    private float shootsize=1;
+    public float limitshoot = 10;
     private bool stopcourutine=false;
     
 
@@ -27,23 +31,36 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private bool colisiondetected = false;
     private GameObject sphere,ball;
     private float delay = 2,next;
-    private float oldx, oldy;
+    private float oldx, oldy,oldvelocity;
+    private float h, v;
+    private bool horizontal;
+    private bool vertical;
+    private float shootlimiet = 1;
+    private bool selecting = false;
+    private float oldshootlimit;
+    private float velocity = 1;
+    private bool correcting = false;
     // Use this for initialization
     void Awake() {
 
-       
+        horizontal = true;
+        vertical = true;
 
         next = Time.time + delay;
         this.enabled = false;
 
-       
-
-        sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
         sphere.GetComponent<Collider>().enabled = false;
         sphere.GetComponent<Renderer>().enabled = false;
 
-        vel.x = 5;
-        vel.y = 5;
+        ball = (GameObject)Instantiate(TrajectorySizeIndicator);
+        ball.transform.localScale=  new Vector3(shootsize, shootsize, shootsize);
+        ball.GetComponent<Collider>().enabled = false;
+        ball.GetComponent<Renderer>().enabled = false;
+
+        vel.x = 2;
+        vel.y = 2;
 
         c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
@@ -58,24 +75,39 @@ public class CharacterShootTrajectory : MonoBehaviour {
             //dot.tag = ("Trajectory"+i);
             dot.transform.parent = ccc.transform;
 
-
             trajectoryPoints.Insert(i, dot);
 
 
-          
        }
-        
-        
-
 
     }
+
+    public void selectingsize(float size)
+    {
+        shootsize = size;
+        selecting = true;
+        
+    }
+
     public void OnEnable() {
+        vel.x = 2;
+        vel.y = 2;
+        horizontal = true;
+        shootsize = 1;
+        ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
+        shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
+        Debug.Log("entra" + shootlimiet);
+        ball.GetComponent<Renderer>().enabled = true;
+                
         stopcourutine = false;
         StartCoroutine(Example());
         //Debug.Log("entra");
     }
     public void OnDisable()
     {
+        //Debug.Log("end " + shootlimiet);
+        if(ball!= null)
+            ball.GetComponent<Renderer>().enabled = false;
         stopcourutine = false;
         stopcourutine = true;
         StopCoroutine(Example());
@@ -84,11 +116,55 @@ public class CharacterShootTrajectory : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        if (selecting)
+        {
 
-        vel.x += h;
-        vel.y += v;
+            oldshootlimit = shootlimiet;
+            ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
+            shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
+            if(oldshootlimit>shootlimiet)
+                correcting = true;
+            selecting = false;
+
+        }
+        
+        if (horizontal)
+        {
+
+            
+            oldx = vel.x;
+            oldy = vel.y;
+
+            h = Input.GetAxis("Horizontal");
+            v = Input.GetAxis("Vertical");
+            
+            vel.x += h;
+            vel.y += v;
+
+           // Debug.Log(" h " + h + " v " + v);
+
+        }
+        else if(horizontal== false)
+        {
+            if (correcting)
+            {
+                vel.x = 2;
+                vel.y = 2;
+                correcting = false;
+            }
+            else
+            {
+                vel.x = oldx;
+                vel.y = oldy;
+                //vel.x --;
+                //vel.y --;
+            }
+
+            
+
+
+        }
+
 
         /*if (Input.GetKeyDown(KeyCode.UpArrow))
         {
@@ -110,11 +186,38 @@ public class CharacterShootTrajectory : MonoBehaviour {
         float angle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
-        Vector3 pos = this.transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
+         Vector3 pos = this.transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
+        //Vector3 pos = this.transform.position;
         setTrajectoryPoints(pos, vel);
         setvisibility();
+        canshooot();
+
+    }
+    public bool canshooot()
+    {
+        float dis = 0;
+        Vector3 spheredis = transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x  );
+        fwd = trajectoryPoints[0].transform.position - spheredis;
+       
+        dis = fwd.magnitude;
+
+        Debug.DrawRay(spheredis, fwd, Color.green);
+
+        if (Physics.Raycast(spheredis, fwd, dis))
+        {
+            for (int j = 1; j < numOfTrajectoryPoints - 1; j++)
+            {
+                trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
+
+            }
+            return false;
+ 
+        }
+        else return true;
+
         
     }
+
     public void QuitTrajectory() {
         for (int i = 0; i < numOfTrajectoryPoints; i++)
         {
@@ -136,29 +239,47 @@ public class CharacterShootTrajectory : MonoBehaviour {
     // It displays projectile trajectory path
     //---------------------------------------	
     void setTrajectoryPoints(Vector3 pStartPosition, Vector3 pVelocity) {
-        float velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
-        float angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
-        float fTime = 0;
-        float oldx = 0;
-        float oldy =0;
-        bool notsame = false;
-        
-        fTime += 0.1f;
-        for (int i = 0; i < numOfTrajectoryPoints && !notsame; i++) {
-            float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
-            float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
-            Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
-            // if (oldx == pos.x && oldy == pos.y)
-            //  notsame = true;
-            trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100 );
-            // trajectoryPoints[i].transform.position = pos;
-            //bolas[i].GetComponent<Renderer>().enabled = false;
-            trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
+
+        oldvelocity = velocity;
+        velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
+
+        Debug.Log(" velocity " + velocity + " shoolitmit " + shootlimiet);
+        Debug.Log(" velocity x  " + pVelocity.x + " velocity y  " + pVelocity.y);
+
+        if (velocity > shootlimiet)
+        {
+            horizontal = false;
+
+        }
+        else if (velocity < shootlimiet)
+        {
+            horizontal = true;
+
+            float angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
+
+            float fTime = 0;
+            float oldx = 0;
+            float oldy = 0;
+            bool notsame = false;
+
             fTime += 0.1f;
-            oldx = pos.x;
-            oldy = pos.y;
-            //Debug.Log(" zasca " + trajectoryPoints[i]);
+            for (int i = 0; i < numOfTrajectoryPoints && !notsame; i++)
+            {
+                float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
+                float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
+                Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
+                // if (oldx == pos.x && oldy == pos.y)
+                //  notsame = true;
+                trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100);
+                // trajectoryPoints[i].transform.position = pos;
+                //bolas[i].GetComponent<Renderer>().enabled = false;
+                trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
+                trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
+                fTime += 0.1f;
+                oldx = pos.x;
+                oldy = pos.y;
+                //Debug.Log(" zasca " + trajectoryPoints[i]);
+            }
         }
     }
     public IEnumerator Example()
@@ -213,6 +334,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, dis))
             {
+                //ball.GetComponent<Renderer>().enabled = true;
+                ball.transform.position = trajectoryPoints[i].transform.position;
                 colisiondetected = true;
                 for (int j = i+1; j < numOfTrajectoryPoints-1 ; j++) {
                     trajectoryPoints[j].GetComponent<Renderer>().enabled = false;

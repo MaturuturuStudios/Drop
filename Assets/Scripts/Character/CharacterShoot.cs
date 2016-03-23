@@ -13,6 +13,7 @@ public class CharacterShoot : MonoBehaviour {
     private int falling = 0;
     //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
     public bool shootmode = false;
+    private float sizeshot=1;
 
     CharacterController c;
     CharacterControllerCustom ccc;
@@ -30,21 +31,50 @@ public class CharacterShoot : MonoBehaviour {
 
         _gcic = GameObject.FindGameObjectWithTag("GameController")
                                 .GetComponent<GameControllerIndependentControl>();
-	}
+
+       
+    }
     public bool isShooting(){
         return shootmode;
     }
-   
-	//---------------------------------------	
+
+    //---------------------------------------	
+    public void IncreaseSize() {
+        if ((shootmode == true))
+        {
+            float oldsize;
+
+            oldsize = sizeshot;
+            sizeshot++;
+            if (sizeshot < 9)
+                st.selectingsize(sizeshot);
+            else sizeshot = oldsize;
+        }
+    }
+
+    public void DecreaseSize()
+    {
+        if ((shootmode == true))
+        {
+            float oldsize;
+      
+            oldsize = sizeshot;
+            sizeshot--;
+            
+            if (sizeshot > 0)
+                st.selectingsize(sizeshot);
+            else sizeshot = oldsize;
+        }
+    }
 
     public void Aim(){
-        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<9))
+        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<9) )
         {
             if (shootmode == false)
             {
                 shootmode = true;
                 st.enabled = true;
-
+                sizeshot = 1;
                 ccc.Parameters = CharacterControllerParameters.ShootingParameters;
             }
             else if ((shootmode == true))
@@ -59,6 +89,7 @@ public class CharacterShoot : MonoBehaviour {
 
 
     }
+
     public void Shoot()
     {
         if ( (shootmode == true))
@@ -71,9 +102,9 @@ public class CharacterShoot : MonoBehaviour {
             st.QuitTrajectory();
             st.enabled = false;
 
-            lessize = GetComponent<CharacterSize>().GetSize();
-            lessize -= 1;
-            GetComponent<CharacterSize>().SetSize(lessize);
+            //lessize = GetComponent<CharacterSize>().GetSize();
+            //lessize -= 1;
+            GetComponent<CharacterSize>().SetSize((int)(GetComponent<CharacterSize>().GetSize()-sizeshot));
 
             throwBall();
             
@@ -101,7 +132,7 @@ public class CharacterShoot : MonoBehaviour {
                 ccc.Parameters = null;
             }       
         }*/
-        if ((shootmode== true) && (ccc.State.IsGrounded == false || size.GetSize()==1))
+        if ((shootmode== true) && (ccc.State.IsGrounded == false || size.GetSize()==1 ))
         {
             shootmode = false;
             st.QuitTrajectory();
@@ -142,7 +173,7 @@ public class CharacterShoot : MonoBehaviour {
 	private void throwBall(){
 
         ball = _gcic.CreateDrop(true); //AddDrop -> CreateDrop
-        ball.GetComponent<CharacterSize>().SetSize(1);
+        ball.GetComponent<CharacterSize>().SetSize((int)sizeshot);
         prepareDropToFly();
 
         ball.SetActive(true);

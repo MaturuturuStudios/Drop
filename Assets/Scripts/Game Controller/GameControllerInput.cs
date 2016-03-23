@@ -87,6 +87,11 @@ public class GameControllerInput : MonoBehaviour {
                 shootComponent.Shoot();
             if (Input.GetButtonDown("ShootMode"))
                 shootComponent.Aim();
+            //Added by Robert Size select
+            if (Input.GetKeyDown(KeyCode.L))
+                shootComponent.IncreaseSize();
+            if(Input.GetKeyDown(KeyCode.O))
+                shootComponent.DecreaseSize();
 
             ///NOT SETTED CONTROLS
             //Shoot mode pointer inputs
