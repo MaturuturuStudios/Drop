@@ -46,7 +46,7 @@ public class CharacterShoot : MonoBehaviour {
 
             oldsize = sizeshot;
             sizeshot++;
-            if (sizeshot < 9)
+            if (sizeshot < GetComponent<CharacterSize>().GetSize())
                 st.selectingsize(sizeshot);
             else sizeshot = oldsize;
         }
