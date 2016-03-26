@@ -2,24 +2,35 @@
 using UnityEngine.EventSystems;
 
 public class CreditsMenu : MonoBehaviour {
-    /// <summary>
-    /// the option to be selected
-    /// </summary>
-    public GameObject firstSelected;
-    /// <summary>
-    /// Control if I have to select a default option
-    /// </summary>
-    private bool _selectOption;
+	#region Private Attributes
+	/// <summary>
+	/// Menu navigator
+	/// </summary>
+	private MenuNavigator _menuNavigator;
+	#endregion
 
-    public void OnEnable() {
-        _selectOption = true;
-    }
+	#region Methods
+	public void Awake() {
+		_menuNavigator = GameObject.FindGameObjectWithTag("Menus")
+			.GetComponent<MenuNavigator>();
+	}
 
     public void Update() {
-        if (_selectOption) {
-            _selectOption = false;
-            //select the option
-            EventSystem.current.SetSelectedGameObject(firstSelected);
-        }
+		//A
+		if (Input.GetButtonDown ("Jump"))
+			_menuNavigator.ComeBack();
+
+		//B
+		if (Input.GetButtonDown("Sluice"))
+			_menuNavigator.ComeBack();
+
+		//return
+		if (Input.GetButtonDown("Back"))
+			_menuNavigator.ComeBack();
+
+		//start
+		if (Input.GetButtonDown("Start"))
+			_menuNavigator.ComeBack();
     }
+	#endregion
 }

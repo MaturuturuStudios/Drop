@@ -13,7 +13,7 @@ public class MenuNavigator : MonoBehaviour {
         PAUSE_MENU,
         OPTION_MENU,
         MAP_LEVEL_MENU,
-        CREDITS_MENU
+        CREDITS_MENU,
     }
     #endregion
 
@@ -58,6 +58,8 @@ public class MenuNavigator : MonoBehaviour {
     /// A gameobject acting as a background for all menus
     /// </summary>
     public GameObject background;
+	public CanvasGroup uiCanvasGroup;
+	public CanvasGroup confirmQuit;
 
     /// <summary>
     /// Main menu
@@ -103,8 +105,12 @@ public class MenuNavigator : MonoBehaviour {
         if (startWithMenu != Menu.NONE) {
             OpenMenu(startWithMenu);
         }
+        DoConfirmQuitNo ();
+
         //get the fading
         _fading = GetComponent<SceneFadeInOut>();
+
+
     }
 
     public void Update() {
@@ -246,6 +252,36 @@ public class MenuNavigator : MonoBehaviour {
 
     }
 
+    /// <summary>
+	/// Called if clicked on No (confirmation)
+	/// </summary>
+	public void DoConfirmQuitNo() {
+        Debug.Log("Back to the game");
+
+        //enable the normal ui
+        uiCanvasGroup.alpha = 1;
+        uiCanvasGroup.interactable = true;
+        uiCanvasGroup.blocksRaycasts = true;
+
+        //disable the confirmation quit ui
+        confirmQuit.alpha = 0;
+        confirmQuit.interactable = false;
+        confirmQuit.blocksRaycasts = false;
+
+        if (_menuPanel.Count > 0) {
+            _menuPanel.Peek().disable();
+            _menuPanel.Peek().enable();
+        }
+    }
+
+    /// <summary>
+    /// Called if clicked on Yes (confirmation)
+    /// </summary>
+    public void DoConfirmQuitYes() {
+        Debug.Log("Ok bye bye");
+        Application.Quit();
+    }
+
     //Region of methods with special/specific actions when pushed or poped from stack
     #region Specifics menu actions
     public void MainMenu() {
@@ -281,8 +317,20 @@ public class MenuNavigator : MonoBehaviour {
     /// TODO: needs a confirmation and probably more actions to close it correctly
     /// </summary>
     public void ExitGame() {
-        Application.Quit();
+        Debug.Log("Check form quit confirmation");
+
+        //reduce the visibility of normal UI, and disable all interraction
+        uiCanvasGroup.alpha = 0.3f;
+        uiCanvasGroup.interactable = false;
+        uiCanvasGroup.blocksRaycasts = false;
+
+        //enable interraction with confirmation gui and make visible
+        confirmQuit.alpha = 1;
+        confirmQuit.interactable = true;
+        confirmQuit.blocksRaycasts = true;
     }
+
+
     #endregion
 
     #region Other Methods

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.EventSystems;
 
 public class OptionsMenu : MonoBehaviour {
@@ -60,6 +59,7 @@ public class OptionsMenu : MonoBehaviour {
             //select the option
             EventSystem.current.SetSelectedGameObject(firstSelected);
         }
+			
     }
 
 
