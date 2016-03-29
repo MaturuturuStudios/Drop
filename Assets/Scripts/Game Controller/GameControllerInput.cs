@@ -48,10 +48,8 @@ public class GameControllerInput : MonoBehaviour {
 
             // Change controlled character
             // Handles the next and back input
-            //if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") > 0)
             if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") > 0)
                     _switcher.ControlNextDrop();
-            //if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") < 0)
             if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") < 0)
                     _switcher.ControlBackDrop();
 
@@ -88,10 +86,16 @@ public class GameControllerInput : MonoBehaviour {
             if (Input.GetButtonDown("ShootMode"))
                 shootComponent.Aim();
             //Added by Robert Size select
-            if (Input.GetKeyDown(KeyCode.L))
+            /*if (Input.GetKeyDown(KeyCode.L))
                 shootComponent.IncreaseSize();
             if(Input.GetKeyDown(KeyCode.O))
+                shootComponent.DecreaseSize();*/
+
+            if (Input.GetButtonDown("ShootCounter") && Input.GetAxis("ShootCounter") > 0)
+                shootComponent.IncreaseSize();
+            if (Input.GetButtonDown("ShootCounter") && Input.GetAxis("ShootCounter") < 0)
                 shootComponent.DecreaseSize();
+
 
             ///NOT SETTED CONTROLS
             //Shoot mode pointer inputs
