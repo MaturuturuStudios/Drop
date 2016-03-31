@@ -17,19 +17,19 @@ public class CreditsMenu : MonoBehaviour {
 
     public void Update() {
 		//A
-		if (Input.GetButtonDown ("Jump"))
+		if (Input.GetButtonDown (Axis.Jump))
 			_menuNavigator.ComeBack();
 
 		//B
-		if (Input.GetButtonDown("Sluice"))
+		if (Input.GetButtonDown(Axis.Irrigate))
 			_menuNavigator.ComeBack();
 
 		//return
-		if (Input.GetButtonDown("Back"))
+		if (Input.GetButtonDown(Axis.Back))
 			_menuNavigator.ComeBack();
 
 		//start
-		if (Input.GetButtonDown("Start"))
+		if (Input.GetButtonDown(Axis.Start))
 			_menuNavigator.ComeBack();
     }
 	#endregion

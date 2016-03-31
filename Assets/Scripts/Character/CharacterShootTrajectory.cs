@@ -139,8 +139,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
             oldx = vel.x;
             oldy = vel.y;
 
-            h = Input.GetAxis("Horizontal");
-            v = Input.GetAxis("Vertical");
+            h = Input.GetAxis(Axis.Horizontal);
+            v = Input.GetAxis(Axis.Vertical);
             
             vel.x += h;
             vel.y += v;

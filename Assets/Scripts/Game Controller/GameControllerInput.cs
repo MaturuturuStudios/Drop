@@ -25,7 +25,7 @@ public class GameControllerInput : MonoBehaviour {
 
 	void Update() {
         //Start button
-        if (Input.GetButtonDown("Start"))
+        if (Input.GetButtonDown(Axis.Start))
             _ui.PauseGame();
 
         if (_ui==null || !_ui.IsMenuActive()) {
@@ -35,55 +35,50 @@ public class GameControllerInput : MonoBehaviour {
             bool shootmode = _switcher.currentCharacter.GetComponent<CharacterShoot>().isShooting();
 
             // Horizontal input
-            float hInput = Input.GetAxis("Horizontal");
+            float hInput = Input.GetAxis(Axis.Horizontal);
             cccp.HorizontalInput = hInput;
 
             // Vertical input
-            float vInput = Input.GetAxis("Vertical");
+            float vInput = Input.GetAxis(Axis.Vertical);
             cccp.VerticalInput = vInput;
 
             // Jump input
-            float jumpInput = Input.GetAxis("Jump");
+            float jumpInput = Input.GetAxis(Axis.Jump);
             cccp.JumpInput = jumpInput;
+			
+			// Control that triggers are pressed only one time
+			if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
+				_switcher.ControlNextDrop();
+				_triggerPressed = true;
+			}
+			else if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) < 0) {
+				_switcher.ControlBackDrop();
+				_triggerPressed = true;
+			}
+			else if (Input.GetAxis(Axis.SelectDrop) == 0)
+				_triggerPressed = false;
 
-            // Change controlled character
-            // Handles the next and back input
-            if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") > 0)
-                    _switcher.ControlNextDrop();
-            if (Input.GetButtonDown("SelectDrop") && Input.GetAxis("SelectDrop") < 0)
-                    _switcher.ControlBackDrop();
-
-            // Control that triggers are pressed only one time
-            if (!_triggerPressed && Input.GetAxis("SelectDropAlt") > 0) {
-                _switcher.ControlNextDrop();
-                _triggerPressed = true;
-            } else if (!_triggerPressed && Input.GetAxis("SelectDropAlt") < 0) {
-                _switcher.ControlBackDrop();
-                _triggerPressed = true;
-            } else if (Input.GetAxis("SelectDropAlt") == 0)
-                _triggerPressed = false;
-
-            // Handles the direct access input
-            if (Input.GetButtonDown("SelectDrop1"))
+			// Handles the direct access input
+			if (Input.GetButtonDown(Axis.SelectDrop1))
                 _switcher.SetControl(0);
-            if (Input.GetButtonDown("SelectDrop2"))
+            if (Input.GetButtonDown(Axis.SelectDrop2))
                 _switcher.SetControl(1);
-            if (Input.GetButtonDown("SelectDrop3"))
+            if (Input.GetButtonDown(Axis.SelectDrop3))
                 _switcher.SetControl(2);
-            if (Input.GetButtonDown("SelectDrop4"))
+            if (Input.GetButtonDown(Axis.SelectDrop4))
                 _switcher.SetControl(3);
-            if (Input.GetButtonDown("SelectDrop5"))
+            if (Input.GetButtonDown(Axis.SelectDrop5))
                 _switcher.SetControl(4);
 
             //Camera looking arround
-            float hLookInput = Input.GetAxis("CamHorizontal");
-            float vLookInput = Input.GetAxis("CamVertical");
+            float hLookInput = Input.GetAxis(Axis.CamHorizontal);
+            float vLookInput = Input.GetAxis(Axis.CamVertical);
             _mainCameraController.LookArround(hLookInput, vLookInput);
 
             //Handle shoot input To delete
-            if (Input.GetButtonDown("Action"))
+            if (Input.GetButtonDown(Axis.Action))
                 shootComponent.Shoot();
-            if (Input.GetButtonDown("ShootMode"))
+            if (Input.GetButtonDown(Axis.ShootMode))
                 shootComponent.Aim();
             //Added by Robert Size select
             /*if (Input.GetKeyDown(KeyCode.L))
@@ -91,31 +86,31 @@ public class GameControllerInput : MonoBehaviour {
             if(Input.GetKeyDown(KeyCode.O))
                 shootComponent.DecreaseSize();*/
 
-            if (Input.GetButtonDown("ShootCounter") && Input.GetAxis("ShootCounter") > 0)
+            if (Input.GetButtonDown(Axis.ShootCounter) && Input.GetAxis(Axis.ShootCounter) > 0)
                 shootComponent.IncreaseSize();
-            if (Input.GetButtonDown("ShootCounter") && Input.GetAxis("ShootCounter") < 0)
+            if (Input.GetButtonDown(Axis.ShootCounter) && Input.GetAxis(Axis.ShootCounter) < 0)
                 shootComponent.DecreaseSize();
 
 
             ///NOT SETTED CONTROLS
             //Shoot mode pointer inputs
-            if (Input.GetAxis("LookAtDir") != 0)
-                Debug.Log("LookAtDir");
-            if (Input.GetAxis("ShootCounter") != 0)
-                Debug.Log("ShootCounter");
+            if (Input.GetAxis(Axis.LookAtDir) != 0)
+                Debug.Log(Axis.LookAtDir);
+            if (Input.GetAxis(Axis.ShootCounter) != 0)
+                Debug.Log(Axis.ShootCounter);
 
             //Sluice action
-            if (Input.GetButtonDown("Sluice"))
-                Debug.Log("Sluice");
+            if (Input.GetButtonDown(Axis.Irrigate))
+                Debug.Log(Axis.Irrigate);
 
             //Select button
-            if (Input.GetButtonDown("Back"))
-                Debug.Log("Back");
+            if (Input.GetButtonDown(Axis.Back))
+                Debug.Log(Axis.Back);
 
 
         } else if(_ui!=null){
             //Select button
-            if (Input.GetButtonDown("Back")) {
+            if (Input.GetButtonDown(Axis.Back)) {
                 _ui.ComeBack();
                 //come back close the menu? unpause the game!!
                 if (!_ui.IsMenuActive()) {

@@ -518,13 +518,13 @@ public class DebugController : MonoBehaviour {
 
 		// Creates the input's movement vector
 		Vector3 movement = new Vector3();
-		movement.x = Input.GetAxis("Horizontal");
+		movement.x = Input.GetAxis(Axis.Horizontal);
 		movement.y = 0;
 		if (Input.GetKey(KeyCode.Space))
 			movement.y++;
 		if (Input.GetKey(KeyCode.X))
 			movement.y--;
-		movement.z = Input.GetAxis("Vertical");
+		movement.z = Input.GetAxis(Axis.Vertical);
 
 		// Creates the input
 		Vector3 rotation = new Vector3();
