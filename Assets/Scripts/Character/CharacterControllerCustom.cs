@@ -347,10 +347,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 		verticalInput *= sqrtSize;
 
 		// Adds the right forces
-		if (horizontal) {
+		if (horizontal && (State.IsGrounded || horizontalInput != 0)) {
 			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
 		}
-		if (vertical) {
+		if (vertical && (State.IsGrounded || verticalInput != 0)) {
 			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
 		}
 
