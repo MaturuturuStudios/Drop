@@ -198,11 +198,6 @@ public class DebugController : MonoBehaviour {
 			_camerasInformationTexts.Add(camera, informationText);
 		}
     }
-
-    //TODO: temporal, esto se borra luego
-    public void Update() {
-        temporal();
-    }
 	
 	/// <summary>
 	/// Unity's method called at the end of each frame if this script is
@@ -261,24 +256,7 @@ public class DebugController : MonoBehaviour {
 
 		// Shows the character's collisions
 		ShowCharacterCollisions();
-
-        
 	}
-
-    /// <summary>
-    /// TODO: borrar luego de la presentación
-    /// </summary>
-    private void temporal() {
-        if (Input.GetKeyDown(KeyCode.M)) {
-           MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag("Menus")
-                                .GetComponent<MenuNavigator>();
-            _menuNavigator.ChangeScene("Test Scene 2");
-        }else if (Input.GetKeyDown(KeyCode.N)) {
-            MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag("Menus")
-                                 .GetComponent<MenuNavigator>();
-            _menuNavigator.ChangeScene("Test Scene");
-        }
-    }
 
 	/// <summary>
 	/// Restores current character's color
@@ -422,7 +400,7 @@ public class DebugController : MonoBehaviour {
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit[] hits = Physics.RaycastAll(ray);
 		foreach (RaycastHit hit in hits)
-			if (hit.collider.CompareTag("Player")) {
+			if (hit.collider.CompareTag(Tags.Player)) {
 				_independentControl.SetControl(hit.collider.gameObject);
 				break;
 			}

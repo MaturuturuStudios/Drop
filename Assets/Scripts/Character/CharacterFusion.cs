@@ -18,7 +18,7 @@ public class CharacterFusion : MonoBehaviour {
     #region Public Methods
     // Use this for initialization
     void Awake () {
-        _independentControl = GameObject.FindGameObjectWithTag("GameController")
+        _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
                                .GetComponent<GameControllerIndependentControl>();
         _characterSize = GetComponent<CharacterSize>();
     }
@@ -75,7 +75,7 @@ public class CharacterFusion : MonoBehaviour {
     /// <param name="hit">The collision data</param>
     private void OnControllerColliderHit(ControllerColliderHit hit) {
         //I'm always the player, is the other a player? or maybe does not exists
-        if(hit.gameObject == null || hit.gameObject.tag != "Player") {
+        if(hit.gameObject == null || !hit.gameObject.CompareTag(Tags.Player)) {
             return;
         }
 

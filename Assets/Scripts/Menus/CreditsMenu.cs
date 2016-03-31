@@ -11,7 +11,7 @@ public class CreditsMenu : MonoBehaviour {
 
 	#region Methods
 	public void Awake() {
-		_menuNavigator = GameObject.FindGameObjectWithTag("Menus")
+		_menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
 			.GetComponent<MenuNavigator>();
 	}
 

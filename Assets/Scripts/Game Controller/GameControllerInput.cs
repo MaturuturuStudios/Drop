@@ -20,7 +20,7 @@ public class GameControllerInput : MonoBehaviour {
         _switcher = GetComponent<GameControllerIndependentControl>();
         _mainCameraController = GetComponentInChildren<MainCameraController>();
 
-        _ui = GameObject.FindGameObjectWithTag("Menus").GetComponent<MenuNavigator>();
+        _ui = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
     }
 
 	void Update() {

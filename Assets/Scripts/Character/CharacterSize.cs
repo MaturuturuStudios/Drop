@@ -103,7 +103,7 @@ public class CharacterSize : MonoBehaviour {
         _ratioRadius = GetComponent<CharacterController>().radius;
 
         _controller = GetComponent<CharacterControllerCustom>();
-        _independentControl = GameObject.FindGameObjectWithTag("GameController")
+        _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
 
         _setState = false;

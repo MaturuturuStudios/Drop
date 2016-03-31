@@ -29,7 +29,7 @@ public class CharacterShoot : MonoBehaviour {
         size= GetComponent<CharacterSize>();
         //gc = GetComponent<GameControllerIndependentControl>(); //Comentado por toni
 
-        _gcic = GameObject.FindGameObjectWithTag("GameController")
+        _gcic = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
 
        

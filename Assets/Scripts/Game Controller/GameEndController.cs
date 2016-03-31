@@ -73,7 +73,7 @@ public class GameEndController : MonoBehaviour {
 
             //Load Menu
             if (_timeElapsed > endGame.waitTime) {
-                MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag("Menus")
+                MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
                                      .GetComponent<MenuNavigator>();
                 _menuNavigator.ChangeScene("StartScene");
             }
@@ -86,7 +86,7 @@ public class GameEndController : MonoBehaviour {
     /// <param name="other">Collider who enters in the trigger</param>
     void OnTriggerEnter(Collider other){
         //only ends game with player
-        if (other.tag == "Player"){
+        if (other.CompareTag(Tags.Player)){
             // Activate counter
             end = true;
 
