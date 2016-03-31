@@ -40,6 +40,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private float oldshootlimit;
     private float velocity = 1;
     private bool correcting = false;
+    private RaycastHit hitpoint;
     // Use this for initialization
     void Awake() {
 
@@ -201,10 +202,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
        
         dis = fwd.magnitude;
 
-        //Debug.DrawRay(spheredis, fwd, Color.green);
+        Debug.DrawRay(spheredis, fwd, Color.green);
 
         if (Physics.Raycast(spheredis, fwd, dis))
         {
+            ball.GetComponent<Renderer>().enabled = false;
             for (int j = 1; j < numOfTrajectoryPoints - 1; j++)
             {
                 trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
@@ -332,10 +334,12 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             dis = fwd.magnitude;
 
-            if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, dis))
+            if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint,dis))
             {
-                //ball.GetComponent<Renderer>().enabled = true;
-                ball.transform.position = trajectoryPoints[i].transform.position;
+                ball.GetComponent<Renderer>().enabled = true;
+                Vector3 hitting = hitpoint.point;
+                hitting.y += 0.5f;
+                ball.transform.position = hitting;
                 colisiondetected = true;
                 for (int j = i+1; j < numOfTrajectoryPoints-1 ; j++) {
                     trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
