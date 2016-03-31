@@ -19,4 +19,14 @@ public static class Tags {
 	/// Tag for the scene's GUI menus.
 	/// </summary>
 	public static readonly string Menus = "Menus";
+
+	/// <summary>
+	/// Tag for a moving platform where the character can land.
+	/// </summary>
+	public static readonly string MovingPlatform = "MovingPlatform";
+
+	/// <summary>
+	/// Tag for wall where the character can perform a wall jump.
+	/// </summary>
+	public static readonly string WallJump = "WallJump";
 }

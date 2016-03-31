@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Custom controller that depends on Unity's CharacterController component.
@@ -401,7 +402,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Checks if it can jump
 		if (!CanJump())
 			return;
-		
+
 		// Normal jump
 		if (!State.IsOnSlope) {
 			// Calculates the jump speed to reach the desired height
@@ -410,7 +411,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			SetVerticalForceRelative(jumpSpeed);
 		}
 		// Wall jump
-		else {
+		else if (Collisions.Where(o => o.CompareTag(Tags.WallJump)).Count() > 0) {
 			// Calculates the jump speed to reach the desired height
 			float jumpHeight = GetSize() * Parameters.wallJumpMagnitude;
 			float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
