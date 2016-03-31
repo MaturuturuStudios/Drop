@@ -29,7 +29,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private RaycastHit hit;
     private Vector3 fwd,aux;
     private bool colisiondetected = false;
-    private GameObject sphere,ball;
+    private GameObject sphere=null,ball=null;
     private float delay = 2,next;
     private float oldx, oldy,oldvelocity;
     private float h, v;
@@ -50,22 +50,26 @@ public class CharacterShootTrajectory : MonoBehaviour {
         next = Time.time + delay;
         this.enabled = false;
 
-        //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
-        sphere.GetComponent<Collider>().enabled = false;
-        sphere.GetComponent<Renderer>().enabled = false;
-
-        ball = (GameObject)Instantiate(TrajectorySizeIndicator);
-        ball.transform.localScale=  new Vector3(shootsize, shootsize, shootsize);
-        ball.GetComponent<Collider>().enabled = false;
-        ball.GetComponent<Renderer>().enabled = false;
-
-        vel.x = 2;
-        vel.y = 2;
-
         c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
         s = GetComponent<CharacterShoot>();
+
+            //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+       sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
+
+       sphere.GetComponent<Collider>().enabled = false;
+       sphere.GetComponent<Renderer>().enabled = false;
+
+       ball = (GameObject)Instantiate(TrajectorySizeIndicator);
+
+       ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
+       ball.GetComponent<Collider>().enabled = false;
+       ball.GetComponent<Renderer>().enabled = false;
+     
+        vel.x = 2;
+        vel.y = 2;
+
+       
 
         trajectoryPoints = new List<GameObject>();
 
@@ -112,6 +116,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         stopcourutine = false;
         stopcourutine = true;
         StopCoroutine(Example());
+       
         //Debug.Log("PARANDOOOOO");
     }
     // Update is called once per frame
@@ -228,6 +233,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         sphere.GetComponent<Renderer>().enabled = false;
         stopcourutine = true;
         StopCoroutine(Example());
+        Destroy(sphere, 1.0f);
+        Destroy(ball, 1.0f);
     }
 
     public Vector3 getvect() {
