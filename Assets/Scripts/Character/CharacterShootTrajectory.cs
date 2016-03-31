@@ -51,14 +51,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         this.enabled = false;
 
         //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
-        sphere.GetComponent<Collider>().enabled = false;
-        sphere.GetComponent<Renderer>().enabled = false;
-
-        ball = (GameObject)Instantiate(TrajectorySizeIndicator);
-        ball.transform.localScale=  new Vector3(shootsize, shootsize, shootsize);
-        ball.GetComponent<Collider>().enabled = false;
-        ball.GetComponent<Renderer>().enabled = false;
+       
 
         vel.x = 2;
         vel.y = 2;
@@ -95,7 +88,15 @@ public class CharacterShootTrajectory : MonoBehaviour {
         vel.y = 2;
         horizontal = true;
         shootsize = 1;
+        sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
+        sphere.GetComponent<Collider>().enabled = false;
+        sphere.GetComponent<Renderer>().enabled = false;
+
+        ball = (GameObject)Instantiate(TrajectorySizeIndicator);
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
+        ball.GetComponent<Collider>().enabled = false;
+       
+        
         shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
         //Debug.Log("entra" + shootlimiet);
         ball.GetComponent<Renderer>().enabled = true;
@@ -112,6 +113,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         stopcourutine = false;
         stopcourutine = true;
         StopCoroutine(Example());
+        Destroy(sphere);
+        Destroy(ball);
         //Debug.Log("PARANDOOOOO");
     }
     // Update is called once per frame
