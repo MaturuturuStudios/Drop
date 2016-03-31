@@ -412,23 +412,27 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 		// Wall jump
 		else if (Collisions.Where(o => o.CompareTag(Tags.WallJump)).Count() > 0) {
-			// Calculates the jump speed to reach the desired height
-			float jumpHeight = GetSize() * Parameters.wallJumpMagnitude;
-			float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
+			float gravity = Parameters.Gravity.magnitude;
 
-			// Adds enough horizontal force to the character to reach it's maximum speed
-			float sqrSize = Mathf.Sqrt(GetSize());
-			float wallJumpSpeed = Mathf.Sign(State.SlopeAngle) * Parameters.maxSpeed * sqrSize;
-			
+			// Calculates the jump speed to reach the desired height
+			float jumpHeight = GetSize() * Parameters.wallJumpHeight;
+			float verticalSpeed = Mathf.Sqrt(2 * Mathf.Abs(gravity * jumpHeight));
+
+			// Calculates the time to reach the peak of the wall jump
+			float timeToPeak = verticalSpeed / gravity;
+
+			// Calculates the horizontal speed
+			float jumpDistance = GetSize() * Parameters.wallJumpDistance;
+			float horizontalSpeed = Mathf.Sign(State.SlopeAngle) * jumpDistance / timeToPeak;
+
 			// Rotates the force according to the gravity
 			float gravityAngle = Vector3.Angle(Parameters.Gravity, Vector3.down);
 			if (Vector3.Cross(Parameters.Gravity, Vector3.down).z < 0)
 				gravityAngle = -gravityAngle;
 			
 			// Sends the player flying using the wall jump speed
-			Vector3 finalVelocity = Quaternion.Euler(0, 0, -gravityAngle) * new Vector3(wallJumpSpeed, jumpSpeed, 0);
-			float flyTime = Parameters.wallJumpFlyTime * sqrSize;
-			SendFlying(finalVelocity, false, true, flyTime);
+			Vector3 finalVelocity = Quaternion.Euler(0, 0, -gravityAngle) * new Vector3(horizontalSpeed, verticalSpeed, 0);
+			SendFlying(finalVelocity, false, true, timeToPeak);
 		}
 
 		_jumpingTime = Parameters.jumpFrequency;

@@ -193,19 +193,19 @@ public class CharacterControllerParameters {
 	public float jumpFrequency = 0.25f;
 
 	/// <summary>
-	/// Jumping factor. Defines the height that should be achieved at the peek of the jump.
+	/// Jumping factor. Defines the height that should be achieved at the peak of the jump.
 	/// </summary>
 	public float jumpMagnitude = 1;
 
 	/// <summary>
-	/// Jumping factor applied when wall jumping.
+	/// Jumping height reached when wall jumping.
 	/// </summary>
-	public float wallJumpMagnitude = 2;
+	public float wallJumpHeight = 1;
 
 	/// <summary>
-	/// Amount of time the character will be uncontrollable after performing a wall jump.
+	/// Amount of distance traveled when reaching the peak of a wall jump.
 	/// </summary>
-	public float wallJumpFlyTime = 0.5f;
+	public float wallJumpDistance = 2;
 
 	/// <summary>
 	/// The base mass of the character, when it's size is 1. This will affect how much force will the
@@ -257,8 +257,8 @@ public class CharacterControllerParameters {
         clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrequency = jumpFrequency;
 		clone.jumpMagnitude = jumpMagnitude;
-		clone.wallJumpMagnitude = wallJumpMagnitude;
-		clone.wallJumpFlyTime = wallJumpFlyTime;
+		clone.wallJumpHeight = wallJumpHeight;
+		clone.wallJumpDistance = wallJumpDistance;
         clone.baseMass = baseMass;
 		clone.useCustomGravity = useCustomGravity;
         clone.customGravity = customGravity;
@@ -287,8 +287,8 @@ public class CharacterControllerParameters {
 		sb.Append("Jump Bheaviour: ").Append(jumpBehaviour.ToString()).Append("\n");
 		sb.Append("Jump Frequency: ").Append(jumpFrequency).Append("\n");
 		sb.Append("Jump Magnitude: ").Append(jumpMagnitude).Append("\n");
-		sb.Append("WallJ. Magnitude: ").Append(wallJumpMagnitude).Append("\n");
-		sb.Append("WallJ. Fly Time: ").Append(wallJumpFlyTime).Append("\n");
+		sb.Append("WallJ. Height: ").Append(wallJumpHeight).Append("\n");
+		sb.Append("WallJ. Distance: ").Append(wallJumpDistance).Append("\n");
 		sb.Append("Base Mass: ").Append(baseMass).Append("\n");
 		sb.Append("Custom Gravity?: ").Append(useCustomGravity).Append("\n");
 		sb.Append("Custom Gravity: ").Append(customGravity).Append("\n");
