@@ -79,7 +79,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
 
        }
-
+       
     }
 
     public void selectingsize(float size)
@@ -96,12 +96,12 @@ public class CharacterShootTrajectory : MonoBehaviour {
         shootsize = 1;
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
         shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-        Debug.Log("entra" + shootlimiet);
+        //Debug.Log("entra" + shootlimiet);
         ball.GetComponent<Renderer>().enabled = true;
                 
         stopcourutine = false;
         StartCoroutine(Example());
-        //Debug.Log("entra");
+       // Debug.Log("Limitshot " + limitshoot);
     }
     public void OnDisable()
     {
@@ -201,7 +201,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
        
         dis = fwd.magnitude;
 
-        Debug.DrawRay(spheredis, fwd, Color.green);
+        //Debug.DrawRay(spheredis, fwd, Color.green);
 
         if (Physics.Raycast(spheredis, fwd, dis))
         {
@@ -243,8 +243,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         oldvelocity = velocity;
         velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
 
-        Debug.Log(" velocity " + velocity + " shoolitmit " + shootlimiet);
-        Debug.Log(" velocity x  " + pVelocity.x + " velocity y  " + pVelocity.y);
+        //Debug.Log(" velocity " + velocity + " shoolitmit " + shootlimiet);
+        //Debug.Log(" velocity x  " + pVelocity.x + " velocity y  " + pVelocity.y);
 
         if (velocity > shootlimiet)
         {
