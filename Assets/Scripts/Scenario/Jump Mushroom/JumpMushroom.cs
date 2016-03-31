@@ -107,23 +107,13 @@ public class JumpMushroom : MonoBehaviour{
         
     }
 
-    public void OnDrawGizmos()
-    {
-        if (!Application.isPlaying)
-        {
-            Awake();
-            Update();
-        }
+    public void OnDrawGizmos() {
+		BoxCollider collider = GetComponent<BoxCollider>();
+        float height = maxheight - minheight;
 
-        float altura = maxheight - minheight;
-        Color color = Color.yellow;
-        color.a = 0.25f;
-        Gizmos.color = color;
-        Vector3 aux =  this.transform.position ;
-        
-        // Draws the cube
-        Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.DrawCube(new Vector3(0, altura / 2, 0f), new Vector3(0.5f, altura, 0.5f));
+		// Draws the box
+		Gizmos.color = Color.yellow;
+		Gizmos.matrix = transform.localToWorldMatrix;
+        Gizmos.DrawWireCube(new Vector3(0, minheight + height / 2, 0f), new Vector3(collider.size.x, height, 0.5f));
     }
-
 }
