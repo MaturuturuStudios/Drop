@@ -15,6 +15,12 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	public float jumpPressTolerance = 0.1f;
 
 	/// <summary>
+	/// The time the player will be able to jump after the chracter stops
+	/// being grounded.
+	/// </summary>
+	public float jumpDelayTolerance = 0.1f;
+
+	/// <summary>
 	/// The time the character will stick to a slope after releaseing
 	/// the direction button.
 	/// </summary>
@@ -76,6 +82,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	private float _jumpPressTime;
 
 	/// <summary>
+	/// Time since the character stopped being grounded.
+	/// </summary>
+	private float _jumpDelayTime;
+
+	/// <summary>
 	/// Flag that indicates if the player is stuck to a slope.
 	/// </summary>
 	private bool _isAlreadyStuck;
@@ -111,6 +122,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	public void Update() {
 		// Decreses the timers
 		_jumpPressTime -= Time.deltaTime;
+		_jumpDelayTime -= Time.deltaTime;
 		_slopeStickTime -= Time.deltaTime;
 
 		// Checks where the player is facing
@@ -168,11 +180,27 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		else if (JumpInput <= 0)
 			_jumpReleased = true;
 
+		// Checks if the character was grounded recently
+		bool groundTrick = false;
+		if (_controller.State.IsGrounded) {
+			_jumpDelayTime = jumpDelayTolerance;
+		}
+		else if (_jumpDelayTime >= 0) {
+			// Tricks the controller to think it's still grounded
+			_controller.State.IsGrounded = true;
+			groundTrick = true;
+        }
+
 		// Makes the character jump
 		if (_jumpPressTime >= 0 && _controller.CanJump()) {
+			_jumpDelayTime = -1;
 			_jumpPressTime = -1;
 			_controller.Jump();
 		}
+
+		// Restores the controller state, undoing the trick
+		if (groundTrick)
+			_controller.State.IsGrounded = false;
 	}
 
 	/// <summary>
