@@ -41,6 +41,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private float velocity = 1;
     private bool correcting = false;
     private RaycastHit hitpoint;
+    private float angle;
     // Use this for initialization
     void Awake() {
 
@@ -131,17 +132,18 @@ public class CharacterShootTrajectory : MonoBehaviour {
             selecting = false;
 
         }
-        
-        if (horizontal)
-        {
 
-            
+        h = Input.GetAxis(Axis.Horizontal);
+        v = Input.GetAxis(Axis.Vertical);
+
+        angle = Mathf.Atan2(v, h) * Mathf.Rad2Deg;
+
+        Debug.Log(" h " + h + " v " + v);
+        if (horizontal)
+        {        
             oldx = vel.x;
             oldy = vel.y;
 
-            h = Input.GetAxis(Axis.Horizontal);
-            v = Input.GetAxis(Axis.Vertical);
-            
             vel.x += h;
             vel.y += v;
 
@@ -158,8 +160,12 @@ public class CharacterShootTrajectory : MonoBehaviour {
             }
             else
             {
-                vel.x = oldx;
+               
                 vel.y = oldy;
+                vel.x = oldx;
+
+                
+                Debug.Log(" vely" + vel.y + " velx " + vel.x);
                 //vel.x --;
                 //vel.y --;
             }
@@ -187,7 +193,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             vel.x -= 1;
         }*/
 
-        float angle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
+        
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
          Vector3 pos = this.transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
@@ -260,7 +266,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         {
             horizontal = true;
 
-            float angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
+            //float angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
 
             float fTime = 0;
             float oldx = 0;
