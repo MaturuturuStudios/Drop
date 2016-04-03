@@ -136,9 +136,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
         h = Input.GetAxis(Axis.Horizontal);
         v = Input.GetAxis(Axis.Vertical);
 
-        angle = Mathf.Atan2(v, h) * Mathf.Rad2Deg;
+        //angle = Mathf.Atan2(v, h) * Mathf.Rad2Deg;
 
-        Debug.Log(" h " + h + " v " + v);
+        //Debug.Log(" h " + h + " v " + v);
         if (horizontal)
         {        
             oldx = vel.x;
@@ -160,14 +160,23 @@ public class CharacterShootTrajectory : MonoBehaviour {
             }
             else
             {
-               
-                vel.y = oldy;
-                vel.x = oldx;
+                if (vel.y > 0)
+                {
+                    oldy = vel.y;
+                    //oldx = vel.x;
+                    vel.y -= 1f;
+                    vel.x += h;
 
-                
-                Debug.Log(" vely" + vel.y + " velx " + vel.x);
-                //vel.x --;
-                //vel.y --;
+
+                    Debug.Log(" vely" + vel.y + " velx " + vel.x);
+                    //vel.x --;
+                    //vel.y --;
+                }
+                else
+                {
+                    vel.y = oldy;
+                    vel.x = oldx;
+                }
             }
 
             
@@ -266,7 +275,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         {
             horizontal = true;
 
-            //float angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
+             angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
 
             float fTime = 0;
             float oldx = 0;
