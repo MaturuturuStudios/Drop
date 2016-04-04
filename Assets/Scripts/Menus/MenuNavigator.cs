@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Control the flow between menus and specials action taken between thems
@@ -58,8 +59,18 @@ public class MenuNavigator : MonoBehaviour {
     /// A gameobject acting as a background for all menus
     /// </summary>
     public GameObject background;
+    /// <summary>
+    /// Canvas with the menus
+    /// </summary>
 	public CanvasGroup uiCanvasGroup;
+    /// <summary>
+    /// Canvas with the confirmation quit
+    /// </summary>
 	public CanvasGroup confirmQuit;
+    /// <summary>
+    /// The option from quit confirmation that should be the default option
+    /// </summary>
+    public GameObject confirmQuitDefault;
 
     /// <summary>
     /// Main menu
@@ -96,6 +107,10 @@ public class MenuNavigator : MonoBehaviour {
     /// Variable to know if I have to open a menu
     /// </summary>
     private Menu openMenu;
+    /// <summary>
+    /// Control if I have to select a default option (confirmation quit)
+    /// </summary>
+    private bool _selectOption;
     #endregion
 
     #region Methods
@@ -105,7 +120,7 @@ public class MenuNavigator : MonoBehaviour {
         if (startWithMenu != Menu.NONE) {
             OpenMenu(startWithMenu);
         }
-        DoConfirmQuitNo ();
+        DoConfirmQuitNo();
 
         //get the fading
         _fading = GetComponent<SceneFadeInOut>();
@@ -119,6 +134,14 @@ public class MenuNavigator : MonoBehaviour {
             OpenMenu(openMenu);
             openMenu = Menu.NONE;
         }
+
+        //if we have to select the option...
+        //if (_selectOption) {
+        //    //only once!
+        //    _selectOption = false;
+        //    //select the option
+        //    EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
+        //}
     }
 
     /// <summary>
@@ -203,6 +226,9 @@ public class MenuNavigator : MonoBehaviour {
         }
         //disable background
         background.SetActive(false);
+
+        //make sure to quit the confirmation
+        DoConfirmQuitNo();
     }
 
     /// <summary>
@@ -211,6 +237,8 @@ public class MenuNavigator : MonoBehaviour {
     /// </summary>
     public void ComeBack() {
         StartCoroutine(ComeBackWait());
+        //make sure to quit the confirmation
+        DoConfirmQuitNo();
     }
 
     
@@ -328,6 +356,12 @@ public class MenuNavigator : MonoBehaviour {
         confirmQuit.alpha = 1;
         confirmQuit.interactable = true;
         confirmQuit.blocksRaycasts = true;
+
+
+        //set selected option by default NO
+        //select the option
+        _selectOption = true;
+        EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
     }
 
 

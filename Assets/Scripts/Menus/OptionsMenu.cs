@@ -39,11 +39,17 @@ public class OptionsMenu : MonoBehaviour {
     /// Control if I have to select a default option
     /// </summary>
     private bool _selectOption;
+    /// <summary>
+	/// Menu navigator
+	/// </summary>
+	private MenuNavigator _menuNavigator;
     #endregion
 
     #region Methods
     public void Awake() {
         _actualPanel = graphics;
+        _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
+            .GetComponent<MenuNavigator>();
     }
 
     public void OnEnable() {
@@ -59,7 +65,19 @@ public class OptionsMenu : MonoBehaviour {
             //select the option
             EventSystem.current.SetSelectedGameObject(firstSelected);
         }
-			
+
+        //B
+        if (Input.GetButtonDown(Axis.Irrigate))
+            _menuNavigator.ComeBack();
+
+        //return
+        if (Input.GetButtonDown(Axis.Back))
+            _menuNavigator.ComeBack();
+
+        //start
+        if (Input.GetButtonDown(Axis.Start))
+            _menuNavigator.ComeBack();
+
     }
 
 
@@ -68,7 +86,7 @@ public class OptionsMenu : MonoBehaviour {
     /// <summary>
     /// Change to graphics option
     /// </summary>
-    public void Graphics() {
+    public void GraphicsOption() {
         ChangePanel(graphics);
     }
 
@@ -82,21 +100,21 @@ public class OptionsMenu : MonoBehaviour {
     /// <summary>
     /// change to input options
     /// </summary>
-    public void Input() {
+    public void InputOption() {
         ChangePanel(input);
     }
 
     /// <summary>
     /// change to language options
     /// </summary>
-    public void Language() {
+    public void LanguageOption() {
         ChangePanel(language);
     }
 
     /// <summary>
     /// change to help options
     /// </summary>
-    public void Help() {
+    public void HelpOption() {
         ChangePanel(help);
     }
 
