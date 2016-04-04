@@ -68,7 +68,7 @@ public class CharacterShoot : MonoBehaviour {
     }
 
     public void Aim(){
-        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<9) )
+        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<10) )
         {
             if (shootmode == false)
             {
