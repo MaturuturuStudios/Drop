@@ -22,10 +22,6 @@ public class GameEndController : MonoBehaviour {
         //Displayed phrase
         public string phrase = "Level Complete!";
     }
-    /// <summary>
-    ///time elapsed since trigger called
-    /// </summary>
-    private float _timeElapsed = 0F;
     
     /// <summary>
     ///On trigger enter control
@@ -68,15 +64,11 @@ public class GameEndController : MonoBehaviour {
 	void Update () {
 		//if the scene is ended
 	    if (end){
-            //Wait time
-            _timeElapsed += Time.deltaTime;
-
-            //Load Menu
-            if (_timeElapsed > endGame.waitTime) {
-                MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
+            //get the navigator
+            MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
                                      .GetComponent<MenuNavigator>();
-                _menuNavigator.ChangeScene("StartScene");
-            }
+            //wait before starting the change
+            _menuNavigator.ChangeScene("StartScene", endGame.waitTime);
         }
     }
 

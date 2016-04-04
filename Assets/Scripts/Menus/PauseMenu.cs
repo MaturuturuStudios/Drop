@@ -57,7 +57,9 @@ public class PauseMenu : MonoBehaviour {
     /// </summary>
     public void ReturnToMainMenu() {
         //TODO: need to control other actions as save game, quit the actual scene...
-        //this script or menuNavigator?
+        //stop the player!
+        StopPlayer();
+
         //unpause just in case
         _menuNavigator.PauseGame(false);
         _menuNavigator.MainMenu();
@@ -75,6 +77,8 @@ public class PauseMenu : MonoBehaviour {
     /// </summary>
     public void RestartLevel() {
         //TODO: avoid input game and another triggers like win game, attack...
+        StopPlayer();
+
         _menuNavigator.PauseGame(false);
         _menuNavigator.ChangeScene(SceneManager.GetActiveScene().name);
     }
@@ -99,5 +103,15 @@ public class PauseMenu : MonoBehaviour {
     public void ExitGame() {
         _menuNavigator.ExitGame();
     }
+
+    #region Private Methods
+    private void StopPlayer() {
+        GameObject currentCharacter = FindObjectOfType<GameControllerIndependentControl>().currentCharacter;
+        CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+        //Stop player
+        cccp.Stop(true);
+        cccp.enabled = false;
+    }
+    #endregion
     #endregion
 }
