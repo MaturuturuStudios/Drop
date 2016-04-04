@@ -158,8 +158,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         {
             if (correcting)
             {
-                vel.x = 2;
-                vel.y = 2;
+                vel.x = oldshootlimit;
+                vel.y = oldshootlimit;
                 correcting = false;
             }
             else
