@@ -13,6 +13,10 @@ public class SceneFadeInOut : MonoBehaviour {
     /// </summary>
     public float delayStartChangeSeconds = 1.0f;
     /// <summary>
+    /// Wait this seconds before starting with the fading
+    /// </summary>
+    public float delayEndChangeSeconds = 0f;
+    /// <summary>
     /// the texture that will overlay the screen. This can be a black image or a loading graphic
     /// </summary>
     public Texture2D fadeOutTexture;
@@ -73,11 +77,23 @@ public class SceneFadeInOut : MonoBehaviour {
     }
 
     /// <summary>
-    /// Change to the next scene with a fading
+    /// Change to the next scene with a fading. This is the method that should be called
     /// </summary>
     /// <param name="nameScene">The name of the next scene</param>
-    public void ChangeScene(string nameScene) {
-        StartCoroutine(NextScene(nameScene));
+    /// <param name="delayStart">Delay should wait before starting. By default -1 that means the public attribute delayStartChangeSeconds
+    /// on this script will be used</param>
+    /// /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the public attribute delaySEndChangeSeconds
+    /// on this script will be used</param>
+    public void ChangeScene(string nameScene, float delayStart=-1, float delayEnd=-1) {
+        if (delayStart <= -1) {
+            delayStart = delayStartChangeSeconds;
+        }
+
+        if (delayEnd <= -1) {
+            delayEnd = delayEndChangeSeconds;
+        }
+
+        StartCoroutine(NextScene(nameScene, delayStart, delayEnd));
     }
     #endregion
 
@@ -87,13 +103,16 @@ public class SceneFadeInOut : MonoBehaviour {
     /// Wait few seconds before starting the fade between actual scene and next scene
     /// </summary>
     /// <param name="nameScene">Next scene</param>
+    /// <param name="delayStart">Wait before starting</param>
+    /// <param name="delayEnd">Wait after ending</param>
     /// <returns></returns>
-    private IEnumerator NextScene(string nameScene) {
-        yield return MenuNavigator.WaitForRealSeconds(delayStartChangeSeconds);
+    private IEnumerator NextScene(string nameScene, float delayStart, float delayEnd) {
+        yield return MenuNavigator.WaitForRealSeconds(delayStart);
 
         float fadeTime = BeginFade(1);
         yield return MenuNavigator.WaitForRealSeconds(fadeTime);
 
+        yield return MenuNavigator.WaitForRealSeconds(delayEnd);
         SceneManager.LoadScene(nameScene, LoadSceneMode.Single);
     }
     #endregion

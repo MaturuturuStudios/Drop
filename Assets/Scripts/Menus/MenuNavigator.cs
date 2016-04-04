@@ -107,10 +107,6 @@ public class MenuNavigator : MonoBehaviour {
     /// Variable to know if I have to open a menu
     /// </summary>
     private Menu openMenu;
-    /// <summary>
-    /// Control if I have to select a default option (confirmation quit)
-    /// </summary>
-    private bool _selectOption;
     #endregion
 
     #region Methods
@@ -124,8 +120,6 @@ public class MenuNavigator : MonoBehaviour {
 
         //get the fading
         _fading = GetComponent<SceneFadeInOut>();
-
-
     }
 
     public void Update() {
@@ -134,14 +128,6 @@ public class MenuNavigator : MonoBehaviour {
             OpenMenu(openMenu);
             openMenu = Menu.NONE;
         }
-
-        //if we have to select the option...
-        //if (_selectOption) {
-        //    //only once!
-        //    _selectOption = false;
-        //    //select the option
-        //    EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
-        //}
     }
 
     /// <summary>
@@ -240,15 +226,15 @@ public class MenuNavigator : MonoBehaviour {
         //make sure to quit the confirmation
         DoConfirmQuitNo();
     }
-
     
-
     /// <summary>
     /// Change the scene with fading
     /// </summary>
     /// <param name="nameScene">The next scene</param>
-    public void ChangeScene(string nameScene) {
-        _fading.ChangeScene(nameScene);
+    /// <param name="delayStart">Delay should wait before starting. By default -1 that means the default will be used</param>
+    /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the default will be used</param>
+    public void ChangeScene(string nameScene, float delayStart = -1, float delayEnd = -1) {
+        _fading.ChangeScene(nameScene, delayStart, delayEnd);
     }
 
     /// <summary>
@@ -359,12 +345,9 @@ public class MenuNavigator : MonoBehaviour {
 
 
         //set selected option by default NO
-        //select the option
-        _selectOption = true;
         EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
     }
-
-
+    
     #endregion
 
     #region Other Methods
