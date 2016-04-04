@@ -127,8 +127,12 @@ public class CharacterShootTrajectory : MonoBehaviour {
             oldshootlimit = shootlimiet;
             ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
             shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-            if(oldshootlimit>shootlimiet)
+            Debug.Log(" LIMITE " + shootlimiet);
+            if (oldshootlimit > shootlimiet)
+            {
                 correcting = true;
+                shootlimiet += 3;
+            }
             selecting = false;
 
         }
@@ -161,7 +165,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             else
             {
                // if (vel.x < 0) vel.x = vel.x * -1;
-                Debug.Log(" vely" + vel.y + " velx " + vel.x);
+               // Debug.Log(" vely" + vel.y + " velx " + vel.x);
 
                 if (vel.x>0)
                 {
