@@ -160,6 +160,20 @@ public class CharacterShootTrajectory : MonoBehaviour {
             }
             else
             {
+                if (vel.x>0)
+                {
+                    oldx = vel.x;
+                    //oldx = vel.x;
+                    vel.x -= 1f;
+                    vel.y += v;
+
+                }
+                else
+                {
+                    vel.y = oldy;
+                    vel.x = oldx;
+                }             
+
                 if (vel.y > 0)
                 {
                     oldy = vel.y;
@@ -168,7 +182,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
                     vel.x += h;
 
 
-                    Debug.Log(" vely" + vel.y + " velx " + vel.x);
+                   // Debug.Log(" vely" + vel.y + " velx " + vel.x);
                     //vel.x --;
                     //vel.y --;
                 }
@@ -177,6 +191,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
                     vel.y = oldy;
                     vel.x = oldx;
                 }
+
             }
 
             
