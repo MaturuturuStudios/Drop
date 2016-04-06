@@ -14,7 +14,7 @@ public class JumpMushroom : MonoBehaviour{
 
     public bool KeepVerticalSpeed = true;
     public bool lostcontrol = true;
-    public bool temporaly=true;
+    public bool temporaly=true,lastvelocity=false;
     public float time=0.1f;
     private float velocity,vel;
     private float height;
@@ -59,29 +59,30 @@ public class JumpMushroom : MonoBehaviour{
        // CharacterControllerCustom  parameters = other.gameObject.GetComponent<CharacterControllerCustom>();
 
         if ((cccp != null)) {
-            
-                //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
 
- 
-                velo = cccp.GetComponent<CharacterControllerCustom>().Velocity;
+            //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
+
+            
+                velo = ccc.GetComponent<CharacterControllerCustom>().LastFrameVelocity;
                 vel = Vector3.Magnitude(Vector3.Project(velo, transform.up));
                  
-               // cccp.gameObject.GetComponent<CharacterControllerCustom>().Stop();
+                cccp.gameObject.GetComponent<CharacterControllerCustom>().Stop();
 
                 
                 height = (vel * vel) / (2 * parameters.Gravity.magnitude);
 
-                Debug.Log("VELOCITY "+vel);
+                Debug.Log(" vector " +velo+"VELOCITY "+vel+ " altura " +height);
                 
-
+                
 
                 if (height < minheight) height = minheight;
                 if (height > maxheight) height = maxheight;
 
+                Debug.Log( " altura " +maxheight);
                 
                 //velocidad = Mathf.Sqrt(2 * velo.y  * maxheight);  to ricochet
 
-                velocity = Mathf.Sqrt(2 * parameters.Gravity.magnitude  * height);
+                velocity = Mathf.Sqrt(2 * parameters.Gravity.magnitude  * (height));
 
                 if (KeepVerticalSpeed == true)
                 {
@@ -116,7 +117,8 @@ public class JumpMushroom : MonoBehaviour{
 		// Draws the box
 		Gizmos.color = color;
 		Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.DrawWireCube(new Vector3(0, minheight + height / 2, 0f), new Vector3(collider.size.x, height, 0.5f));
+        Gizmos.DrawWireCube(new Vector3(0, minheight + height/2, 0f), new Vector3(collider.size.x, height
+            , 0.5f));
 
        
     }
