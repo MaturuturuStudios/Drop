@@ -40,11 +40,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public Vector3 Velocity { get { return _velocity; } }
 
 	/// <summary>
-	/// The velocity of the Character on te previous frame.
-	/// </summary>
-	public Vector3 LastFrameVelocity { get; private set; }
-
-	/// <summary>
 	/// List of the colliders which this controller collided with on the last frame.
 	/// </summary>
 	public List<Collider> Collisions { get { return _collisions; } }
@@ -509,13 +504,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 	#endregion
 
 	/// <summary>
-	/// Unity's method called each frame.
-	/// Moves the character according to it's velocity
+	/// Unity's method called each fixed step.
+	/// Moves the character according to it's velocity.
 	/// </summary>
-	public void Update() {
+	public void FixedUpdate() {
 		// Decreases the timers
-		_jumpingTime -= Time.deltaTime;
-		_flyingTime -= Time.deltaTime;
+		_jumpingTime -= Time.fixedDeltaTime;
+		_flyingTime -= Time.fixedDeltaTime;
 
 		// If the flying timer has expired, stops the flight
 		if (_flyingTime < 0)
@@ -525,14 +520,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 		float dragFactor = 1;
 		if (State.IsSliding)
 			dragFactor -= Parameters.slidingDragFactor / Mathf.Sqrt(GetSize());
-		_velocity += Parameters.Gravity * Time.deltaTime * dragFactor;
+		_velocity += Parameters.Gravity * Time.fixedDeltaTime * dragFactor;
 
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
 
-		// Tries the movement of the entity according to it's velocity
-		LastFrameVelocity = Velocity;
-		Move(Velocity * Time.deltaTime);
+		// Tries the movement of the entity according to it's 
+		if (!State.HasCollisions)
+			State.BeforeCollisionsVelocity = Velocity;
+		Move(Velocity * Time.fixedDeltaTime);
 	}
 
 	#region Movement Methods
@@ -553,7 +549,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 				_transform.Translate(moveDistance, Space.World);
 
 			// Saves the velocity of the platform
-			State.PlatformVelocity = moveDistance / Time.deltaTime;
+			State.PlatformVelocity = moveDistance / Time.fixedDeltaTime;
 		}
 		else {
 			// Resets the velocity of the platform
