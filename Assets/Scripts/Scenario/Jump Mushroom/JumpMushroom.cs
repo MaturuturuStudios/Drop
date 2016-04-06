@@ -8,6 +8,7 @@ public class JumpMushroom : MonoBehaviour{
 	
     public bool lostcontrol = true;
     public bool temporaly = true;
+    public bool KeepVerticalSpeed = false;
     public float time = 0.1f;
 	
     public void OnTriggerEnter(Collider other) {
@@ -31,9 +32,17 @@ public class JumpMushroom : MonoBehaviour{
 				height = maxheight;
 
 			speed = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * height);
-			Vector3 velocity = transform.up * speed;
+			
 
-			if (lostcontrol == true) {
+            if (KeepVerticalSpeed == true)
+            {
+                speed += Vector3.Magnitude(Vector3.Project(ccc.Velocity, transform.right));
+
+            }
+
+            Vector3 velocity = transform.up * speed;
+
+            if (lostcontrol == true) {
                 if(time == 0.0f)
                     ccc.SendFlying(velocity);
                 else
