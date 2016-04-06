@@ -43,6 +43,7 @@ public class JumpMushroom : MonoBehaviour{
 
         // Sets the center of the collider
         // _collider.center = new Vector3(0, length / 4, 0);
+        
 
     }
     public void OnTriggerEnter(Collider other) {
@@ -62,10 +63,12 @@ public class JumpMushroom : MonoBehaviour{
 
             //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
 
-            
+            if (lastvelocity == false)
+            {
                 velo = ccc.GetComponent<CharacterControllerCustom>().LastFrameVelocity;
                 vel = Vector3.Magnitude(Vector3.Project(velo, transform.up));
-                 
+                lastvelocity = true;
+            }
                 cccp.gameObject.GetComponent<CharacterControllerCustom>().Stop();
 
                 
@@ -78,7 +81,7 @@ public class JumpMushroom : MonoBehaviour{
                 if (height < minheight) height = minheight;
                 if (height > maxheight) height = maxheight;
 
-                Debug.Log( " altura " +maxheight);
+               
                 
                 //velocidad = Mathf.Sqrt(2 * velo.y  * maxheight);  to ricochet
 
@@ -105,7 +108,7 @@ public class JumpMushroom : MonoBehaviour{
         
     }
     public void OnTriggerExit(Collider other) {
-        
+        lastvelocity = false;
     }
 
     public void OnDrawGizmos() {
