@@ -5,11 +5,15 @@ public class JumpMushroom : MonoBehaviour{
     
     public float minheight = 1.0f;
     public float maxheight = 10.0f;
-	
+    private float minheightvelocity;
+    private float maxheightvelocity;
+
     public bool lostcontrol = true;
     public bool temporaly = true;
     public bool KeepVerticalSpeed = false;
     public float time = 0.1f;
+    
+    private float speed;
 	
     public void OnTriggerEnter(Collider other) {
 
@@ -21,25 +25,31 @@ public class JumpMushroom : MonoBehaviour{
 		
         CharacterControllerCustom ccc = other.gameObject.GetComponent<CharacterControllerCustom>();
         if (ccc != null) {
-			float speed = Vector3.Project(ccc.State.BeforeCollisionsVelocity, transform.up).magnitude;
-			Debug.Log(speed);
+            speed = Vector3.Project(ccc.State.BeforeCollisionsVelocity, transform.up).magnitude;
+            
 
-			float height = (speed * speed) / (2 * ccc.Parameters.Gravity.magnitude);
+            //float height = (speed * speed) / (2 * ccc.Parameters.Gravity.magnitude);
+            //speed = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * height);
 
-			if (height < minheight)
-				height = minheight;
-			if (height > maxheight)
-				height = maxheight;
+            Debug.Log(" speed "+speed);
 
-			speed = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * height);
-			
+            minheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * minheight);
+            maxheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * maxheight);
+
+            Debug.Log( " min "+minheightvelocity);
+            Debug.Log(" max "+maxheightvelocity);
+
+            if (speed < minheightvelocity)
+				speed = minheightvelocity;
+			if (speed > maxheightvelocity)
+				speed = maxheightvelocity;
 
             if (KeepVerticalSpeed == true)
             {
                 speed += Vector3.Magnitude(Vector3.Project(ccc.Velocity, transform.right));
 
             }
-
+  
             Vector3 velocity = transform.up * speed;
 
             if (lostcontrol == true) {
@@ -52,6 +62,11 @@ public class JumpMushroom : MonoBehaviour{
                 ccc.AddForce(velocity, ForceMode.VelocityChange);
             }
         }
+    }
+
+    public void OnTriggerExit()
+    {
+
     }
 
     public void OnDrawGizmos() {
