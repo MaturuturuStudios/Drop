@@ -158,8 +158,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
         {
             if (correcting)
             {
-                vel.x = oldshootlimit;
-                vel.y = oldshootlimit;
+                vel.x = shootlimiet;
+                vel.y = shootlimiet;
+                Debug.Log(" vely" + vel.y + " velx " + vel.x);
                 correcting = false;
             }
             else
@@ -169,20 +170,20 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
                 if (vel.x > 0)
                 {
-                    vel.x -=0.2f;
-                    vel.y -= 0.2f;
+                    vel.x -=0.3f;
+                    vel.y -= 0.3f;
                     //Debug.Log(" vely" + vel.y + " VELX " + vel.x);
                 }
                 else if (vel.x < 0)
                 {
-                    vel.x += 0.2f;
-                    vel.y -= 0.2f;
-                    //Debug.Log(" vely" + vel.y + " velx " + vel.x);
+                    vel.x += 0.3f;
+                    vel.y -= 0.3f;
+                   // Debug.Log(" vely" + vel.y + " velx " + vel.x);
                 }
 
                 if (vel.y < -20) vel.y =0;
 
-                //Debug.Log(" vely" + vel.y + " velx " + vel.x + " V " +v);
+               // Debug.Log(" vely" + vel.y + " velx " + vel.x + " V " +v);
             }
 
             
