@@ -392,8 +392,8 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
     /// <param name="isLocked">If true lock and hide the cursor</param>
     private void setCursorLock(bool isLocked) {
         this.isLocked = isLocked;
-        Cursor.lockState = (isLocked)? CursorLockMode.Locked:CursorLockMode.None;
-        Cursor.visible = !isLocked;
+        //Cursor.lockState = (isLocked)? CursorLockMode.Locked:CursorLockMode.None;
+        //Cursor.visible = !isLocked;
     }
 
     /// <summary>
