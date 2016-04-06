@@ -35,13 +35,7 @@ public class JumpMushroom : MonoBehaviour{
 
     // Update is called once per frame
     void Update() {
-        //FacingDirection = new Vector3(transform.position.x, transform.position.y, 0).normalized;
-        FacingDirection = (transform.rotation * FacingDirection);
-
-        // _collider.size = new Vector3(width / 2, maxheight / 2, 0.5f);
-
-        // Sets the center of the collider
-        // _collider.center = new Vector3(0, length / 4, 0);
+        //FacingDirection = (transform.rotation * FacingDirection);
 
     }
     public void OnTriggerEnter(Collider other) {
@@ -117,5 +111,7 @@ public class JumpMushroom : MonoBehaviour{
 		Gizmos.color = color;
 		Gizmos.matrix = transform.localToWorldMatrix;
         Gizmos.DrawWireCube(new Vector3(0, minheight + height / 2, 0f), new Vector3(collider.size.x, height, 0.5f));
+
+       
     }
 }
