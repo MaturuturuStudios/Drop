@@ -171,18 +171,18 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 {
                     oldx = vel.x;
                     oldy = vel.y;
-                    //oldx = vel.x;
-                    vel.x -= 1f;
-                    vel.y += v;
+                    vel.x -= 0.3f;
+                    vel.y += v * Time.deltaTime;
+                    
 
                 }
                 else if (vel.x < 0)
                 {
                     oldx = vel.x;
                     oldy = vel.y;
-                    //oldx = vel.x;
-                    vel.x += 1f;
-                    vel.y += v;
+                    vel.x += 0.3f;
+                    vel.y += v * Time.deltaTime;
+                   
 
 
                 }
@@ -190,13 +190,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 {
                     oldy = vel.y;
                     oldx = vel.x;
-                    vel.y -= 1f;
-                    vel.x += h;
+                    vel.y -= 0.3f;
+                    vel.x += h * Time.deltaTime;
+                 
 
-
-                   
-                    //vel.x --;
-                    //vel.y --;
                 }
                 
 
