@@ -27,6 +27,7 @@ public class JumpMushroom : MonoBehaviour{
     public void Awake() {
         
         FacingDirection = Vector3.up;
+        
         _collider = gameObject.GetComponent<BoxCollider>();
         velo.x = 0;
         velo.z = 0;
@@ -35,7 +36,13 @@ public class JumpMushroom : MonoBehaviour{
 
     // Update is called once per frame
     void Update() {
-        //FacingDirection = (transform.rotation * FacingDirection);
+        //FacingDirection = new Vector3(transform.position.x, transform.position.y, 0).normalized;
+        // FacingDirection = (transform.rotation * FacingDirection);
+        FacingDirection = (transform.rotation * FacingDirection);
+        // _collider.size = new Vector3(width / 2, maxheight / 2, 0.5f);
+
+        // Sets the center of the collider
+        // _collider.center = new Vector3(0, length / 4, 0);
 
     }
     public void OnTriggerEnter(Collider other) {
@@ -53,19 +60,18 @@ public class JumpMushroom : MonoBehaviour{
 
         if ((cccp != null)) {
             
-            if ((cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsGrounded == false) || (cccp.gameObject.GetComponent<CharacterControllerCustom>().State.IsFalling == true)){
                 //iff(other.gameObject.GetComponent<CharacterControllerCustomPlayer>().isgrounded==false)
 
  
                 velo = cccp.GetComponent<CharacterControllerCustom>().Velocity;
                 vel = Vector3.Magnitude(Vector3.Project(velo, transform.up));
                  
-                cccp.gameObject.GetComponent<CharacterControllerCustom>().Stop();
+               // cccp.gameObject.GetComponent<CharacterControllerCustom>().Stop();
 
                 
                 height = (vel * vel) / (2 * parameters.Gravity.magnitude);
 
-                //Debug.Log("VELOCITY "+vel);
+                Debug.Log("VELOCITY "+vel);
                 
 
 
@@ -95,7 +101,7 @@ public class JumpMushroom : MonoBehaviour{
                 }
             }
             
-        }
+        
     }
     public void OnTriggerExit(Collider other) {
         
