@@ -40,6 +40,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public Vector3 Velocity { get { return _velocity; } }
 
 	/// <summary>
+	/// The velocity of the Character on te previous frame.
+	/// </summary>
+	public Vector3 LastFrameVelocity { get; private set; }
+
+	/// <summary>
 	/// List of the colliders which this controller collided with on the last frame.
 	/// </summary>
 	public List<Collider> Collisions { get { return _collisions; } }
@@ -526,6 +531,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		HandleMovingPlatforms();
 
 		// Tries the movement of the entity according to it's velocity
+		LastFrameVelocity = Velocity;
 		Move(Velocity * Time.deltaTime);
 	}
 
