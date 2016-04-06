@@ -150,8 +150,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             vel.x += h;
             vel.y += v;
-
-           // Debug.Log(" h " + h + " v " + v);
+            //Debug.Log(" vely" + vel.y + " velx " + vel.x);
+             //Debug.Log(" h " + h + " v " + v);
 
         }
         else if(horizontal== false)
@@ -164,39 +164,25 @@ public class CharacterShootTrajectory : MonoBehaviour {
             }
             else
             {
-               // if (vel.x < 0) vel.x = vel.x * -1;
-               // Debug.Log(" vely" + vel.y + " velx " + vel.x);
+                // if (vel.x < 0) vel.x = vel.x * -1;
+                
 
-                if (vel.x>0)
+                if (vel.x > 0)
                 {
-                    oldx = vel.x;
-                    oldy = vel.y;
-                    vel.x -= 0.3f;
-                    vel.y += v * Time.deltaTime;
-                    
-
+                    vel.x -=0.2f;
+                    vel.y -= 0.2f;
+                    //Debug.Log(" vely" + vel.y + " VELX " + vel.x);
                 }
                 else if (vel.x < 0)
                 {
-                    oldx = vel.x;
-                    oldy = vel.y;
-                    vel.x += 0.3f;
-                    vel.y += v * Time.deltaTime;
-                   
-
-
+                    vel.x += 0.2f;
+                    vel.y -= 0.2f;
+                    //Debug.Log(" vely" + vel.y + " velx " + vel.x);
                 }
-                if (vel.y>0 )
-                {
-                    oldy = vel.y;
-                    oldx = vel.x;
-                    vel.y -= 0.3f;
-                    vel.x += h * Time.deltaTime;
-                 
 
-                }
-                
+                if (vel.y < -20) vel.y =0;
 
+                //Debug.Log(" vely" + vel.y + " velx " + vel.x + " V " +v);
             }
 
             
