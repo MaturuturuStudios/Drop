@@ -44,6 +44,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	public List<Collider> Collisions { get { return _collisions; } }
 
+	/// <summary>
+	/// The velocity the character had just before a collision.
+	/// </summary>
+	public Vector3 BeforeCollisionVelocity { get; private set; }
+
 	#endregion
 
 	#region Backing Fields
@@ -525,9 +530,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
 
-		// Tries the movement of the entity according to it's 
-		if (!State.HasCollisions)
-			State.BeforeCollisionsVelocity = Velocity;
+		// Tries the movement of the entity according to it's velocity
 		Move(Velocity * Time.fixedDeltaTime);
 	}
 
@@ -586,7 +589,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Do the actual movement
 		_controller.Move(movement);
-		Debug.DrawRay(_transform.position, movement, Color.red);
 
 		// If the Z coordinate is clamped, resets it to zero
 		if (Parameters.zClamp) {
@@ -627,6 +629,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		Vector3 normal = hit.normal;
 		if (hit.collider is SphereCollider)
 			normal = -hit.normal;
+
+		// Saves the velocity of the character
+		BeforeCollisionVelocity = Velocity;
 
 		// Before modifying the velocity, applies force to the other object if it allows it
 		Rigidbody otherRigidbody = hit.collider.attachedRigidbody;
@@ -681,6 +686,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 				State.IsOnSlope = false;
 			}
 		}
+
+		// Calls the special method on the collided object
+		hit.gameObject.SendMessage("OnCustomControllerCollision", hit, SendMessageOptions.DontRequireReceiver);
 	}
 
 	#endregion

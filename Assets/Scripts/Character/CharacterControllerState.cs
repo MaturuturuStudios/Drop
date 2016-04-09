@@ -15,12 +15,6 @@ public class CharacterControllerState {
 	public bool HasCollisions { get; set; }
 
 	/// <summary>
-	/// The velocity of the character on the last frame id didn't
-	/// collide with anything.
-	/// </summary>
-	public Vector3 BeforeCollisionsVelocity { get; set; }
-
-	/// <summary>
 	/// If the character was grounded at the end of the last frame.
 	/// </summary>
 	public bool IsGrounded { get; set; }
@@ -88,7 +82,6 @@ public class CharacterControllerState {
 	override public String ToString() {
 		StringBuilder sb = new StringBuilder();
 		sb.Append("Has Collisions: ").Append(HasCollisions).Append("\n");
-		sb.Append("B.C. Velocity: ").Append(BeforeCollisionsVelocity).Append("\n");
 		sb.Append("Is Grounded: ").Append(IsGrounded).Append("\n");
 		sb.Append("Is Falling: ").Append(IsFalling).Append("\n");
 		sb.Append("Is Flying: ").Append(IsFlying).Append("\n");
