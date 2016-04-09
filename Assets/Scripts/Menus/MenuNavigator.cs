@@ -148,7 +148,6 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
             GameObject actualSelected = EventSystem.current.currentSelectedGameObject;
 
             if (actualSelected == null) {
-                Debug.Log("Reselecting input");
                 EventSystem.current.SetSelectedGameObject(selected);
             } else if (actualSelected != selected) {
                 selected = actualSelected;
@@ -296,8 +295,6 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
 	/// Called if clicked on No (confirmation)
 	/// </summary>
 	public void DoConfirmQuitNo() {
-        Debug.Log("Back to the game");
-
         //enable the normal ui
         uiCanvasGroup.alpha = 1;
         uiCanvasGroup.interactable = true;
@@ -318,7 +315,6 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
     /// Called if clicked on Yes (confirmation)
     /// </summary>
     public void DoConfirmQuitYes() {
-        Debug.Log("Ok bye bye");
         Application.Quit();
     }
 
@@ -357,8 +353,6 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
     /// TODO: needs a confirmation and probably more actions to close it correctly
     /// </summary>
     public void ExitGame() {
-        Debug.Log("Check form quit confirmation");
-
         //reduce the visibility of normal UI, and disable all interraction
         uiCanvasGroup.alpha = 0.3f;
         uiCanvasGroup.interactable = false;

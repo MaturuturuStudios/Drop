@@ -328,7 +328,6 @@ public class CharacterSize : MonoBehaviour {
         int finalSize = setMaximumSize(newScale, _dropTransform.position + offsetCenter);
         //calculate the extra drop I have to spit
         int numberDropsRemain = _targetSize - finalSize;
-        Debug.Log("Spit " + numberDropsRemain + " out");
 
         //final position for the spitted drop
         float finalRadius = (finalSize + numberDropsRemain) *_ratioRadius;
