@@ -41,8 +41,8 @@ public class JumpMushroom : MonoBehaviour{
 	}
 
 	void OnCustomControllerCollision(ControllerColliderHit hit) {
-		if (hit.collider != jumpCollider)
-			return;
+		//if (hit.collider != jumpCollider)
+			//return;
 
 		CharacterControllerCustom ccc = hit.controller.GetComponent<CharacterControllerCustom>();
 		if (ccc != null) {
