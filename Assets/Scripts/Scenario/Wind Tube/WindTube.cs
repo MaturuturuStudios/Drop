@@ -5,6 +5,7 @@ using System.Collections;
 /// Creates an area where the gravity fill be changed, simulating
 /// a place where the wind pushes the player.
 /// </summary>
+[RequireComponent(typeof(BoxCollider))]
 public class WindTube : MonoBehaviour {
 
 	#region Public Attributes
@@ -12,17 +13,17 @@ public class WindTube : MonoBehaviour {
 	/// <summary>
 	/// Defines the force of the wind.
 	/// </summary>
-	public float windForce = 25;
+	public float windForce = 25.0f;
 
 	/// <summary>
 	/// The width of the area where the wind force is applied.
 	/// </summary>
-	public float width = 1f;
+	public float width = 1.0f;
 
 	/// <summary>
 	/// The height of the area where the wind force is applied.
 	/// </summary>
-	public float length = 5f;
+	public float length = 5.0f;
 
 	/// <summary>
 	/// If enabled, gravity will not affect the entity while floating
@@ -39,12 +40,12 @@ public class WindTube : MonoBehaviour {
 	/// Defines the particle emission rate when the width of the tube
 	/// is 1.
 	/// </summary>
-	public float baseParticleEmissionRate = 25;
+	public float baseParticleEmissionRate = 25.0f;
 
 	/// <summary>
 	/// Defines the particle initial speed when the wind force is 1.
 	/// </summary>
-	public float baseParticleInitialSpeed = 10.0f / 25.0f;
+	public float baseParticleInitialSpeed = 0.4f;
 
 	#endregion
 
@@ -86,14 +87,14 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	public void Update() {
 		// Sets the size of the collider
-		_collider.size = new Vector3(width / 2, length / 2, 0.5f);
+		_collider.size = new Vector3(width, length, 0.5f);
 
 		// Sets the center of the collider
-		_collider.center = new Vector3(0, length / 4, 0);
+		_collider.center = new Vector3(0, length / 2, 0);
 
 		// Modifies the particle system to fit the collider. Modifies the shape
 		ParticleSystem.ShapeModule shape = _particleSystem.shape;
-		shape.box = new Vector3(width, 0.5f, 0);
+		shape.box = new Vector3(width, 0, 0);
 
 		// Modifies the particle velocity
 		_particleSystem.startSpeed = baseParticleInitialSpeed * windForce;
@@ -109,7 +110,6 @@ public class WindTube : MonoBehaviour {
 		rate.constantMax = emissionRate;
 		rate.constantMin = emissionRate;
 		emission.rate = rate;
-
 	}
 
 	/// <summary>
