@@ -6,12 +6,19 @@ public class GameControllerInput : MonoBehaviour {
     // Internal references
     private GameControllerIndependentControl _switcher;
     private MainCameraController _mainCameraController;
+
     //menu navigator of the scene
     private MenuNavigator _ui;
+
     /// <summary>
     /// Control if the trigger is pressed for only call change drop one time
     /// </summary>
     private bool _triggerPressed = false;
+
+    /// <summary>
+    /// Control if the shootCounter is pressed for only call it one time
+    /// </summary>
+    private bool _shootCounterPressed = false;
     #endregion
 
     #region Methods
@@ -80,26 +87,23 @@ public class GameControllerInput : MonoBehaviour {
                 shootComponent.Shoot();
             if (Input.GetButtonDown(Axis.ShootMode))
                 shootComponent.Aim();
-            //Added by Robert Size select
-            /*if (Input.GetKeyDown(KeyCode.L))
-                shootComponent.IncreaseSize();
-            if(Input.GetKeyDown(KeyCode.O))
-                shootComponent.DecreaseSize();*/
 
-            if (Input.GetButtonDown(Axis.ShootCounter) && Input.GetAxis(Axis.ShootCounter) > 0)
+            // Control that shootCounter is pressed only one time
+            if (!_shootCounterPressed && Input.GetAxis(Axis.ShootCounter) > 0) {
                 shootComponent.IncreaseSize();
-            if (Input.GetButtonDown(Axis.ShootCounter) && Input.GetAxis(Axis.ShootCounter) < 0)
+                _shootCounterPressed = true;
+            } else if (!_shootCounterPressed && Input.GetAxis(Axis.ShootCounter) < 0) {
                 shootComponent.DecreaseSize();
-
+                _shootCounterPressed = true;
+            } else if (Input.GetAxis(Axis.ShootCounter) == 0)
+                _shootCounterPressed = false;
 
             ///NOT SETTED CONTROLS
             //Shoot mode pointer inputs
             if (Input.GetAxis(Axis.LookAtDir) != 0)
                 Debug.Log(Axis.LookAtDir);
-            if (Input.GetAxis(Axis.ShootCounter) != 0)
-                Debug.Log(Axis.ShootCounter);
 
-            //Sluice action
+            //Irrigate action
             if (Input.GetButtonDown(Axis.Irrigate))
                 Debug.Log(Axis.Irrigate);
 
