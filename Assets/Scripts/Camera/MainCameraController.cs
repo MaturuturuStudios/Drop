@@ -151,12 +151,12 @@ public class MainCameraController : MonoBehaviour {
             if (excededX < bounds.left + aux)
                 excededX = destination.x = bounds.left + aux;
         }
-        if (destination.y < bounds.bottom + aux / 2)
-            excededY = destination.y = bounds.bottom + aux / 2;
+        if (destination.y < bounds.bottom + offset.y + aux / 2)
+            excededY = destination.y = bounds.bottom + offset.y  + aux / 2;
         else if (destination.y > bounds.top - aux / 2) {
             excededY = destination.y = bounds.top - aux / 2;
-            if (excededY < bounds.bottom + aux / 2)
-                excededY = destination.y = bounds.bottom + aux / 2;
+            if (excededY < bounds.bottom + offset.y + aux / 2)
+                excededY = destination.y = bounds.bottom + offset.y + aux / 2;
         }
 
 		//Calculate next position
@@ -177,12 +177,12 @@ public class MainCameraController : MonoBehaviour {
 
         //Add Loook around offset
         destination += _lookArroundOffset;
-
+        
         //If there isn't liberty looking at, block it
         if (lookAt.lookAtFixedOnBounds && excededX != 0) 
             destination.x = excededX;
         if (lookAt.lookAtFixedOnBounds && excededY != 0) 
-            destination.y = excededY;
+            destination.y = excededY - offset.y;
 
 
         //Calculate the look at position of the camera
