@@ -29,11 +29,6 @@ public class GameEndController : MonoBehaviour {
     private bool end = false;
 
     /// <summary>
-    /// Reference to the entity's transform component.
-    /// </summary>
-    private Transform _transform;
-
-    /// <summary>
     /// Reference to the collider where the wind force will be applied.
     /// </summary>
     private BoxCollider _collider;
@@ -46,7 +41,6 @@ public class GameEndController : MonoBehaviour {
     /// </summary>
     public void Awake() {
         // Retrieves the components of the entity.
-        _transform = transform;
         _collider = gameObject.GetComponent<BoxCollider>();
     }
 
