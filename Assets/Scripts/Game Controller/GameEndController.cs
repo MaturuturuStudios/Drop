@@ -108,9 +108,8 @@ public class GameEndController : MonoBehaviour {
 
         // Draws the cube
         Gizmos.matrix = transform.localToWorldMatrix;
-        Vector3 pos = Vector3.up;
-        pos.y -= _collider.size.y;
-        Gizmos.DrawCube(pos , _collider.size);
+        Vector3 pos = Vector3.zero;
+        Gizmos.DrawCube(pos, _collider.size);
     }
     #endregion
 }
