@@ -94,13 +94,13 @@ public class WindTube : MonoBehaviour {
 
 		// Modifies the particle system to fit the collider. Modifies the shape
 		ParticleSystem.ShapeModule shape = _particleSystem.shape;
-		shape.box = new Vector3(width, 0, 0);
+		shape.box = new Vector3(width * _transform.lossyScale.x, 0, 0);
 
 		// Modifies the particle velocity
-		_particleSystem.startSpeed = baseParticleInitialSpeed * windForce;
+		_particleSystem.startSpeed = baseParticleInitialSpeed * windForce * _transform.lossyScale.y;
 
 		// Modifies the particle lifetime according to the velocity and  length
-		_particleSystem.startLifetime = length / _particleSystem.startSpeed;
+		_particleSystem.startLifetime = length * _transform.lossyScale.y / _particleSystem.startSpeed;
 
 		// Modifies the emission rate according to the lifetime and width
 		ParticleSystem.EmissionModule emission = _particleSystem.emission;
