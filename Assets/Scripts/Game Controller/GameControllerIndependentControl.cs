@@ -41,6 +41,11 @@ public class GameControllerIndependentControl : MonoBehaviour {
     void Start() {
 		//Get the mext drop number
         _dropNameCounter = allCurrentCharacters.Count;
+        if (_dropNameCounter == 0 && currentCharacter != null) {
+            allCurrentCharacters.Add(currentCharacter);
+            ++_dropNameCounter;
+        }
+
     }
 
     /// <summary>

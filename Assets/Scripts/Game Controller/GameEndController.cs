@@ -18,7 +18,7 @@ public class GameEndController : MonoBehaviour {
         //wait time showing message untill scene is changed
         public float waitTime = 3F;
         //UI text object reference
-        public Text gameOverText;
+        public Text levelCompleteText;
         //Displayed phrase
         public string phrase = "Level Complete!";
     }
@@ -49,7 +49,7 @@ public class GameEndController : MonoBehaviour {
     /// </summary>
     void Start(){
         //Reset Text
-        endGame.gameOverText.text = "";
+        endGame.levelCompleteText.text = "";
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class GameEndController : MonoBehaviour {
            //currentCharacter.SetActive(false);
 
             //Show message
-            endGame.gameOverText.text = endGame.phrase;
+            endGame.levelCompleteText.text = endGame.phrase;
         }
     }
 
