@@ -2,8 +2,6 @@
 
 public class JumpMushroom : MonoBehaviour{
 
-	public BoxCollider jumpCollider;
-
 	public float minHeight = 1.0f;
 	public float maxHeight = 10.0f;
 
@@ -20,10 +18,10 @@ public class JumpMushroom : MonoBehaviour{
 		_transform = transform;
 	}
 	
-	void OnTriggerEnter(Collider other) {
-		Rigidbody rb = other.attachedRigidbody;
+	void OnCollisionEnter(Collision other) {
+		Rigidbody rb = other.rigidbody;
 		if (rb != null) {
-			float speed = Vector3.Project(rb.velocity, transform.up).magnitude;
+			float speed = Vector3.Project(other.relativeVelocity, transform.up).magnitude;
 
 			float minheightvelocity = Mathf.Sqrt(2 * Physics.gravity.magnitude * minHeight);
 			float maxheightvelocity = Mathf.Sqrt(2 * Physics.gravity.magnitude * maxHeight);
@@ -35,15 +33,12 @@ public class JumpMushroom : MonoBehaviour{
 
 			Vector3 velocity = transform.up * speed;
 			if (keepPerpendicularSpeed)
-				velocity += Vector3.Project(rb.velocity, transform.right);
+				velocity += Vector3.Project(other.relativeVelocity, transform.right);
 			rb.velocity = velocity;
 		}
 	}
 
 	void OnCustomControllerCollision(ControllerColliderHit hit) {
-		//if (hit.collider != jumpCollider)
-			//return;
-
 		CharacterControllerCustom ccc = hit.controller.GetComponent<CharacterControllerCustom>();
 		if (ccc != null) {
 			float speed = Vector3.Project(ccc.BeforeCollisionVelocity, transform.up).magnitude;
@@ -80,6 +75,6 @@ public class JumpMushroom : MonoBehaviour{
 		// Draws the box
 		Gizmos.color = color;
 		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawWireCube(new Vector3(0, minHeight + height / 2, 0f), new Vector3(jumpCollider.size.x, height, 0.5f));
+		Gizmos.DrawWireCube(new Vector3(0, minHeight + height / 2, 0f), new Vector3(GetComponent<BoxCollider>().size.x, height, 0.5f));
 	}
 }
