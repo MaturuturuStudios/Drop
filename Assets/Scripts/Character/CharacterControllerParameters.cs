@@ -252,16 +252,16 @@ public class CharacterControllerParameters {
 		clone.accelerationOnAir = accelerationOnAir;
 		clone.slopeStickiness = slopeStickiness;
 		clone.maxWallSlideAngle = maxWallSlideAngle;
-        clone.slidingDragFactor = slidingDragFactor;
+		clone.slidingDragFactor = slidingDragFactor;
 		clone.angleThereshold = angleThereshold;
-        clone.jumpBehaviour = jumpBehaviour;
+		clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrequency = jumpFrequency;
 		clone.jumpMagnitude = jumpMagnitude;
 		clone.wallJumpHeight = wallJumpHeight;
 		clone.wallJumpDistance = wallJumpDistance;
-        clone.baseMass = baseMass;
+		clone.baseMass = baseMass;
 		clone.useCustomGravity = useCustomGravity;
-        clone.customGravity = customGravity;
+		clone.customGravity = customGravity;
 		clone.maxVelocity = maxVelocity;
 		clone.zClamp = zClamp;
 

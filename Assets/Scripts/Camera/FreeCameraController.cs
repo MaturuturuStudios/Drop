@@ -64,17 +64,17 @@ public class FreeCameraController : MonoBehaviour {
 		_rotationX = 0;
     }
 
-    /// <summary>
-    /// Moves the camera.
-    /// </summary>
-    public void Move(Vector3 movement) {
+	/// <summary>
+	/// Moves the camera.
+	/// </summary>
+	public void Move(Vector3 movement) {
 		_transform.Translate(movement * movementSpeed * Time.deltaTime);
-    }
+	}
 
-    /// <summary>
-    /// Rotates the camera.
-    /// </summary>
-    public void Rotate(Vector3 rotation) {
+	/// <summary>
+	/// Rotates the camera.
+	/// </summary>
+	public void Rotate(Vector3 rotation) {
 		// Inverts the X rotation and scales the Z rotation
 		if (invertVerticalRotation)
 			rotation.x = -rotation.x;
@@ -92,7 +92,7 @@ public class FreeCameraController : MonoBehaviour {
 
 		// Does the actual rotation
 		_transform.localEulerAngles = newRotation;
-    }
+	}
 
 	#endregion
 }

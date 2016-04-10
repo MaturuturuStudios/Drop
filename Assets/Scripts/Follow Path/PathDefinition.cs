@@ -27,14 +27,14 @@ public class PathDefinition : MonoBehaviour {
 	/// <returns>A back and forward path enumerator</returns>
 	public IEnumerator<Transform> GetBackAndForwardEumerator() {
 		// Only one point is required
-        if (points == null || points.Length < 1)
-            yield break;
+		if (points == null || points.Length < 1)
+			yield break;
 
 		bool returning = false;
-        int index = 0;
-        while (true) {
+		int index = 0;
+		while (true) {
 			// Lazy return
-            yield return points[index];
+			yield return points[index];
 
 			// If there is only one point, no further calculations are needed
 			if (points.Length == 1)
@@ -46,7 +46,7 @@ public class PathDefinition : MonoBehaviour {
 				returning = true;
 
 			index += returning ? -1 : 1;
-        }
+		}
 	}
 
 	/// <summary>
@@ -75,14 +75,14 @@ public class PathDefinition : MonoBehaviour {
 	/// Draws the path on the editor.
 	/// </summary>
 	public void OnDrawGizmos() {
-        // At least 2 points are needed to draw a line
-        if (points == null || points.Length < 2)
-            return;
+		// At least 2 points are needed to draw a line
+		if (points == null || points.Length < 2)
+			return;
 
-        for (int i = 1; i < points.Length; i++)
+		for (int i = 1; i < points.Length; i++)
 			if (points[i - 1] != null && points[i] != null)
 				Gizmos.DrawLine(points[i - 1].position, points[i].position);
-    }
+	}
 
 	#endregion
 }

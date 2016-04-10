@@ -31,7 +31,10 @@ public class DebugCameraSwitcher : MonoBehaviour {
 		// Adds the main camera to the list of cameras
 		_cameras = new List<Camera>();
 		Camera mainCamera = FindObjectOfType<MainCameraController>().GetComponent<Camera>();
-        _cameras.Add(mainCamera);
+		if (mainCamera == null)
+			Debug.LogError("Couldn't find a Main Camera Controller!");
+		else
+			_cameras.Add(mainCamera);
 
 		// Adds all the children cameras to the list
 		Camera[] childrenCameras = GetComponentsInChildren<Camera>();
@@ -40,7 +43,7 @@ public class DebugCameraSwitcher : MonoBehaviour {
 
 		// Sets the camera to the default one
 		SetActiveCamera(0);
-    }
+	}
 
 	/// <summary>
 	/// Returns the active camera.
@@ -61,22 +64,22 @@ public class DebugCameraSwitcher : MonoBehaviour {
 	/// <summary>
 	/// Swtiches to the next camera in the list.
 	/// </summary>
-    public void NextCamera()  {
-        if (_cameras.Count > 1) {
-            // Get next index
-            int nextCamera = _currentCameraIndex + 1;
-            if (nextCamera >= _cameras.Count)
-                nextCamera = 0;
+	public void NextCamera()  {
+		if (_cameras.Count > 1) {
+			// Get next index
+			int nextCamera = _currentCameraIndex + 1;
+			if (nextCamera >= _cameras.Count)
+				nextCamera = 0;
 
-            // Switches the camera
-            SetActiveCamera(nextCamera);
-        }
-    }
+			// Switches the camera
+			SetActiveCamera(nextCamera);
+		}
+	}
 
-    /// <summary>
+	/// <summary>
 	/// Switches to the previous camera in the list.
 	/// </summary>
-    public void PreviousCamera() {
+	public void PreviousCamera() {
 		if (_cameras.Count > 1) {
 			// Get previous index
 			int previousCamera = _currentCameraIndex - 1;
@@ -86,7 +89,7 @@ public class DebugCameraSwitcher : MonoBehaviour {
 			// Switches the camera
 			SetActiveCamera(previousCamera);
 		}
-    }
+	}
 
 	/// <summary>
 	/// Switches to the camera on the selected index.
@@ -94,7 +97,7 @@ public class DebugCameraSwitcher : MonoBehaviour {
 	/// <param name="cameraIndex">Index of the camera to switch to</param>
 	public void SetActiveCamera(int cameraIndex) {
 		// Disables all the cameras
-        for (int i = 0; i < _cameras.Count; ++i)
+		for (int i = 0; i < _cameras.Count; ++i)
 			if (i == cameraIndex) {
 				_cameras[i].enabled = true;
 				_cameras[i].gameObject.SetActive(true);

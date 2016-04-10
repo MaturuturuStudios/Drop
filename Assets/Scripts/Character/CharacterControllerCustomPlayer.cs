@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 /// <summary>
 /// Communication point beetween the input system and the character controller.
 /// </summary>
+[RequireComponent(typeof(CharacterControllerCustom))]
 public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 	#region Public Attributes
@@ -189,7 +188,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			// Tricks the controller to think it's still grounded
 			_controller.State.IsGrounded = true;
 			groundTrick = true;
-        }
+		}
 
 		// Makes the character jump
 		if (_jumpPressTime >= 0 && _controller.CanJump()) {

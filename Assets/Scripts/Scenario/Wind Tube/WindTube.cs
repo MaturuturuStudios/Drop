@@ -77,8 +77,11 @@ public class WindTube : MonoBehaviour {
 	public void Awake() {
 		// Retrieves the components of the entity.
 		_transform = transform;
-		_particleSystem = GetComponentInChildren<ParticleSystem>();
 		_collider = gameObject.GetComponent<BoxCollider>();
+
+		_particleSystem = GetComponentInChildren<ParticleSystem>();
+		if (_particleSystem == null)
+			Debug.LogError("Couldn't find children's Particle System!");
 	}
 
 	/// <summary>

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 /// This version uses more information about each ray to
 /// deform the mesh more smartly.
 /// </summary>
+[RequireComponent(typeof(MeshFilter))]
 public class SmarterSphereDeform : MonoBehaviour {
 
 	#region Public Attributes
@@ -169,7 +170,7 @@ public class SmarterSphereDeform : MonoBehaviour {
 
 			// Calculates the deformation weights of the ray
 			_deformationWeights[i] = new float[_originalVertices.Length];
-            for (int j = 0; j < _originalVertices.Length; j++) {
+			for (int j = 0; j < _originalVertices.Length; j++) {
 				// Calculates the distance from the center to the vertex in global coordinates
 				Vector3 distanceToVertex = _originalVertices[j] - center;
 
@@ -178,15 +179,15 @@ public class SmarterSphereDeform : MonoBehaviour {
 				distanceToVertex.z = 0;
 
 				// Checks if the vertex is near the ray using the angle between rays
-                float angle = Vector3.Angle(distanceToVertex, _rayDirections[i]) * Mathf.Deg2Rad;
+				float angle = Vector3.Angle(distanceToVertex, _rayDirections[i]) * Mathf.Deg2Rad;
 				if (Mathf.Abs(angle) <= angleBetweenRays) {
 					// Calculates the weight of the vertex
 					float zFactor = 1 - zDistance / sphereCollider.radius;
-                    _deformationWeights[i][j] = Mathf.Sqrt((1 - angle / angleBetweenRays) * zFactor);
-                }
+					_deformationWeights[i][j] = Mathf.Sqrt((1 - angle / angleBetweenRays) * zFactor);
+				}
 				else
 					_deformationWeights[i][j] = 0;
-            }
+			}
 		}
 	}
 
@@ -211,15 +212,14 @@ public class SmarterSphereDeform : MonoBehaviour {
 				deformations[i] = Vector3.zero;
 				continue;
 			}
-			Debug.DrawRay(center, transformedDirection * rayDistance, Color.blue);
 
 			// Calculates the deformation
 			deformations[i] = transformedDirection * (hitInfo.distance - rayDistance);
-            deformations[i] = Vector3.Project(deformations[i], hitInfo.normal);
+			deformations[i] = Vector3.Project(deformations[i], hitInfo.normal);
 
 			// For each vertex, calculates the chamf deformation to apply
 			DeformChamfVertices(i, deformations[i], ref modifiedVertices);
-        }
+		}
 
 		// For each vertex, calculates the planar deformation to apply
 		for (int i = 0; i < numberOfRays; i++)
@@ -229,7 +229,7 @@ public class SmarterSphereDeform : MonoBehaviour {
 		// Moves the vertices to their desired position
 		Vector3[] newVertices = new Vector3[modifiedVertices.Length];
 		Vector3[] lastFrameVertices = _modifiedMesh.vertices;
-        for (int i = 0; i < newVertices.Length; i++)
+		for (int i = 0; i < newVertices.Length; i++)
 			newVertices[i] = Vector3.Lerp(lastFrameVertices[i], modifiedVertices[i], deformationSpeed * Time.deltaTime);
 
 		// Reassignates the vertices and recalculates the normals of the vertices

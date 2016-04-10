@@ -41,17 +41,17 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	public GameObject cameraPanelPrefab;
 
- 	/// <summary>
-  	/// Reference to the information text component. Configured on the prefab.
-  	/// Should not be modified on the editor.
-  	/// </summary>
- 	public Text generalInformation;
+	/// <summary>
+	/// Reference to the information text component. Configured on the prefab.
+	/// Should not be modified on the editor.
+	/// </summary>
+	public Text generalInformation;
 
-    /// <summary>
-    /// Reference to the information text component. Configured on the prefab.
-    /// Should not be modified on the editor.
-    /// </summary>
-    public Text informationText;
+	/// <summary>
+	/// Reference to the information text component. Configured on the prefab.
+	/// Should not be modified on the editor.
+	/// </summary>
+	public Text informationText;
 
 	/// <summary>
 	/// Reference to the state text component. Configured on the prefab.
@@ -118,21 +118,21 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	private Color _savedCharacterColor;
 
-    /// <summary>
-     /// Delta time used in fps calculation
-     /// </summary>
-     float deltaTime = 0.0f;
-    #endregion
+	/// <summary>
+		/// Delta time used in fps calculation
+		/// </summary>
+		float deltaTime = 0.0f;
+	#endregion
 
-    #region Methods
+	#region Methods
 
-    #region Public GUI Methods
+	#region Public GUI Methods
 
-    /// <summary>
-    /// Toggles the debug mode, which displays important information and
-    /// allows some extra operations.
-    /// </summary>
-    public void ToggleDebugMode() {
+	/// <summary>
+	/// Toggles the debug mode, which displays important information and
+	/// allows some extra operations.
+	/// </summary>
+	public void ToggleDebugMode() {
 		debugMode = !debugMode;
 	}
 
@@ -165,12 +165,18 @@ public class DebugController : MonoBehaviour {
 
 		// Looks for the independent controller component
 		_independentControl = FindObjectOfType<GameControllerIndependentControl>();
+		if (_independentControl == null)
+			Debug.LogError("Could not find a Game Controller Independent Control!");
 
 		// Looks for the input component
 		_input = FindObjectOfType<GameControllerInput>();
+		if (_input == null)
+			Debug.LogError("Could not find a Game Controller Input!");
 
 		// Looks for the camera switcher component
 		_cameraSwitcher = GetComponentInChildren<DebugCameraSwitcher>();
+		if (_input == null)
+			Debug.LogError("Could not children's Debug Camera Switcher!");
 
 		// Initializes the current character
 		_currentCharacter = null;
@@ -185,20 +191,30 @@ public class DebugController : MonoBehaviour {
 			cameraPanel.transform.SetSiblingIndex(i);
 
 			// Sets the event of the button
-			Button cameraButton = cameraPanel.transform.GetComponentInChildren<Button>();
-			int iVal = i;
-			cameraButton.onClick.AddListener(() => { _cameraSwitcher.SetActiveCamera(iVal); });
+			Button cameraButton = cameraPanel.GetComponentInChildren<Button>();
+			if (cameraButton == null)
+				Debug.LogError("Couldn't find Button component on the camera panel for: " + camera.ToString());
+			else {
+				int iVal = i;
+				cameraButton.onClick.AddListener(() => { _cameraSwitcher.SetActiveCamera(iVal); });
+			}
 
 			// Sets the text of the button
 			Text nameText = cameraButton.GetComponentInChildren<Text>();
-			nameText.text = camera.name;
+			if (cameraButton == null)
+				Debug.LogError("Couldn't find Text component on the camera panel for: " + camera.ToString());
+			else
+				nameText.text = camera.name;
 
 			// Stores the information text
 			GameObject informationText = cameraPanel.transform.Find("Camera Information Text").gameObject;
-			_camerasInformationTexts.Add(camera, informationText);
+			if (cameraButton == null)
+				Debug.LogError("Couldn't find Camera Information Text on the camera panel's children for: " + camera.ToString());
+			else
+				_camerasInformationTexts.Add(camera, informationText);
 		}
-    }
-	
+	}
+
 	/// <summary>
 	/// Unity's method called at the end of each frame if this script is
 	/// active.
@@ -224,7 +240,7 @@ public class DebugController : MonoBehaviour {
 		if (!debugMode) {
 			RestoreCharacterColor();
 			_cameraSwitcher.SetActiveCamera(0);
-            return;
+			return;
 		}
 
 		// Checks if the current character has changed and retrieves it
@@ -239,9 +255,9 @@ public class DebugController : MonoBehaviour {
 			characterMaterial.SetColor("_Color", characterColor);
 		}
 
-        // Updates the texts
-        ShowGeneralInformation();
-        ShowCharacterInformation();
+		// Updates the texts
+		ShowGeneralInformation();
+		ShowCharacterInformation();
 		ShowCharacterState();
 		ShowCharacterParameters();
 
@@ -265,32 +281,31 @@ public class DebugController : MonoBehaviour {
 		if (_currentCharacter != null)
 			_currentCharacter.GetComponentInChildren<Renderer>().material.SetColor("_Color", _savedCharacterColor);
 		_currentCharacter = null;
-    }
+	}
 
-    #region Show Information Methods
+	#region Show Information Methods
 
-    /// <summary>
-    /// Show basic and general information like fps
-    /// </summary>
-    private void ShowGeneralInformation() {
-        StringBuilder sb = new StringBuilder();
+	/// <summary>
+	/// Show basic and general information like fps
+	/// </summary>
+	private void ShowGeneralInformation() {
+		StringBuilder sb = new StringBuilder();
 
-        //fps
-        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-        float msec = deltaTime * 1000.0f;
-        float fps = 1.0f / deltaTime;
-        sb.AppendFormat("{0:0.0} ms ({1:0.} fps)", msec, fps);
-        
+		//fps
+		deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+		float msec = deltaTime * 1000.0f;
+		float fps = 1.0f / deltaTime;
+		sb.AppendFormat("{0:0.0} ms ({1:0.} fps)", msec, fps);
 
-        generalInformation.text = sb.ToString();
+		generalInformation.text = sb.ToString();
 
-    }
+	}
 
-    /// <summary>
-    /// Updates the GUI text with the basic information of the current
-    /// character.
-    /// </summary>
-    private void ShowCharacterInformation() {
+	/// <summary>
+	/// Updates the GUI text with the basic information of the current
+	/// character.
+	/// </summary>
+	private void ShowCharacterInformation() {
 		// Creates the string builder
 		StringBuilder sb = new StringBuilder();
 
@@ -325,7 +340,7 @@ public class DebugController : MonoBehaviour {
 
 		// Sets the text
 		informationText.text = sb.ToString();
-    }
+	}
 
 	/// <summary>
 	/// Updates the GUI text with the state information of the current
@@ -420,7 +435,7 @@ public class DebugController : MonoBehaviour {
 		float distance;
 		if (plane.Raycast(ray, out distance)) {
 			_independentControl.currentCharacter.GetComponent<CharacterControllerCustom>().Stop();
-            _independentControl.currentCharacter.transform.position = ray.GetPoint(distance);
+			_independentControl.currentCharacter.transform.position = ray.GetPoint(distance);
 		}
 	}
 
@@ -560,7 +575,7 @@ public class DebugController : MonoBehaviour {
 					material.SetColor("_Color", collisionColor);
 				}
 			}
-    }
+	}
 
 	#endregion
 

@@ -5,6 +5,8 @@ using System.Linq;
 /// <summary>
 /// Custom controller that depends on Unity's CharacterController component.
 /// </summary>
+[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(CharacterSize))]
 public class CharacterControllerCustom : MonoBehaviour {
 
 	#region Properties
@@ -188,6 +190,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 				_velocity += (force / GetTotalMass()) * Time.deltaTime;
 				break;
 			default:
+				Debug.LogError("Not a valid Force Mode: " + mode.ToString());
 				return;
 		}
 	}
@@ -331,6 +334,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			case CharacterControllerParameters.MovementControl.None:
 				break;
 			default:
+				Debug.LogError("Not a valid Movement Control: " + Parameters.movementControl.ToString());
 				return;
 		}
 
@@ -364,8 +368,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 			float velocityStick = _velocity.x * Mathf.Sin(State.SlopeAngle * Mathf.Deg2Rad);
 			if (velocityStick > 0)
 				velocityStick *= Parameters.slopeStickiness;
-            _velocity.y -= velocityStick;
-        }
+			_velocity.y -= velocityStick;
+		}
 
 		// If the input was relative to the gravity, restores it's orientation
 		if (Parameters.relativeToGravity) {
@@ -387,7 +391,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			case CharacterControllerParameters.MovementBehaviour.CantMoveOnSlope:
 				// Patch: if the slope is vertical, still allow movement
 				return !State.IsOnSlope || slopeIsVertical;
-            case CharacterControllerParameters.MovementBehaviour.CantMoveSliding:
+			case CharacterControllerParameters.MovementBehaviour.CantMoveSliding:
 				// Patch: if the slope is vertical, still allow movement
 				return !State.IsSliding || slopeIsVertical;
 			case CharacterControllerParameters.MovementBehaviour.CanMoveOnGround:
@@ -395,6 +399,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			case CharacterControllerParameters.MovementBehaviour.CantMove:
 				return false;
 			default:
+				Debug.LogError("Not a valid Movement Behaviour: " + Parameters.movementBehaviour.ToString());
 				return false;
 		}
 	}
@@ -457,7 +462,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			case CharacterControllerParameters.JumpBehaviour.CanJumpAnywhere:
 				return true;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpOnSlope:
-                return State.IsGrounded || State.IsOnSlope;
+				return State.IsGrounded || State.IsOnSlope;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpSliding:
 				return State.IsGrounded || State.IsSliding;
 			case CharacterControllerParameters.JumpBehaviour.CanJumpOnGround:
@@ -465,6 +470,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			case CharacterControllerParameters.JumpBehaviour.CantJump:
 				return false;
 			default:
+				Debug.LogError("Not a valid Jump Behaviour: " + Parameters.jumpBehaviour.ToString());
 				return false;
 		}
 	}
