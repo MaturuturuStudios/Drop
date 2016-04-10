@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// Control the flow between menus and specials action taken between thems
 /// </summary>
-public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
+public class MenuNavigator : MonoBehaviour {
     #region Enumerations
     public enum Menu {
         NONE,
@@ -111,10 +111,6 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
     /// The previous selected game object
     /// </summary>
     private GameObject selected;
-    /// <summary>
-    /// 
-    /// </summary>
-    bool isLocked;
     #endregion
 
     #region Methods
@@ -128,9 +124,6 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
 
         //get the fading
         _fading = GetComponent<SceneFadeInOut>();
-
-        isLocked = true;
-        setCursorLock(isLocked);
     }
 
     public void Update() {
@@ -139,11 +132,7 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
             OpenMenu(openMenu);
             openMenu = Menu.NONE;
         }
-
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            setCursorLock(!isLocked);
-        }
-
+        
         if (IsMenuActive()) {
             GameObject actualSelected = EventSystem.current.currentSelectedGameObject;
 
@@ -377,31 +366,6 @@ public class MenuNavigator : MonoBehaviour, ICanvasRaycastFilter {
     /// <returns>True if any menu exists</returns>
     public bool IsMenuActive() {
         return _menuPanel.Count > 0;
-    }
-
-    /// <summary>
-    /// Lock and hide the cursor if true
-    /// If false, the cursor is unlocked and visible
-    /// </summary>
-    /// <param name="isLocked">If true lock and hide the cursor</param>
-    private void setCursorLock(bool isLocked) {
-        this.isLocked = isLocked;
-        //Cursor.lockState = (isLocked)? CursorLockMode.Locked:CursorLockMode.None;
-        //Cursor.visible = !isLocked;
-    }
-
-    /// <summary>
-    /// Get the raycast event and always return false. This way, buttons, text and other UI component does not
-    /// react to mouse's event
-    /// Warning: Still react to a click, not calling the asociated method but deselecting the gameObject
-    /// This is solved in method update reselecting it. The bad part is the animation showing up
-    /// Happens only when we have a scene behind
-    /// </summary>
-    /// <param name="screenPoint"></param>
-    /// <param name="eventCamera"></param>
-    /// <returns></returns>
-    public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera) {
-        return false;
     }
     #endregion
 
