@@ -21,6 +21,8 @@ public class GameEndController : MonoBehaviour {
         public Text levelCompleteText;
         //Displayed phrase
         public string phrase = "Level Complete!";
+        //Name of the scene to load
+        public string nextScene;
     }
     
     /// <summary>
@@ -51,6 +53,8 @@ public class GameEndController : MonoBehaviour {
         //Reset Text
         endGame.levelCompleteText.text = endGame.phrase;
         endGame.levelCompleteText.enabled = false;
+        if (endGame.nextScene == "")
+            endGame.nextScene = "StartScene";
 
     }
 
@@ -64,7 +68,7 @@ public class GameEndController : MonoBehaviour {
             MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
                                      .GetComponent<MenuNavigator>();
             //wait before starting the change
-            _menuNavigator.ChangeScene("StartScene", endGame.waitTime);
+            _menuNavigator.ChangeScene(endGame.nextScene, endGame.waitTime);
         }
     }
 
@@ -83,7 +87,6 @@ public class GameEndController : MonoBehaviour {
             //Stop player
             cccp.Stop(true);
             cccp.enabled = false;
-            //currentCharacter.SetActive(false);
 
             //Show message
             endGame.levelCompleteText.enabled = true;
