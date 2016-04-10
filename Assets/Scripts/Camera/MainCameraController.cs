@@ -143,20 +143,20 @@ public class MainCameraController : MonoBehaviour {
         excededX = excededY = 0;
         
         //Calculate if it is out of bounds
-        float aux = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
-        if (destination.x < bounds.left + aux)
-            excededX = destination.x = bounds.left + aux;
-        else if (destination.x > bounds.right - aux) {
-            excededX = destination.x = bounds.right - aux;
-            if (excededX < bounds.left + aux)
-                excededX = destination.x = bounds.left + aux;
+        float cameraRealBound = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
+        if (destination.x < bounds.left + cameraRealBound)
+            excededX = destination.x = bounds.left + cameraRealBound;
+        else if (destination.x > bounds.right - cameraRealBound) {
+            excededX = destination.x = bounds.right - cameraRealBound;
+            if (excededX < bounds.left + cameraRealBound)
+                excededX = destination.x = bounds.left + cameraRealBound;
         }
-        if (destination.y < bounds.bottom + offset.y + aux / 2)
-            excededY = destination.y = bounds.bottom + offset.y  + aux / 2;
-        else if (destination.y > bounds.top - aux / 2) {
-            excededY = destination.y = bounds.top - aux / 2;
-            if (excededY < bounds.bottom + offset.y + aux / 2)
-                excededY = destination.y = bounds.bottom + offset.y + aux / 2;
+        if (destination.y < bounds.bottom + offset.y + (cameraRealBound * 9 / 16))
+            excededY = destination.y = bounds.bottom + offset.y  + (cameraRealBound * 9 / 16);
+        else if (destination.y > bounds.top - (cameraRealBound * 9 / 16)) {
+            excededY = destination.y = bounds.top - (cameraRealBound * 9 / 16);
+            if (excededY < bounds.bottom + offset.y + (cameraRealBound * 9 / 16))
+                excededY = destination.y = bounds.bottom + offset.y + (cameraRealBound * 9 / 16);
         }
 
 		//Calculate next position
@@ -227,6 +227,21 @@ public class MainCameraController : MonoBehaviour {
         Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.left, bounds.bottom, 0));
         Gizmos.DrawLine(new Vector3(bounds.left, bounds.bottom, 0), new Vector3(bounds.right, bounds.bottom, 0));
         Gizmos.DrawLine(new Vector3(bounds.right, bounds.bottom, 0), new Vector3(bounds.right, bounds.top, 0));
+
+        Camera camera = GetComponent<Camera>();
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 0, camera.nearClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 0, camera.nearClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 1, camera.nearClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 1, camera.nearClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 1, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 0, camera.farClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 0, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 0, camera.farClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 0, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 1, camera.farClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 1, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 1, camera.farClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 1, camera.farClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 0, camera.farClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 0, camera.farClipPlane)));
+        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 1, camera.farClipPlane)));
     }
     #endregion
 }
