@@ -49,7 +49,9 @@ public class GameEndController : MonoBehaviour {
     /// </summary>
     void Start(){
         //Reset Text
-        endGame.levelCompleteText.text = "";
+        endGame.levelCompleteText.text = endGame.phrase;
+        endGame.levelCompleteText.enabled = false;
+
     }
 
     /// <summary>
@@ -81,10 +83,10 @@ public class GameEndController : MonoBehaviour {
             //Stop player
             cccp.Stop(true);
             cccp.enabled = false;
-           //currentCharacter.SetActive(false);
+            //currentCharacter.SetActive(false);
 
             //Show message
-            endGame.levelCompleteText.text = endGame.phrase;
+            endGame.levelCompleteText.enabled = true;
         }
     }
 
@@ -108,7 +110,7 @@ public class GameEndController : MonoBehaviour {
 
         // Draws the cube
         Gizmos.matrix = transform.localToWorldMatrix;
-        Vector3 pos = Vector3.zero;
+        Vector3 pos = _collider.transform.position - transform.position;
         Gizmos.DrawCube(pos, _collider.size);
     }
     #endregion

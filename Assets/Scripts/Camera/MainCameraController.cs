@@ -109,7 +109,7 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Update the camera phisics
     /// </summary>
-    void LateUpdate() {
+    void FixedUpdate() {
         //Camera Movement
         MoveCamera();
 
