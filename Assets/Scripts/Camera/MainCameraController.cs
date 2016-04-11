@@ -230,18 +230,8 @@ public class MainCameraController : MonoBehaviour {
 
         Camera camera = GetComponent<Camera>();
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 0, camera.nearClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 0, camera.nearClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 1, camera.nearClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 1, camera.nearClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 1, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 0, camera.farClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 0, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 0, camera.farClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 0, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 1, camera.farClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 1, camera.farClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 1, camera.farClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 1, camera.farClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(1, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(1, 0, camera.farClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 0, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 0, camera.farClipPlane)));
-        Gizmos.DrawLine(camera.ViewportToWorldPoint(new Vector3(0, 1, camera.nearClipPlane)), camera.ViewportToWorldPoint(new Vector3(0, 1, camera.farClipPlane)));
-    }
+        Gizmos.matrix = camera.transform.localToWorldMatrix;
+        Gizmos.DrawFrustum(Vector3.zero, camera.fieldOfView, camera.farClipPlane, camera.nearClipPlane, camera.aspect);
+   }
     #endregion
 }
