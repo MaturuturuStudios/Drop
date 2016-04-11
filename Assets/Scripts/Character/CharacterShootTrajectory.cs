@@ -55,8 +55,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         this.enabled = false;
 
         //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        startTime = Time.time;
 
+       
         vel.x = 15;
         vel.y = 15;
 
@@ -91,7 +91,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         
         horizontal = true;
         shootsize = 1;
-        
+        vel.x = 5;
+        vel.y = 5;
         sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
         sphere.GetComponent<Collider>().enabled = false;
         sphere.GetComponent<Renderer>().enabled = false;
@@ -99,11 +100,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
         ball = (GameObject)Instantiate(TrajectorySizeIndicator);
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
         ball.GetComponent<Collider>().enabled = false;
-       
-        
+            
         shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-        vel.x = 15;
-        vel.y = 15;
+        
         ball.GetComponent<Renderer>().enabled = true;
                 
         stopcourutine = false;
@@ -137,20 +136,22 @@ public class CharacterShootTrajectory : MonoBehaviour {
             Debug.Log(" LIMITE " + shootlimiet);
             if (oldshootlimit > shootlimiet)
             {
-                correcting = true;
-                
-                //shootlimiet += 3;
+                Vector3 end;
+                end.x = shootlimiet;
+                end.y = shootlimiet;
+                end.z = 0;
+
+                vel = Vector3.MoveTowards(aux, end, 5 * Time.deltaTime);
+
+                Debug.Log(" VEL " + vel + " AUX " + aux + " END " + end);
             }
             selecting = false;
-
+            
         }
 
         h = Input.GetAxis(Axis.Horizontal);
         v = Input.GetAxis(Axis.Vertical);
 
-        //angle = Mathf.Atan2(v, h) * Mathf.Rad2Deg;
-
-        //Debug.Log(" h " + h + " v " + v);
         if (horizontal)
         {        
             oldx = vel.x;
@@ -158,30 +159,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             vel.x += h;
             vel.y += v;
-            //Debug.Log(" vely" + vel.y + " velx " + vel.x);
-             //Debug.Log(" h " + h + " v " + v);
 
         }
         else if(horizontal== false)
         {
-            if (correcting)
-            {
-                vel.x = shootlimiet;
-                vel.y = shootlimiet;
-                journeyLength = Vector3.Distance(aux, vel);
-
-                float distCovered = (Time.time - startTime) * speed;
-                float fracJourney = distCovered / journeyLength;
-                vel = Vector3.Lerp(aux, vel, fracJourney);
-
-                Debug.Log(" AUX " + aux + " VEL " + vel+ " TIME " + fracJourney);
-                correcting = false;
-            }
-            else
-            {
-                // if (vel.x < 0) vel.x = vel.x * -1;
-                
-
                 if (vel.x > 0)
                 {
                     vel.x -=0.3f;
@@ -196,13 +177,6 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 }
 
                 if (vel.y < -1) vel.y =0;
-
-               // Debug.Log(" vely" + vel.y + " velx " + vel.x + " V " +v);
-            }
-
-            
-
-
         }
        
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
