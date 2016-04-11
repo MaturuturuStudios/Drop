@@ -131,15 +131,14 @@ public class CharacterShootTrajectory : MonoBehaviour {
             oldshootlimit = shootlimiet;
             aux.y = oldshootlimit;
             aux.x = oldshootlimit;
-            Debug.Log(" AUX " + aux );
+            Debug.Log(" VEL " + vel);
             ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
             shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
             Debug.Log(" LIMITE " + shootlimiet);
             if (oldshootlimit > shootlimiet)
             {
                 correcting = true;
-                
-                //shootlimiet += 3;
+               
             }
             selecting = false;
 
@@ -148,9 +147,6 @@ public class CharacterShootTrajectory : MonoBehaviour {
         h = Input.GetAxis(Axis.Horizontal);
         v = Input.GetAxis(Axis.Vertical);
 
-        //angle = Mathf.Atan2(v, h) * Mathf.Rad2Deg;
-
-        //Debug.Log(" h " + h + " v " + v);
         if (horizontal)
         {        
             oldx = vel.x;
@@ -158,22 +154,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             vel.x += h;
             vel.y += v;
-            correcting = false;
-            //Debug.Log(" vely" + vel.y + " velx " + vel.x);
-            //Debug.Log(" h " + h + " v " + v);
 
         }
         else if(horizontal== false)
         {
-            if (correcting)
-            {
-                
-            }
-            else
-            {
-                // if (vel.x < 0) vel.x = vel.x * -1;
-                
-
+         
                 if (vel.x > 0)
                 {
                     vel.x -=0.3f;
@@ -188,11 +173,6 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 }
 
                 if (vel.y < -1) vel.y =0;
-
-               // Debug.Log(" vely" + vel.y + " velx " + vel.x + " V " +v);
-            }
-
-            
 
 
         }
