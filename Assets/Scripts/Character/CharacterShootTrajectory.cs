@@ -42,6 +42,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private bool correcting = false;
     private RaycastHit hitpoint;
     private float angle;
+    private float startTime;
+    private float journeyLength;
+    public float speed = 1.0F;
     // Use this for initialization
     void Awake() {
 
@@ -52,10 +55,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
         this.enabled = false;
 
         //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-       
+        startTime = Time.time;
 
-        vel.x = 2;
-        vel.y = 2;
+        vel.x = 15;
+        vel.y = 15;
 
         c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
@@ -85,10 +88,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
     }
 
     public void OnEnable() {
-        vel.x = 2;
-        vel.y = 2;
+        
         horizontal = true;
         shootsize = 1;
+        
         sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
         sphere.GetComponent<Collider>().enabled = false;
         sphere.GetComponent<Renderer>().enabled = false;
@@ -99,7 +102,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
        
         
         shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-        //Debug.Log("entra" + shootlimiet);
+        vel.x = 15;
+        vel.y = 15;
         ball.GetComponent<Renderer>().enabled = true;
                 
         stopcourutine = false;
@@ -123,15 +127,19 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         if (selecting)
         {
-
+            
             oldshootlimit = shootlimiet;
+            aux.y = oldshootlimit;
+            aux.x = oldshootlimit;
+            Debug.Log(" AUX " + aux );
             ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
             shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
             Debug.Log(" LIMITE " + shootlimiet);
             if (oldshootlimit > shootlimiet)
             {
                 correcting = true;
-                shootlimiet += 3;
+                
+                //shootlimiet += 3;
             }
             selecting = false;
 
@@ -160,7 +168,13 @@ public class CharacterShootTrajectory : MonoBehaviour {
             {
                 vel.x = shootlimiet;
                 vel.y = shootlimiet;
-                Debug.Log(" vely" + vel.y + " velx " + vel.x);
+                journeyLength = Vector3.Distance(aux, vel);
+
+                float distCovered = (Time.time - startTime) * speed;
+                float fracJourney = distCovered / journeyLength;
+                vel = Vector3.Lerp(aux, vel, fracJourney);
+
+                Debug.Log(" AUX " + aux + " VEL " + vel+ " TIME " + fracJourney);
                 correcting = false;
             }
             else
@@ -181,7 +195,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
                    // Debug.Log(" vely" + vel.y + " velx " + vel.x);
                 }
 
-                if (vel.y < -20) vel.y =0;
+                if (vel.y < -1) vel.y =0;
 
                // Debug.Log(" vely" + vel.y + " velx " + vel.x + " V " +v);
             }
@@ -190,26 +204,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
 
         }
-
-
-        /*if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            vel.y += 1;
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            vel.y -= 1;
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            vel.x += 1;
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            vel.x -= 1;
-        }*/
-
-        
+       
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
          Vector3 pos = this.transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
@@ -282,8 +277,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         {
             horizontal = true;
 
-             angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
-
+            angle = Mathf.Rad2Deg * (Mathf.Atan2(pVelocity.y, pVelocity.x));
+            //Debug.Log(" ANGULO " + angle);
             float fTime = 0;
             float oldx = 0;
             float oldy = 0;
