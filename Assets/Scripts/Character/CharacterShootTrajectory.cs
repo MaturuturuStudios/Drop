@@ -158,6 +158,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
                     old.y = vel.y;
                     vel.x -=0.3f;
                      vel.y -= 0.3f;
+                    
 
                     Debug.Log(" vely" + vel);
             }
