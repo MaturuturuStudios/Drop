@@ -130,8 +130,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             Debug.Log(" LIMITE " + shootlimiet);
             if (oldshootlimit > shootlimiet)
             {
-                correcting = true;
-                shootlimiet += 3;
+
             }
             selecting = false;
 
@@ -140,9 +139,6 @@ public class CharacterShootTrajectory : MonoBehaviour {
         h = Input.GetAxis(Axis.Horizontal);
         v = Input.GetAxis(Axis.Vertical);
 
-        //angle = Mathf.Atan2(v, h) * Mathf.Rad2Deg;
-
-        //Debug.Log(" h " + h + " v " + v);
         if (horizontal)
         {        
             oldx = vel.x;
@@ -150,23 +146,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             vel.x += h;
             vel.y += v;
-            //Debug.Log(" vely" + vel.y + " velx " + vel.x);
-             //Debug.Log(" h " + h + " v " + v);
+
 
         }
         else if(horizontal== false)
         {
-            if (correcting)
-            {
-                vel.x = shootlimiet;
-                vel.y = shootlimiet;
-                Debug.Log(" vely" + vel.y + " velx " + vel.x);
-                correcting = false;
-            }
-            else
-            {
-                // if (vel.x < 0) vel.x = vel.x * -1;
-                
 
                 if (vel.x > 0)
                 {
@@ -186,28 +170,6 @@ public class CharacterShootTrajectory : MonoBehaviour {
                // Debug.Log(" vely" + vel.y + " velx " + vel.x + " V " +v);
             }
 
-            
-
-
-        }
-
-
-        /*if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            vel.y += 1;
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            vel.y -= 1;
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            vel.x += 1;
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            vel.x -= 1;
-        }*/
 
         
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
@@ -262,7 +224,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private Vector2 GetForceFrom(Vector3 fromPos, Vector3 toPos) {
         return (new Vector2(toPos.x, toPos.y) - new Vector2(fromPos.x, fromPos.y)) * power;//*ball.rigidbody.mass;
     }
-    //---------------------------------------	
+    //--------------------------------------	
     // It displays projectile trajectory path
     //---------------------------------------	
     void setTrajectoryPoints(Vector3 pStartPosition, Vector3 pVelocity) {
