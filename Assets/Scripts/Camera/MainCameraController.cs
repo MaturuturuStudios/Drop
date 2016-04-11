@@ -221,7 +221,7 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Draws the movement bounds on the editor.
     /// </summary>
-    public void OnDrawGizmos() {
+    public void OnDrawGizmosSelected() {
         Gizmos.color = Color.green;
         Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.right, bounds.top, 0));
         Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.left, bounds.bottom, 0));
