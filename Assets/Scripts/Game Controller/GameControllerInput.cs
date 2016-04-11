@@ -39,7 +39,6 @@ public class GameControllerInput : MonoBehaviour {
             // Retrieves current character's components
             CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
             CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
-            bool shootmode = _switcher.currentCharacter.GetComponent<CharacterShoot>().isShooting();
 
             // Horizontal input
             float hInput = Input.GetAxis(Axis.Horizontal);

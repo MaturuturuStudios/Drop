@@ -21,7 +21,7 @@ public class JumpMushroom : MonoBehaviour{
 	void OnCollisionEnter(Collision other) {
 		Rigidbody rb = other.rigidbody;
 		if (rb != null) {
-			float speed = Vector3.Project(other.relativeVelocity, transform.up).magnitude;
+            float speed = Vector3.Project(other.relativeVelocity, _transform.up).magnitude;
 
 			float minheightvelocity = Mathf.Sqrt(2 * Physics.gravity.magnitude * minHeight);
 			float maxheightvelocity = Mathf.Sqrt(2 * Physics.gravity.magnitude * maxHeight);
@@ -31,9 +31,9 @@ public class JumpMushroom : MonoBehaviour{
 			if (speed > maxheightvelocity)
 				speed = maxheightvelocity;
 
-			Vector3 velocity = transform.up * speed;
+			Vector3 velocity = _transform.up * speed;
 			if (keepPerpendicularSpeed)
-				velocity += Vector3.Project(other.relativeVelocity, transform.right);
+                velocity += Vector3.Project(other.relativeVelocity, _transform.right);
 			rb.velocity = velocity;
 		}
 	}
@@ -41,7 +41,7 @@ public class JumpMushroom : MonoBehaviour{
 	void OnCustomControllerCollision(ControllerColliderHit hit) {
 		CharacterControllerCustom ccc = hit.controller.GetComponent<CharacterControllerCustom>();
 		if (ccc != null) {
-			float speed = Vector3.Project(ccc.BeforeCollisionVelocity, transform.up).magnitude;
+            float speed = Vector3.Project(ccc.BeforeCollisionVelocity, _transform.up).magnitude;
 
 			float minheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * minHeight);
 			float maxheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * maxHeight);
@@ -51,9 +51,9 @@ public class JumpMushroom : MonoBehaviour{
 			if (speed > maxheightvelocity)
 				speed = maxheightvelocity;
 
-			Vector3 velocity = transform.up * speed * jumpFactor;
+			Vector3 velocity = _transform.up * speed * jumpFactor;
 			if (keepPerpendicularSpeed)
-				velocity += Vector3.Project(ccc.BeforeCollisionVelocity, transform.right);
+                velocity += Vector3.Project(ccc.BeforeCollisionVelocity, _transform.right);
 
 			if (lostControl) {
 				if (!temporaly)
