@@ -19,7 +19,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private CharacterController c;
     private  CharacterShoot s;
     
-    private Vector3 vel,aiming;
+    private Vector3 vel,aiming,old;
     private float power = 25;
     private float shootsize=1;
     public float limitshoot = 10;
@@ -31,7 +31,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private bool colisiondetected = false;
     private GameObject sphere,ball;
     private float delay = 2,next;
-    private float oldx, oldy,oldvelocity;
+    private float oldvelocity;
     private float h, v;
     private bool horizontal;
     private bool vertical;
@@ -127,10 +127,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
             oldshootlimit = shootlimiet;
             ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
             shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-            Debug.Log(" LIMITE " + shootlimiet);
+            
             if (oldshootlimit > shootlimiet)
             {
-
+                
             }
             selecting = false;
 
@@ -141,8 +141,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         if (horizontal)
         {        
-            oldx = vel.x;
-            oldy = vel.y;
+            old.x = vel.x;
+            old.y = vel.y;
 
             vel.x += h;
             vel.y += v;
@@ -154,10 +154,13 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
                 if (vel.x > 0)
                 {
+                    old.x = vel.x;
+                    old.y = vel.y;
                     vel.x -=0.3f;
-                    vel.y -= 0.3f;
-                    //Debug.Log(" vely" + vel.y + " VELX " + vel.x);
-                }
+                     vel.y -= 0.3f;
+
+                    Debug.Log(" vely" + vel);
+            }
                 else if (vel.x < 0)
                 {
                     vel.x += 0.3f;
