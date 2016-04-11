@@ -262,7 +262,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     private Vector2 GetForceFrom(Vector3 fromPos, Vector3 toPos) {
         return (new Vector2(toPos.x, toPos.y) - new Vector2(fromPos.x, fromPos.y)) * power;//*ball.rigidbody.mass;
     }
-    //---------------------------------------	
+    //--------------------------------------	
     // It displays projectile trajectory path
     //---------------------------------------	
     void setTrajectoryPoints(Vector3 pStartPosition, Vector3 pVelocity) {
