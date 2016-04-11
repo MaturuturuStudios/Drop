@@ -158,24 +158,16 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             vel.x += h;
             vel.y += v;
+            correcting = false;
             //Debug.Log(" vely" + vel.y + " velx " + vel.x);
-             //Debug.Log(" h " + h + " v " + v);
+            //Debug.Log(" h " + h + " v " + v);
 
         }
         else if(horizontal== false)
         {
             if (correcting)
             {
-                Vector3 end;
-                end.x = shootlimiet;
-                end.y = shootlimiet;
-                end.z = 0;
-
-                vel = Vector3.MoveTowards(aux,end,5*Time.deltaTime) ;
-
-                Debug.Log(" VEL " + vel + " AUX " + aux + " END " + end);
                 
-                correcting = false;
             }
             else
             {
