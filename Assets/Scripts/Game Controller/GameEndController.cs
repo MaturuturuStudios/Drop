@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -31,9 +30,14 @@ public class GameEndController : MonoBehaviour {
     private bool end = false;
 
     /// <summary>
-    /// Reference to the collider where the wind force will be applied.
+    /// Reference to the collider of end region.
     /// </summary>
     private BoxCollider _collider;
+
+    /// <summary>
+    /// Input controller to disable it when its necessary
+    /// </summary>
+    private GameControllerInput _gci;
     #endregion
 
     #region Methods
@@ -50,11 +54,16 @@ public class GameEndController : MonoBehaviour {
     /// Unity's method called on start script only one time
     /// </summary>
     void Start(){
-        //Reset Text
+        //Set the phrase to the text label and disable it
         endGame.levelCompleteText.text = endGame.phrase;
         endGame.levelCompleteText.enabled = false;
+
+        //in case that the scene is empty, by default we use StartScene
         if (endGame.nextScene == "")
             endGame.nextScene = "StartScene";
+
+        //Get input controller
+        _gci = FindObjectOfType<GameControllerInput>();
 
     }
 
@@ -85,8 +94,10 @@ public class GameEndController : MonoBehaviour {
             GameObject currentCharacter = FindObjectOfType<GameControllerIndependentControl>().currentCharacter;
             CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
             //Stop player
-            cccp.Stop(true);
-            cccp.enabled = false;
+            cccp.Stop();
+
+            //Disable input
+            _gci.enabled = false;
 
             //Show message
             endGame.levelCompleteText.enabled = true;
@@ -113,7 +124,7 @@ public class GameEndController : MonoBehaviour {
 
         // Draws the cube
         Gizmos.matrix = transform.localToWorldMatrix;
-        Vector3 pos = _collider.transform.position - transform.position;
+        Vector3 pos = _collider.center;
         Gizmos.DrawCube(pos, _collider.size);
     }
     #endregion
