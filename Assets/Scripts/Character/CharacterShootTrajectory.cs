@@ -11,6 +11,9 @@ public class CharacterShootTrajectory : MonoBehaviour
     public int numOfTrajectoryPoints = 30;
     public float particletrajectoryspeed = 0.08f;
     private int jk = 0;
+    public float speed = 1.0F;
+    private float startTime;
+    private float journeyLength;
 
     private List<GameObject> trajectoryPoints;
     private List<GameObject> bolas;
@@ -41,6 +44,8 @@ public class CharacterShootTrajectory : MonoBehaviour
     {
         next = Time.time + delay;
         this.enabled = false;
+
+        startTime = Time.time;
 
         angle = 45;
 
@@ -178,7 +183,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed )
     {
 
-        pVelocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * speed;
+        pVelocity = new Vector3(Mathf.Cos(angle) * speed, Mathf.Sin(angle) * speed, 0);
         Debug.Log(" APUNTANDO " + pVelocity);
     
         velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
@@ -193,7 +198,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100);
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime , pVelocity.x) * Mathf.Rad2Deg);
+            trajectoryPoints[i].transform.eulerAngles = new Vector3(0,0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime , pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
         }
 
@@ -203,19 +208,22 @@ public class CharacterShootTrajectory : MonoBehaviour
     public IEnumerator Example()
     {
         sphere.transform.position = trajectoryPoints[0].transform.position;
+        jk = 1;
         while (!stopcourutine)
         {
             if (trajectoryPoints[jk].GetComponent<Renderer>().enabled == true)
             {
-                sphere.transform.position = trajectoryPoints[jk].transform.position;      
+                sphere.transform.position = Vector3.MoveTowards(sphere.transform.position, trajectoryPoints[jk].transform.position, 5*Time.deltaTime);      
             }
             if ((jk == numOfTrajectoryPoints - 1))
             {
+                sphere.transform.position = trajectoryPoints[0].transform.position;
                 jk = 0;
             }
             if (trajectoryPoints[jk].GetComponent<Renderer>().enabled == false)
             {
-                jk = -1;
+                sphere.transform.position = trajectoryPoints[0].transform.position;
+                jk = 0;
             }
             jk++;
             yield return new WaitForSeconds(particletrajectoryspeed);
