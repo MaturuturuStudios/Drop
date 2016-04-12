@@ -165,7 +165,7 @@ public class CharacterShoot : MonoBehaviour {
     private void prepareDropToFly()
     {
         Vector3 pos = transform.position;
-         ball.transform.position = this.transform.position + st.getvect().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
+         ball.transform.position = this.transform.position + new Vector3(1, 1, 0).normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
        // ball.transform.position = pos;
 	    ball.SetActive(false);
     }
