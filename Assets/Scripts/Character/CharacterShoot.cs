@@ -178,6 +178,6 @@ public class CharacterShoot : MonoBehaviour {
 
         ball.SetActive(true);
 
-		ball.GetComponent<CharacterControllerCustom>().SendFlying(st.getvect());
+		ball.GetComponent<CharacterControllerCustom>().SendFlying(st.GetpVelocity());
 	}
 }

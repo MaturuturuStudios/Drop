@@ -23,7 +23,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private Vector3 vel, aiming, old, pVelocity;
     private float power = 25;
     private float shootsize = 1;
-    public float limitshoot = 10;
+    public float limitshoot = 5;
     private bool stopcourutine = false;
 
 
@@ -103,6 +103,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
 
         shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
+        Debug.Log(" limit shoot " + limitshoot + " character ssize  " + ccc.GetComponent<CharacterSize>().GetSize() + " diasparada " + shootsize);
         vel.x = 15;
         vel.y = 15;
         //Debug.Log("entra" + shootlimiet);
@@ -134,7 +135,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             oldshootlimit = shootlimiet;
             ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
             shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-
+           
             if (oldshootlimit > shootlimiet)
             {
 
@@ -151,8 +152,10 @@ public class CharacterShootTrajectory : MonoBehaviour
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
         Vector3 pos = this.transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
-        //Vector3 pos = this.transform.position;
-        setTrajectoryPoints(pos, angle, shootlimiet);
+       float speed = Mathf.Sqrt(limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize) / ccc.Parameters.Gravity.magnitude);
+        // float speed = shootlimiet;
+        Debug.Log(" angulo " + angle + " speed " + speed);
+        setTrajectoryPoints(pos, angle, speed);
         setvisibility();
         canshooot();
 
@@ -200,7 +203,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     }
     public Vector3 GetpVelocity()
     {
-        Debug.Log(" DISPARO " + pVelocity);
+        Debug.Log(" distancia  " + (transform.position.magnitude-pVelocity.magnitude));
         return pVelocity;
     }
     //---------------------------------------	
@@ -211,7 +214,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     //--------------------------------------	
     // It displays projectile trajectory path
     //---------------------------------------	
-    void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed = 1)
+    void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed )
     {
 
         pVelocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * speed;
