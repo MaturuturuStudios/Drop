@@ -140,7 +140,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     public bool canshooot()
     {
         float dis = 0;
-        Vector3 spheredis = transform.position + new Vector3(1, 1, 0).normalized * (c.radius * this.transform.lossyScale.x);
+        Vector3 spheredis = transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x);
         fwd = trajectoryPoints[0].transform.position - spheredis;
 
         dis = fwd.magnitude;
