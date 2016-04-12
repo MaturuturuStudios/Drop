@@ -126,7 +126,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         Debug.Log(" angulo " + angle);
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
-        Vector3 pos = this.transform.position + new Vector3(1,1,0).normalized*(c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
+        Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
         float speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
         // float speed = shootlimiet;
         
@@ -176,14 +176,14 @@ public class CharacterShootTrajectory : MonoBehaviour
     //This fuctions return the shoot vector for the shoot script
     public Vector3 GetpVelocity()
     {
-        return pVelocity;
+        return new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0); ;
     }
 
     //This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
     void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed )
     {
 
-        pVelocity = new Vector3(Mathf.Cos(angle) * speed, Mathf.Sin(angle) * speed, 0);
+        pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
         Debug.Log(" APUNTANDO " + pVelocity);
     
         velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
