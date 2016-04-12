@@ -176,7 +176,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     //This fuctions return the shoot vector for the shoot script
     public Vector3 GetpVelocity()
     {
-        return new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0); ;
+        return pVelocity; 
     }
 
     //This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
