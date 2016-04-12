@@ -123,7 +123,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         //v = Input.GetAxis(Axis.Vertical);
 
         angle += h;
-        Debug.Log(" angulo " + angle);
+       // Debug.Log(" angulo " + angle);
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
         Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
@@ -213,7 +213,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         {
             if (trajectoryPoints[jk].GetComponent<Renderer>().enabled == true)
             {
-                sphere.transform.position = Vector3.MoveTowards(sphere.transform.position, trajectoryPoints[jk].transform.position, 5 * Time.deltaTime);
+                sphere.transform.position = Vector3.MoveTowards(sphere.transform.position, trajectoryPoints[jk].transform.position, 100);
             }
             if ((jk == numOfTrajectoryPoints - 1))
             {
