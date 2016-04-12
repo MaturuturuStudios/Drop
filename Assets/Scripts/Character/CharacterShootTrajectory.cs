@@ -82,8 +82,6 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
         Debug.Log(" limit shoot " + limitshoot + " character ssize  " + ccc.GetComponent<CharacterSize>().GetSize() + " diasparada " + shootsize);
-        vel.x = 15;
-        vel.y = 15;
 
         ball.GetComponent<Renderer>().enabled = true;
 
@@ -123,7 +121,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
-        Vector3 pos = this.transform.position + getvect().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
+        Vector3 pos = this.transform.position + new Vector3(1,1,0).normalized*(c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
         float speed = Mathf.Sqrt(limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize) / ccc.Parameters.Gravity.magnitude);
         // float speed = shootlimiet;
         Debug.Log(" angulo " + angle + " speed " + speed);
@@ -170,13 +168,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         StopCoroutine(Example());
     }
 
-    //This fuctions return a vector which we add when we calculate the shooting start point
-    public Vector3 getvect()
-    {
-        return vel;
-    }
-
-    //This fuctions return the shooot vector
+    //This fuctions return the shoot vector for the shoot script
     public Vector3 GetpVelocity()
     {
         return pVelocity;
