@@ -122,7 +122,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
         Vector3 pos = this.transform.position + new Vector3(1,1,0).normalized*(c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
-        float speed = Mathf.Sqrt(limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize) / ccc.Parameters.Gravity.magnitude);
+        float speed = Mathf.Sqrt(limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize) * ccc.Parameters.Gravity.magnitude);
         // float speed = shootlimiet;
         Debug.Log(" angulo " + angle + " speed " + speed);
         setTrajectoryPoints(pos, angle, speed);
