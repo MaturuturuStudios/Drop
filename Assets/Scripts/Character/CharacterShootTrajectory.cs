@@ -122,7 +122,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
         Vector3 pos = this.transform.position + new Vector3(1,1,0).normalized*(c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
-        float speed = Mathf.Sqrt(limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize) * ccc.Parameters.Gravity.magnitude);
+        float speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
         // float speed = shootlimiet;
         Debug.Log(" angulo " + angle + " speed " + speed);
         setTrajectoryPoints(pos, angle, speed);
@@ -180,7 +180,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         pVelocity = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * speed;
         Debug.Log(" APUNTANDO " + pVelocity);
-        oldvelocity = velocity;
+    
         velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
 
         float fTime = 0;
@@ -194,7 +194,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100);
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
+            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime , pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
         }
 
