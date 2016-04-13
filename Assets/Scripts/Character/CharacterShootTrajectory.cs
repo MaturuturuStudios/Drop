@@ -98,8 +98,8 @@ public class CharacterShootTrajectory : MonoBehaviour
         ball.GetComponent<Renderer>().enabled = true;
 
         stopcourutine = true;
-        //stopcourutine = false;
-        //StartCoroutine(Example());
+        nextWaypoint = 1;
+        lastWaypoint = 0;
 
     }
     //This fuctions delete prefabs that we ar not using
@@ -234,7 +234,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             
             return;
         }
-        //we COULD use Translate at this point, but it's simpler to just compute the current position
+        
         sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
 
     }
