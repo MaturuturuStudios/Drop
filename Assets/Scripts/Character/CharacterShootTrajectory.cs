@@ -15,6 +15,8 @@ public class CharacterShootTrajectory : MonoBehaviour
     private float startTime;
     private float journeyLength;
 
+    public LayerMask Scene;
+
     private List<GameObject> trajectoryPoints;
     private List<GameObject> bolas;
     private CharacterControllerCustom ccc;
@@ -246,12 +248,12 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             dis = fwd.magnitude;
 
-            if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis))
+            if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis,Scene))
             {
                 ball.GetComponent<Renderer>().enabled = true;
                 Vector3 hitting = hitpoint.point;
-                hitting.y += 0.5f;
-                ball.transform.position = hitting;
+                float displacement = ball.transform.lossyScale.x * ball.GetComponent<SphereCollider>().radius;
+                ball.transform.position = hitting + hitpoint.normal * displacement;
                 colisiondetected = true;
                 for (int j = i + 1; j < numOfTrajectoryPoints - 1; j++)
                 {
