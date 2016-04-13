@@ -17,7 +17,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private float faction_of_path_traveled;
     private int lastWaypoint, nextWaypoint, finalWaypoint;
 
-    public LayerMask Scene;
+    public LayerMask Scene=8;
 
     private List<GameObject> trajectoryPoints;
     private List<GameObject> bolas;
@@ -159,6 +159,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (Physics.Raycast(spheredis, fwd, dis))
         {
             ball.GetComponent<Renderer>().enabled = false;
+            sphere.GetComponent<Renderer>().enabled = false;
             for (int j = 1; j < numOfTrajectoryPoints - 1; j++)
             {
                 trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
@@ -167,7 +168,11 @@ public class CharacterShootTrajectory : MonoBehaviour
             return false;
 
         }
-        else return true;
+        else
+        {
+            sphere.GetComponent<Renderer>().enabled = true;
+            return true;
+        }
     }
 
     //This fuctions delete the trajectory
@@ -217,26 +222,26 @@ public class CharacterShootTrajectory : MonoBehaviour
     //This fuctions draw the particle trip along the trajectory
     public void Example()
     {
-        //Debug.Log("FINAL " + finalWaypoint);
-        if (nextWaypoint > finalWaypoint)
-        {
-            nextWaypoint = 1;
-            lastWaypoint = 0;
-        }
+         //Debug.Log("FINAL " + finalWaypoint);
+            if (nextWaypoint > finalWaypoint)
+            {
+                nextWaypoint = 1;
+                lastWaypoint = 0;
+            }
 
-        Vector3 fullPath = trajectoryPoints[nextWaypoint].transform.position - trajectoryPoints[lastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-        faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime; //animate along the path
-        if (faction_of_path_traveled > 1) //move to next waypoint
-        {
-            lastWaypoint++; nextWaypoint++;
+            Vector3 fullPath = trajectoryPoints[nextWaypoint].transform.position - trajectoryPoints[lastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
+            faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime; //animate along the path
+            if (faction_of_path_traveled > 1) //move to next waypoint
+            {
+                lastWaypoint++; nextWaypoint++;
 
-            faction_of_path_traveled = 0;
-            
-            return;
-        }
+                faction_of_path_traveled = 0;
+
+                return;
+            }
+
+            sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
         
-        sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
-
     }
 
 
