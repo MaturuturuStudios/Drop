@@ -20,8 +20,8 @@ public class GameEndController : MonoBehaviour {
         public Text levelCompleteText;
         //Displayed phrase
         public string phrase = "Level Complete!";
-        //Name of the scene to load
-        public string nextScene;
+        //Scene to load
+        public Scene nextScene;
     }
     
     /// <summary>
@@ -59,8 +59,9 @@ public class GameEndController : MonoBehaviour {
         endGame.levelCompleteText.enabled = false;
 
         //in case that the scene is empty, by default we use StartScene
-        if (endGame.nextScene == "")
-            endGame.nextScene = "StartScene";
+        //TODO improve this part, try to avoid hardcoded strings
+        if (endGame.nextScene == null)
+            endGame.nextScene.name = "StartScene";
 
         //Get input controller
         _gci = FindObjectOfType<GameControllerInput>();
@@ -77,7 +78,7 @@ public class GameEndController : MonoBehaviour {
             MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
                                      .GetComponent<MenuNavigator>();
             //wait before starting the change
-            _menuNavigator.ChangeScene(endGame.nextScene, endGame.waitTime);
+            _menuNavigator.ChangeScene(endGame.nextScene.name, endGame.waitTime);
         }
     }
 

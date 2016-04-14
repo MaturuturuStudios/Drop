@@ -11,7 +11,7 @@ public class MainMenu : MonoBehaviour {
     /// Scene to be opened when starting a new game
     /// </summary>
     /// TODO: editor for drag scenes
-    public string NewGameScene;
+    public Scene NewGameScene;
     /// <summary>
     /// The option to be selected
     /// </summary>
@@ -51,7 +51,7 @@ public class MainMenu : MonoBehaviour {
     /// Start a new game
     /// </summary>
     public void NewGame() {
-        _menuNavigator.ChangeScene(NewGameScene);
+        _menuNavigator.ChangeScene(NewGameScene.name);
     }
 
     /// <summary>
