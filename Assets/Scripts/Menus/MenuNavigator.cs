@@ -49,8 +49,7 @@ public class MenuNavigator : MonoBehaviour {
     /// <summary>
     /// Which scene is the starting point of the application/main menu
     /// </summary>
-    /// TODO: make an editor to drag and drop a Scene 
-    public string startSceneMainMenu;
+    public Scene startSceneMainMenu;
     /// <summary>
     /// When scene start, should open which menu?
     /// </summary>
@@ -310,7 +309,7 @@ public class MenuNavigator : MonoBehaviour {
     //Region of methods with special/specific actions when pushed or poped from stack
     #region Specifics menu actions
     public void MainMenu() {
-        ChangeScene(startSceneMainMenu);
+		ChangeScene(startSceneMainMenu.name);
     }
 
     /// <summary>
