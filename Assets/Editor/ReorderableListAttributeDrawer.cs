@@ -20,14 +20,12 @@ public class ReorderableListDrawer : PropertyDrawer {
 		}
 		return _list;
 	}
-
-
+	
 	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
 		return GetList(property).GetHeight();
 	}
-
-
-	public override void OnGUI(UnityEngine.Rect position, SerializedProperty property, GUIContent label) {
+	
+	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 		ReorderableList list = GetList(property);
 		SerializedProperty listProperty = property.FindPropertyRelative("list");
 		float height = 0f;
