@@ -4,9 +4,9 @@ public class TriggerArea : MonoBehaviour {
 	
 	public bool drawGizmos = false;
 
-	public ReorderableList_MethodInvoke onEnter;
-	public ReorderableList_MethodInvoke onStay;
-	public ReorderableList_MethodInvoke onExit;
+	public ReorderableList_MethodInvoke onEnter = new ReorderableList_MethodInvoke();
+	public ReorderableList_MethodInvoke onStay = new ReorderableList_MethodInvoke();
+	public ReorderableList_MethodInvoke onExit = new ReorderableList_MethodInvoke();
 
 	private Collider[] _colliders;
 
@@ -51,35 +51,28 @@ public class TriggerArea : MonoBehaviour {
 			Start();
 		
 		Gizmos.matrix = Matrix4x4.identity;
-		Color lineColor = Color.green;
-		lineColor.a = 0.25f;
-		Gizmos.color = lineColor;
+		Vector3 separation = new Vector3(0, 0.1f, 0);
+        Gizmos.color = Color.green;
 		foreach (MethodInvoke methodInvoke in onEnter.AsList())
-			DrawLineToTarget(methodInvoke);
+			if (methodInvoke.target != null)
+				Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
 
-		lineColor = Color.yellow;
-		lineColor.a = 0.25f;
-		Gizmos.color = lineColor;
+		Gizmos.color = Color.yellow;
 		foreach (MethodInvoke methodInvoke in onStay.AsList())
-			DrawLineToTarget(methodInvoke);
+			if (methodInvoke.target != null)
+				Gizmos.DrawLine(transform.position, methodInvoke.target.transform.position);
 
-		lineColor = Color.red;
-		lineColor.a = 0.25f;
-		Gizmos.color = lineColor;
+		Gizmos.color = Color.red;
 		foreach (MethodInvoke methodInvoke in onExit.AsList())
-			DrawLineToTarget(methodInvoke);
+			if (methodInvoke.target != null)
+				Gizmos.DrawLine(transform.position - separation, methodInvoke.target.transform.position - separation);
 
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Color colliderColor = Color.cyan;
-		colliderColor.a = 0.25f;
+		colliderColor.a = 0.5f;
 		Gizmos.color = colliderColor;
 		foreach (Collider collider in _colliders)
 			DrawCollider(collider);
-	}
-
-	private void DrawLineToTarget(MethodInvoke methodInvoke) {
-		if (methodInvoke.target != null)
-			Gizmos.DrawLine(transform.position, methodInvoke.target.transform.position);
 	}
 
 	private void DrawCollider(Collider collider) {
