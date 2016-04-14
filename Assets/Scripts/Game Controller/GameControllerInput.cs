@@ -82,7 +82,7 @@ public class GameControllerInput : MonoBehaviour {
 			_mainCameraController.LookArround(hLookInput, vLookInput);
 
 			//Handle shoot input To delete
-			if (Input.GetButtonDown(Axis.Action))
+			if (Input.GetButtonDown(Axis.Action) || Input.GetButtonDown(Axis.Jump))
 				shootComponent.Shoot();
 			if (Input.GetButtonDown(Axis.ShootMode))
 				shootComponent.Aim();
