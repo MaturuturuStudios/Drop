@@ -5,14 +5,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+/// <summary>
+/// Custom drawer used to properly represent the information
+/// and functionality of a MethodInvoke on the editor.
+/// </summary>
 [CustomPropertyDrawer(typeof(MethodInvoke))]
 class MethodInvokeDrawer : PropertyDrawer {
 
+	/// <summary>
+	/// Overrides the height method of the element to return
+	/// the height of the element.
+	/// </summary>
+	/// <param name="property">The property of the drawer</param>
+	/// <param name="label">The content of the element</param>
+	/// <returns></returns>
 	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+		// Returns a fixed height, since the space occupied by this element is fixed as well
 		return 40;
 	}
 
+	/// <summary>
+	/// Unity's method called to draw the element on the editor.
+	/// </summary>
+	/// <param name="position">The space occupied by the element</param>
+	/// <param name="property">The property of the drawer</param>
+	/// <param name="label">The content of the element</param>
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+
+		// Draws the target selector field
 		Rect targetRect = position;
 		targetRect.width = 120;
 		targetRect.height = 18;
@@ -23,6 +43,8 @@ class MethodInvokeDrawer : PropertyDrawer {
 		}
 
 		if (target != null) {
+
+			// Draws the method selector field
 			Rect popupRect = position;
 			popupRect.y += 22;
 			popupRect.width = 120;
@@ -31,6 +53,7 @@ class MethodInvokeDrawer : PropertyDrawer {
 			int selectedIndex = EditorGUI.Popup(popupRect, property.FindPropertyRelative("selectedIndex").intValue, methods.Select((e) => e.DeclaringType + "/" + e.Name).ToArray());
 			property.FindPropertyRelative("selectedIndex").intValue = selectedIndex;
 
+			// Checks for the number of parameters of the method and draws the parameter field if necessary
 			MethodInfo selectedMethod = methods[selectedIndex];
 			ParameterInfo[] parameters = selectedMethod.GetParameters();
 			if (parameters.Length == 1) {
@@ -42,10 +65,18 @@ class MethodInvokeDrawer : PropertyDrawer {
 				FieldByType(parameterRect, parameters[0].ParameterType, property, parameters[0].Name);
 			}
 			else if (parameters.Length > 1)
-				Debug.LogError("Warning: The selected method has more than one parameter: " + selectedMethod.Name);
+				Debug.LogWarning("Warning: The selected method has more than one parameter: " + selectedMethod.Name);
 		}
 	}
 
+	/// <summary>
+	/// Draws the right field used by the selected type on the
+	/// given space.
+	/// </summary>
+	/// <param name="position">The space the field will occupy</param>
+	/// <param name="type">The type of the field</param>
+	/// <param name="property">The property stored on the field</param>
+	/// <param name="label">The label shown with the field</param>
 	private void FieldByType(Rect position, Type type, SerializedProperty property, string label = null) {
 		property = property.FindPropertyRelative(type.Name + "Parameter");
 		if (type == typeof(Int32))
@@ -77,6 +108,6 @@ class MethodInvokeDrawer : PropertyDrawer {
 		else if (type == typeof(UnityEngine.Object))
 			property.objectReferenceValue = EditorGUI.ObjectField(position, label, property.objectReferenceValue, type, true);
 		else
-			Debug.LogError("Warning: Unsupported parameter type: " + type.Name);
+			Debug.LogWarning("Warning: Unsupported parameter type: " + type.Name);
 	}
 }
