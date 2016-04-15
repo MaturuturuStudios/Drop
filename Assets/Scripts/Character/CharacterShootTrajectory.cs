@@ -128,7 +128,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             selecting = false;
         }
 
-        h = Input.GetAxis(Axis.Vertical);
+        h = Input.GetAxis(Axis.Horizontal);
         //v = Input.GetAxis(Axis.Vertical);
 
         angle += h;
