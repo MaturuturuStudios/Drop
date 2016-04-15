@@ -9,8 +9,8 @@ public class CharacterShoot : MonoBehaviour {
    
     private GameObject ball;
 	private bool  isBallThrown;
-    private int lessize=0;
-    private int falling = 0;
+
+
     //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
     public bool shootmode = false;
     private float sizeshot=1;
@@ -164,7 +164,7 @@ public class CharacterShoot : MonoBehaviour {
     //Set ball properties like createBall()
     private void prepareDropToFly()
     {
-        Vector3 pos = transform.position;
+
          ball.transform.position = this.transform.position + st.GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
        // ball.transform.position = pos;
 	    ball.SetActive(false);

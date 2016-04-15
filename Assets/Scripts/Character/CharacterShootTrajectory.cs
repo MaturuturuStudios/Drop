@@ -10,9 +10,9 @@ public class CharacterShootTrajectory : MonoBehaviour
     public GameObject TrajectoryParticlePrefeb;
     public int numOfTrajectoryPoints = 30;
     public float particletrajectoryspeed = 0.08f;
-    private int jk = 0;
+
     public float speed = 1.0F;
-    private float startTime;
+
     private float journeyLength;
     private float faction_of_path_traveled;
     private int lastWaypoint, nextWaypoint, finalWaypoint;
@@ -23,21 +23,21 @@ public class CharacterShootTrajectory : MonoBehaviour
     private List<GameObject> bolas;
     private CharacterControllerCustom ccc;
     private CharacterController c;
-    private CharacterShoot s;
+
 
     private Vector3 vel, pVelocity;
     private float shootsize = 1;
     public float limitshoot = 5;
-    private bool stopcourutine = false;
+
 
     private RaycastHit hit;
     private Vector3 fwd;
     private bool colisiondetected = false;
     private GameObject sphere, ball;
-    private float delay = 2, next;
+   
     private float oldvelocity;
     private float h, v;
-    private float shootlimiet = 1;
+    //private float shootlimiet = 1;
     private bool selecting = false;
     private float velocity = 1;
 
@@ -46,16 +46,16 @@ public class CharacterShootTrajectory : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        next = Time.time + delay;
+       
         this.enabled = false;
 
-        startTime = Time.time;
+        
 
         angle = 45;
 
         c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
-        s = GetComponent<CharacterShoot>();
+        
 
         trajectoryPoints = new List<GameObject>();
 
@@ -92,12 +92,12 @@ public class CharacterShootTrajectory : MonoBehaviour
         ball.GetComponent<Collider>().enabled = false;
 
 
-        shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-        Debug.Log(" limit shoot " + limitshoot + " character ssize  " + ccc.GetComponent<CharacterSize>().GetSize() + " diasparada " + shootsize);
+        //shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
+       // Debug.Log(" limit shoot " + limitshoot + " character ssize  " + ccc.GetComponent<CharacterSize>().GetSize() + " diasparada " + shootsize);
 
         ball.GetComponent<Renderer>().enabled = true;
 
-        stopcourutine = true;
+       
         nextWaypoint = 1;
         lastWaypoint = 0;
 
@@ -110,7 +110,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             ball.GetComponent<Renderer>().enabled = false;
         //stopcourutine = true;
         //StopCoroutine(Example());
-        stopcourutine = false;
+
         Destroy(sphere);
         Destroy(ball);
 
@@ -122,7 +122,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (selecting)
         {
             ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
-            shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
+            //shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
 
             selecting = false;
         }
@@ -183,7 +183,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
         }
         sphere.GetComponent<Renderer>().enabled = false;
-        stopcourutine = false;
+        
         //stopcourutine = true;
         //StopCoroutine(Example());
     }
