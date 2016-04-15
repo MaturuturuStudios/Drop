@@ -50,8 +50,6 @@ public class CharacterShootTrajectory : MonoBehaviour
        
         this.enabled = false;
 
-        
-
         angle = 45;
 
         c = GetComponent<CharacterController>();
@@ -92,10 +90,6 @@ public class CharacterShootTrajectory : MonoBehaviour
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
         ball.GetComponent<Collider>().enabled = false;
 
-
-        //shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-       // Debug.Log(" limit shoot " + limitshoot + " character ssize  " + ccc.GetComponent<CharacterSize>().GetSize() + " diasparada " + shootsize);
-
         ball.GetComponent<Renderer>().enabled = true;
 
        
@@ -109,8 +103,6 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         if (ball != null)
             ball.GetComponent<Renderer>().enabled = false;
-        //stopcourutine = true;
-        //StopCoroutine(Example());
 
         Destroy(sphere);
         Destroy(ball);
@@ -123,21 +115,15 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (selecting)
         {
             ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
-            //shootlimiet = limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize);
-
             selecting = false;
         }
 
         h = Input.GetAxis(Axis.Horizontal);
-        //v = Input.GetAxis(Axis.Vertical);
 
-        angle += h;
-       // Debug.Log(" angulo " + angle);
-        // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
+        angle -= h;
 
         Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + sphere.GetComponent<SphereCollider>().radius* sphere.transform.lossyScale.x);
         float speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
-        // float speed = shootlimiet;
 
         setTrajectoryPoints(pos, angle, speed);
         setvisibility();
@@ -185,8 +171,6 @@ public class CharacterShootTrajectory : MonoBehaviour
         }
         sphere.GetComponent<Renderer>().enabled = false;
         
-        //stopcourutine = true;
-        //StopCoroutine(Example());
     }
 
     //This fuctions return the shoot vector for the shoot script
