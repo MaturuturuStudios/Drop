@@ -18,6 +18,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private int lastWaypoint, nextWaypoint, finalWaypoint;
 
     public LayerMask Scene=8;
+    public LayerMask Character=9;
 
     private List<GameObject> trajectoryPoints;
     private List<GameObject> bolas;
@@ -134,7 +135,7 @@ public class CharacterShootTrajectory : MonoBehaviour
        // Debug.Log(" angulo " + angle);
         // transform.eulerAngles = new Vector3(0, 0, angle);    this is to face in the direction you are aming
 
-        Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + c.radius * this.transform.lossyScale.x);
+        Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + sphere.GetComponent<SphereCollider>().radius* sphere.transform.lossyScale.x);
         float speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
         // float speed = shootlimiet;
 
@@ -261,7 +262,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             dis = fwd.magnitude;
 
-            if (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis,Scene))
+            if ((Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis, Character)) || (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis,Scene)))
             {
                 ball.GetComponent<Renderer>().enabled = true;
                 Vector3 hitting = hitpoint.point;
