@@ -122,7 +122,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         angle -= h;
 
-        Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + sphere.GetComponent<SphereCollider>().radius* sphere.transform.lossyScale.x);
+        Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<SphereCollider>().radius* ball.transform.lossyScale.x);
         float speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
 
         setTrajectoryPoints(pos, angle, speed);
