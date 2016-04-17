@@ -1,94 +1,113 @@
-﻿using System.Xml;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using System.Collections.Generic;
-using System.IO;
-using System.Collections.Generic;
-using UnityEngine.SceneManagement;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Data structure for save build data into a file and recover it
+/// </summary>
 public class BuildData {
-   // [XmlAttribute("BuildName")]
+
+    /// <summary>
+    /// The name of this release
+    /// </summary>
     public string buildName;
 
-   // [XmlAttribute("Path")]
-    public string path;
+    /// <summary>
+    /// Path where aplication will work on
+    /// </summary>
+    public string workPath;
 
-   // [XmlAttribute("Windows")]
+    /// <summary>
+    /// check it it shares the build to a target parth
+    /// </summary>
+    public bool share;
+
+    /// <summary>
+    /// Path where aplication will share the zip package
+    /// </summary>
+    public string sharedFolderPath;
+
+    /// <summary>
+    /// Path where aplication will find zip exe
+    /// </summary>
+    public string zipPath;
+
+    /// <summary>
+    /// True when build for Windows is active
+    /// </summary>
     public bool win;
 
-    //[XmlAttribute("Linux")]
+    /// <summary>
+    /// True when build for Linux is active
+    /// </summary>
     public bool lin;
 
-   // [XmlAttribute("Mac")]
+    /// <summary>
+    /// True when build for Mac is active
+    /// </summary>
     public bool mac;
 
-    //[XmlAttribute("Scenes")]
+    /// <summary>
+    /// List of the scenes that will be included into de build
+    /// </summary>
     public List<string> scenes;
 
-    public int test;
 
+    /// <summary>
+    /// Default constructor with default setted values
+    /// </summary>
     public BuildData() {
         buildName = "drop-v";
-        path = "D:\\Google Drive\\WorkSpace\\DropOfficial\\Realeases";
+        workPath = "../../Builds/Drop";
+        sharedFolderPath = "../../Google Drive/WorkSpace/DropOfficial/Realeases";
+        share = false;
+        zipPath = "../../Program Files (x86)/GnuWin32/bin";
         win = true;
         lin = true;
         mac = true;
         scenes = new List<string>();
     }
 
-    public BuildData(string buildName, string path, bool win, bool lin, bool mac) {
-        this.buildName = buildName;
-        this.path = path;
-        this.win = win;
-        this.lin = lin;
-        this.mac = mac;
-        this.scenes = new List<string>();
-    }
+    /// <summary>
+    /// Saves the configuration data structure to a file using XML
+    /// </summary>
+	/// <param name="bd">BuildData structure to save in the file</param>
+    public static void Save(BuildData bd) {
 
-    public BuildData(string buildName, string path, bool win, bool lin, bool mac, List<string> scenes) {
-        this.buildName = buildName;
-        this.path = path;
-        this.win = win;
-        this.lin = lin;
-        this.mac = mac;
-        this.scenes = scenes;
-    }
-
-    public void SetConfig(string buildName, string path, bool win, bool lin, bool mac) {
-        this.buildName = buildName;
-        this.path = path;
-        this.win = win;
-        this.lin = lin;
-        this.mac = mac;
-    }
-
-    public void SetScenes(List<string> scenes) {
-        this.scenes = scenes;
-    }
-
-    public static void Save(BuildData bdc) {
-
+        // Create a serializer
         XmlSerializer serializer = new XmlSerializer(typeof(BuildData));
-        using (FileStream stream = new FileStream(Application.persistentDataPath + "/build.conf", FileMode.Create)) {
-            serializer.Serialize(stream, bdc);
+
+        // Save the file in "Application.streamingAssetsPath" folder
+        using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/build.conf", FileMode.Create)) {
+            serializer.Serialize(stream, bd);
             Debug.Log("Data saved");
         }
     }
 
+    /// <summary>
+    /// Load data from XML structure file to a configuration data structure and return it
+    /// </summary>
+    /// <returns>BuildData object with data found in the file, null if it fails</returns>
     public static BuildData Load() {
 
+        // Return variable
         BuildData bd = null;
-        if (File.Exists(Application.persistentDataPath + "/build.conf")) {
 
+        // Look if the file config exist
+        if (File.Exists(Application.streamingAssetsPath + "/build.conf")) {
+
+            // Create a serializer
             XmlSerializer serializer = new XmlSerializer(typeof(BuildData));
-            using (FileStream stream = new FileStream(Application.persistentDataPath + "/build.conf", FileMode.Open)) {
+
+            //read the file from "Application.streamingAssetsPath" folder
+            using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/build.conf", FileMode.Open)) {
                 bd = (BuildData)serializer.Deserialize(stream);
                 Debug.Log("Data readed");
             }
-
         }
+
+        // Return result
         return bd;
     }
 }

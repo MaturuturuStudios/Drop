@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 using System;
+using System.IO;
+
+// Zip for windows
+// http://gnuwin32.sourceforge.net/packages/zip.htm
+
 
 public class BuildManager {
 
@@ -16,7 +18,9 @@ public class BuildManager {
         //Verify that all data
         BuildManager bm = new BuildManager();
         bm.bd = BuildData.Load();
-        if (bm.ValidateData()) {
+        if (!bm.ValidateData()) {
+
+        }else { 
             string succes =
                 "Build configurated succesfully\nNow we proced to build ("
                 + (bm.bd.win == true ? "Windows" : "")
@@ -25,25 +29,24 @@ public class BuildManager {
                 + ((bm.bd.mac == true && bm.bd.lin == true) ? ", " : "")
                 + (bm.bd.lin == true ? "Linux" : "")
                 + "). \nThe target folder will be: \""
-                + bm.bd.path
+                + bm.bd.workPath
                 + "\" \nThe build name is: "
                 + bm.bd.buildName;
 
             Debug.Log(succes);
-        }
 
         // Build Windows
         if (bm.bd.win) {
             Debug.Log("Building for Windows platform");
-            string fullPath = bm.bd.path + "/" + bm.bd.buildName + "_win.exe";
+            string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_win.exe";
             BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneWindows, (development ? BuildOptions.Development : BuildOptions.None));
 
 
-            Debug.Log("Compressing and uploading to: " + bm.bd.path);
+            Debug.Log("Compressing and uploading Windows build  to: " + bm.bd.workPath);
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             try {
-                proc.StartInfo.FileName = MakeRelative("D:/Program Files (x86)/GnuWin32/bin/zip.exe", Application.dataPath);
-                proc.StartInfo.WorkingDirectory = bm.bd.path;
+                proc.StartInfo.FileName = MakeRelative(bm.bd.zipPath, Application.dataPath);
+                proc.StartInfo.WorkingDirectory = bm.bd.workPath;
                 proc.StartInfo.Arguments = "-9 -r " + bm.bd.buildName + "_win.zip " + bm.bd.buildName + "_win.exe " + bm.bd.buildName + "_win_Data ";
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.CreateNoWindow = true;
@@ -56,15 +59,15 @@ public class BuildManager {
         // Build Linux
         if (bm.bd.lin) {
             Debug.Log("Building for Linux platform");
-            string fullPath = bm.bd.path + "/" + bm.bd.buildName + "_lin.x86";
+            string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_lin.x86";
             BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinux, (development ? BuildOptions.Development : BuildOptions.None));
 
 
-            Debug.Log("Compressing and uploading to: " + bm.bd.path);
+            Debug.Log("Compressing and uploading Linux build  to: " + bm.bd.workPath);
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             try {
-                proc.StartInfo.FileName = MakeRelative("D:/Program Files (x86)/GnuWin32/bin/zip.exe", Application.dataPath);
-                proc.StartInfo.WorkingDirectory = bm.bd.path;
+                proc.StartInfo.FileName = MakeRelative(bm.bd.zipPath, Application.dataPath);
+                proc.StartInfo.WorkingDirectory = bm.bd.workPath;
                 proc.StartInfo.Arguments = "-9 -r " + bm.bd.buildName + "_lin.zip " + bm.bd.buildName + "_lin.x86 " + bm.bd.buildName + "_lin_Data ";
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.CreateNoWindow = true;
@@ -77,15 +80,15 @@ public class BuildManager {
         // Build Mac
         if (bm.bd.mac) {
             Debug.Log("Building for Mac platform");
-            string fullPath = bm.bd.path + "/" + bm.bd.buildName + "_mac.app";
+            string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_mac.app";
             BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinux, (development ? BuildOptions.Development : BuildOptions.None));
 
 
-            Debug.Log("Compressing and uploading to: " + bm.bd.path);
+            Debug.Log("Compressing and uploading Mac build to: " + bm.bd.workPath);
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             try {
-                proc.StartInfo.FileName = MakeRelative("D:/Program Files (x86)/GnuWin32/bin/zip.exe", Application.dataPath);
-                proc.StartInfo.WorkingDirectory = bm.bd.path;
+                proc.StartInfo.FileName = MakeRelative(bm.bd.zipPath, Application.dataPath);
+                proc.StartInfo.WorkingDirectory = bm.bd.workPath;
                 proc.StartInfo.Arguments = "-9 -r " + bm.bd.buildName + "_mac.zip " + bm.bd.buildName + "_mac.app ";
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.CreateNoWindow = true;
@@ -96,21 +99,33 @@ public class BuildManager {
         }
 
 
-        // Build Mac
-        if (bm.bd.lin) {
-            Debug.Log("Packing");
-            System.Threading.Thread.Sleep(5000);
-            Debug.Log("Compressing and uploading to: " + bm.bd.path);
-            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+        // Packing all
+        Debug.Log("Packing");
+        System.Threading.Thread.Sleep(5000);
+        Debug.Log("Compressing and uploading to: " + bm.bd.workPath);
+        System.Diagnostics.Process procPack = new System.Diagnostics.Process();
             try {
-                proc.StartInfo.FileName = MakeRelative("D:/Program Files (x86)/GnuWin32/bin/zip.exe", Application.dataPath);
-                proc.StartInfo.WorkingDirectory = bm.bd.path;
-                proc.StartInfo.Arguments = "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : "");
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.CreateNoWindow = true;
-                proc.Start();
+                procPack.StartInfo.FileName = MakeRelative(bm.bd.zipPath, Application.dataPath);
+                procPack.StartInfo.WorkingDirectory = bm.bd.workPath;
+                procPack.StartInfo.Arguments = "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : "");
+                procPack.StartInfo.UseShellExecute = false;
+                procPack.StartInfo.CreateNoWindow = true;
+                procPack.Start();
+                Debug.LogError("Compression done");
             } catch (Exception e) {
                 Debug.LogError("Compression failed: " + e.ToString());
+            }
+
+            if (bm.bd.share) {
+                try {
+                    // Copy package to shared folder
+                    FileUtil.CopyFileOrDirectory(bm.bd.workPath + bm.bd.buildName + ".zip ", bm.bd.sharedFolderPath + bm.bd.buildName + ".zip ");
+                    Debug.LogError("File shared");
+                } catch (Exception e) {
+                    Debug.LogError("Share failed: " + e.ToString());
+                }
+
+
             }
         }
 
@@ -128,8 +143,11 @@ public class BuildManager {
 
     public bool ValidateData() {
 
-        if (!ValidateScenes())
+        if (!ValidateScenes()) {
+            EditorUtility.DisplayDialog("Configuration error",
+            "There are no scenes selected or catched scenes aren't the right ones, please re-catch scenes.", "Ok");
             return false;
+        }
 
         if (bd.buildName == "") {
             EditorUtility.DisplayDialog("Configuration error",
@@ -137,7 +155,7 @@ public class BuildManager {
             return false;
         }
 
-        if (bd.path == "") {
+        if (bd.workPath == "") {
             EditorUtility.DisplayDialog("Configuration error",
             "Build path cannot be empty", "Ok");
             return false;
@@ -214,8 +232,29 @@ public class BuildManager {
     }
 
     public static string MakeRelative(string filePath, string referencePath) {
+
+        if (!IsAbsoluteUrl(filePath)) {
+            return filePath;
+        }
         var fileUri = new Uri(filePath);
         var referenceUri = new Uri(referencePath);
         return referenceUri.MakeRelativeUri(fileUri).ToString();
+    }
+
+
+    public static string MakeAbsolute(string filePath) {
+
+        if (IsAbsoluteUrl(filePath)) {
+            return filePath;
+        }
+        string converted = Path.GetFullPath(filePath);
+        Debug.Log(converted);
+        return converted.ToString();
+    }
+
+
+    private static bool IsAbsoluteUrl(string url) {
+        Uri result;
+        return Uri.TryCreate(url, UriKind.Absolute, out result);
     }
 }

@@ -155,10 +155,6 @@ public class PathIterator  : MonoBehaviour {
 
         // Get the desire path
         _transform.position = path.MoveAt(startStep).position;
-
-        //Do a first iteration to put all in their place
-        //if (stepByStep)
-            //isActive = true;
     }
 
 	/// <summary>
@@ -197,8 +193,6 @@ public class PathIterator  : MonoBehaviour {
 		float squaredDistance = (_transform.position - path.GetCurrent().position).sqrMagnitude;
         // The squared distance is used becouse a multiplication is cheaper than a square root
         if (squaredDistance < maxDistanceToGoal * maxDistanceToGoal) {
-            Transform prev = path.GetCurrent();
-
             // Move next
             MoveNext();
         }
