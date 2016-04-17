@@ -3,17 +3,17 @@ using UnityEditor;
 
 public class BuildMenuEditor: MonoBehaviour {
 
-    [MenuItem("Build/Scenes/Catch scenes")]
+    [MenuItem("Build/Scenes/Catch Scenes")]
     private static void CatchScenes(MenuCommand command) {
         BuildManager.CatchScenes();
     }
 
-    [MenuItem("Build/Scenes/Verify scenes catched")]
+    [MenuItem("Build/Scenes/Verify Scenes Catched")]
     private static void VerifyScenesCatched(MenuCommand command) {
         BuildManager.ValidateScenes();
     }
 
-    [MenuItem("Build/Scenes/Show Scene catched")]
+    [MenuItem("Build/Scenes/Show Scene Catched")]
     private static void ShowScenesCatched(MenuCommand command) {
         BuildManager.ShowScenesCatched();
     }
@@ -23,7 +23,7 @@ public class BuildMenuEditor: MonoBehaviour {
         BuildConfigPopup.Init();
     }
 
-    [MenuItem("Build/Development build")]
+    [MenuItem("Build/Development Build With Postprocess")]
     public static void DevelopmentBuild(MenuCommand command) {
         BuildManager.BuildGame();
     }

@@ -8,6 +8,8 @@ using UnityEngine;
 /// </summary>
 public class BuildData {
 
+    #region Public Attributes
+
     /// <summary>
     /// The name of this release
     /// </summary>
@@ -53,6 +55,9 @@ public class BuildData {
     /// </summary>
     public List<string> scenes;
 
+    #endregion
+
+    #region Methods
 
     /// <summary>
     /// Default constructor with default setted values
@@ -110,4 +115,7 @@ public class BuildData {
         // Return result
         return bd;
     }
+
+    #endregion
+
 }

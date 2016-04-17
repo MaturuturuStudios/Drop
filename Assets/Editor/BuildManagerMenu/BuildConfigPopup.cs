@@ -1,25 +1,63 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+/// <summary>
+/// Popup for set the build configuration
+/// </summary>
 public class BuildConfigPopup : EditorWindow {
 
-    bool start = true;
-    BuildData bd;
-    
+    #region Private Attributes
+
+    /// <summary>
+    /// Handle to set the non static values when popup is started
+    /// </summary>
+    private bool start = true;
+
+    /// <summary>
+    /// Attribute for allow the data loaded and the data to save
+    /// </summary>
+    private BuildData bd;
+
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Static method call to create the popup
+    /// </summary>
     public static void Init() {
+
+        // Create an instance of the popup
         BuildConfigPopup window = CreateInstance<BuildConfigPopup>();
+            
+        // Set window dimensions
         window.position = new Rect(Screen.width / 2, Screen.height / 2, 400, 305);
+
+        // Set the popup visible
         window.ShowPopup();
     }
 
-    void OnGUI() {
+    #endregion
+
+    #region Private Methods
+
+    private void OnGUI() {
+
+        // Set the non static values when popup is started
         if (start) {
+
+            // Try to find saved data
             bd = BuildData.Load();
+
             if (bd == null)
+                // Setting default data
                 bd = new BuildData();
-            start = !start;
+
+            // Toggle start to false
+            start = false;
         }
         
+        //Popup Start
         GUILayout.BeginVertical();
 
         //Tittle
@@ -59,6 +97,7 @@ public class BuildConfigPopup : EditorWindow {
         // Share folder & Path
         bd.share = EditorGUILayout.Toggle("Send to shared folder: ", bd.share);
         if (bd.share) {
+
             GUILayout.Label("Shared folder path:");
             GUILayout.BeginHorizontal();
             bd.sharedFolderPath = EditorGUILayout.TextArea(bd.sharedFolderPath);
@@ -66,6 +105,7 @@ public class BuildConfigPopup : EditorWindow {
             GUILayout.EndHorizontal();
         }else {
 
+            // If option disable substitute it for an empty space
             GUILayout.Space(38);
         }
 
@@ -80,27 +120,62 @@ public class BuildConfigPopup : EditorWindow {
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
+        //Popup End
         GUILayout.EndVertical();
     }
 
+    /// <summary>
+    /// Save the data to the file and close the popup
+    /// </summary>
     private void Save() {
+
+        // Save the data to the file
         BuildData.Save(bd);
+
+        // Close the popup
         Close();
     }
 
+    /// <summary>
+    /// Searches a path with a SaveFolderPanel
+    /// </summary>
+    /// <param name="currentPath">Folder to start to search</param>
+    /// <returns>A string with the selected path</returns>
     private string SearchPath(string currentPath) {
+
+        // Return variable
         string path;
+
+        // Lunch SaveFolderPanel window
         path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", BuildManager.MakeAbsolute(currentPath), "");
+
+        // If path isn't empty parse it
         if(path != "")
             path = BuildManager.MakeRelative(@path, @Application.dataPath);
+
         return path;
     }
 
-    private string SearchZipExe() {
+
+    /// <summary>
+    /// Searches a file path with a SaveFilePanel and sets the value to bd.zipPath
+    /// </summary>
+    /// <returns>A string with the selected path</returns>
+    private void SearchZipExe() {
+
+        // Return variable
         string path;
-        path = EditorUtility.SaveFilePanel("Search Zip.exe", BuildManager.MakeAbsolute(bd.zipPath), "zip.exe", "exe");
-        if (path != "")
+
+        // Lunch SaveFilePanel window
+        path = EditorUtility.OpenFilePanel("Search Zip.exe", BuildManager.MakeAbsolute(bd.zipPath), "exe");
+        //path = EditorUtility.SaveFilePanel("Search Zip.exe", BuildManager.MakeAbsolute(bd.zipPath), "zip.exe", "exe");
+
+        // If path isn't empty parse it and store it
+        if (path != "") {
             path = BuildManager.MakeRelative(@path, @Application.dataPath);
-        return path;
+            bd.zipPath = path;
+        }
     }
+
+    #endregion
 }
