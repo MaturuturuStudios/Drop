@@ -81,7 +81,7 @@ public class BuildConfigPopup : EditorWindow {
         GUILayout.Label("Build path:");
         GUILayout.BeginHorizontal();
         bd.workPath = EditorGUILayout.TextArea(bd.workPath);
-        if (GUILayout.Button("Search", GUILayout.Width(80))) bd.workPath = SearchPath(bd.workPath) != "" ? SearchPath(bd.workPath) : bd.workPath;
+        if (GUILayout.Button("Search", GUILayout.Width(80))) bd.workPath = SearchPath(bd.workPath);
         GUILayout.EndHorizontal();
 
         GUILayout.Space(10);
@@ -101,7 +101,7 @@ public class BuildConfigPopup : EditorWindow {
             GUILayout.Label("Shared folder path:");
             GUILayout.BeginHorizontal();
             bd.sharedFolderPath = EditorGUILayout.TextArea(bd.sharedFolderPath);
-            if (GUILayout.Button("Search", GUILayout.Width(80))) bd.sharedFolderPath = SearchPath(bd.sharedFolderPath) != ""? SearchPath(bd.sharedFolderPath) : bd.sharedFolderPath;
+            if (GUILayout.Button("Search", GUILayout.Width(80))) bd.sharedFolderPath = SearchPath(bd.sharedFolderPath);
             GUILayout.EndHorizontal();
         }else {
 
@@ -144,14 +144,15 @@ public class BuildConfigPopup : EditorWindow {
     private string SearchPath(string currentPath) {
 
         // Return variable
-        string path;
+        string path = currentPath;
 
         // Lunch SaveFolderPanel window
         path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", BuildManager.MakeAbsolute(currentPath), "");
 
         // If path isn't empty parse it
-        if(path != "")
+        if (path != "") {
             path = BuildManager.MakeRelative(@path, @Application.dataPath);
+        }
 
         return path;
     }

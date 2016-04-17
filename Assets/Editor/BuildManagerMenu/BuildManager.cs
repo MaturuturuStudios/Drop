@@ -233,7 +233,7 @@ public class BuildManager {
         // Build it
         BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinux, (development ? BuildOptions.Development : BuildOptions.None));
 
-        Debug.Log("Build for Windows done");
+        Debug.Log("Build for Linux done");
 
         // Compress 
         Compress(bm, "Linux", "-9 -r " + bm.bd.buildName + "_lin.zip " + bm.bd.buildName + "_lin.x86 " + bm.bd.buildName + "_lin_Data ");
