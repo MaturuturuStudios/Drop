@@ -81,7 +81,7 @@ public class CanonShoot : MonoBehaviour
             {
                 ontriger = false;
                 ccc.transform.position = this.transform.position;
-
+                ccc.Stop();
                 ccc.SendFlying(GetpVelocity());
                 Debug.Log(" angle " + transform.eulerAngles);
 
@@ -95,21 +95,17 @@ public class CanonShoot : MonoBehaviour
     {
         ccc = other.GetComponent<CharacterControllerCustom>();
         if( (ccc != null))
-        {
-           
-            
+        {                     
             ontriger = true;
-
         }
 
         }
+
     void OnTriggerExit(Collider other)
     {
         ccc = other.GetComponent<CharacterControllerCustom>();
         if ((ccc != null))
         {
-
-
             ontriger = false;
 
         }
@@ -182,8 +178,6 @@ public class CanonShoot : MonoBehaviour
             sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
         
     }*/
-
-
 
     //This fuction draw the trajectory prefab depending on the colisions with their raycast
     public void setvisibility()
