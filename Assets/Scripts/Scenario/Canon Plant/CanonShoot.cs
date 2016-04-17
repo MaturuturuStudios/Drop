@@ -109,7 +109,7 @@ public class CanonShoot : MonoBehaviour
     {
 
         angle = 75;
-        power = 50;
+        power = 54;
 
 
     }

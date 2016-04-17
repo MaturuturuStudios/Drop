@@ -24,7 +24,7 @@ public class DoorTriggerVertical : MonoBehaviour {
 	public void Close() {
         if (isopen)
         {
-            transform.Translate(new Vector3(0, -5, 0));
+            transform.Translate(new Vector3(0, -10, 0));
             isopen = false;
         }
 	}
