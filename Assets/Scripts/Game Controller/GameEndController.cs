@@ -60,7 +60,7 @@ public class GameEndController : MonoBehaviour {
 
         //in case that the scene is empty, by default we use StartScene
         //TODO improve this part, try to avoid hardcoded strings
-        if (endGame.nextScene == null)
+        if (endGame.nextScene == null || endGame.nextScene.name == "Not")
             endGame.nextScene.name = "StartScene";
 
         //Get input controller

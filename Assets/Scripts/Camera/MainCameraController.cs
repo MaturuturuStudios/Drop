@@ -182,7 +182,7 @@ public class MainCameraController : MonoBehaviour {
         if (lookAt.lookAtFixedOnBounds && excededX != 0) 
             destination.x = excededX;
         if (lookAt.lookAtFixedOnBounds && excededY != 0) 
-            destination.y = excededY - offset.y;
+            destination.y = excededY - (offset.y * (_dropSize) );
 
 
         //Calculate the look at position of the camera
