@@ -91,6 +91,29 @@ public class CanonShoot : MonoBehaviour
 
     }
 
+    public void Shoot()
+    {
+        if (ontriger)
+        {
+            ontriger = false;
+            ccc.transform.position = this.transform.position;
+            ccc.Stop();
+            ccc.SendFlying(GetpVelocity());
+            Debug.Log(" angle " + transform.eulerAngles);
+
+
+        }
+    }
+
+    public void Changeangle()
+    {
+
+        angle = 75;
+        power = 50;
+
+
+    }
+
     void OnTriggerEnter(Collider other)
     {
         ccc = other.GetComponent<CharacterControllerCustom>();
