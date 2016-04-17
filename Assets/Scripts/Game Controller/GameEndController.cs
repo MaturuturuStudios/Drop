@@ -60,8 +60,10 @@ public class GameEndController : MonoBehaviour {
 
         //in case that the scene is empty, by default we use StartScene
         //TODO improve this part, try to avoid hardcoded strings
-        if (endGame.nextScene == null || endGame.nextScene.name == "Not")
+        if (endGame.nextScene.name == "Not" || endGame.nextScene.name == "") {
+            Debug.LogWarning("Next Scene not setted, assigning StartScene by default");
             endGame.nextScene.name = "StartScene";
+        }
 
         //Get input controller
         _gci = FindObjectOfType<GameControllerInput>();
@@ -94,6 +96,7 @@ public class GameEndController : MonoBehaviour {
 
             GameObject currentCharacter = FindObjectOfType<GameControllerIndependentControl>().currentCharacter;
             CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+
             //Stop player
             cccp.Stop();
 

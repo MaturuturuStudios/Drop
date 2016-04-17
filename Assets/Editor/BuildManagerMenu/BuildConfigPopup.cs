@@ -31,7 +31,7 @@ public class BuildConfigPopup : EditorWindow {
         BuildConfigPopup window = CreateInstance<BuildConfigPopup>();
             
         // Set window dimensions
-        window.position = new Rect(Screen.width / 2, Screen.height / 2, 400, 305);
+        window.position = new Rect(Screen.width / 2, Screen.height / 2, 500, 305);
 
         // Set the popup visible
         window.ShowPopup();
@@ -144,7 +144,7 @@ public class BuildConfigPopup : EditorWindow {
     private string SearchPath(string currentPath) {
 
         // Return variable
-        string path = currentPath;
+        string path;
 
         // Lunch SaveFolderPanel window
         path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", BuildManager.MakeAbsolute(currentPath), "");
@@ -152,6 +152,8 @@ public class BuildConfigPopup : EditorWindow {
         // If path isn't empty parse it
         if (path != "") {
             path = BuildManager.MakeRelative(@path, @Application.dataPath);
+        }else {
+            path = currentPath;
         }
 
         return path;
@@ -168,8 +170,7 @@ public class BuildConfigPopup : EditorWindow {
         string path;
 
         // Lunch SaveFilePanel window
-        path = EditorUtility.OpenFilePanel("Search Zip.exe", BuildManager.MakeAbsolute(bd.zipPath), "exe");
-        //path = EditorUtility.SaveFilePanel("Search Zip.exe", BuildManager.MakeAbsolute(bd.zipPath), "zip.exe", "exe");
+        path = EditorUtility.OpenFilePanel("Search Zip.exe", BuildManager.MakeAbsolute(bd.zipPath).Replace(@"\", @"\\").ToString(), "exe");
 
         // If path isn't empty parse it and store it
         if (path != "") {
