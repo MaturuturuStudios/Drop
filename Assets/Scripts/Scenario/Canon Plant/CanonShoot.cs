@@ -75,7 +75,7 @@ public class CanonShoot : MonoBehaviour
         setTrajectoryPoints(pos, angle, speed);
         setvisibility();
 
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.L) || Input.GetButtonDown(Axis.Action))
         {
             if (ontriger)
             {
