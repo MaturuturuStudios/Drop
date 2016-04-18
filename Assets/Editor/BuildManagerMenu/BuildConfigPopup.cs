@@ -183,7 +183,6 @@ public class BuildConfigPopup : EditorWindow {
 
         // If path isn't empty parse it and store it
         if (path != "") {
-            path = BuildManager.MakeRelative(@path, @Application.dataPath);
             bd.zipPath = path;
         }
     }
