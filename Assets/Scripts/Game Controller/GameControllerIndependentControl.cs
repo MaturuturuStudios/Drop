@@ -14,13 +14,13 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public List<GameObject> allCurrentCharacters;
 
 
-	/// <summary>
+    /// <summary>
     /// Drop prefab reference
     /// </summary>
     public GameObject PfDrop;
-	//Drop name number when dinamically create it
+    //Drop name number when dinamically create it
     private int _dropNameCounter;
-    
+
     //Camera reference
     private MainCameraController _cameraController;
     #endregion
@@ -33,13 +33,13 @@ public class GameControllerIndependentControl : MonoBehaviour {
         //Get the camera
         _cameraController = GetComponentInChildren<MainCameraController>();
 
-	}
-	
+    }
+
     /// <summary>
     /// Unity's method called on start script only one time
     /// </summary>
     void Start() {
-		//Get the mext drop number
+        //Get the mext drop number
         _dropNameCounter = allCurrentCharacters.Count;
         if (_dropNameCounter == 0 && currentCharacter != null) {
             allCurrentCharacters.Add(currentCharacter);
@@ -56,7 +56,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public GameObject CreateDrop(bool setControl = false, bool addToControlList = true) {
         //Create a drop
         GameObject drop = Instantiate(PfDrop);
-		//Set the name to the object
+        //Set the name to the object
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
 
         //Add to controled drop list
@@ -79,14 +79,14 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// <param name="drop">drop to remove from control & scene</param>
     /// <param name="setControlNextDrop">On drop deleted set the control to next drop</param>
     public void DestroyDrop(GameObject drop, bool setControlNextDrop = false) {
-        if (!IsUnderControl (drop) || allCurrentCharacters.Count > 1) {
+        if (!IsUnderControl(drop) || allCurrentCharacters.Count > 1) {
             //Set control to the next drop if it was the one under control
             if (setControlNextDrop && currentCharacter == drop)
                 ControlNextDrop();
             //remove from control list
             allCurrentCharacters.Remove(drop);
 
-			//Disactive drop because it isn't destroy untill end of frame
+            //Disactive drop because it isn't destroy untill end of frame
             drop.SetActive(false);
 
             //Destroy drop
@@ -170,6 +170,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// <param name="drop">drop to check control</param>
     public bool IsUnderControl(GameObject drop) {
         return allCurrentCharacters.Contains(drop);
+    }
+
+    public List<GameObject> getCharacters() {
+        return allCurrentCharacters;
     }
     #endregion
 }
