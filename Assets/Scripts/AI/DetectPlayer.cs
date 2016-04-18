@@ -10,6 +10,7 @@ public class DetectPlayer : StateMachineBehaviour {
     /// </summary>
     private GameControllerIndependentControl _independentControl;
 
+    Collider triggerArea;
     
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -22,14 +23,7 @@ public class DetectPlayer : StateMachineBehaviour {
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        List<GameObject> list = _independentControl.getCharacters();
-        foreach(GameObject aDrop in list ){
-            Transform positionDrop = aDrop.transform;
-            if(Vector3.Distance(positionDrop.position, animator.rootPosition) < 5) {
-                Debug.Log("Ajaaa!!");
-            }
-        }
-        
+       
         
     }
 
@@ -40,4 +34,11 @@ public class DetectPlayer : StateMachineBehaviour {
     public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         
     }
+
+
+    //public void OnTriggerEnter(Collider ownCollider, Collider other) {
+    //    if (other.tag == Tags.Player && _independentControl.IsUnderControl(other.gameObject)) {
+    //        Debug.Log("Ajaaa!!");
+    //    }
+    //}
 }
