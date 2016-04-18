@@ -109,9 +109,8 @@ public class GameControllerInput : MonoBehaviour {
 			//Select button
 			if (Input.GetButtonDown(Axis.Back))
 				Debug.Log(Axis.Back);
-
-
-		} else if(_ui!=null){
+		}
+		else if(_ui!=null){
 			//Select button
 			if (Input.GetButtonDown(Axis.Back)) {
 				_ui.ComeBack();
@@ -121,6 +120,15 @@ public class GameControllerInput : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	/// <summary>
+	/// Stops the player and closes the input.
+	/// </summary>
+	public void StopInput() {
+		CharacterControllerCustom ccc = _switcher.currentCharacter.GetComponent<CharacterControllerCustom>();
+		ccc.Stop();
+		this.enabled = false;
 	}
 	#endregion
 }

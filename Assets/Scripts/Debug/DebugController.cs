@@ -92,6 +92,12 @@ public class DebugController : MonoBehaviour {
 	private GameControllerIndependentControl _independentControl;
 
 	/// <summary>
+	/// Reference to the cursor controller component from the scene's
+	/// game controller.
+	/// </summary>
+	private GameControllerCursorController _cursorController;
+
+	/// <summary>
 	/// Reference to the input component from the scene's game controller.
 	/// </summary>
 	private GameControllerInput _input;
@@ -134,6 +140,12 @@ public class DebugController : MonoBehaviour {
 	/// </summary>
 	public void ToggleDebugMode() {
 		debugMode = !debugMode;
+		if (debugMode)
+			// Shows the cursor
+			_cursorController.ShowCursor();
+		else
+			// Shows the cursor
+			_cursorController.HideCursor();
 	}
 
 	/// <summary>
@@ -164,18 +176,22 @@ public class DebugController : MonoBehaviour {
 		_camerasInformationTexts = new Dictionary<Camera, GameObject>();
 
 		// Looks for the independent controller component
-		_independentControl = FindObjectOfType<GameControllerIndependentControl>();
-		if (_independentControl == null)
+		_independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
+        if (_independentControl == null)
 			Debug.LogError("Could not find a Game Controller Independent Control!");
 
+		_cursorController = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerCursorController>();
+		if (_cursorController == null)
+			Debug.LogError("Could not find a Game Controller Cursor Controller!");
+
 		// Looks for the input component
-		_input = FindObjectOfType<GameControllerInput>();
+		_input = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
 		if (_input == null)
 			Debug.LogError("Could not find a Game Controller Input!");
 
 		// Looks for the camera switcher component
 		_cameraSwitcher = GetComponentInChildren<DebugCameraSwitcher>();
-		if (_input == null)
+		if (_cameraSwitcher == null)
 			Debug.LogError("Could not children's Debug Camera Switcher!");
 
 		// Initializes the current character
@@ -236,7 +252,6 @@ public class DebugController : MonoBehaviour {
 		// Checks if the debug mode is active
 		debugPanel.SetActive(debugMode);
 		camerasPanelButton.SetActive(debugMode);
-		//Cursor.visible = debugMode;	Still not necessary
 		if (!debugMode) {
 			RestoreCharacterColor();
 			_cameraSwitcher.SetActiveCamera(0);
