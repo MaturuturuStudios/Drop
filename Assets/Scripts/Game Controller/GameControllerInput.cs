@@ -126,9 +126,9 @@ public class GameControllerInput : MonoBehaviour {
 	/// Stops the player and closes the input.
 	/// </summary>
 	public void StopInput() {
-		CharacterControllerCustom ccc = _switcher.currentCharacter.GetComponent<CharacterControllerCustom>();
-		ccc.Stop();
-		this.enabled = false;
+		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+		cccp.Stop();
+		enabled = false;
 	}
 	#endregion
 }
