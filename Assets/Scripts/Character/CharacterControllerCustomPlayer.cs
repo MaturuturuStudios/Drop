@@ -95,6 +95,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// </summary>
 	private float _slopeStickTime;
 
+	/// <summary>
+	/// Flag that indicates if the player is jumping.
+	/// </summary>
+	private bool _isJumping;
+
 	#endregion
 
 	#region Methods
@@ -112,17 +117,18 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 		// Sets the jump button flag
 		_jumpReleased = true;
+		_isJumping = false;
 	}
 
 	/// <summary>
 	/// Unity's method called every frame.
 	/// Sends the input to the controller.
 	/// </summary>
-	public void Update() {
+	public void FixedUpdate() {
 		// Decreses the timers
-		_jumpPressTime -= Time.deltaTime;
-		_jumpDelayTime -= Time.deltaTime;
-		_slopeStickTime -= Time.deltaTime;
+		_jumpPressTime -= Time.fixedDeltaTime;
+		_jumpDelayTime -= Time.fixedDeltaTime;
+		_slopeStickTime -= Time.fixedDeltaTime;
 
 		// Checks where the player is facing
 		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
@@ -190,11 +196,18 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			groundTrick = true;
 		}
 
+		// If the character is jumping and the player is holding the jump button, add additional force
+		if (_isJumping && JumpInput > 0)
+			_controller.HoldJump();
+		else
+			_isJumping = false;
+
 		// Makes the character jump
 		if (_jumpPressTime >= 0 && _controller.CanJump()) {
 			_jumpDelayTime = -1;
 			_jumpPressTime = -1;
 			_controller.Jump();
+			_isJumping = true;
 		}
 
 		// Restores the controller state, undoing the trick

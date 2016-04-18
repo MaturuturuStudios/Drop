@@ -75,6 +75,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 	#region Public Attributes
 
 	/// <summary>
+	/// There is an error factor on height calculations when holding the jump button.
+	/// </summary>
+	[HideInInspector]
+	public float errorFactor = 1.1f;
+
+	/// <summary>
 	/// Default parameters. If no parameters have been specified, the default ones will 
 	/// be used.
 	/// </summary>
@@ -107,6 +113,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// Time since the last time the character jumped.
 	/// </summary>
 	private float _jumpingTime;
+
+	/// <summary>
+	/// Remaining time the player can hold the jump button to jump higher.
+	/// </summary>
+	private float _jumpHoldTime;
 
 	/// <summary>
 	/// After been sent flying, specifies if the character will stop flying when
@@ -357,10 +368,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Adds the right forces
 		if (horizontal && (State.IsGrounded || horizontalInput != 0)) {
-			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
+			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.fixedDeltaTime);
 		}
 		if (vertical && (State.IsGrounded || verticalInput != 0)) {
-			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.deltaTime);
+			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.fixedDeltaTime);
 		}
 
 		// If it's grounded on a slope, subtracts the necessary vertical speed to stick to the ground
@@ -416,9 +427,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Normal jump
 		if (!State.IsOnSlope) {
 			// Calculates the jump speed to reach the desired height
-			float jumpHeight = GetSize() * Parameters.jumpMagnitude;
-			float jumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(Parameters.Gravity.magnitude * jumpHeight));
+			float jumpHeight = errorFactor * GetSize() * Parameters.jumpMagnitude;
+			float gravity = Parameters.Gravity.magnitude;
+			float jumpSpeed = -2 * gravity * Parameters.jumpHoldTimeMax;
+			float root = -jumpSpeed;
+			root *= root;
+			root += 8 * gravity * jumpHeight;
+			jumpSpeed += Mathf.Sqrt(root);
+			jumpSpeed /= 2;
 			SetVerticalForceRelative(jumpSpeed);
+			_jumpHoldTime = Parameters.jumpHoldTimeMax;
 		}
 		// Wall jump
 		else if (Collisions.Where(o => o.CompareTag(Tags.WallJump)).Count() > 0) {
@@ -446,6 +464,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 
 		_jumpingTime = Parameters.jumpFrequency;
+	}
+
+	/// <summary>
+	/// Makes the character stay jumping. Used while the jump button is being pressed.
+	/// </summary>
+	public void HoldJump() {
+		if (_jumpHoldTime > 0)
+			AddForce(-Parameters.Gravity, ForceMode.Acceleration);
 	}
 
 	/// <summary>
@@ -522,6 +548,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Decreases the timers
 		_jumpingTime -= Time.fixedDeltaTime;
 		_flyingTime -= Time.fixedDeltaTime;
+		_jumpHoldTime -= Time.fixedDeltaTime;
 
 		// If the flying timer has expired, stops the flight
 		if (_flyingTime < 0)
