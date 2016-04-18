@@ -144,11 +144,20 @@ public class BuildManager {
             if (bd == null)
                 bd = new BuildData();
 
+
+
             // Clear old scenes
             bd.scenes.Clear();
 
+            // Get where to start
+            int i = 0;
+
+            // If scene is in build settings we have to count one more scene
+            int handler = 0;
+
+
             // Get new scenes
-            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; ++i) {
+            for (; i < SceneManager.sceneCountInBuildSettings + handler; ++i) {
 
                 //Load next Scene
                 SceneManager.LoadScene(i);
@@ -156,11 +165,15 @@ public class BuildManager {
                 // Get scene path
                 string path = SceneManager.GetSceneAt(i).path;
                 if (i > 0) {
+
+                    // Add to scene list
                     bd.scenes.Add(path);
                     Debug.Log("Scene Loaded: " + path);
+
+                    // Check if scene is build settings
+                    if (SceneManager.GetSceneAt(0).name == SceneManager.GetSceneAt(i).name)
+                        handler = 1;
                 }
-
-
             }
 
             Debug.Log(bd.scenes.Count + " scenes catched");
@@ -278,7 +291,7 @@ public class BuildManager {
         try {
 
             // Get zip location
-            proc.StartInfo.FileName = MakeAbsolute(bm.bd.zipPath).Replace(@"\", @"\\").ToString();
+            proc.StartInfo.FileName = MakeAbsolute(bm.bd.zipPath);
 
             // Get directory where process will work
             proc.StartInfo.WorkingDirectory = MakeAbsolute(bm.bd.workPath);
