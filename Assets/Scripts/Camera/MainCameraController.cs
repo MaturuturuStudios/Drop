@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Controller for main camera.
@@ -49,13 +49,13 @@ public class MainCameraController : MonoBehaviour {
     }
     //Look Arround Offset
     private Vector3 _lookArroundOffset;
-    
+
     /// <summary>
     /// Camera liberty movement bounds
     /// </summary>
     //	Bounds Attributes
     public Boundary bounds;
-	//  Bounds Class
+    //  Bounds Class
     [System.Serializable]
     public class Boundary {
         public float top = 100.0f;
@@ -67,6 +67,14 @@ public class MainCameraController : MonoBehaviour {
 	//bounds exceded controll
     private float excededX = 0F;
     private float excededY = 0F;
+
+    
+    /// <summary>
+    /// Array of areas where area will be allocated in a fixed place
+    /// </summary>
+    public List<Transform> fixedAreas;
+
+
 
     // Reference to the independent control component from the scene's game controller.
     private GameControllerIndependentControl _independentControl;
@@ -208,6 +216,21 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public void RestoreTarget() {
         SetObjective(_independentControl.currentCharacter);
+    }
+
+    /// <summary>
+    /// Set the look arround offset
+    /// </summary>
+    public void FixCamera(Vector3 position, Vector3 size) {
+        //Setting look arround values depending of the input
+
+    }
+
+    /// <summary>
+    /// Set the look arround offset
+    /// </summary>
+    public void UnfixCamera() {
+        //Setting look arround values depending of the input
     }
 
     /// <summary>
