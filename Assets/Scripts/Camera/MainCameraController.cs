@@ -81,6 +81,12 @@ public class MainCameraController : MonoBehaviour {
 
     //Reference to current caracter size
     private float _dropSize;
+
+    // Check for camera in locked area
+    private bool _cameraInLockArea = false;
+
+    // Check for camera in locked area
+    private Vector3 _lockPosition;
     #endregion
 
     #region Methods
@@ -144,6 +150,10 @@ public class MainCameraController : MonoBehaviour {
 		//Calculate destination
         Vector3 destination = target.transform.position + _offset;
 
+        if (_cameraInLockArea)
+            destination = _lockPosition;
+
+
         //Add Loook around offset
         destination += _lookArroundOffset;
 
@@ -185,7 +195,15 @@ public class MainCameraController : MonoBehaviour {
 
         //Add Loook around offset
         destination += _lookArroundOffset;
-        
+
+
+        if (_cameraInLockArea) {
+            Vector3 destinationOnZ = _lockPosition;
+            destinationOnZ.z = 0;
+            destination = destinationOnZ;
+            transform.rotation = Quaternion.identity;
+        }
+
         //If there isn't liberty looking at, block it
         if (lookAt.lookAtFixedOnBounds && excededX != 0) 
             destination.x = excededX;
@@ -224,6 +242,14 @@ public class MainCameraController : MonoBehaviour {
     public void FixCamera(Vector3 position, Vector3 size) {
         //Setting look arround values depending of the input
 
+        _cameraInLockArea = true;
+
+        float cameraZPos = (size.y) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
+
+        _lockPosition = new Vector3(position.x, position.y,  -cameraZPos);
+
+
+
     }
 
     /// <summary>
@@ -231,6 +257,7 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public void UnfixCamera() {
         //Setting look arround values depending of the input
+        _cameraInLockArea = false;
     }
 
     /// <summary>
