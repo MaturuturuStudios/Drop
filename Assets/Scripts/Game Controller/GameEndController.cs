@@ -61,7 +61,7 @@ public class GameEndController : MonoBehaviour {
         //in case that the scene is empty, by default we use StartScene
         //TODO improve this part, try to avoid hardcoded strings
         if (endGame.nextScene.name == "Not" || endGame.nextScene.name == "") {
-            Debug.LogWarning("Next Scene not setted, assigning StartScene by default");
+            Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
             endGame.nextScene.name = "StartScene";
         }
 

@@ -9,6 +9,12 @@ public class LockAreaController : MonoBehaviour {
     #region Attributes
 
     /// <summary>
+    /// Frame size of the trigger. It's the zone that will be seen outside of the trigger
+    /// </summary>
+    public float frameSize = 0F;
+
+
+    /// <summary>
     /// Reference to the collider of end region.
     /// </summary>
     private BoxCollider _collider;
@@ -32,16 +38,6 @@ public class LockAreaController : MonoBehaviour {
         // Retrieves the components of the entities.
         _collider = gameObject.GetComponent<BoxCollider>();
 
-        // Force dimensions
-        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x, transform.localScale.x);
-        _collider.size = new Vector3(_collider.size.x, _collider.size.x * 9 / 16, _collider.size.x * 9 / 16);
-
-        // Force position
-        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-
-        // Force rotation
-        transform.rotation = new Quaternion(0, 0, transform.rotation.z, 0);
-
     }
 
     /// <summary>
@@ -53,20 +49,42 @@ public class LockAreaController : MonoBehaviour {
         _cameraController = Camera.main.GetComponent<MainCameraController>();
     }
 
+    /// <summary>
+    /// Control the state of the input data
+    /// </summary>
+	void Update() {
 
-	/// <summary>
+        // Force dimensions
+        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x, transform.localScale.x);
+        _collider.size = new Vector3(_collider.size.x, _collider.size.x * 9 / 16, _collider.size.x * 9 / 16);
+
+        // Force position
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        _collider.center = new Vector3(_collider.center.x, _collider.center.y, 0);
+
+        // Force rotation
+        transform.rotation = new Quaternion(0, 0, transform.rotation.z, 0);
+
+        // Force frame size
+        if (frameSize < 1)
+            frameSize = 1;
+    }
+
+
+    /// <summary>
     /// When player enters on the trigger fix the camera in a determinate position
     /// </summary>
     /// <param name="other">Collider who enters in the trigger</param>
-    void OnTriggerEnter(Collider other){
+    void OnTriggerEnter(Collider other) {
 
         //only active it with players
-        if (other.CompareTag(Tags.Player)){
+        if (other.CompareTag(Tags.Player)) {
 
             // Calculate parameters to send
-            //Vector2 position = new Vector2((_collider.center.x - _collider.size.x / 2), (_collider.center.y + _collider.size.y / 2));
-            Vector2 centerPosition = new Vector2(transform.position.x, transform.position.y);
-            Vector2 size = new Vector2(_collider.size.x, _collider.size.y);
+            float xPos = transform.position.x + (_collider.center.x * transform.localScale.x);
+            float yPos = transform.position.y + (_collider.center.y * transform.localScale.y);
+            Vector2 centerPosition = new Vector2(xPos, yPos);
+            Vector2 size = new Vector2(_collider.size.x + (frameSize * 2), _collider.size.y + (frameSize * (2 * 9 / 16)));
 
             // Fix the camera
             _cameraController.FixCamera(centerPosition, size * transform.localScale.x);
@@ -98,6 +116,7 @@ public class LockAreaController : MonoBehaviour {
         // Calls the configuration functions
         if (!Application.isPlaying) {
             Awake();
+            Update();
         }
 
         // Defines the color of the gizmo
@@ -105,19 +124,23 @@ public class LockAreaController : MonoBehaviour {
         color.a = 0.15f;
         Gizmos.color = color;
 
-     // Draws the cube
-     Gizmos.matrix = transform.localToWorldMatrix;
-     
-     Vector3 pos = _collider.center;
-     Vector3 size = _collider.size;
-     size.z = 0.01f;
-     Gizmos.DrawCube(pos, size);
+        // Convert dimensions to local
+        Gizmos.matrix = transform.localToWorldMatrix;
 
+        // Draws camera displayed zone
+        Vector3 pos = _collider.center;
+        Vector3 size = _collider.size;
+        // Add frame
+        size.x += (frameSize * 2);
+        size.y += (frameSize * (2 * 9 / 16) );
+        size.z = 0.01f;
+        Gizmos.DrawCube(pos, size);
 
-     Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
-     Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
-     Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
-     Gizmos.DrawLine(new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
+        // Draw trigger action zone
+        Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
+        Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
+        Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
+        Gizmos.DrawLine(new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
 
     }
     #endregion

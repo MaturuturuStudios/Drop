@@ -151,11 +151,11 @@ public class MainCameraController : MonoBehaviour {
         Vector3 destination = target.transform.position + _offset;
 
         if (_cameraInLockArea)
+            // Lock camera
             destination = _lockPosition;
-
-
-        //Add Loook around offset
-        destination += _lookArroundOffset;
+        else
+            //Add Loook around offset
+            destination += _lookArroundOffset;
 
         //Reset bounds exceded to recalculate
         excededX = excededY = 0;
