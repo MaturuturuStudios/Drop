@@ -1,16 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AIAnt : MonoBehaviour {
+public class AIAnt : AIBase {
 
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
