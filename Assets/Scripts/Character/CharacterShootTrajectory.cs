@@ -129,6 +129,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     #endregion
 
+    #region Methods
+
     /// <summary>
 	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
@@ -379,4 +381,5 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     }
 
+    #endregion
 }
