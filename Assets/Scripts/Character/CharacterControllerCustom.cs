@@ -470,7 +470,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// Makes the character stay jumping. Used while the jump button is being pressed.
 	/// </summary>
 	public void HoldJump() {
-		if (_jumpHoldTime > 0)
+		if (_jumpHoldTime > 0 && !State.IsFlying)	// Disabled while flying too
 			AddForce(-Parameters.Gravity, ForceMode.Acceleration);
 	}
 
