@@ -2,52 +2,139 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// This class draws the shoot trajectory 
+/// </summary>
 public class CharacterShootTrajectory : MonoBehaviour
 {
+    #region Private Attributes
 
-    public GameObject TrajectoryPointPrefeb;
-    public GameObject TrajectorySizeIndicator;
-    public GameObject TrajectoryParticlePrefeb;
-    public int numOfTrajectoryPoints = 30;
-    public float particletrajectoryspeed = 0.08f;
-
-    public float speed = 1.0F;
-
+    /// <summary>
+    /// This is to draw the animation of the particle that move throught the trajectory 
+    /// </summary>
     private float journeyLength;
     private float faction_of_path_traveled;
     private int lastWaypoint, nextWaypoint, finalWaypoint;
 
-    public LayerMask Scene=8;
-    public LayerMask Character=9;
-
+    /// <summary>
+    /// This is the arrays of the trajectory points
+    /// </summary>
     private List<GameObject> trajectoryPoints;
-    private List<GameObject> bolas;
+
+    /// <summary>
+    /// These are the scripts objects
+    /// </summary>
     private CharacterControllerCustom ccc;
     private CharacterController c;
 
-
-    private Vector3 vel, pVelocity;
-    private float shootsize = 1;
-    public float limitshoot = 5;
-
-
+    /// <summary>
+    /// Ray cast to know where the trajectory points are hitting
+    /// </summary>
     private RaycastHit hit;
+
+    /// <summary>
+    /// Vector which contain the information that we need to shoot a drop in the sendflying method
+    /// </summary>
+    private Vector3 pVelocity;
+
+    /// <summary>
+    /// Size of the drop that will be shooted
+    /// </summary>
+    private float shootsize = 1;
+
+    /// <summary>
+    /// Vector auxiliar to keep data
+    /// </summary>
     private Vector3 fwd;
+
+    /// <summary>
+    /// Boolean to know if the raycast hitted something
+    /// </summary>
     private bool colisiondetected = false;
+
+    /// <summary>
+    /// Objects that represent the sphere that travel around the trajectory and the ball that indicate the size of the drop shooted
+    /// </summary>
     private GameObject sphere, ball;
-   
-    private float oldvelocity;
+
+    /// <summary>
+    /// Float that catch the Axis Inputs
+    /// </summary>
     private float h, v;
-    //private float shootlimiet = 1;
+
+    /// <summary>
+    /// Float to indiccate if we changed the size of the drop shooted
+    /// </summary>
     private bool selecting = false;
+
+    /// <summary>
+    /// Variable to keep data
+    /// </summary>
     private float velocity = 1;
 
+    /// <summary>
+    /// Ray cast to know where the last trajectory point hit something
+    /// </summary>
     private RaycastHit hitpoint;
+
+    /// <summary>
+    /// Angle of the trajectory that we will changing with the input axis
+    /// </summary>
     private float angle;
-    // Use this for initialization
+
+    /// <summary>
+    /// Speed that help to calculate the power that the drop will be shooted
+    /// </summary>
+    private float speed = 1.0F;
+
+    #endregion
+
+    #region Public Attributes
+
+    /// <summary>
+    /// Prefab of the trajectory points
+    /// </summary>
+    public GameObject TrajectoryPointPrefeb;
+
+    /// <summary>
+    ///Prefab of the size indicator at the end of the trajectory path
+    /// </summary>
+    public GameObject TrajectorySizeIndicator;
+
+    /// <summary>
+    /// Prefab of the particle that travel in the trajectory path
+    /// </summary>
+    public GameObject TrajectoryParticlePrefeb;
+
+    /// <summary>
+    /// Number of trajectoyr points we will have
+    /// </summary>
+    public int numOfTrajectoryPoints = 100;
+
+    /// <summary>
+    /// Speed of the particle that travel in the trajectory path
+    /// </summary>
+    public float particletrajectoryspeed = 0.08f;
+
+    /// <summary>
+    /// Layer to indicate with what things the raycast will hit
+    /// </summary>
+    public LayerMask Scene=8;
+    public LayerMask Character=9;
+
+    /// <summary>
+    /// Variable to calculate the max distance of the trajectory path
+    /// </summary>
+    public float limitshoot = 5;
+
+    #endregion
+
+    /// <summary>
+	/// Unity's method called when the entity is created.
+	/// Recovers the desired componentes of the entity.
+	/// </summary>
     void Awake()
-    {
-       
+    {      
         this.enabled = false;
 
         angle = 45;
@@ -72,13 +159,19 @@ public class CharacterShootTrajectory : MonoBehaviour
         finalWaypoint = trajectoryPoints.Capacity;
     }
 
+    /// <summary>
+	/// Method to know if we changed the size of the drop shooted
+	/// </summary>
     public void selectingsize(float size)
     {
         shootsize = size;
         selecting = true;
 
     }
-    //This fuctions create prefabs that we are going to use and initialite some variables
+
+    /// <summary>
+    /// Method to creat the sphere that travel in the trajectory path and the ball the indicate the size of the shooted drop.
+    /// </summary>
     public void OnEnable()
     {
         shootsize = 1;
@@ -91,16 +184,17 @@ public class CharacterShootTrajectory : MonoBehaviour
         ball.GetComponent<Collider>().enabled = false;
 
         ball.GetComponent<Renderer>().enabled = true;
-
-       
+    
         nextWaypoint = 1;
         lastWaypoint = 0;
 
     }
-    //This fuctions delete prefabs that we ar not using
+
+    /// <summary>
+	/// Method to destroy the sphere that travel in the trajectory path and the ball the indicate the size of the shooted drop.
+	/// </summary>
     public void OnDisable()
     {
-
         if (ball != null)
             ball.GetComponent<Renderer>().enabled = false;
 
@@ -108,7 +202,10 @@ public class CharacterShootTrajectory : MonoBehaviour
         Destroy(ball);
 
     }
-    // Update is called once per frame
+
+    /// <summary>
+    /// Unity's method called each frame.
+    /// </summary>
     void Update()
     {
 
@@ -122,17 +219,21 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         angle -= h;
 
+        //Calculate the vector from the drop  where  be shooted 
         Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<SphereCollider>().radius* ball.transform.lossyScale.x);
+        //The power of the shoot
         float speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
 
         setTrajectoryPoints(pos, angle, speed);
         setvisibility();
         canshooot();
-        Example();
+        ParticleTrip();
 
     }
 
-    //This fuctions calculate if there is a colision with the raycast of the first shoot trajectory  before it
+    /// <summary>
+    /// This fuctions calculate if there is a colision with the raycast of the first shoot trajectory  before it
+    /// </summary>
     public bool canshooot()
     {
         float dis = 0;
@@ -161,8 +262,10 @@ public class CharacterShootTrajectory : MonoBehaviour
             return true;
         }
     }
-
-    //This fuctions delete the trajectory
+   
+    /// <summary>
+    /// This fuctions delete the trajectory
+    /// </summary>
     public void QuitTrajectory()
     {
         for (int i = 0; i < numOfTrajectoryPoints; i++)
@@ -173,19 +276,22 @@ public class CharacterShootTrajectory : MonoBehaviour
         
     }
 
-    //This fuctions return the shoot vector for the shoot script
+    ///  <summary>
+    /// This fuctions return the shoot vector for the shoot script
+    /// </summary>
     public Vector3 GetpVelocity()
     {
         return pVelocity; 
     }
 
-    //This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
+    ///  <summary>
+    /// This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
+    /// </summary>
     void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed)
     {
-
+        //calculate the end vector of the trajectory
         pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
-       // Debug.Log(" APUNTANDO " + pVelocity);
-
+        //magnitud of the pVelocity to calculate de distance
         velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
 
         float fTime = 0;
@@ -204,10 +310,11 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     }
 
-    //This fuctions draw the particle trip along the trajectory
-    public void Example()
+    ///  <summary>
+    /// This fuctions draw the particle trip along the trajectory
+    /// </summary>
+    public void ParticleTrip()
     {
-         //Debug.Log("FINAL " + finalWaypoint);
             if (nextWaypoint > finalWaypoint)
             {
                 nextWaypoint = 1;
@@ -229,9 +336,9 @@ public class CharacterShootTrajectory : MonoBehaviour
         
     }
 
-
-
-    //This fuction draw the trajectory prefab depending on the colisions with their raycast
+    ///  <summary>
+    /// This fuction draw the trajectory prefab depending on the colisions with their raycast
+    /// </summary>
     public void setvisibility()
     {
         float dis = 0;
