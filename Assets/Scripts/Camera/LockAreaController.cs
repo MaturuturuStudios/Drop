@@ -50,7 +50,7 @@ public class LockAreaController : MonoBehaviour {
     void Start() {
 
         // Retrieves the components of the entity.
-        _cameraController = GetComponentInParent<MainCameraController>();
+        _cameraController = Camera.main.GetComponent<MainCameraController>();
     }
 
 
@@ -65,11 +65,11 @@ public class LockAreaController : MonoBehaviour {
 
             // Calculate parameters to send
             //Vector2 position = new Vector2((_collider.center.x - _collider.size.x / 2), (_collider.center.y + _collider.size.y / 2));
-            Vector2 centerPosition = new Vector2(_collider.center.x, _collider.center.y);
+            Vector2 centerPosition = new Vector2(transform.position.x, transform.position.y);
             Vector2 size = new Vector2(_collider.size.x, _collider.size.y);
 
             // Fix the camera
-            _cameraController.FixCamera(centerPosition, size);
+            _cameraController.FixCamera(centerPosition, size * transform.localScale.x);
         }
     }
 
@@ -107,7 +107,7 @@ public class LockAreaController : MonoBehaviour {
 
      // Draws the cube
      Gizmos.matrix = transform.localToWorldMatrix;
-        /*
+     
      Vector3 pos = _collider.center;
      Vector3 size = _collider.size;
      size.z = 0.01f;
@@ -118,21 +118,6 @@ public class LockAreaController : MonoBehaviour {
      Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
      Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
      Gizmos.DrawLine(new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
-
-     */
-        Vector2 position2 = new Vector2((_collider.center.x - _collider.size.x / 2), (_collider.center.y + _collider.size.y / 2));
-        Vector2 size2 = new Vector2( _collider.size.x, _collider.size.y);
-
-
-        Color color2 = Color.blue;
-        color2.a = 0.15f;
-        Gizmos.color = color2;
-
-        Gizmos.DrawLine(new Vector3(position2.x, position2.y, 0), new Vector3(position2.x, position2.y - size2.y, 0));
-        Gizmos.DrawLine(new Vector3(position2.x, position2.y, 0), new Vector3(position2.x + size2.x , position2.y, 0));
-        Gizmos.DrawLine(new Vector3(position2.x, position2.y - size2.y, 0), new Vector3(position2.x + size2.x, position2.y - size2.y, 0));
-        Gizmos.DrawLine(new Vector3(position2.x + size2.x, position2.y, 0), new Vector3(position2.x + size2.x, position2.y - size2.y, 0));
-
 
     }
     #endregion
