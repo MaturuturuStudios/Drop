@@ -3,32 +3,124 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Walking : StateMachineBehaviour {
+    #region Public and hidden in inspector attributes
     [HideInInspector]
     public GameObject enemy = null;
+
+
     [HideInInspector]
-    public List<Vector3> path;
+    /// <summary>
+	/// A reference to the path this entity will follow.
+	/// </summary>
+	public PathDefinition path;
+    [HideInInspector]
+    /// <summary>
+	/// Defines how will the entity move to the next point in the path.
+	/// </summary>
+	public FollowType followType = FollowType.MoveTowards;
+    /// <summary>
+	/// Speed of the entity.
+	/// </summary>
+	public float speed = 10;
+    /// <summary>
+    /// Distance tolerance for the entity to look for a new point in the path.
+    /// </summary>
+    public float maxDistanceToGoal = 0.1f;
+    /// <summary>
+    /// If enabled, the entity will also rotate to fit the point's rotation.
+    /// </summary>
+    public bool useOrientation = false;
+    /// <summary>
+    /// Defines how the entity looks for the next point in the path.
+    /// </summary>
+    public PathType pathType = PathType.Random;
+    #endregion
+
+    #region Private attribute
+    /// <summary>
+	/// A reference to the entity's transform.
+	/// </summary>
+	private Transform _transform;
+    /// <summary>
+	/// Enumerator of the path.
+	/// </summary>
+	private IEnumerator<Transform> _pathEnumerator;
+    #endregion
+
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         Debug.Log("Walking");
+
+        _transform = enemy.transform;
+        if (_pathEnumerator == null) {
+            // Selects the current path type
+            switch (pathType) {
+                case PathType.BackAndForward:
+                    _pathEnumerator = path.GetBackAndForwardEnumerator();
+                    break;
+                case PathType.Loop:
+                    _pathEnumerator = path.GetLoopEumerator();
+                    break;
+                case PathType.Random:
+                    _pathEnumerator = path.GetRandomEnumerator();
+                    break;
+                default:
+                    Debug.LogError("Unrecognized path type!");
+                    return;
+            }
+        }
+
+        // Moves the enumerator to the first/next position
+        _pathEnumerator.MoveNext();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        Debug.Log("Stop wlaking");
         animator.SetBool("ChangeState", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        
+        //check if have condition to change state
         int size = animator.GetInteger("SizeDrop");
         int sizeLimit = animator.GetInteger("LimitSizeDrop");
-
         if (sizeLimit<=0 || (size < sizeLimit && size>0)) {
             Debug.Log("Changed state");
             animator.SetBool("ChangeState", true);
         }
 
+
+
         //set the moving path
-       
+        if (_pathEnumerator == null || _pathEnumerator.Current == null)
+            return;
+
+        // Saves the original position
+        Vector3 originalPosition = _transform.position;
+
+        // Moves the entity using the right function
+        switch (followType) {
+            case FollowType.MoveTowards:
+                _transform.position = Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
+                break;
+            case FollowType.Lerp:
+                _transform.position = Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
+                break;
+            default:
+                return;
+        }
+
+        // Rotates the entity
+        if (useOrientation) {
+            float traveledDistance = (_transform.position - originalPosition).magnitude;
+            float remainingDistance = (_pathEnumerator.Current.position - originalPosition).magnitude;
+            if (remainingDistance > 0.01f)
+                _transform.rotation = Quaternion.Lerp(_transform.rotation, _pathEnumerator.Current.rotation, traveledDistance / remainingDistance);
+        }
+
+        // Checks if the entity is close enough to the target point
+        float squaredDistance = (_transform.position - _pathEnumerator.Current.position).sqrMagnitude;
+        // The squared distance is used because a multiplication is cheaper than a square root
+        if (squaredDistance < maxDistanceToGoal * maxDistanceToGoal)
+            _pathEnumerator.MoveNext();
     }
 
     public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -38,4 +130,6 @@ public class Walking : StateMachineBehaviour {
     public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 
     }
+
+
 }

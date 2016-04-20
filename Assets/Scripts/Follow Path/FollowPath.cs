@@ -39,7 +39,11 @@ public class FollowPath : MonoBehaviour {
 		/// After reaching the end, returns to the first point in the path
 		/// and starts again in the same order.
 		/// </summary>
-		Loop
+		Loop,
+        /// <summary>
+        /// Start and continue to random points
+        /// </summary>
+        Random
 	}
 
 	#endregion
@@ -111,11 +115,14 @@ public class FollowPath : MonoBehaviour {
 		// Selects the current path type
 		switch (pathType) {
 			case PathType.BackAndForward:
-				_pathEnumerator = path.GetBackAndForwardEumerator();
+				_pathEnumerator = path.GetBackAndForwardEnumerator();
 				break;
 			case PathType.Loop:
 				_pathEnumerator = path.GetLoopEumerator();
 				break;
+            case PathType.Random:
+                _pathEnumerator = path.GetRandomEnumerator();
+                break;
 			default:
 				Debug.LogError("Unrecognized path type!", gameObject);
 				return;
@@ -166,5 +173,13 @@ public class FollowPath : MonoBehaviour {
 			_pathEnumerator.MoveNext();
 	}
 
-	#endregion
+    /// <summary>
+	/// Unity's method called by the editor in order to draw the gizmos.
+	/// Draws the path on the editor.
+	/// </summary>
+	public void OnDrawGizmos() {
+        path.OnDrawGizmos();
+    }
+
+    #endregion
 }
