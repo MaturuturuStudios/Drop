@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class AIBase : MonoBehaviour {
     #region Public Attribute
+    public GameObject enemy;
     /// <summary>
     /// Area in which enemy react
     /// </summary>
@@ -57,18 +58,18 @@ public class AIBase : MonoBehaviour {
     public void Awake() {
         _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
-        _animator = gameObject.GetComponent<Animator>();
+        _animator = enemy.GetComponent<Animator>();
         _animator.SetInteger("LimitSizeDrop", sizeLimitDrop);
     }
 
     public void Start() {
         //get the behaviours and set their data
         Walking walkingAI = _animator.GetBehaviour<Walking>();
-        walkingAI.enemy = gameObject;
+        walkingAI.enemy = enemy;
         walkingAI.timeUntilIddle = timeUntilIddle;
 
         GoAway runningAway= _animator.GetBehaviour<GoAway>();
-        runningAway.enemy = gameObject;
+        runningAway.enemy = enemy;
         runningAway.endPoint = endPoint;
 
         DetectPlayer detectedAI = _animator.GetBehaviour<DetectPlayer>();
