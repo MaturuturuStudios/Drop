@@ -224,7 +224,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         //Calculate the vector from the drop  where  be shooted 
         Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<SphereCollider>().radius* ball.transform.lossyScale.x);
         //The power of the shoot
-        float speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
+        speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
 
         setTrajectoryPoints(pos, angle, speed);
         setvisibility();
