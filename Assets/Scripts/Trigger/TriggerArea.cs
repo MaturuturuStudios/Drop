@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Defines an area which will fire events when something
@@ -7,7 +9,52 @@
 /// </summary>
 public class TriggerArea : MonoBehaviour {
 
+	#region Enumerations
+
+	/// <summary>
+	/// Defines how the area will behave.
+	/// </summary>
+	public enum TriggerMode {
+
+		/// <summary>
+		/// Events will be called for every object that
+		/// interacts with the trigger.
+		/// </summary>
+		Sensor,
+
+		/// <summary>
+		/// OnExit will only be called once all the objects have
+		/// left the area. OnEnter will only be called once OnExit
+		/// has been called.
+		/// </summary>
+		Switch,
+
+		/// <summary>
+		/// Similiar to the Switch mode, but OnExit will be called
+		/// once an amount of time has passed.
+		/// </summary>
+		TimedSwitch
+	}
+
+	#endregion
+
 	#region Public Attributes
+
+	/// <summary>
+	/// Defines how the area will behave.
+	/// </summary>
+	public TriggerMode triggerMode = TriggerMode.Switch;
+
+	/// <summary>
+	/// Amount of time after which the switch will be turned off.
+	/// </summary>
+	public float switchTime = 0.0f;
+
+	/// <summary>
+	/// If enabled, the trigger will be disabled after the OnExit
+	/// call has been performed.
+	/// </summary>
+	public bool autoDisable = false;
 
 	/// <summary>
 	/// If enabled, the Gizmos will be drawn in the editor even
@@ -39,6 +86,21 @@ public class TriggerArea : MonoBehaviour {
 	/// </summary>
 	private Collider[] _colliders;
 
+	/// <summary>
+	/// List of colliders currently staying on the area.
+	/// </summary>
+	private List<Collider> _stayingColliders;
+
+	/// <summary>
+	/// If the area is a switch, stores if it's been activated or not.
+	/// </summary>
+	private bool _switchActive = false;
+
+	/// <summary>
+	/// The remaining time until the switch is deactivated.
+	/// </summary>
+	private float _remainingTimeToDeactivateSwitch;
+
 	#endregion
 
 	#region Methods
@@ -48,6 +110,10 @@ public class TriggerArea : MonoBehaviour {
 	/// Checks if at least one trigger is attached to the object.
 	/// </summary>
 	void Start() {
+		// Initialization
+		_stayingColliders = new List<Collider>();
+
+		// Checks if the colliders are valid
 		_colliders = GetComponents<Collider>();
 		if (_colliders.Length == 0)
 			Debug.LogWarning("Warning: No collider attached to the trigger area!");
@@ -64,21 +130,59 @@ public class TriggerArea : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Unity's method called each frame.
+	/// </summary>
+	void Update() {
+		// Checks if the switch should be deactivated
+		if (_switchActive && triggerMode == TriggerMode.TimedSwitch) {
+			_remainingTimeToDeactivateSwitch -= Time.deltaTime;
+
+			if (_remainingTimeToDeactivateSwitch <= 0)
+				DoExit();
+		}
+
+		// Removes any destroyed collider
+		_stayingColliders = _stayingColliders.Where(e => e != null).ToList();
+	}
+
+	/// <summary>
 	/// Unity's method called when an entity enters the trigger
 	/// area.
+	/// If the trigger is a switch it will only be called if it's
+	/// deactivated.
 	/// </summary>
 	/// <param name="other">The collider entering the area</param>
 	void OnTriggerEnter(Collider other) {
-		foreach (MethodInvoke methodInvoke in onEnter.AsList())
-			methodInvoke.Invoke();
+		if (!enabled)
+			return;
+
+		// Adds the collider to the list
+		_stayingColliders.Add(other);
+
+		// Checks if the enter call should be performed
+		if ((triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) && _switchActive)
+			// It will not be called if it's a switch and it's activated
+			return;
+
+		// Performs the entrance
+		DoEnter();
 	}
 	
 	/// <summary>
 	/// Unity's method called while an entity stays in the trigger
 	/// area.
+	/// WARNING: This method will NOT be called if the trigger is a switch.
 	/// </summary>
 	/// <param name="other">The collider staying int the area</param>
 	void OnTriggerStay(Collider other) {
+		if (!enabled)
+			return;
+
+		// This method will not be called if the trigger is a swtich
+		if (triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch)
+			return;
+
+		// Performs the method invocations
 		foreach (MethodInvoke methodInvoke in onStay.AsList())
 			methodInvoke.Invoke();
 	}
@@ -86,11 +190,59 @@ public class TriggerArea : MonoBehaviour {
 	/// <summary>
 	/// Unity's method called when an entity exits the trigger
 	/// area.
+	/// If the trigger is a switch it will only be called if it's
+	/// activated and there's no colliders remaining in the area.
 	/// </summary>
 	/// <param name="other">The collider exiting the area</param>
-		void OnTriggerExit(Collider other) {
+	void OnTriggerExit(Collider other) {
+		if (!enabled)
+			return;
+
+		// Removes the collider from the list
+		_stayingColliders.Remove(other);
+
+		// Checks if the enter call should be performed
+		if (triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) {
+			// It will not be called if it's a switch and it's not activated
+			if (!_switchActive)
+				return;
+
+			// If there are colliders remaining in the area, the invocations will not be performed
+			if (_stayingColliders.Count > 0)
+				return;
+		}
+
+		// Performs the exit
+		DoExit();
+	}
+
+	/// <summary>
+	/// Performs the tasks when an object succesfully enters the area.
+	/// </summary>
+	private void DoEnter() {
+		// Activates the switch and starts the timer
+		_switchActive = true;
+		_remainingTimeToDeactivateSwitch = switchTime;
+
+		// Performs the method invocations
+		foreach (MethodInvoke methodInvoke in onEnter.AsList())
+			methodInvoke.Invoke();
+	}
+
+	/// <summary>
+	/// Performs the tasks when an object succesfully exits the area.
+	/// </summary>
+	private void DoExit() {
+		// Deactivates the trigger
+		_switchActive = false;
+
+		// Performs the method invocations
 		foreach (MethodInvoke methodInvoke in onExit.AsList())
 			methodInvoke.Invoke();
+
+		// Checks if the trigger should be disabled
+		if (autoDisable)
+			enabled = false;
 	}
 	
 	/// <summary>
@@ -111,7 +263,7 @@ public class TriggerArea : MonoBehaviour {
 		
 		Gizmos.matrix = Matrix4x4.identity;
 		Vector3 separation = new Vector3(0, 0.1f, 0);
-        Gizmos.color = Color.green;
+		Gizmos.color = Color.green;
 		foreach (MethodInvoke methodInvoke in onEnter.AsList())
 			if (methodInvoke.target != null)
 				Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
