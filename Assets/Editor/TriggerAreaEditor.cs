@@ -7,6 +7,18 @@ using UnityEditor;
 [CustomEditor(typeof(TriggerArea))]
 [CanEditMultipleObjects]
 public class TriggerAreaEditor : Editor {
+
+	/// <summary>
+	/// The saved serialized property.
+	/// </summary>
+	private SerializedObject _serializedScript;
+
+	/// <summary>
+	/// Unity's method called when the component is enabled.
+	/// </summary>
+	public void OnEnable() {
+		_serializedScript = new SerializedObject(target);
+	}
 	
 	/// <summary>
 	/// Draws the information on the editor.
@@ -33,19 +45,21 @@ public class TriggerAreaEditor : Editor {
 		myScript.drawGizmos = EditorGUILayout.Toggle("Draw Gizmos", myScript.drawGizmos);
 
 		// Draws the OnEnter methods list
-		SerializedObject serializedScript = new SerializedObject(target);
-		SerializedProperty onEnter = serializedScript.FindProperty("onEnter");
+		SerializedProperty onEnter = _serializedScript.FindProperty("onEnter");
 		EditorGUILayout.PropertyField(onEnter, true);
 
 		// Draws the OnStay methods list, but only if it's not a swtich
 		if (myScript.triggerMode == TriggerArea.TriggerMode.Sensor) {
-			SerializedProperty onStay = serializedScript.FindProperty("onStay");
+			SerializedProperty onStay = _serializedScript.FindProperty("onStay");
 			EditorGUILayout.PropertyField(onStay, true);
-		}
+        }
 
 		// Draws the OnExit methods list
-		SerializedProperty onExit = serializedScript.FindProperty("onExit");
+		SerializedProperty onExit = _serializedScript.FindProperty("onExit");
 		EditorGUILayout.PropertyField(onExit, true);
+
+		// Applys the changes to the serialized object
+		_serializedScript.ApplyModifiedProperties();
 	}
 }
 
