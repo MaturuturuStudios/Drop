@@ -12,6 +12,28 @@ public class TriggerArea : MonoBehaviour {
 	#region Enumerations
 
 	/// <summary>
+	/// Defines which objects will interact with the trigger.
+	/// </summary>
+	public enum ColliderFilter {
+
+		/// <summary>
+		/// Any object will interact with the trigger.
+		/// </summary>
+		AnyObject,
+
+		/// <summary>
+		/// Only player's characters will interact with the trigger.
+		/// </summary>
+		OnlyCharacters,
+
+		/// <summary>
+		/// Only currently controlled player's character will interact
+		/// with the trigger.
+		/// </summary>
+		OnlyControlledCharacter
+	}
+
+	/// <summary>
 	/// Defines how the area will behave.
 	/// </summary>
 	public enum TriggerMode {
@@ -39,6 +61,11 @@ public class TriggerArea : MonoBehaviour {
 	#endregion
 
 	#region Public Attributes
+
+	/// <summary>
+	/// Defines which objects will interact with the trigger.
+	/// </summary>
+	public ColliderFilter colliderFilter = ColliderFilter.OnlyCharacters;
 
 	/// <summary>
 	/// Defines how the area will behave.
@@ -87,6 +114,11 @@ public class TriggerArea : MonoBehaviour {
 	private Collider[] _colliders;
 
 	/// <summary>
+	/// Reference to the Game Controller's independent control component.
+	/// </summary>
+	private GameControllerIndependentControl _gameControllerIndependentControl;
+
+	/// <summary>
 	/// List of colliders currently staying on the area.
 	/// </summary>
 	private List<Collider> _stayingColliders;
@@ -112,6 +144,14 @@ public class TriggerArea : MonoBehaviour {
 	void Start() {
 		// Initialization
 		_stayingColliders = new List<Collider>();
+		GameObject gameController = GameObject.FindGameObjectWithTag(Tags.GameController);
+		if (gameController == null)
+			Debug.LogError("Error: No Game Controller was found on the scene.");
+		else {
+			_gameControllerIndependentControl = gameController.GetComponent<GameControllerIndependentControl>();
+			if (_gameControllerIndependentControl == null)
+				Debug.LogError("Error: No Independent Control component was found in the Game Controller.");
+		}
 
 		// Checks if the colliders are valid
 		_colliders = GetComponents<Collider>();
@@ -156,6 +196,10 @@ public class TriggerArea : MonoBehaviour {
 		if (!enabled)
 			return;
 
+		// Checks if it's a valid collider
+		if (!IsValidCollider(other))
+			return;
+
 		// Adds the collider to the list
 		_stayingColliders.Add(other);
 
@@ -178,6 +222,10 @@ public class TriggerArea : MonoBehaviour {
 		if (!enabled)
 			return;
 
+		// Checks if it's a valid collider
+		if (!IsValidCollider(other))
+			return;
+
 		// This method will not be called if the trigger is a swtich
 		if (triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch)
 			return;
@@ -196,6 +244,10 @@ public class TriggerArea : MonoBehaviour {
 	/// <param name="other">The collider exiting the area</param>
 	void OnTriggerExit(Collider other) {
 		if (!enabled)
+			return;
+
+		// Checks if it's a valid collider
+		if (!IsValidCollider(other))
 			return;
 
 		// Removes the collider from the list
@@ -245,6 +297,24 @@ public class TriggerArea : MonoBehaviour {
 			enabled = false;
 	}
 	
+	/// <summary>
+	/// Checks if a collider can interact with the trigger.
+	/// </summary>
+	/// <param name="other">The collider to check the interaction</param>
+	/// <returns>If the collider can interact with the trigger</returns>
+	private bool IsValidCollider(Collider other) {
+		if (colliderFilter == ColliderFilter.AnyObject)
+			return true;
+
+		if (other.CompareTag(Tags.Player))
+			if (colliderFilter == ColliderFilter.OnlyControlledCharacter)
+				return _gameControllerIndependentControl.currentCharacter == other.gameObject;
+			else
+				return true;
+
+		return false;
+	}
+
 	/// <summary>
 	/// Unity's method called on the editor to draw helpers.
 	/// </summary>

@@ -16,6 +16,9 @@ public class TriggerAreaEditor : Editor {
 
 		EditorUtility.SetDirty(target);
 
+		// Draws the collider filter field
+		myScript.colliderFilter = (TriggerArea.ColliderFilter)EditorGUILayout.EnumPopup("Object Filter", myScript.colliderFilter);
+
 		// Draws the trigger mode field
 		myScript.triggerMode = (TriggerArea.TriggerMode) EditorGUILayout.EnumPopup("Trigger Mode", myScript.triggerMode);
 
