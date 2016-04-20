@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// </summary>
 public class MainCameraController : MonoBehaviour {
 
-    #region Attributes
+    #region Public Attributes
     // Target of the camera, it use to be the player
     private GameObject target;
 
@@ -64,9 +64,6 @@ public class MainCameraController : MonoBehaviour {
         public float right = 100.0f;
     }
     ///private bounds references
-	//bounds exceded controll
-    private float excededX = 0F;
-    private float excededY = 0F;
 
     
     /// <summary>
@@ -76,8 +73,18 @@ public class MainCameraController : MonoBehaviour {
 
 
 
+
+
+    #endregion
+
+    #region Private Attributes
+
     // Reference to the independent control component from the scene's game controller.
     private GameControllerIndependentControl _independentControl;
+
+    //bounds exceded controll
+    private float excededX = 0F;
+    private float excededY = 0F;
 
     //Reference to current caracter size
     private float _dropSize;
@@ -88,15 +95,14 @@ public class MainCameraController : MonoBehaviour {
     // Check for camera in locked area
     private Vector3 _lockPosition;
 
+    // Camera locked handler
+    private bool _lookAtPlace = false;
+
     // The time that camera will be looking at this place
     private float _lookAtPlaceTimmer = 0;
 
     // The position that camera will be looking
     private Vector3 _lookAtPlacePos;
-
-    // Camera locked handler
-    private bool _lookAtPlace = false;
-
 
     #endregion
 
@@ -164,7 +170,7 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Move the camera to offset position of the player gradually
+    //// Move the camera to offset position of the player gradually
     /// </summary>
     private void MoveCamera() {
 		//Calculate destination
