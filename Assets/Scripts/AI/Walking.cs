@@ -34,6 +34,8 @@ public class Walking : StateMachineBehaviour {
     /// Defines how the entity looks for the next point in the path.
     /// </summary>
     public PathType pathType = PathType.Random;
+
+    public bool onFloor=true;
     #endregion
 
     #region Private attribute
@@ -107,13 +109,21 @@ public class Walking : StateMachineBehaviour {
             default:
                 return;
         }
-
+        
+        //TODO orientation does not work as expected
         // Rotates the entity
         if (useOrientation) {
             float traveledDistance = (_transform.position - originalPosition).magnitude;
             float remainingDistance = (_pathEnumerator.Current.position - originalPosition).magnitude;
             if (remainingDistance > 0.01f)
                 _transform.rotation = Quaternion.Lerp(_transform.rotation, _pathEnumerator.Current.rotation, traveledDistance / remainingDistance);
+        }
+
+        
+        if (onFloor) {
+            float yPosition = originalPosition.y;
+            originalPosition = _transform.position;
+            originalPosition.y = yPosition;
         }
 
         // Checks if the entity is close enough to the target point

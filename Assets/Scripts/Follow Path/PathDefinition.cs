@@ -76,11 +76,12 @@ public class PathDefinition {
     /// </summary>
     /// <returns>Random points inside the path</returns>
     public IEnumerator<Transform> GetRandomEnumerator() {
+        UnityEngine.Random.seed = (int)Time.deltaTime*10;
         if (points == null || points.Length < 1)
             yield break;
         
         while (true) {
-            int index = UnityEngine.Random.Range(0,points.Length-1);
+            int index = UnityEngine.Random.Range(0,points.Length);
 
             // Lazy return
             yield return points[index];
