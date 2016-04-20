@@ -87,6 +87,14 @@ public class MainCameraController : MonoBehaviour {
 
     // Check for camera in locked area
     private Vector3 _lockPosition;
+
+    // The time that camera will be looking at this place
+    private float _lookAtPlaceTimmer = 0;
+
+    // The position that camera will be looking
+    private Vector3 _lookAtPlacePos;
+
+
     #endregion
 
     #region Methods
@@ -141,6 +149,10 @@ public class MainCameraController : MonoBehaviour {
         //Update ofset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
             _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
+
+        // Update look at place timmer if it's needed
+        if (_lookAtPlaceTimmer > 0)
+            _lookAtPlaceTimmer -= Time.deltaTime;
     }
 
     /// <summary>
@@ -156,6 +168,12 @@ public class MainCameraController : MonoBehaviour {
         else
             //Add Loook around offset
             destination += _lookArroundOffset;
+
+
+        // Look at place time control
+        if (_lookAtPlaceTimmer > 0)
+            //Add Loook around offset
+            destination = _lookAtPlacePos;
 
         //Reset bounds exceded to recalculate
         excededX = excededY = 0;
@@ -190,19 +208,28 @@ public class MainCameraController : MonoBehaviour {
     /// Makes the camera look to the player's position gradually
     /// </summary>
     private void LookAt() {
-		//Calculate objective of the camera
+		// Calculate objective of the camera
         Vector3 destination = target.transform.position;
 
-        //Add Loook around offset
+        // Add Loook around offset
         destination += _lookArroundOffset;
 
-
+        // Lock area control
         if (_cameraInLockArea) {
             Vector3 destinationOnZ = _lockPosition;
             destinationOnZ.z = 0;
             destination = destinationOnZ;
-            transform.rotation = Quaternion.identity;
+            //transform.rotation = Quaternion.identity;
         }
+
+        // Look at place time control
+        if (_lookAtPlaceTimmer > 0) {
+            Vector3 destinationOnZ = _lookAtPlacePos;
+            destinationOnZ.z = 0;
+            destination = destinationOnZ;
+            //transform.rotation = Quaternion.identity;
+        }
+
 
         //If there isn't liberty looking at, block it
         if (lookAt.lookAtFixedOnBounds && excededX != 0) 
@@ -282,6 +309,24 @@ public class MainCameraController : MonoBehaviour {
         Gizmos.color = Color.yellow;
         Gizmos.matrix = camera.transform.localToWorldMatrix;
         Gizmos.DrawFrustum(Vector3.zero, camera.fieldOfView, camera.farClipPlane, camera.nearClipPlane, camera.aspect);
-   }
+    }
+
+
+    /// <summary>
+    /// Looks at position for determinate time
+    /// </summary>
+    /// <param name="pos"> X & Y used for position that will be used, Z used for the time that will be watching</param>
+    public void LookAtPlace(Vector3 pos) {
+
+        // Set timmer
+        _lookAtPlaceTimmer = pos.z;
+
+        // Set place
+        _lookAtPlacePos = new Vector3(pos.x, pos.y, transform.position.z);
+
+    }
+
+
+
     #endregion
 }
