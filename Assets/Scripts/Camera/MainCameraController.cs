@@ -124,12 +124,6 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Camera locked handler
-    /// </summary>
-    private bool _lookAtPlace = false;
-
-
-    /// <summary>
     /// The time that camera will be looking at this place
     /// </summary>
     private float _lookAtPlaceTimmer = 0;
@@ -176,8 +170,16 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     void Update() {
 
-        // Update status
-        UpdateState();
+        // Get drop size
+        _dropSize = target.GetComponent<CharacterSize>().GetSize();
+
+        // Update ofset and boundary depends of the size
+        if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
+            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
+
+        // Update look at place timmer if it's needed
+        if (_lookAtPlaceTimmer > 0)
+            _lookAtPlaceTimmer -= Time.deltaTime;
     }
 
 
@@ -193,25 +195,7 @@ public class MainCameraController : MonoBehaviour {
         LookAt();
 
         // Reset camera lock at place state
-        _lookAtPlace = false;
         _cameraInLockArea = false;
-    }
-
-
-    /// <summary>
-    /// Update the camera status
-    /// </summary>
-    private void UpdateState() {
-        // Get drop size
-        _dropSize = target.GetComponent<CharacterSize>().GetSize();
-
-        // Update ofset and boundary depends of the size
-        if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
-            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
-
-        // Update look at place timmer if it's needed
-        if (_lookAtPlaceTimmer > 0)
-            _lookAtPlaceTimmer -= Time.deltaTime;
     }
 
 
@@ -334,7 +318,31 @@ public class MainCameraController : MonoBehaviour {
     public void RestoreTarget() {
         SetObjective(_independentControl.currentCharacter);
     }
-    
+
+    /// <summary>
+    /// Set the look arround offset
+    /// </summary>
+    public void LookArround(float OffsetX, float OffsetY) {
+
+        // Setting look arround values depending of the input
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth * _dropSize;
+    }
+
+
+    /// <summary>
+    /// Looks at position for determinate time
+    /// </summary>
+    /// <param name="pos"> X & Y used for position that will be used, Z used for the time that will be watching</param>
+    public void LookAtPlace(Vector3 pos) {
+
+        // Set timmer
+        _lookAtPlaceTimmer = pos.z;
+
+        // Set place
+        _lookAtPlacePos = new Vector3(pos.x, pos.y, transform.position.z);
+
+    }
+
 
     /// <summary>
     /// Fix camera when a player comes into a CameraLockArea
@@ -358,10 +366,8 @@ public class MainCameraController : MonoBehaviour {
             _cameraInLockArea = false;
 
         }
-
-
-
     }
+
 
     /// <summary>
     /// Unfix camera when a player leaves a CameraLockArea
@@ -370,16 +376,6 @@ public class MainCameraController : MonoBehaviour {
 
         // Setting look arround values depending of the input
         _cameraInLockArea = false;
-    }
-
-
-    /// <summary>
-    /// Set the look arround offset
-    /// </summary>
-    public void LookArround(float OffsetX, float OffsetY) {
-
-        // Setting look arround values depending of the input
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth * _dropSize;
     }
 
 
@@ -401,25 +397,6 @@ public class MainCameraController : MonoBehaviour {
         Gizmos.matrix = camera.transform.localToWorldMatrix;
         Gizmos.DrawFrustum(Vector3.zero, camera.fieldOfView, camera.farClipPlane, camera.nearClipPlane, camera.aspect);
     }
-
-
-    /// <summary>
-    /// Looks at position for determinate time
-    /// </summary>
-    /// <param name="pos"> X & Y used for position that will be used, Z used for the time that will be watching</param>
-    public void LookAtPlace(Vector3 pos) {
-
-        // Set state
-        _lookAtPlace = true;
-
-        // Set timmer
-        _lookAtPlaceTimmer = pos.z;
-
-        // Set place
-        _lookAtPlacePos = new Vector3(pos.x, pos.y, transform.position.z);
-
-    }
-    
 
     #endregion
 }
