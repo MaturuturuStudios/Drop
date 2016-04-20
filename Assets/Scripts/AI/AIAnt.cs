@@ -26,6 +26,8 @@ public class AIAnt : AIBase {
     /// Defines how the entity looks for the next point in the path.
     /// </summary>
     public PathType pathType = PathType.Random;
+    //The ant does not fly, set it to ground
+    public bool onFloor = true;
 
     public new void Start() {
         //make base start
@@ -38,5 +40,6 @@ public class AIAnt : AIBase {
         walking.maxDistanceToGoal = maxDistanceToGoal;
         walking.useOrientation = useOrientation;
         walking.pathType = pathType;
+        walking.onFloor = onFloor;
     }
 }

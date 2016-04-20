@@ -9,6 +9,7 @@ public class AIBase : MonoBehaviour {
     public Region triggerArea;
     /// <summary>
     /// Under this limit, enemy attack, equal or over this size, the enemy escape
+    /// if zero or less, the size is ignored (example of bee)
     /// </summary>
     public int sizeLimitDrop;
     /// <summary>
@@ -17,11 +18,20 @@ public class AIBase : MonoBehaviour {
     /// </summary>
     public float timeDetectChase;
     /// <summary>
+    /// Time in walking until it get iddle a while
+    /// -1 for not iddle at all, then, timeInIddle does not apply
+    /// </summary>
+    public float timeUntilIddle;
+    /// <summary>
+    /// Time while in Iddle
+    /// </summary>
+    public float timeInIddle = 0;
+    /// <summary>
     /// End point when reached a running away state
     /// Can be a static point in a flower to let bee recolect
     /// or a point behind scene or lateral point to make an ant to disappear
     /// </summary>
-    public Vector3 endPoint;
+    public PathDefinition endPoint;
     #endregion
 
     #region Private attributes
@@ -55,9 +65,17 @@ public class AIBase : MonoBehaviour {
         //get the behaviours and set their data
         Walking walkingAI = _animator.GetBehaviour<Walking>();
         walkingAI.enemy = gameObject;
+        walkingAI.timeUntilIddle = timeUntilIddle;
+
+        GoAway runningAway= _animator.GetBehaviour<GoAway>();
+        runningAway.enemy = gameObject;
+        runningAway.endPoint = endPoint;
 
         DetectPlayer detectedAI = _animator.GetBehaviour<DetectPlayer>();
         detectedAI.timeWarning = timeDetectChase;
+
+        Iddle iddle= _animator.GetBehaviour<Iddle>();
+        iddle.timeInIddle= timeInIddle;
     }
 
     public void Update() {

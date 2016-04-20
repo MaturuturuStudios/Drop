@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Walking : StateMachineBehaviour {
+public class GoAway : StateMachineBehaviour {
     #region Public and hidden in inspector attributes
     [HideInInspector]
     public GameObject enemy = null;
@@ -11,41 +11,38 @@ public class Walking : StateMachineBehaviour {
     /// <summary>
 	/// A reference to the path this entity will follow.
 	/// </summary>
-	public PathDefinition path;
+	public PathDefinition endPoint;
     [HideInInspector]
     /// <summary>
 	/// Defines how will the entity move to the next point in the path.
 	/// </summary>
 	public FollowType followType = FollowType.MoveTowards;
+    [HideInInspector]
     /// <summary>
 	/// Speed of the entity.
 	/// </summary>
 	public float speed = 10;
+    [HideInInspector]
     /// <summary>
     /// Distance tolerance for the entity to look for a new point in the path.
     /// </summary>
     public float maxDistanceToGoal = 0.1f;
+    [HideInInspector]
     /// <summary>
     /// If enabled, the entity will also rotate to fit the point's rotation.
     /// </summary>
     public bool useOrientation = false;
+    [HideInInspector]
     /// <summary>
     /// Defines how the entity looks for the next point in the path.
     /// </summary>
-    public PathType pathType = PathType.Random;
+    public PathType pathType = PathType.Loop;
+    [HideInInspector]
     /// <summary>
     /// Is a terrain enemy? or maybe it fly?
     /// </summary>
-    public bool onFloor=true;
-    /// <summary>
-    /// Time to stay in detect state
-    /// </summary>
+    public bool onFloor = true;
     [HideInInspector]
-    public float timeUntilIddle = 0;
-    /// <summary>
-    /// Timer
-    /// </summary>
-    private float _deltaTime;
     #endregion
 
     #region Private attribute
@@ -59,21 +56,20 @@ public class Walking : StateMachineBehaviour {
 	private IEnumerator<Transform> _pathEnumerator;
     #endregion
 
-
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        animator.SetBool("GoAway", false);
         _transform = enemy.transform;
-        _deltaTime = timeUntilIddle;
         if (_pathEnumerator == null) {
             // Selects the current path type
             switch (pathType) {
                 case PathType.BackAndForward:
-                    _pathEnumerator = path.GetBackAndForwardEnumerator();
+                    _pathEnumerator = endPoint.GetBackAndForwardEnumerator();
                     break;
                 case PathType.Loop:
-                    _pathEnumerator = path.GetLoopEumerator();
+                    _pathEnumerator = endPoint.GetLoopEumerator();
                     break;
                 case PathType.Random:
-                    _pathEnumerator = path.GetRandomEnumerator();
+                    _pathEnumerator = endPoint.GetRandomEnumerator();
                     break;
                 default:
                     Debug.LogError("Unrecognized path type!");
@@ -92,27 +88,6 @@ public class Walking : StateMachineBehaviour {
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        //check if have condition to change state
-        int size = animator.GetInteger("SizeDrop");
-        int sizeLimit = animator.GetInteger("LimitSizeDrop");
-        if (sizeLimit > 0 && size >= sizeLimit) {
-            animator.SetBool("GoAway", true);
-        } else if (sizeLimit <= 0 || (size < sizeLimit && size > 0)) {
-            animator.SetBool("Detect", true);
-            return;
-        }
-
-        //check timer
-        if (timeUntilIddle > 0) {
-            _deltaTime -= Time.deltaTime;
-            if (_deltaTime <= 0) {
-                animator.SetBool("Timer", true);
-                return;
-            }
-        }
-
-
-
         //set the moving path
         if (_pathEnumerator == null || _pathEnumerator.Current == null)
             return;
@@ -131,7 +106,7 @@ public class Walking : StateMachineBehaviour {
             default:
                 return;
         }
-        
+
         //TODO orientation does not work as expected
         // Rotates the entity
         if (useOrientation) {
@@ -141,7 +116,7 @@ public class Walking : StateMachineBehaviour {
                 _transform.rotation = Quaternion.Lerp(_transform.rotation, _pathEnumerator.Current.rotation, traveledDistance / remainingDistance);
         }
 
-        
+
         if (onFloor) {
             float yPosition = originalPosition.y;
             originalPosition = _transform.position;
@@ -162,6 +137,4 @@ public class Walking : StateMachineBehaviour {
     public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 
     }
-
-
 }
