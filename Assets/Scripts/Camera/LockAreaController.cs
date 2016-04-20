@@ -75,7 +75,7 @@ public class LockAreaController : MonoBehaviour {
     /// When player enters on the trigger fix the camera in a determinate position
     /// </summary>
     /// <param name="other">Collider who enters in the trigger</param>
-    void OnTriggerEnter(Collider other) {
+    void OnTriggerStay(Collider other) {
 
         //only active it with players
         if (other.CompareTag(Tags.Player)) {
@@ -87,7 +87,7 @@ public class LockAreaController : MonoBehaviour {
             Vector2 size = new Vector2(_collider.size.x + (frameSize * 2), _collider.size.y + (frameSize * (2 * 9 / 16)));
 
             // Fix the camera
-            _cameraController.FixCamera(centerPosition, size * transform.localScale.x);
+            _cameraController.FixCamera(centerPosition, size * transform.localScale.x, other.gameObject.name);
         }
     }
 

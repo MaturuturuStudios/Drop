@@ -94,6 +94,9 @@ public class MainCameraController : MonoBehaviour {
     // The position that camera will be looking
     private Vector3 _lookAtPlacePos;
 
+    // Camera locked handler
+    private bool _lookAtPlace = false;
+
 
     #endregion
 
@@ -137,6 +140,10 @@ public class MainCameraController : MonoBehaviour {
 
         //LookAt player
         LookAt();
+
+        // Reset camera lock at place state
+        _lookAtPlace = false;
+        _cameraInLockArea = false;
     }
 
     /// <summary>
@@ -154,6 +161,7 @@ public class MainCameraController : MonoBehaviour {
         if (_lookAtPlaceTimmer > 0)
             _lookAtPlaceTimmer -= Time.deltaTime;
     }
+
 
     /// <summary>
     /// Move the camera to offset position of the player gradually
@@ -266,14 +274,22 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Set the look arround offset
     /// </summary>
-    public void FixCamera(Vector3 position, Vector3 size) {
-        //Setting look arround values depending of the input
+    public void FixCamera(Vector3 position, Vector3 size, string objectName) {
 
-        _cameraInLockArea = true;
+        // If controlled caracter is inside the trigger
+        if (_independentControl.currentCharacter.name == objectName || _cameraInLockArea == true) {
+            //Setting look arround values depending of the input
+            _cameraInLockArea = true;
 
-        float cameraZPos = (size.y) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
+            float cameraZPos = (size.y) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
 
-        _lockPosition = new Vector3(position.x, position.y,  -cameraZPos);
+            _lockPosition = new Vector3(position.x, position.y, -cameraZPos);
+        } else {
+
+            // Unlock camera 
+            _cameraInLockArea = false;
+
+        }
 
 
 
@@ -317,6 +333,9 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     /// <param name="pos"> X & Y used for position that will be used, Z used for the time that will be watching</param>
     public void LookAtPlace(Vector3 pos) {
+
+        // Set state
+        _lookAtPlace = true;
 
         // Set timmer
         _lookAtPlaceTimmer = pos.z;
