@@ -188,7 +188,8 @@ public class CharacterShoot : MonoBehaviour {
 
             Gizmos.color = Color.white;
             //Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt((5 * (9))));
-            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (8) ));
+            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (9) ));
+            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (1.5f)));
             Debug.Log(" distance " + (5 * 9) * -25);
         }
     
