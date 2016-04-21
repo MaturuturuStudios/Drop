@@ -177,5 +177,21 @@ public class CharacterShoot : MonoBehaviour {
 		ball.GetComponent<CharacterControllerCustom>().SendFlying(st.GetpVelocity());
 	}
 
+    
+
+        public void OnDrawGizmosSelected () {
+            if (!Application.isPlaying)
+            {
+                Awake();
+                Update();
+            }
+
+            Gizmos.color = Color.white;
+            //Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt((5 * (9))));
+            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (8) ));
+            Debug.Log(" distance " + (5 * 9) * -25);
+        }
+    
+
     #endregion
 }
