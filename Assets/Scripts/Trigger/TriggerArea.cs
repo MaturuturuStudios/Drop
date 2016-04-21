@@ -255,7 +255,7 @@ public class TriggerArea : MonoBehaviour {
 		_stayingColliders.Remove(other);
 
 		// Checks if the enter call should be performed
-		if (triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) {
+		if (triggerMode == TriggerMode.Switch) {
 			// It will not be called if it's a switch and it's not activated
 			if (!switchActive)
 				return;
@@ -264,6 +264,10 @@ public class TriggerArea : MonoBehaviour {
 			if (_stayingColliders.Count > 0)
 				return;
 		}
+
+		// It will not be called if it's a timed switch
+		if (triggerMode == TriggerMode.TimedSwitch)
+			return;
 
 		// Performs the exit
 		DoExit();
