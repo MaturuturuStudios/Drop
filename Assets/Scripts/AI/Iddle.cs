@@ -16,6 +16,8 @@ public class Iddle : StateMachineBehaviour {
     /// </summary>
     [HideInInspector]
     public IddleParameters parameters;
+    [HideInInspector]
+    public CommonParameters commonParameters;
     /// <summary>
     /// Timer
     /// </summary>
@@ -33,6 +35,7 @@ public class Iddle : StateMachineBehaviour {
         animator.SetBool("Detect", false);
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
+        animator.SetBool("Reached", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

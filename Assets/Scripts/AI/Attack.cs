@@ -1,12 +1,20 @@
 ﻿using UnityEngine;
 
 public class Attack : StateMachineBehaviour {
+    [HideInInspector]
+    public CommonParameters commonParameters;
+
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //OnStateEnter is called on the first frame of the state being played.
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //OnStateExit is called on the last frame of a transition to another state.
+        //reset states (using bool because trigger does not work correctly)
+        animator.SetBool("Detect", false);
+        animator.SetBool("Timer", false);
+        animator.SetBool("GoAway", false);
+        animator.SetBool("Reached", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

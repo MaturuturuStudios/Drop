@@ -15,6 +15,8 @@ public class DetectPlayer : StateMachineBehaviour {
     /// Parameters of the script
     ///</summary>
     public DetectParameters parameters;
+    [HideInInspector]
+    public CommonParameters commonParameters;
     /// <summary>
     /// Timer
     /// </summary>
@@ -29,24 +31,43 @@ public class DetectPlayer : StateMachineBehaviour {
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //reset states (using bool because trigger does not work correctly)
+        animator.SetBool("Detect", false);
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
+        animator.SetBool("Reached", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        //check if have condition to change state
         int size = animator.GetInteger("SizeDrop");
-        int sizeLimit = animator.GetInteger("LimitSizeDrop");
+        int sizeLimit = commonParameters.sizeLimitDrop;
         if (sizeLimit > 0 && size >= sizeLimit) {
             animator.SetBool("GoAway", true);
         }
 
-        //TODO: always face to the target
+        //always face target
+        faceTarget();
 
         _deltaTime -= Time.deltaTime;
         if (_deltaTime <= 0) {
             animator.SetBool("Timer", true);
         }
+    }
+
+    private void faceTarget() {
+        Quaternion _lookRotation;
+        Vector3 _direction;
+        Transform targetTransform = commonParameters.drop.transform;
+        Transform enemyTransform = commonParameters.enemy.transform;
+
+        //find the vector pointing from our position to the target
+        _direction = (targetTransform.position - enemyTransform.position).normalized;
+
+        if (_direction == Vector3.zero) return;
+        //create the rotation we need to be in to look at the target
+        _lookRotation = Quaternion.LookRotation(_direction);
+
+        //rotate us over time according to speed until we are in the required rotation
+        enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
     }
     #endregion
 }

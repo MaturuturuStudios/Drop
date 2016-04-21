@@ -4,11 +4,6 @@ using System.Collections.Generic;
 [System.Serializable]
 public class WalkingParameters {
     /// <summary>
-    /// The entity to move
-    /// </summary>
-    [HideInInspector]
-    public GameObject enemy = null;
-    /// <summary>
 	/// A reference to the path this entity will follow.
 	/// </summary>
 	public PathDefinition path;
@@ -34,10 +29,6 @@ public class WalkingParameters {
     public PathType pathType = PathType.Random;
     [HideInInspector]
     /// <summary>
-    /// Is a terrain enemy? or maybe it fly?
-    /// </summary>
-    public bool onFloor = true;
-    /// <summary>
     /// Time to stay in detect state
     /// </summary>
     public float timeUntilIddle = 0;
@@ -47,6 +38,8 @@ public class Walking : StateMachineBehaviour {
     #region Public and hidden in inspector attributes
     [HideInInspector]
     public WalkingParameters parameters;
+    [HideInInspector]
+    public CommonParameters commonParameters;
     /// <summary>
     /// Timer
     /// </summary>
@@ -66,7 +59,7 @@ public class Walking : StateMachineBehaviour {
 
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        _transform = parameters.enemy.transform;
+        _transform = commonParameters.enemy.transform;
         //start timer
         _deltaTime = parameters.timeUntilIddle;
         //get path
@@ -97,13 +90,14 @@ public class Walking : StateMachineBehaviour {
         animator.SetBool("Detect", false);
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
+        animator.SetBool("Reached", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //check if have condition to change state
         int size = animator.GetInteger("SizeDrop");
-        int sizeLimit = animator.GetInteger("LimitSizeDrop");
-        if (sizeLimit > 0 && size >= sizeLimit) {
+        int sizeLimit = commonParameters.sizeLimitDrop;
+        if (sizeLimit > 0 && size >= sizeLimit)  {
             animator.SetBool("GoAway", true);
         } else if ((sizeLimit <= 0 || size < sizeLimit) && size > 0) { 
             animator.SetBool("Detect", true);
@@ -123,6 +117,7 @@ public class Walking : StateMachineBehaviour {
             return;
 
         // Saves the original position
+        float y = _transform.position.y;
         Vector3 originalPosition = _transform.position;
 
         // Moves the entity using the right function
@@ -137,20 +132,17 @@ public class Walking : StateMachineBehaviour {
                 return;
         }
         
-        //TODO orientation does not work as expected
         // Rotates the entity
         if (parameters.useOrientation) {
-            float traveledDistance = (_transform.position - originalPosition).magnitude;
-            float remainingDistance = (_pathEnumerator.Current.position - originalPosition).magnitude;
-            if (remainingDistance > 0.01f)
-                _transform.rotation = Quaternion.Lerp(_transform.rotation, _pathEnumerator.Current.rotation, traveledDistance / remainingDistance);
+            faceTarget();
         }
 
         
-        if (parameters.onFloor) {
+        if (commonParameters.onFloor) {
             float yPosition = originalPosition.y;
             originalPosition = _transform.position;
-            originalPosition.y = yPosition;
+            originalPosition.y = y;
+            _transform.position = originalPosition;
         }
 
         // Checks if the entity is close enough to the target point
@@ -158,6 +150,26 @@ public class Walking : StateMachineBehaviour {
         // The squared distance is used because a multiplication is cheaper than a square root
         if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal)
             _pathEnumerator.MoveNext();
+    }
+
+    private void faceTarget() {
+        Quaternion _lookRotation;
+        Vector3 _direction;
+        Transform targetTransform = _pathEnumerator.Current.transform;
+        Transform enemyTransform = commonParameters.enemy.transform;
+
+        //find the vector pointing from our position to the target
+        _direction = (targetTransform.position - enemyTransform.position).normalized;
+
+        if (_direction == Vector3.zero) return;
+
+        //create the rotation we need to be in to look at the target
+        _lookRotation = Quaternion.LookRotation(_direction);
+
+        _lookRotation.x = 0;
+        _lookRotation.z = 0;
+        //rotate us over time according to speed until we are in the required rotation
+        enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
     }
     #endregion
 

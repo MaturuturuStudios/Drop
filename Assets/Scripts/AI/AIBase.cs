@@ -3,24 +3,7 @@ using System.Collections.Generic;
 
 public class AIBase : MonoBehaviour {
     #region Public Attribute
-    /// <summary>
-    /// The enemy to control
-    /// </summary>
-    public GameObject enemy;
-    /// <summary>
-    /// Is it a grounded entity? or maybe fly?
-    /// </summary>
-    public bool onFloor;
-    /// <summary>
-    /// Under this limit, enemy attack, equal or over this size, the enemy escape
-    /// if zero or less, the size is ignored (example of bee)
-    /// </summary>
-    public int sizeLimitDrop;
-    /// <summary>
-    /// Distance tolerance of the enemy to take in account when calculate if reached the drop
-    /// The size of the drop is alreaded taked in account
-    /// </summary>
-    public float toleranteDistanceAttack = 1.0f;
+    public CommonParameters commonParameters;
     /// <summary>
     /// Area in which enemy react
     /// </summary>
@@ -57,10 +40,6 @@ public class AIBase : MonoBehaviour {
     /// </summary>
     protected Animator _animator;
     /// <summary>
-    /// The detected drop
-    /// </summary>
-    protected GameObject _detectedDrop;
-    /// <summary>
     /// The size of the detected drop
     /// </summary>
     protected CharacterSize _sizeDetected;
@@ -84,17 +63,15 @@ public class AIBase : MonoBehaviour {
         _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
         //get the animator of the enemy
-        _animator = enemy.GetComponent<Animator>();
-        _animator.SetInteger("LimitSizeDrop", sizeLimitDrop);
-        Debug.Log("Im awake and get the animator");
+        _animator = commonParameters.enemy.GetComponent<Animator>();
+        _animator.SetInteger("LimitSizeDrop", commonParameters.sizeLimitDrop);
     }
 
     public void Start() {
         //get the behaviours and set their data
         Walking walkingAI = _animator.GetBehaviour<Walking>();
-        walkingAI.parameters.enemy = enemy;
+        walkingAI.commonParameters = commonParameters;
         walkingAI.parameters.timeUntilIddle = walkingParameters.timeUntilIddle;
-        walkingAI.parameters.onFloor = onFloor;
         walkingAI.parameters.path = walkingParameters.path;
         walkingAI.parameters.followType = walkingParameters.followType;
         walkingAI.parameters.speed = walkingParameters.speed;
@@ -103,21 +80,23 @@ public class AIBase : MonoBehaviour {
         walkingAI.parameters.pathType = walkingParameters.pathType;
 
         GoAway runningAway = _animator.GetBehaviour<GoAway>();
-        runningAway.parameters.enemy = enemy;
+        runningAway.commonParameters = commonParameters;
         runningAway.parameters.endPoint = goAwayParameters.endPoint;
-        runningAway.parameters.onFloor = onFloor;
 
         DetectPlayer detectedAI = _animator.GetBehaviour<DetectPlayer>();
         detectedAI.parameters.timeWarningDetect = detectParameters.timeWarningDetect;
+        detectedAI.commonParameters = commonParameters;
 
         Iddle iddle= _animator.GetBehaviour<Iddle>();
         iddle.parameters.timeInIddle = iddleParameters.timeInIddle;
+        iddle.commonParameters = commonParameters;
 
         _chaseAI = _animator.GetBehaviour<Chase>();
-        _chaseAI.parameters.enemy = enemy;
+        _chaseAI.commonParameters = commonParameters;
         _chaseAI.parameters.speed = chaseParameters.speed;
 
         attackAI = _animator.GetBehaviour<Attack>();
+        attackAI.commonParameters = commonParameters;
     }
 
     public void Update() {
@@ -131,14 +110,12 @@ public class AIBase : MonoBehaviour {
         Collider[] drops = Physics.OverlapBox(center, halfSize, Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
 
         //if we have a drop detected, check only him if is outside the trigger or not
-        if (_detectedDrop == null) {
+        if (commonParameters.drop == null) {
             int sizeDrop = 0;
             foreach (Collider dropCollider in drops) {
-                Debug.Log("Checked a drop!");
                 if (_independentControl.IsUnderControl(dropCollider.gameObject)) {
-                    _detectedDrop = dropCollider.gameObject;
-                    _sizeDetected = _detectedDrop.GetComponent<CharacterSize>();
-                    _chaseAI.parameters.target = _detectedDrop;
+                    commonParameters.drop = dropCollider.gameObject;
+                    _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
                     sizeDrop = _sizeDetected.GetSize();
                 }
             }
@@ -148,32 +125,48 @@ public class AIBase : MonoBehaviour {
             //check if is outside of trigger
             bool outside = true;
             foreach (Collider dropCollider in drops) {
-                if (dropCollider.gameObject==_detectedDrop) {
+                if (dropCollider.gameObject == commonParameters.drop) {
                     outside = false;
                 }
             }
             //it's outside!
             if (outside) {
                 _animator.SetInteger("SizeDrop", 0);
-                _detectedDrop = null;
+                commonParameters.drop = null;
             }
             //check if reached the drop
             DropReached();
+
+            //check if too near
+            DropNear();
         }
     }
     
-
-    private void DropReached() {
-        if (_detectedDrop == null) {
+    private void DropNear() {
+        if (commonParameters.drop == null){
             return;
         }
-
-        //check distance TODO adjust 
+        
         // Checks if the entity is close enough to the target point
-        float squaredDistance = (_detectedDrop.transform.position - enemy.transform.position).sqrMagnitude;
+        float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
+        // The squared distance is used becouse a multiplication is cheaper than a square root
+        float distanceTolerance = _sizeDetected.GetSize();
+        distanceTolerance += commonParameters.near;
+        distanceTolerance *= distanceTolerance;
+        if (squaredDistance < distanceTolerance)
+            _animator.SetBool("Near", true);
+    }
+
+    private void DropReached() {
+        if (commonParameters.drop == null) {
+            return;
+        }
+ 
+        // Checks if the entity is close enough to the target point
+        float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
         // The squared distance is used becouse a multiplication is cheaper than a square root
         float distanceTolerance= _sizeDetected.GetSize();
-        distanceTolerance += toleranteDistanceAttack;
+        distanceTolerance += commonParameters.toleranteDistanceAttack;
         distanceTolerance *= distanceTolerance;
         if (squaredDistance < distanceTolerance)
             _animator.SetBool("Reached", true);

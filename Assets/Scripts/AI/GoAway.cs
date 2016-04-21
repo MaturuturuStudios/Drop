@@ -4,11 +4,6 @@ using System.Collections.Generic;
 [System.Serializable]
 public class GoAwayParameters {
     /// <summary>
-    /// The entity to move
-    /// </summary>
-    [HideInInspector]
-    public GameObject enemy = null;
-    /// <summary>
     /// A reference to the path this entity will follow.
     /// </summary>
     public PathDefinition endPoint;
@@ -32,17 +27,14 @@ public class GoAwayParameters {
     /// Defines how the entity looks for the next point in the path.
     /// </summary>
     public PathType pathType = PathType.Loop;
-    /// <summary>
-    /// Is a terrain enemy? or maybe it fly?
-    /// </summary>
-    [HideInInspector]
-    public bool onFloor = true;
 }
 
 public class GoAway : StateMachineBehaviour {
     #region Public and hidden in inspector attributes
     [HideInInspector]
     public GoAwayParameters parameters;
+    [HideInInspector]
+    public CommonParameters commonParameters;
     #endregion
 
     #region Private attribute
@@ -59,7 +51,7 @@ public class GoAway : StateMachineBehaviour {
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         animator.SetBool("GoAway", false);
-        _transform = parameters.enemy.transform;
+        _transform = commonParameters.enemy.transform;
         if (_pathEnumerator == null) {
             // Selects the current path type
             switch (parameters.pathType) {
@@ -87,6 +79,7 @@ public class GoAway : StateMachineBehaviour {
         animator.SetBool("Detect", false);
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
+        animator.SetBool("Reached", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -119,7 +112,7 @@ public class GoAway : StateMachineBehaviour {
         }
 
 
-        if (parameters.onFloor) {
+        if (commonParameters.onFloor) {
             float yPosition = originalPosition.y;
             originalPosition = _transform.position;
             originalPosition.y = yPosition;

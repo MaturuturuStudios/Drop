@@ -7,6 +7,6 @@ public class AIBee : AIBase {
     /// Set another defaults values
     /// </summary>
     public void Reset() {
-        onFloor = false;
+        commonParameters.onFloor = false;
     }
 }
