@@ -117,32 +117,36 @@ public class Walking : StateMachineBehaviour {
             return;
 
         // Saves the original position
-        float y = _transform.position.y;
-        Vector3 originalPosition = _transform.position;
+        //float y = _transform.position.y;
+        //float x = _transform.position.x;
+        //Vector3 originalPosition = _transform.position;
+        Vector3 target = _pathEnumerator.Current.position;
+        if (commonParameters.onFloor) 
+            target.y = _transform.position.y;
 
         // Moves the entity using the right function
         switch (parameters.followType) {
             case FollowType.MoveTowards:
-                _transform.position = Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, parameters.speed * Time.deltaTime);
+                _transform.position = Vector3.MoveTowards(_transform.position, target, parameters.speed * Time.deltaTime);
                 break;
             case FollowType.Lerp:
-                _transform.position = Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, parameters.speed * Time.deltaTime);
+                _transform.position = Vector3.Lerp(_transform.position, target, parameters.speed * Time.deltaTime);
                 break;
             default:
                 return;
         }
-        
+
+        if (commonParameters.onFloor) {
+            //float yPosition = originalPosition.y;
+            //originalPosition = _transform.position;
+            //originalPosition.y = y;
+            //originalPosition.x = x;
+            //_transform.position = originalPosition;
+        }
+
         // Rotates the entity
         if (parameters.useOrientation) {
             faceTarget();
-        }
-
-        
-        if (commonParameters.onFloor) {
-            float yPosition = originalPosition.y;
-            originalPosition = _transform.position;
-            originalPosition.y = y;
-            _transform.position = originalPosition;
         }
 
         // Checks if the entity is close enough to the target point
