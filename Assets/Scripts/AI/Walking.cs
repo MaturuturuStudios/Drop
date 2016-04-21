@@ -1,18 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Walking : StateMachineBehaviour {
-    #region Public and hidden in inspector attributes
+[System.Serializable]
+public class WalkingParameters {
+    /// <summary>
+    /// The entity to move
+    /// </summary>
     [HideInInspector]
     public GameObject enemy = null;
-
-
-    [HideInInspector]
     /// <summary>
 	/// A reference to the path this entity will follow.
 	/// </summary>
 	public PathDefinition path;
-    [HideInInspector]
     /// <summary>
 	/// Defines how will the entity move to the next point in the path.
 	/// </summary>
@@ -36,12 +35,17 @@ public class Walking : StateMachineBehaviour {
     /// <summary>
     /// Is a terrain enemy? or maybe it fly?
     /// </summary>
-    public bool onFloor=true;
+    public bool onFloor = true;
     /// <summary>
     /// Time to stay in detect state
     /// </summary>
-    [HideInInspector]
     public float timeUntilIddle = 0;
+}
+
+public class Walking : StateMachineBehaviour {
+    #region Public and hidden in inspector attributes
+    [HideInInspector]
+    public WalkingParameters parameters;
     /// <summary>
     /// Timer
     /// </summary>
@@ -61,19 +65,19 @@ public class Walking : StateMachineBehaviour {
 
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        _transform = enemy.transform;
-        _deltaTime = timeUntilIddle;
+        _transform = parameters.enemy.transform;
+        _deltaTime = parameters.timeUntilIddle;
         if (_pathEnumerator == null) {
             // Selects the current path type
-            switch (pathType) {
+            switch (parameters.pathType) {
                 case PathType.BackAndForward:
-                    _pathEnumerator = path.GetBackAndForwardEnumerator();
+                    _pathEnumerator = parameters.path.GetBackAndForwardEnumerator();
                     break;
                 case PathType.Loop:
-                    _pathEnumerator = path.GetLoopEumerator();
+                    _pathEnumerator = parameters.path.GetLoopEumerator();
                     break;
                 case PathType.Random:
-                    _pathEnumerator = path.GetRandomEnumerator();
+                    _pathEnumerator = parameters.path.GetRandomEnumerator();
                     break;
                 default:
                     Debug.LogError("Unrecognized path type!");
@@ -103,7 +107,7 @@ public class Walking : StateMachineBehaviour {
         }
 
         //check timer
-        if (timeUntilIddle > 0) {
+        if (parameters.timeUntilIddle > 0) {
             _deltaTime -= Time.deltaTime;
             if (_deltaTime <= 0) {
                 animator.SetBool("Timer", true);
@@ -121,12 +125,12 @@ public class Walking : StateMachineBehaviour {
         Vector3 originalPosition = _transform.position;
 
         // Moves the entity using the right function
-        switch (followType) {
+        switch (parameters.followType) {
             case FollowType.MoveTowards:
-                _transform.position = Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
+                _transform.position = Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, parameters.speed * Time.deltaTime);
                 break;
             case FollowType.Lerp:
-                _transform.position = Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, speed * Time.deltaTime);
+                _transform.position = Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, parameters.speed * Time.deltaTime);
                 break;
             default:
                 return;
@@ -134,7 +138,7 @@ public class Walking : StateMachineBehaviour {
         
         //TODO orientation does not work as expected
         // Rotates the entity
-        if (useOrientation) {
+        if (parameters.useOrientation) {
             float traveledDistance = (_transform.position - originalPosition).magnitude;
             float remainingDistance = (_pathEnumerator.Current.position - originalPosition).magnitude;
             if (remainingDistance > 0.01f)
@@ -142,7 +146,7 @@ public class Walking : StateMachineBehaviour {
         }
 
         
-        if (onFloor) {
+        if (parameters.onFloor) {
             float yPosition = originalPosition.y;
             originalPosition = _transform.position;
             originalPosition.y = yPosition;
@@ -151,7 +155,7 @@ public class Walking : StateMachineBehaviour {
         // Checks if the entity is close enough to the target point
         float squaredDistance = (_transform.position - _pathEnumerator.Current.position).sqrMagnitude;
         // The squared distance is used because a multiplication is cheaper than a square root
-        if (squaredDistance < maxDistanceToGoal * maxDistanceToGoal)
+        if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal)
             _pathEnumerator.MoveNext();
     }
 

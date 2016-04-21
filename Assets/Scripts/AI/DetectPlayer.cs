@@ -3,19 +3,24 @@
 using System.Collections.Generic;
 using System.Collections;
 
-public class DetectPlayer : StateMachineBehaviour {
+[System.Serializable]
+public class DetectParameters{
     /// <summary>
     /// Time to stay in detect state
     /// </summary>
+    public float timeWarningDetect = 0;
+}
+
+public class DetectPlayer : StateMachineBehaviour {
     [HideInInspector]
-    public float timeWarning=0;
+    public DetectParameters parameters;
     /// <summary>
     /// Timer
     /// </summary>
     private float _deltaTime;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        _deltaTime = timeWarning;
+        _deltaTime = parameters.timeWarningDetect;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

@@ -3,36 +3,33 @@ using System.Collections.Generic;
 
 public class AIBase : MonoBehaviour {
     #region Public Attribute
+    /// <summary>
+    /// The enemy to control
+    /// </summary>
     public GameObject enemy;
     /// <summary>
-    /// Area in which enemy react
+    /// Is it a grounded entity? or maybe fly?
     /// </summary>
-    public Region triggerArea;
+    public bool onFloor;
     /// <summary>
     /// Under this limit, enemy attack, equal or over this size, the enemy escape
     /// if zero or less, the size is ignored (example of bee)
     /// </summary>
     public int sizeLimitDrop;
     /// <summary>
-    /// Time between detecting a drop and chasing him or come back to iddle/walking if not
-    /// in trigger area anymore
+    /// Distance tolerance of the enemy to take in account when calculate if reached the drop
+    /// The size of the drop is alreaded taked in account
     /// </summary>
-    public float timeDetectChase;
+    public float toleranteDistanceAttack = 1.0f;
     /// <summary>
-    /// Time in walking until it get iddle a while
-    /// -1 for not iddle at all, then, timeInIddle does not apply
+    /// Area in which enemy react
     /// </summary>
-    public float timeUntilIddle;
-    /// <summary>
-    /// Time while in Iddle
-    /// </summary>
-    public float timeInIddle = 0;
-    /// <summary>
-    /// End point when reached a running away state
-    /// Can be a static point in a flower to let bee recolect
-    /// or a point behind scene or lateral point to make an ant to disappear
-    /// </summary>
-    public PathDefinition endPoint;
+    public Region triggerArea;
+    public GoAwayParameters goAwayParameters;
+    public WalkingParameters walkingParameters;
+    public IddleParameters iddleParameters;
+    public ChaseParameters chaseParameters;
+    public DetectParameters detectParameters;
     #endregion
 
     #region Private attributes
@@ -48,6 +45,18 @@ public class AIBase : MonoBehaviour {
     /// The detected drop
     /// </summary>
     protected GameObject _detectedDrop;
+    /// <summary>
+    /// The size of the detected drop
+    /// </summary>
+    protected CharacterSize _sizeDetected;
+    /// <summary>
+    /// TODO: needed?
+    /// </summary>
+    protected Attack attackAI;
+    /// <summary>
+    /// The chase AI reference to send him the detected and chased drop
+    /// </summary>
+    protected Chase _chaseAI;
     #endregion
 
     #region Methods
@@ -65,49 +74,89 @@ public class AIBase : MonoBehaviour {
     public void Start() {
         //get the behaviours and set their data
         Walking walkingAI = _animator.GetBehaviour<Walking>();
-        walkingAI.enemy = enemy;
-        walkingAI.timeUntilIddle = timeUntilIddle;
+        walkingAI.parameters.enemy = enemy;
+        walkingAI.parameters.timeUntilIddle = walkingParameters.timeUntilIddle;
+        walkingAI.parameters.onFloor = onFloor;
+        walkingAI.parameters.path = walkingParameters.path;
+        walkingAI.parameters.followType = walkingParameters.followType;
+        walkingAI.parameters.speed = walkingParameters.speed;
+        walkingAI.parameters.maxDistanceToGoal= walkingParameters.maxDistanceToGoal;
+        walkingAI.parameters.useOrientation= walkingParameters.useOrientation;
+        walkingAI.parameters.pathType = walkingParameters.pathType;
 
-        GoAway runningAway= _animator.GetBehaviour<GoAway>();
-        runningAway.enemy = enemy;
-        runningAway.endPoint = endPoint;
+        GoAway runningAway = _animator.GetBehaviour<GoAway>();
+        runningAway.parameters.enemy = enemy;
+        runningAway.parameters.endPoint = goAwayParameters.endPoint;
+        runningAway.parameters.onFloor = onFloor;
 
         DetectPlayer detectedAI = _animator.GetBehaviour<DetectPlayer>();
-        detectedAI.timeWarning = timeDetectChase;
+        detectedAI.parameters.timeWarningDetect = detectParameters.timeWarningDetect;
 
         Iddle iddle= _animator.GetBehaviour<Iddle>();
-        iddle.timeInIddle= timeInIddle;
+        iddle.parameters.timeInIddle = iddleParameters.timeInIddle;
+
+        _chaseAI = _animator.GetBehaviour<Chase>();
+        _chaseAI.parameters.enemy = enemy;
+        _chaseAI.parameters.speed = chaseParameters.speed;
+
+        attackAI = _animator.GetBehaviour<Attack>();
     }
 
     public void Update() {
-        //if we have a drop detected, continue with it and check if is outside the trigger or not
-        //if (true) {
-        //    //send to the SM that drop dissapear (size=0)
-        //} else {
-            
-        //}
+            LayerMask layerCast = (1 << LayerMask.NameToLayer("Character")); ;
+            Vector3 center = triggerArea.origin + transform.position;
+            Vector3 halfSize = triggerArea.size / 2;
+            center.x += halfSize.x;
+            center.y += halfSize.y;
+            center.z += halfSize.z;
+            Collider[] drops = Physics.OverlapBox(center, halfSize,
+                Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
 
-        LayerMask layerCast = (1 << LayerMask.NameToLayer("Character")); ;
-        Vector3 center = triggerArea.origin + transform.position;
-        Vector3 halfSize = triggerArea.size / 2;
-        center.x += halfSize.x;
-        center.y += halfSize.y;
-        center.z += halfSize.z;
-        Collider[] drops=Physics.OverlapBox(center, halfSize,
-            Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
-
-        int sizeDrop = 0;
-        foreach(Collider dropCollider in drops) {
-            Debug.Log("Enter to detection");
-            if (_independentControl.IsUnderControl(dropCollider.gameObject)) {
-                _detectedDrop = dropCollider.gameObject;
-                sizeDrop=(_detectedDrop.GetComponent<CharacterSize>()).GetSize();
+            //if we have a drop detected, check only him if is outside the trigger or not
+        if (_detectedDrop == null) {
+            int sizeDrop = 0;
+            foreach (Collider dropCollider in drops) {
+                if (_independentControl.IsUnderControl(dropCollider.gameObject)) {
+                    _detectedDrop = dropCollider.gameObject;
+                    _sizeDetected = _detectedDrop.GetComponent<CharacterSize>();
+                    _chaseAI.parameters.target = _detectedDrop;
+                    sizeDrop = _sizeDetected.GetSize();
+                }
             }
-        }
 
-        _animator.SetInteger("SizeDrop", sizeDrop);
+            _animator.SetInteger("SizeDrop", sizeDrop);
+        } else {
+            //check if is outside of trigger
+            bool outside = true;
+            foreach (Collider dropCollider in drops) {
+                if (dropCollider.gameObject==_detectedDrop) {
+                    outside = false;
+                }
+            }
+            if (outside) {
+                _animator.SetInteger("SizeDrop", 0);
+                _detectedDrop = null;
+            }
+            DropReached();
+        }
     }
     #endregion
+
+    private void DropReached() {
+        if (_detectedDrop == null) {
+            return;
+        }
+
+        //check distance TODO adjust 
+        // Checks if the entity is close enough to the target point
+        float squaredDistance = (_detectedDrop.transform.position - enemy.transform.position).sqrMagnitude;
+        // The squared distance is used becouse a multiplication is cheaper than a square root
+        float distanceTolerance= _sizeDetected.GetSize();
+        distanceTolerance += toleranteDistanceAttack;
+        distanceTolerance *= distanceTolerance;
+        if (squaredDistance < distanceTolerance)
+            _animator.SetBool("Reached", true);
+    }
 
 
     #region Private class

@@ -2,31 +2,42 @@
 using System.Collections;
 
 [System.Serializable]
-public class IddleParameters {
+public struct ChaseParameters {
+    [HideInInspector]
     /// <summary>
-    /// Time the entity will be in iddle state
+    /// The entity to be chased
     /// </summary>
-    public float timeInIddle=0;
+    public GameObject target;
+    [HideInInspector]
+    /// <summary>
+    /// The entity to chase the target
+    /// </summary>
+    public GameObject enemy;
+    /// <summary>
+    /// The chasing speed
+    /// </summary>
+    public float speed;
 }
 
-public class Iddle : StateMachineBehaviour {
+public class Chase : StateMachineBehaviour {
     /// <summary>
-    /// Parameters
+    /// Parameters of the chase script
     /// </summary>
-    [HideInInspector]
-    public IddleParameters parameters;
+    public ChaseParameters parameters;
+
+    #region Private attribute
     /// <summary>
-    /// Timer
+    /// A reference to the entity's transform.
     /// </summary>
-    private float _deltaTime;
+    private Transform _transform;
+    #endregion
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        _deltaTime = parameters.timeInIddle;
+        _transform = parameters.enemy.transform;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        animator.SetBool("Detect", false);
-        animator.SetBool("Timer", false);
+        animator.SetBool("Reached", false);
         animator.SetBool("GoAway", false);
     }
 
@@ -36,15 +47,13 @@ public class Iddle : StateMachineBehaviour {
         int sizeLimit = animator.GetInteger("LimitSizeDrop");
         if (sizeLimit > 0 && size >= sizeLimit) {
             animator.SetBool("GoAway", true);
-        } else if (sizeLimit <= 0 || (size < sizeLimit && size > 0)) {
-            animator.SetBool("Detect", true);
             return;
         }
 
-        _deltaTime -= Time.deltaTime;
-        if (_deltaTime <= 0) {
-            animator.SetBool("Timer", true);
-        }
+        //move toward target
+        _transform.position = Vector3.Lerp(_transform.position, parameters.target.transform.position, parameters.speed * Time.deltaTime);
+
+        //reached calculation is on specific IA
     }
 
     public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -54,4 +63,5 @@ public class Iddle : StateMachineBehaviour {
     public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 
     }
+
 }
