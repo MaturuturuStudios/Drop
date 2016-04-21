@@ -39,6 +39,7 @@ public class GameControllerInput : MonoBehaviour {
 			// Retrieves current character's components
 			CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 			CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
+			CharacterAction actionComponent = _switcher.currentCharacter.GetComponent<CharacterAction>();
 
 			// Horizontal input
 			float hInput = Input.GetAxis(Axis.Horizontal);
@@ -81,7 +82,7 @@ public class GameControllerInput : MonoBehaviour {
 			float vLookInput = Input.GetAxis(Axis.CamVertical);
 			_mainCameraController.LookArround(hLookInput, vLookInput);
 
-			//Handle shoot input To delete
+			//Handle shoot input
 			if (Input.GetButtonDown(Axis.Action) || Input.GetButtonDown(Axis.Jump))
 				shootComponent.Shoot();
 			if (Input.GetButtonDown(Axis.ShootMode))
@@ -96,6 +97,10 @@ public class GameControllerInput : MonoBehaviour {
 				_shootCounterPressed = true;
 			} else if (Input.GetAxis(Axis.ShootCounter) == 0)
 				_shootCounterPressed = false;
+
+			//Handle action input
+			if (Input.GetButtonDown(Axis.Action))
+				actionComponent.DoAction();
 
 			///NOT SETTED CONTROLS
 			//Shoot mode pointer inputs

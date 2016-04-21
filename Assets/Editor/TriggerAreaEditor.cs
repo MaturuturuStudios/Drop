@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 
 /// <summary>
 /// Editor script for the TriggerArea script.
@@ -52,7 +51,7 @@ public class TriggerAreaEditor : Editor {
 		if (myScript.triggerMode == TriggerArea.TriggerMode.Sensor) {
 			SerializedProperty onStay = _serializedScript.FindProperty("onStay");
 			EditorGUILayout.PropertyField(onStay, true);
-        }
+		}
 
 		// Draws the OnExit methods list
 		SerializedProperty onExit = _serializedScript.FindProperty("onExit");
