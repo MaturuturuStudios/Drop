@@ -326,7 +326,10 @@ public class BuildManager {
 
         Debug.Log("Sharing " + label + " build");
 
-        try {
+		String path = MakeAbsolute (bm.bd.sharedFolderPath);
+		System.IO.Directory.CreateDirectory (path);
+        
+		try {
 
             // Get folders
             string from = bm.bd.workPath + "/" + bm.bd.buildName + ".zip ";

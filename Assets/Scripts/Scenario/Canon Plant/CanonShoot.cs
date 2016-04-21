@@ -2,51 +2,93 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// This class is for the canon plant shoot
+/// </summary>
 public class CanonShoot : MonoBehaviour
 {
+    #region Private Attributes
 
-    public GameObject TrajectoryPointPrefeb;
-   
-    //public GameObject TrajectoryParticlePrefeb;
-    public int numOfTrajectoryPoints = 30;
-    //public float particletrajectoryspeed = 0.08f;
-    public float angle=45;
-    //public float speed = 1.0F;
-
+    /// <summary>
+    /// This is to draw the animation of the particle that move throught the trajectory 
+    /// </summary>
     private float journeyLength;
     private float faction_of_path_traveled;
 
-
+    /// <summary>
+    /// This is the arrays of the trajectory points
+    /// </summary>
     private List<GameObject> trajectoryPoints;
-    private List<GameObject> bolas;
+
+    /// <summary>
+    /// These are the scripts objects
+    /// </summary>
     private CharacterControllerCustom cc;
+    private CharacterControllerCustom ccc;
 
-    CharacterControllerCustom ccc;
-   
+    /// <summary>
+    /// Vector which contain the information that we need to shoot a drop in the sendflying method
+    /// </summary>
+    private Vector3  pVelocity;
 
-    private Vector3 vel, pVelocity;
+    /// <summary>
+    /// To know if we tauch the trigger
+    /// </summary>
+    private bool ontriger = false;
 
-    public float power = 25;
-    private bool ontriger=false;
-
+    /// <summary>
+    /// Ray cast to know where the trajectory points are hitting
+    /// </summary>
     private RaycastHit hit;
+    /// <summary>
+    /// Vector auxiliar to keep data
+    /// </summary>
     private Vector3 fwd;
-    private bool colisiondetected = false;
 
-   
-    private float oldvelocity;
-    private float h, v;
-    //private float shootlimiet = 1;
-
+    /// <summary>
+    /// Variable to keep data
+    /// </summary>
     private float velocity = 1;
 
-    // Use this for initialization
+    /// <summary>
+    /// Boolean to know if the raycast hitted something
+    /// </summary>
+    private bool colisiondetected = false;
+
+    #endregion
+
+    #region Public Attributes
+
+    /// <summary>
+    /// Prefab of the trajectory points
+    /// </summary>
+    public GameObject TrajectoryPointPrefeb;
+
+    /// <summary>
+    /// Number of trajectoyr points we will have
+    /// </summary>
+    public int numOfTrajectoryPoints = 100;
+
+    /// <summary>
+    /// Angle of the trajectory that we will changing with the input axis
+    /// </summary>
+    public float angle=45;
+
+    /// <summary>
+    ///  the power that the drop will be shooted
+    /// </summary>
+    public float power = 25;
+
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+	/// Unity's method called when the entity is created.
+	/// Recovers the desired componentes of the entity.
+	/// </summary>
     void Awake()
     {
-
-       // c = GetComponent<CharacterController>();
-        //ccc = GetComponent<CharacterControllerCustom>();
-
         cc = GameObject.FindGameObjectWithTag(Tags.Player)
                                 .GetComponent<CharacterControllerCustom>();
 
@@ -63,14 +105,14 @@ public class CanonShoot : MonoBehaviour
 
     }
 
-    //This fuctions create prefabs that we are going to use and initialite some variables
-    
-    // Update is called once per frame
+    /// <summary>
+    /// Unity's method called each frame.
+    /// </summary>
     void Update()
     {
         
         transform.eulerAngles = new Vector3(0, 0, angle ); //this is to face in the direction you are aming
-        Vector3 pos = this.transform.position ;                                             // float speed = Mathf.Sqrt((power) * ccc.Parameters.Gravity.magnitude);
+        Vector3 pos = this.transform.position ;            // float speed = Mathf.Sqrt((power) * ccc.Parameters.Gravity.magnitude);
         float speed = Mathf.Sqrt((power) * cc.Parameters.Gravity.magnitude);
         setTrajectoryPoints(pos, angle, speed);
         setvisibility();
@@ -83,14 +125,15 @@ public class CanonShoot : MonoBehaviour
                 ccc.transform.position = this.transform.position;
                 ccc.Stop();
                 ccc.SendFlying(GetpVelocity());
-                Debug.Log(" angle " + transform.eulerAngles);
-
-                
+               // Debug.Log(" angle " + transform.eulerAngles);              
             }
         }
 
     }
 
+    /// <summary>
+    /// Method to use in Game Input Script
+    /// </summary>
     public void Shoot()
     {
         if (ontriger)
@@ -105,15 +148,19 @@ public class CanonShoot : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Method to change the angle and the power of the plant when drop touch the trigger
+    /// </summary>
     public void Changeangle()
     {
-
         angle = 75;
         power = 54;
 
-
     }
 
+    /// <summary>
+    /// Method that activate when the drop touch the trigger
+    /// </summary>
     void OnTriggerEnter(Collider other)
     {
         ccc = other.GetComponent<CharacterControllerCustom>();
@@ -122,8 +169,11 @@ public class CanonShoot : MonoBehaviour
             ontriger = true;
         }
 
-        }
+    }
 
+    /// <summary>
+    /// Method that activate when the drop exit the trigger
+    /// </summary>
     void OnTriggerExit(Collider other)
     {
         ccc = other.GetComponent<CharacterControllerCustom>();
@@ -135,8 +185,9 @@ public class CanonShoot : MonoBehaviour
 
     }
 
-
-    //This fuctions delete the trajectory
+    /// <summary>
+    /// This fuctions delete the trajectory
+    /// </summary>
     public void QuitTrajectory()
     {
         for (int i = 0; i < numOfTrajectoryPoints; i++)
@@ -146,13 +197,17 @@ public class CanonShoot : MonoBehaviour
         
     }
 
-    //This fuctions return the shoot vector for the shoot script
+    ///  <summary>
+    /// This fuctions return the shoot vector for the shoot script
+    /// </summary>
     public Vector3 GetpVelocity()
     {
         return pVelocity; 
     }
 
-    //This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
+    ///  <summary>
+    /// This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
+    /// </summary>
     void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed)
     {
 
@@ -177,7 +232,9 @@ public class CanonShoot : MonoBehaviour
 
     }
 
-    //This fuctions draw the particle trip along the trajectory
+    ///  <summary>
+    /// This fuctions draw the particle trip along the trajectory
+    /// </summary>
    /* public void Example()
     {
          //Debug.Log("FINAL " + finalWaypoint);
@@ -202,7 +259,9 @@ public class CanonShoot : MonoBehaviour
         
     }*/
 
-    //This fuction draw the trajectory prefab depending on the colisions with their raycast
+    ///  <summary>
+    /// This fuction draw the trajectory prefab depending on the colisions with their raycast
+    /// </summary>
     public void setvisibility()
     {
         float dis = 0;
@@ -238,4 +297,5 @@ public class CanonShoot : MonoBehaviour
 
     }
 
+    #endregion
 }

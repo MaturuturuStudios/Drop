@@ -6,28 +6,40 @@ using UnityEngine.UI;
 /// </summary>
 public class GameEndController : MonoBehaviour {
 
-    #region Attributes
+    #region Public Attributes
+
+
     /// <summary>
-    /// End Game configuration options
+    /// Wait time showing message untill scene is changed
     /// </summary>
-    public EndGame endGame;
-    [System.Serializable]
-	//  Movement Class
-    public class EndGame {
-        //wait time showing message untill scene is changed
-        public float waitTime = 3F;
-        //UI text object reference
-        public Text levelCompleteText;
-        //Displayed phrase
-        public string phrase = "Level Complete!";
-        //Scene to load
-        public Scene nextScene;
-    }
+    public float waitTime = 3F;
+
+
+    /// <summary>
+    /// UI text object reference
+    /// </summary>
+    public Text levelCompleteText;
+
+
+    /// <summary>
+    /// Displayed phrase
+    /// </summary>
+    public string phrase = "Level Complete!";
     
+
     /// <summary>
-    ///On trigger enter control
+    /// Next scene to load
     /// </summary>
-    private bool end = false;
+    public Scene nextScene;
+
+    #endregion
+
+    #region Private Attributes
+
+    /// <summary>
+    /// Input controller to disable it when its necessary
+    /// </summary>
+    private GameControllerInput _gci;
 
     /// <summary>
     /// Reference to the collider of end region.
@@ -35,12 +47,15 @@ public class GameEndController : MonoBehaviour {
     private BoxCollider _collider;
 
     /// <summary>
-    /// Input controller to disable it when its necessary
+    /// On trigger enter control
     /// </summary>
-    private GameControllerInput _gci;
+    private bool end = false;
+
     #endregion
 
     #region Methods
+
+
     /// <summary>
     /// Unity's method called when the entity is created.
     /// Recovers the desired componentes of the entity.
@@ -50,19 +65,20 @@ public class GameEndController : MonoBehaviour {
         _collider = gameObject.GetComponent<BoxCollider>();
     }
 
+
     /// <summary>
     /// Unity's method called on start script only one time
     /// </summary>
     void Start(){
-        //Set the phrase to the text label and disable it
-        endGame.levelCompleteText.text = endGame.phrase;
-        endGame.levelCompleteText.enabled = false;
+        // Set the phrase to the text label and disable it
+        levelCompleteText.text = phrase;
+        levelCompleteText.enabled = false;
 
-        //in case that the scene is empty, by default we use StartScene
-        //TODO improve this part, try to avoid hardcoded strings
-        if (endGame.nextScene.name == "Not" || endGame.nextScene.name == "") {
-            Debug.LogWarning("Next Scene not setted, assigning StartScene by default");
-            endGame.nextScene.name = "StartScene";
+        // In case that the scene is empty, by default we use StartScene
+        // TODO improve this part, try to avoid hardcoded strings
+        if (nextScene.name == "Not" || nextScene.name == "") {
+            Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
+            nextScene.name = "StartScene";
         }
 
         //Get input controller
@@ -74,37 +90,42 @@ public class GameEndController : MonoBehaviour {
     /// Update the state of the trigger
     /// </summary>
 	void Update () {
-		//if the scene is ended
+
+		// If the scene is ended
 	    if (end){
-            //get the navigator
+
+            // Get the navigator
             MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
                                      .GetComponent<MenuNavigator>();
-            //wait before starting the change
-            _menuNavigator.ChangeScene(endGame.nextScene.name, endGame.waitTime);
+            // Wait before starting the change
+            _menuNavigator.ChangeScene(nextScene.name, waitTime);
         }
     }
+
 
 	/// <summary>
     /// Activated when player enters on the trigger
     /// </summary>
     /// <param name="other">Collider who enters in the trigger</param>
     void OnTriggerEnter(Collider other){
-        //only ends game with player
+
+        // Only ends game with player
         if (other.CompareTag(Tags.Player)){
+
             // Activate counter
             end = true;
 
             GameObject currentCharacter = FindObjectOfType<GameControllerIndependentControl>().currentCharacter;
             CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 
-            //Stop player
+            // Stop player
             cccp.Stop();
 
-            //Disable input
-            _gci.enabled = false;
+            // Disable input
+            _gci.StopInput();
 
-            //Show message
-            endGame.levelCompleteText.enabled = true;
+            // Show message
+            levelCompleteText.enabled = true;
         }
     }
 
@@ -115,6 +136,7 @@ public class GameEndController : MonoBehaviour {
     /// Draws the volume on the editor.
     /// </summary>
     public void OnDrawGizmos() {
+
         // Calls the configuration functions
         if (!Application.isPlaying) {
             Awake();
@@ -126,7 +148,7 @@ public class GameEndController : MonoBehaviour {
         color.a = 0.25f;
         Gizmos.color = color;
 
-        // Draws the cube
+        // Draws the end game zone
         Gizmos.matrix = transform.localToWorldMatrix;
         Vector3 pos = _collider.center;
         Gizmos.DrawCube(pos, _collider.size);
