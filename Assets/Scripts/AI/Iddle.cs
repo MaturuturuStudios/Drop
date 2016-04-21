@@ -41,9 +41,8 @@ public class Iddle : StateMachineBehaviour {
         int sizeLimit = animator.GetInteger("LimitSizeDrop");
         if (sizeLimit > 0 && size >= sizeLimit) {
             animator.SetBool("GoAway", true);
-        } else if (sizeLimit <= 0 || (size < sizeLimit && size > 0)) {
+        } else if ((sizeLimit <= 0 || size < sizeLimit) && size > 0) {
             animator.SetBool("Detect", true);
-            return;
         }
 
         _deltaTime -= Time.deltaTime;

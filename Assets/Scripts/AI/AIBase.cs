@@ -86,6 +86,7 @@ public class AIBase : MonoBehaviour {
         //get the animator of the enemy
         _animator = enemy.GetComponent<Animator>();
         _animator.SetInteger("LimitSizeDrop", sizeLimitDrop);
+        Debug.Log("Im awake and get the animator");
     }
 
     public void Start() {
@@ -133,6 +134,7 @@ public class AIBase : MonoBehaviour {
         if (_detectedDrop == null) {
             int sizeDrop = 0;
             foreach (Collider dropCollider in drops) {
+                Debug.Log("Checked a drop!");
                 if (_independentControl.IsUnderControl(dropCollider.gameObject)) {
                     _detectedDrop = dropCollider.gameObject;
                     _sizeDetected = _detectedDrop.GetComponent<CharacterSize>();
