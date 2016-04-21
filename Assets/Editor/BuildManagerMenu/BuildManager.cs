@@ -244,7 +244,7 @@ public class BuildManager {
         string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_lin.x86";
 
         // Build it
-        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinux, (development ? BuildOptions.Development : BuildOptions.None));
+        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinuxUniversal, (development ? BuildOptions.Development : BuildOptions.None));
 
         Debug.Log("Build for Linux done");
 
@@ -266,7 +266,7 @@ public class BuildManager {
         string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_mac.app";
 
         // Build it
-        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinux, (development ? BuildOptions.Development : BuildOptions.None));
+        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneOSXUniversal, (development ? BuildOptions.Development : BuildOptions.None));
 
         Debug.Log("Build for Mac done");
 
