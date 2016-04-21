@@ -32,6 +32,7 @@ public class WalkingParameters {
     /// Defines how the entity looks for the next point in the path.
     /// </summary>
     public PathType pathType = PathType.Random;
+    [HideInInspector]
     /// <summary>
     /// Is a terrain enemy? or maybe it fly?
     /// </summary>
