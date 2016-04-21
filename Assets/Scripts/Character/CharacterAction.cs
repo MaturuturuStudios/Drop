@@ -45,8 +45,8 @@ public class CharacterAction : MonoBehaviour {
 
 		// Checks if the colliders area interactive and notifies them
 		foreach (Collider collider in overlapingColliders) {
-			ActionPerformer actionPerformer = collider.GetComponent<ActionPerformer>();
-			if (actionPerformer != null)
+			ActionPerformer[] actionPerformers = collider.GetComponents<ActionPerformer>();
+			foreach (ActionPerformer actionPerformer in actionPerformers)
 				actionPerformer.DoAction(gameObject);
 		}
 	}
