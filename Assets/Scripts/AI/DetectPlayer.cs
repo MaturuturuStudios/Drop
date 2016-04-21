@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 
-using System.Collections.Generic;
-using System.Collections;
-
 [System.Serializable]
 public class DetectParameters{
     /// <summary>
@@ -12,18 +9,26 @@ public class DetectParameters{
 }
 
 public class DetectPlayer : StateMachineBehaviour {
+    #region Attributes
     [HideInInspector]
+    ///<summary>
+    /// Parameters of the script
+    ///</summary>
     public DetectParameters parameters;
     /// <summary>
     /// Timer
     /// </summary>
     private float _deltaTime;
+    #endregion
 
+    #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        //start timer
         _deltaTime = parameters.timeWarningDetect;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        //reset states (using bool because trigger does not work correctly)
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
     }
@@ -36,9 +41,12 @@ public class DetectPlayer : StateMachineBehaviour {
             animator.SetBool("GoAway", true);
         }
 
+        //TODO: always face to the target
+
         _deltaTime -= Time.deltaTime;
         if (_deltaTime <= 0) {
             animator.SetBool("Timer", true);
         }
     }
+    #endregion
 }

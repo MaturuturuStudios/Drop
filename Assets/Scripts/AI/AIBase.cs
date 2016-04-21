@@ -25,10 +25,25 @@ public class AIBase : MonoBehaviour {
     /// Area in which enemy react
     /// </summary>
     public Region triggerArea;
+    /// <summary>
+    /// Parameters for the go Away state
+    /// </summary>
     public GoAwayParameters goAwayParameters;
+    /// <summary>
+    /// Parameters for the walking state
+    /// </summary>
     public WalkingParameters walkingParameters;
+    /// <summary>
+    /// Parameters for the iddle state
+    /// </summary>
     public IddleParameters iddleParameters;
+    /// <summary>
+    /// Parameters for the chase state
+    /// </summary>
     public ChaseParameters chaseParameters;
+    /// <summary>
+    /// Parameters for the detection state
+    /// </summary>
     public DetectParameters detectParameters;
     #endregion
 
@@ -65,8 +80,10 @@ public class AIBase : MonoBehaviour {
     /// The character start with size one
     /// </summary>
     public void Awake() {
+        //get the independ control to know if the detected drop is under control
         _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
+        //get the animator of the enemy
         _animator = enemy.GetComponent<Animator>();
         _animator.SetInteger("LimitSizeDrop", sizeLimitDrop);
     }
@@ -103,16 +120,16 @@ public class AIBase : MonoBehaviour {
     }
 
     public void Update() {
-            LayerMask layerCast = (1 << LayerMask.NameToLayer("Character")); ;
-            Vector3 center = triggerArea.origin + transform.position;
-            Vector3 halfSize = triggerArea.size / 2;
-            center.x += halfSize.x;
-            center.y += halfSize.y;
-            center.z += halfSize.z;
-            Collider[] drops = Physics.OverlapBox(center, halfSize,
-                Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
+        //Get the collisions/trigger area
+        LayerMask layerCast = (1 << LayerMask.NameToLayer("Character")); ;
+        Vector3 center = triggerArea.origin + transform.position;
+        Vector3 halfSize = triggerArea.size / 2;
+        center.x += halfSize.x;
+        center.y += halfSize.y;
+        center.z += halfSize.z;
+        Collider[] drops = Physics.OverlapBox(center, halfSize, Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
 
-            //if we have a drop detected, check only him if is outside the trigger or not
+        //if we have a drop detected, check only him if is outside the trigger or not
         if (_detectedDrop == null) {
             int sizeDrop = 0;
             foreach (Collider dropCollider in drops) {
@@ -123,8 +140,8 @@ public class AIBase : MonoBehaviour {
                     sizeDrop = _sizeDetected.GetSize();
                 }
             }
-
             _animator.SetInteger("SizeDrop", sizeDrop);
+
         } else {
             //check if is outside of trigger
             bool outside = true;
@@ -133,14 +150,16 @@ public class AIBase : MonoBehaviour {
                     outside = false;
                 }
             }
+            //it's outside!
             if (outside) {
                 _animator.SetInteger("SizeDrop", 0);
                 _detectedDrop = null;
             }
+            //check if reached the drop
             DropReached();
         }
     }
-    #endregion
+    
 
     private void DropReached() {
         if (_detectedDrop == null) {
@@ -157,9 +176,9 @@ public class AIBase : MonoBehaviour {
         if (squaredDistance < distanceTolerance)
             _animator.SetBool("Reached", true);
     }
+    #endregion
 
-
-    #region Private class
+    #region Personal methods and class
     /// <summary>
     /// Region definition
     /// </summary>
@@ -170,9 +189,14 @@ public class AIBase : MonoBehaviour {
     }
 
     /// <summary>
-    /// Draws the trigger area.
+    /// Draws the trigger area and paths
     /// </summary>
     public void OnDrawGizmos() {
+        //draw paths
+        walkingParameters.path.OnDrawGizmos();
+        goAwayParameters.endPoint.OnDrawGizmos();
+
+        //draw area
         Gizmos.color = Color.red;
 
         Vector3 originWorld = triggerArea.origin + transform.position;

@@ -20,12 +20,11 @@ public struct ChaseParameters {
 }
 
 public class Chase : StateMachineBehaviour {
+    #region Attributes
     /// <summary>
     /// Parameters of the chase script
     /// </summary>
     public ChaseParameters parameters;
-
-    #region Private attribute
     /// <summary>
     /// A reference to the entity's transform.
     /// </summary>
@@ -37,6 +36,7 @@ public class Chase : StateMachineBehaviour {
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        //reset states (using bool because trigger does not work correctly)
         animator.SetBool("Reached", false);
         animator.SetBool("GoAway", false);
     }
@@ -50,18 +50,10 @@ public class Chase : StateMachineBehaviour {
             return;
         }
 
-        //move toward target
-        _transform.position = Vector3.Lerp(_transform.position, parameters.target.transform.position, parameters.speed * Time.deltaTime);
+        //move towards target
+        _transform.position = Vector3.MoveTowards(_transform.position, parameters.target.transform.position, parameters.speed * Time.deltaTime);
 
         //reached calculation is on specific IA
-    }
-
-    public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-
-    }
-
-    public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-
     }
 
 }

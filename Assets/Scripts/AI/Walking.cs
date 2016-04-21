@@ -63,10 +63,12 @@ public class Walking : StateMachineBehaviour {
 	private IEnumerator<Transform> _pathEnumerator;
     #endregion
 
-
+    #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         _transform = parameters.enemy.transform;
+        //start timer
         _deltaTime = parameters.timeUntilIddle;
+        //get path
         if (_pathEnumerator == null) {
             // Selects the current path type
             switch (parameters.pathType) {
@@ -90,6 +92,7 @@ public class Walking : StateMachineBehaviour {
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        //reset states (using bool because trigger does not work correctly)
         animator.SetBool("Detect", false);
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
@@ -114,8 +117,6 @@ public class Walking : StateMachineBehaviour {
                 return;
             }
         }
-
-
 
         //set the moving path
         if (_pathEnumerator == null || _pathEnumerator.Current == null)
@@ -158,14 +159,6 @@ public class Walking : StateMachineBehaviour {
         if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal)
             _pathEnumerator.MoveNext();
     }
-
-    public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-
-    }
-
-    public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-
-    }
-
+    #endregion
 
 }

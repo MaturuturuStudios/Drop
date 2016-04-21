@@ -10,6 +10,7 @@ public class IddleParameters {
 }
 
 public class Iddle : StateMachineBehaviour {
+    #region Attributes
     /// <summary>
     /// Parameters
     /// </summary>
@@ -19,12 +20,16 @@ public class Iddle : StateMachineBehaviour {
     /// Timer
     /// </summary>
     private float _deltaTime;
+    #endregion
 
+    #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        //start timer
         _deltaTime = parameters.timeInIddle;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        //reset states (using bool because trigger does not work correctly)
         animator.SetBool("Detect", false);
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
@@ -48,10 +53,15 @@ public class Iddle : StateMachineBehaviour {
     }
 
     public override void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-
+        //OnStateMove is called before OnAnimatorMove would be called in MonoBehaviours for every frame the state is playing.
+        //When OnStateMove is called, it will stop OnAnimatorMove from being called in MonoBehaviours.
     }
 
     public override void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-
+        //OnStateIK is called after OnAnimatorIK on MonoBehaviours for every frame the while the state is being played.
+        //It is important to note that OnStateIK will only be called if the state is on a layer that has an IK pass. 
+        //By default, layers do not have an IK pass and so this function will not be called. 
+        //For more information on IK see the information linked below.
     }
+    #endregion
 }
