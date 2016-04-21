@@ -7,6 +7,7 @@ using System.Linq;
 /// enters, stays or leaves it. It's fully configurable on
 /// the editor.
 /// </summary>
+[RequireComponent(typeof(Collider))]
 public class TriggerArea : MonoBehaviour {
 
 	#region Enumerations
@@ -73,6 +74,11 @@ public class TriggerArea : MonoBehaviour {
 	public TriggerMode triggerMode = TriggerMode.Switch;
 
 	/// <summary>
+	/// If the area is a switch, stores if it's been activated or not.
+	/// </summary>
+	public bool switchActive = false;
+
+	/// <summary>
 	/// Amount of time after which the switch will be turned off.
 	/// </summary>
 	public float switchTime = 0.0f;
@@ -124,11 +130,6 @@ public class TriggerArea : MonoBehaviour {
 	private List<Collider> _stayingColliders;
 
 	/// <summary>
-	/// If the area is a switch, stores if it's been activated or not.
-	/// </summary>
-	private bool _switchActive = false;
-
-	/// <summary>
 	/// The remaining time until the switch is deactivated.
 	/// </summary>
 	private float _remainingTimeToDeactivateSwitch;
@@ -174,7 +175,7 @@ public class TriggerArea : MonoBehaviour {
 	/// </summary>
 	void Update() {
 		// Checks if the switch should be deactivated
-		if (_switchActive && triggerMode == TriggerMode.TimedSwitch) {
+		if (switchActive && triggerMode == TriggerMode.TimedSwitch) {
 			_remainingTimeToDeactivateSwitch -= Time.deltaTime;
 
 			if (_remainingTimeToDeactivateSwitch <= 0)
@@ -204,7 +205,7 @@ public class TriggerArea : MonoBehaviour {
 		_stayingColliders.Add(other);
 
 		// Checks if the enter call should be performed
-		if ((triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) && _switchActive)
+		if ((triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) && switchActive)
 			// It will not be called if it's a switch and it's activated
 			return;
 
@@ -256,7 +257,7 @@ public class TriggerArea : MonoBehaviour {
 		// Checks if the enter call should be performed
 		if (triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) {
 			// It will not be called if it's a switch and it's not activated
-			if (!_switchActive)
+			if (!switchActive)
 				return;
 
 			// If there are colliders remaining in the area, the invocations will not be performed
@@ -273,7 +274,7 @@ public class TriggerArea : MonoBehaviour {
 	/// </summary>
 	private void DoEnter() {
 		// Activates the switch and starts the timer
-		_switchActive = true;
+		switchActive = true;
 		_remainingTimeToDeactivateSwitch = switchTime;
 
 		// Performs the method invocations
@@ -286,7 +287,7 @@ public class TriggerArea : MonoBehaviour {
 	/// </summary>
 	private void DoExit() {
 		// Deactivates the trigger
-		_switchActive = false;
+		switchActive = false;
 
 		// Performs the method invocations
 		foreach (MethodInvoke methodInvoke in onExit.AsList())
