@@ -78,7 +78,7 @@ public class BuildManager {
                 Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
 
                 // Wait for all work done
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(15000);
 
                 // Share file
                 if (bm.bd.share)
