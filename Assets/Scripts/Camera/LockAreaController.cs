@@ -9,12 +9,6 @@ public class LockAreaController : MonoBehaviour {
     #region Attributes
 
     /// <summary>
-    /// Frame size of the trigger. It's the zone that will be seen outside of the trigger
-    /// </summary>
-    public float frameSize = 0F;
-
-
-    /// <summary>
     /// Reference to the collider of end region.
     /// </summary>
     private BoxCollider _collider;
@@ -54,9 +48,9 @@ public class LockAreaController : MonoBehaviour {
     /// </summary>
 	void Update() {
 
-        // Force dimensions
-        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x, transform.localScale.x);
-        _collider.size = new Vector3(_collider.size.x, _collider.size.x * 9 / 16, _collider.size.x * 9 / 16);
+        // Force 16/9 dimensions to camara vision field
+        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x * 9 / 16, transform.localScale.x * 9 / 16);
+        _collider.size = new Vector3(_collider.size.x, _collider.size.y, _collider.size.y);
 
         // Force position
         transform.position = new Vector3(transform.position.x, transform.position.y, 0);
@@ -64,10 +58,6 @@ public class LockAreaController : MonoBehaviour {
 
         // Force rotation
         transform.rotation = new Quaternion(0, 0, transform.rotation.z, 0);
-
-        // Force frame size
-        if (frameSize < 1)
-            frameSize = 1;
     }
 
 
@@ -81,13 +71,11 @@ public class LockAreaController : MonoBehaviour {
         if (other.CompareTag(Tags.Player)) {
 
             // Calculate parameters to send
-            float xPos = transform.position.x + (_collider.center.x * transform.localScale.x);
-            float yPos = transform.position.y + (_collider.center.y * transform.localScale.y);
-            Vector2 centerPosition = new Vector2(xPos, yPos);
-            Vector2 size = new Vector2(_collider.size.x + (frameSize * 2), _collider.size.y + (frameSize * (2 * 9 / 16)));
+            Vector2 centerPosition = new Vector2(transform.position.x, transform.position.y);
+            Vector2 size = new Vector2(transform.localScale.x, transform.localScale.y);
 
             // Fix the camera
-            _cameraController.FixCamera(centerPosition, size * transform.localScale.x, other.gameObject.name);
+            _cameraController.FixCamera(centerPosition, size, other.gameObject.name);
         }
     }
 
@@ -125,14 +113,12 @@ public class LockAreaController : MonoBehaviour {
         Gizmos.color = color;
 
         // Convert dimensions to local
-        Gizmos.matrix = transform.localToWorldMatrix;
+        //Gizmos.matrix = transform.localToWorldMatrix;
 
         // Draws camera displayed zone
-        Vector3 pos = _collider.center;
-        Vector3 size = _collider.size;
+        Vector3 pos = transform.position;
+        Vector3 size = transform.localScale;
         // Add frame
-        size.x += (frameSize * 2);
-        size.y += (frameSize * (2 * 9 / 16) );
         size.z = 0.01f;
         Gizmos.DrawCube(pos, size);
 
@@ -141,7 +127,6 @@ public class LockAreaController : MonoBehaviour {
         Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
         Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
         Gizmos.DrawLine(new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
-
     }
     #endregion
 }
