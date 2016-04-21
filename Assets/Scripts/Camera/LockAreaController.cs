@@ -50,11 +50,14 @@ public class LockAreaController : MonoBehaviour {
 
         // Force 16/9 dimensions to camara vision field
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x * 9 / 16, transform.localScale.x * 9 / 16);
-        _collider.size = new Vector3(_collider.size.x, _collider.size.y, _collider.size.y);
+        _collider.size = new Vector3(Mathf.Clamp(_collider.size.x, 0.01f, 1f) , Mathf.Clamp(_collider.size.y, 0.01f, 1f), _collider.size.y);
 
         // Force position
         transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-        _collider.center = new Vector3(_collider.center.x, _collider.center.y, 0);
+        _collider.center = new Vector3(
+                Mathf.Clamp(_collider.center.x, -0.5f + (_collider.size.x/2),  0.5f - (_collider.size.x / 2)), 
+                Mathf.Clamp(_collider.center.y, -0.5f + (_collider.size.y / 2), 0.5f - (_collider.size.y / 2)), 
+                0);
 
         // Force rotation
         transform.rotation = new Quaternion(0, 0, transform.rotation.z, 0);
@@ -101,6 +104,7 @@ public class LockAreaController : MonoBehaviour {
     /// Draws the volume on the editor.
     /// </summary>
     public void OnDrawGizmos() {
+
         // Calls the configuration functions
         if (!Application.isPlaying) {
             Awake();
@@ -112,15 +116,10 @@ public class LockAreaController : MonoBehaviour {
         color.a = 0.15f;
         Gizmos.color = color;
 
-        // Convert dimensions to local
-        //Gizmos.matrix = transform.localToWorldMatrix;
-
-        // Draws camera displayed zone
-        Vector3 pos = transform.position;
+        // Draws camera displayed zone in a plane
         Vector3 size = transform.localScale;
-        // Add frame
         size.z = 0.01f;
-        Gizmos.DrawCube(pos, size);
+        Gizmos.DrawCube(transform.position, size);
 
         // Draw trigger action zone
         Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
