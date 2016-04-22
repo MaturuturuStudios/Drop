@@ -92,6 +92,7 @@ public class GoAway : StateMachineBehaviour {
         Vector3 originalPosition = commonParameters.enemy.transform.position;
         Vector3 finalPosition = originalPosition;
         Vector3 target = _pathEnumerator.Current.position;
+        
 
         // Moves the entity using the right function
         switch (parameters.followType) {
@@ -126,8 +127,13 @@ public class GoAway : StateMachineBehaviour {
             position.y = target.y;
         float squaredDistance = (position - target).sqrMagnitude;
         // The squared distance is used because a multiplication is cheaper than a square root
-        if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal)
+        if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal) {
+            Transform last = _pathEnumerator.Current;
             _pathEnumerator.MoveNext();
+            if (last == _pathEnumerator.Current) {
+                animator.SetTrigger("Recolect");
+            }
+        }
     }
 
     private void faceTarget(Vector3 finalPosition) {

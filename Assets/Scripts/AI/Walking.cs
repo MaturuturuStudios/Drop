@@ -75,7 +75,7 @@ public class Walking : StateMachineBehaviour {
         //start timer
         _deltaTime = parameters.timeUntilIddle;
         //get path
-        if (!parameters.usePath && _pathEnumerator == null) {
+        if (parameters.usePath && _pathEnumerator == null) {
             // Selects the current path type
             switch (parameters.pathType) {
                 case PathType.BackAndForward:

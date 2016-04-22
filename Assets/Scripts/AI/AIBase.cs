@@ -73,29 +73,22 @@ public class AIBase : MonoBehaviour {
         Walking walkingAI = _animator.GetBehaviour<Walking>();
         walkingAI.commonParameters = commonParameters;
         walkingAI.parameters = walkingParameters;
-        //walkingAI.parameters.timeUntilIddle = walkingParameters.timeUntilIddle;
-        //walkingAI.parameters.path = walkingParameters.path;
-        //walkingAI.parameters.followType = walkingParameters.followType;
-        //walkingAI.parameters.speed = walkingParameters.speed;
-        //walkingAI.parameters.maxDistanceToGoal= walkingParameters.maxDistanceToGoal;
-        //walkingAI.parameters.useOrientation= walkingParameters.useOrientation;
-        //walkingAI.parameters.pathType = walkingParameters.pathType;
 
         GoAway runningAway = _animator.GetBehaviour<GoAway>();
         runningAway.commonParameters = commonParameters;
-        runningAway.parameters.endPoint = goAwayParameters.endPoint;
+        runningAway.parameters = goAwayParameters;
 
         DetectPlayer detectedAI = _animator.GetBehaviour<DetectPlayer>();
-        detectedAI.parameters.timeWarningDetect = detectParameters.timeWarningDetect;
+        detectedAI.parameters = detectParameters;
         detectedAI.commonParameters = commonParameters;
 
         Iddle iddle= _animator.GetBehaviour<Iddle>();
-        iddle.parameters.timeInIddle = iddleParameters.timeInIddle;
+        iddle.parameters = iddleParameters;
         iddle.commonParameters = commonParameters;
 
         _chaseAI = _animator.GetBehaviour<Chase>();
         _chaseAI.commonParameters = commonParameters;
-        _chaseAI.parameters.speed = chaseParameters.speed;
+        _chaseAI.parameters = chaseParameters;
 
         Attack attackAI = _animator.GetBehaviour<Attack>();
         attackAI.commonParameters = commonParameters;
@@ -144,7 +137,30 @@ public class AIBase : MonoBehaviour {
             DropNear();
         }
     }
-    
+
+    public void Scare() {
+        _animator.SetBool("GoAway", true);
+    }
+
+    public void OnDrawGizmosSelected() {
+        //draw paths
+        goAwayParameters.endPoint.OnDrawGizmos();
+
+        if (!walkingParameters.usePath) {
+            walkingParameters.walkArea.OndrawGizmos(Color.blue, transform.position);
+        } else {
+            walkingParameters.path.OnDrawGizmos();
+        }
+    }
+
+    /// <summary>
+    /// Draws the trigger area and paths
+    /// </summary>
+    public void OnDrawGizmos() {
+        triggerArea.OndrawGizmos(Color.red, transform.position);
+    }
+
+    #region Private methods
     private void DropNear() {
         if (commonParameters.drop == null){
             return;
@@ -176,22 +192,5 @@ public class AIBase : MonoBehaviour {
     }
     #endregion
 
-    #region Personal methods and class
-    
-    public void OnDrawGizmosSelected() {
-        //draw paths
-        walkingParameters.path.OnDrawGizmos();
-        goAwayParameters.endPoint.OnDrawGizmos();
-
-        walkingParameters.walkArea.OndrawGizmos(Color.blue, transform.position);
-    }
-   
-
-    /// <summary>
-    /// Draws the trigger area and paths
-    /// </summary>
-    public void OnDrawGizmos() {
-        triggerArea.OndrawGizmos(Color.red, transform.position);
-    }
     #endregion
 }
