@@ -63,9 +63,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
         if (addToControlList)
             allCurrentCharacters.Add(drop);
 
-        //Move the drop to players position
-        drop.transform.position = currentCharacter.transform.position;
-
         //Set Control
         if (setControl)
             SetControl(drop);
@@ -135,10 +132,14 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// </summary>
     /// <param name="index">Index of drop in the allCurentCharacters list</param>
     public void SetControl(int index) {
-        bool shootmode = currentCharacter.GetComponent<CharacterShoot>().isShooting();
-        if (index < allCurrentCharacters.Count && index > -1 && !shootmode) {
+
+        // Can't change controll if it is in shoot mode
+        bool notShoothing = (currentCharacter == null || !currentCharacter.GetComponent<CharacterShoot>().isShooting());
+
+        if (index < allCurrentCharacters.Count && index > -1 && notShoothing) {
             //Try to stop abandoned drop
-            currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
+            if(currentCharacter != null)
+                currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
 
             //Set Control to new drop
             currentCharacter = allCurrentCharacters[index];
