@@ -4,9 +4,18 @@ using System.Collections.Generic;
 [System.Serializable]
 public class WalkingParameters {
     /// <summary>
+    /// True if use the path to walk or false if use the area instead
+    /// </summary>
+    public bool usePath=true;
+    /// <summary>
 	/// A reference to the path this entity will follow.
 	/// </summary>
 	public PathDefinition path;
+    /// <summary>
+    /// Area where entity will stay walking
+    /// </summary>
+    public Region walkArea;
+
     /// <summary>
 	/// Defines how will the entity move to the next point in the path.
 	/// </summary>
@@ -54,6 +63,10 @@ public class Walking : StateMachineBehaviour {
 	/// Enumerator of the path.
 	/// </summary>
 	private IEnumerator<Transform> _pathEnumerator;
+    /// <summary>
+    /// The next point to move toward
+    /// </summary>
+    private Vector3 _targetPosition;
     #endregion
 
     #region Methods
@@ -62,7 +75,7 @@ public class Walking : StateMachineBehaviour {
         //start timer
         _deltaTime = parameters.timeUntilIddle;
         //get path
-        if (_pathEnumerator == null) {
+        if (!parameters.usePath && _pathEnumerator == null) {
             // Selects the current path type
             switch (parameters.pathType) {
                 case PathType.BackAndForward:
@@ -81,7 +94,7 @@ public class Walking : StateMachineBehaviour {
         }
 
         // Moves the enumerator to the first/next position
-        _pathEnumerator.MoveNext();
+        getNextTarget();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -113,22 +126,20 @@ public class Walking : StateMachineBehaviour {
         }
 
         //set the moving path
-        if (_pathEnumerator == null || _pathEnumerator.Current == null)
+        if (parameters.usePath && (_pathEnumerator == null || _pathEnumerator.Current == null))
             return;
 
         // Saves the original position
         Vector3 originalPosition = commonParameters.enemy.transform.position;
         Vector3 finalPosition = originalPosition;
-        Vector3 target = _pathEnumerator.Current.position;
-        
 
         // Moves the entity using the right function
         switch (parameters.followType) {
             case FollowType.MoveTowards:
-                finalPosition = Vector3.MoveTowards(originalPosition, target, parameters.speed * Time.deltaTime);
+                finalPosition = Vector3.MoveTowards(originalPosition, _targetPosition, parameters.speed * Time.deltaTime);
                 break;
             case FollowType.Lerp:
-                finalPosition = Vector3.Lerp(originalPosition, target, parameters.speed * Time.deltaTime);
+                finalPosition = Vector3.Lerp(originalPosition, _targetPosition, parameters.speed * Time.deltaTime);
                 break;
             default:
                 return;
@@ -152,21 +163,30 @@ public class Walking : StateMachineBehaviour {
         Vector3 position=commonParameters.enemy.transform.position;
         //ignore axis if on floor
         if (commonParameters.onFloor)
-            position.y = target.y;
-        float squaredDistance = (position - target).sqrMagnitude;
+            position.y = _targetPosition.y;
+        float squaredDistance = (position - _targetPosition).sqrMagnitude;
         // The squared distance is used because a multiplication is cheaper than a square root
         if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal)
+            getNextTarget();
+    }
+
+    void getNextTarget() {
+        if (parameters.usePath) {
             _pathEnumerator.MoveNext();
+            _targetPosition = _pathEnumerator.Current.position;
+        } else {
+            //select random point in the area
+            _targetPosition = parameters.walkArea.GetRandomPoint() + commonParameters.rootEntityPosition.position;
+        }
     }
 
     private void faceTarget(Vector3 finalPosition) {
         Quaternion _lookRotation;
         Vector3 _direction;
-        Transform targetTransform = _pathEnumerator.Current.transform;
         Transform enemyTransform = commonParameters.enemy.transform;
 
         //find the vector pointing from our position to the target
-        _direction = (targetTransform.position - finalPosition).normalized;
+        _direction = (_targetPosition - finalPosition).normalized;
 
         if (_direction == Vector3.zero) return;
 

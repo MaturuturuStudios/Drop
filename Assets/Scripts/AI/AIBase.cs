@@ -65,19 +65,21 @@ public class AIBase : MonoBehaviour {
         //get the animator of the enemy
         _animator = commonParameters.enemy.GetComponent<Animator>();
         _animator.SetInteger("LimitSizeDrop", commonParameters.sizeLimitDrop);
+        commonParameters.rootEntityPosition = transform;
     }
 
     public void Start() {
         //get the behaviours and set their data
         Walking walkingAI = _animator.GetBehaviour<Walking>();
         walkingAI.commonParameters = commonParameters;
-        walkingAI.parameters.timeUntilIddle = walkingParameters.timeUntilIddle;
-        walkingAI.parameters.path = walkingParameters.path;
-        walkingAI.parameters.followType = walkingParameters.followType;
-        walkingAI.parameters.speed = walkingParameters.speed;
-        walkingAI.parameters.maxDistanceToGoal= walkingParameters.maxDistanceToGoal;
-        walkingAI.parameters.useOrientation= walkingParameters.useOrientation;
-        walkingAI.parameters.pathType = walkingParameters.pathType;
+        walkingAI.parameters = walkingParameters;
+        //walkingAI.parameters.timeUntilIddle = walkingParameters.timeUntilIddle;
+        //walkingAI.parameters.path = walkingParameters.path;
+        //walkingAI.parameters.followType = walkingParameters.followType;
+        //walkingAI.parameters.speed = walkingParameters.speed;
+        //walkingAI.parameters.maxDistanceToGoal= walkingParameters.maxDistanceToGoal;
+        //walkingAI.parameters.useOrientation= walkingParameters.useOrientation;
+        //walkingAI.parameters.pathType = walkingParameters.pathType;
 
         GoAway runningAway = _animator.GetBehaviour<GoAway>();
         runningAway.commonParameters = commonParameters;
@@ -175,56 +177,21 @@ public class AIBase : MonoBehaviour {
     #endregion
 
     #region Personal methods and class
-    /// <summary>
-    /// Region definition
-    /// </summary>
-    [System.Serializable]
-    public class Region {
-        public Vector3 origin = Vector3.one;
-        public Vector3 size = Vector3.one;
+    
+    public void OnDrawGizmosSelected() {
+        //draw paths
+        walkingParameters.path.OnDrawGizmos();
+        goAwayParameters.endPoint.OnDrawGizmos();
+
+        walkingParameters.walkArea.OndrawGizmos(Color.blue, transform.position);
     }
+   
 
     /// <summary>
     /// Draws the trigger area and paths
     /// </summary>
     public void OnDrawGizmos() {
-        //draw paths
-        walkingParameters.path.OnDrawGizmos();
-        goAwayParameters.endPoint.OnDrawGizmos();
-
-        //draw area
-        Gizmos.color = Color.red;
-
-        Vector3 originWorld = triggerArea.origin + transform.position;
-
-        Vector3 bottomLeft = originWorld;
-        Vector3 topLeft = originWorld;
-        topLeft.y += triggerArea.size.y;
-        Vector3 topRight = topLeft;
-        topRight.x += triggerArea.size.x;
-        Vector3 bottomRight = bottomLeft;
-        bottomRight.x += triggerArea.size.x;
-
-        Gizmos.DrawLine(topLeft, topRight);
-        Gizmos.DrawLine(topLeft, bottomLeft);
-        Gizmos.DrawLine(topRight, bottomRight);
-        Gizmos.DrawLine(bottomLeft, bottomRight);
-
-        Vector3 deep = Vector3.zero;
-        deep.z = triggerArea.size.z;
-        Gizmos.DrawLine(topLeft, topLeft + deep);
-        Gizmos.DrawLine(topRight, topRight + deep);
-        Gizmos.DrawLine(bottomRight, bottomRight + deep);
-        Gizmos.DrawLine(bottomLeft, bottomLeft + deep);
-
-        topLeft += deep;
-        topRight += deep;
-        bottomLeft += deep;
-        bottomRight += deep;
-        Gizmos.DrawLine(topLeft, topRight);
-        Gizmos.DrawLine(topLeft, bottomLeft);
-        Gizmos.DrawLine(topRight, bottomRight);
-        Gizmos.DrawLine(bottomLeft, bottomRight);
+        triggerArea.OndrawGizmos(Color.red, transform.position);
     }
     #endregion
 }

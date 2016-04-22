@@ -6,7 +6,8 @@ using UnityEditor;
 public class RegionEditor : Editor {
     public void OnSceneGUI() {
         AIBase aiBase = (target as AIBase);
-        AIBase.Region region = aiBase.triggerArea;
+        Region region = aiBase.triggerArea;
+        Region walk = aiBase.walkingParameters.walkArea;
         Vector3 parentPosition = aiBase.transform.position;
 
 
@@ -16,8 +17,13 @@ public class RegionEditor : Editor {
                 float scaleHandle = HandleUtility.GetHandleSize(region.origin);
                 Vector3 scale = Handles.ScaleHandle(region.size, region.origin+ parentPosition,
                                                     Quaternion.identity, scaleHandle);
+
+                scaleHandle = HandleUtility.GetHandleSize(walk.origin);
+                Vector3 scale2 = Handles.ScaleHandle(walk.size, walk.origin + parentPosition,
+                                                    Quaternion.identity, scaleHandle);
                 if (EditorGUI.EndChangeCheck()) {
                     region.size = scale;
+                    walk.size = scale2;
                 }
                 break;
 
@@ -25,8 +31,12 @@ public class RegionEditor : Editor {
                 EditorGUI.BeginChangeCheck();
                 Vector3 move = Handles.PositionHandle(region.origin+parentPosition,
                                                             Quaternion.identity);
+                
+                Vector3 move2 = Handles.PositionHandle(walk.origin + parentPosition,
+                                                            Quaternion.identity);
                 if (EditorGUI.EndChangeCheck()) {
                     region.origin = move - parentPosition;
+                    walk.origin = move2 - parentPosition;
                 }
                 break;
 

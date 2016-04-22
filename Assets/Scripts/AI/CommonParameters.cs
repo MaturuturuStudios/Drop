@@ -34,4 +34,6 @@ public class CommonParameters {
     /// Distance considered too much near to the enemy
     /// </summary>
     public float near = 2f;
+    [HideInInspector]
+    public Transform rootEntityPosition;
 }
