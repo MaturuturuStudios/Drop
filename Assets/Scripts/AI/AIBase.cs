@@ -28,6 +28,10 @@ public class AIBase : MonoBehaviour {
     /// Parameters for the detection state
     /// </summary>
     public DetectParameters detectParameters;
+    /// <summary>
+    /// Parameters for the attack state
+    /// </summary>
+    public AttackParameters attackParameters;
     #endregion
 
     #region Private attributes
@@ -43,10 +47,6 @@ public class AIBase : MonoBehaviour {
     /// The size of the detected drop
     /// </summary>
     protected CharacterSize _sizeDetected;
-    /// <summary>
-    /// TODO: needed?
-    /// </summary>
-    protected Attack attackAI;
     /// <summary>
     /// The chase AI reference to send him the detected and chased drop
     /// </summary>
@@ -95,8 +95,9 @@ public class AIBase : MonoBehaviour {
         _chaseAI.commonParameters = commonParameters;
         _chaseAI.parameters.speed = chaseParameters.speed;
 
-        attackAI = _animator.GetBehaviour<Attack>();
+        Attack attackAI = _animator.GetBehaviour<Attack>();
         attackAI.commonParameters = commonParameters;
+        attackAI.parameters = attackParameters;
     }
 
     public void Update() {

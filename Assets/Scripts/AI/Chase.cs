@@ -33,6 +33,7 @@ public class Chase : StateMachineBehaviour {
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
+        animator.SetBool("Near", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -61,7 +62,9 @@ public class Chase : StateMachineBehaviour {
         //always face it
         faceTarget(finalPosition);
 
-        //move the entity
+        //move the entity, and set the gravity
+        if (commonParameters.onFloor)
+            finalPosition.y -= 25 * Time.deltaTime;
         Vector3 move = finalPosition - originalPosition;
         _controller.Move(move);
 
@@ -69,6 +72,8 @@ public class Chase : StateMachineBehaviour {
     }
 
     private void faceTarget(Vector3 finalPosition) {
+        if (commonParameters.drop == null) return;
+
         Quaternion _lookRotation;
         Vector3 _direction;
         Transform targetTransform = commonParameters.drop.transform;

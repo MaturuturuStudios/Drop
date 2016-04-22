@@ -90,6 +90,7 @@ public class Walking : StateMachineBehaviour {
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
+        animator.SetBool("Near", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

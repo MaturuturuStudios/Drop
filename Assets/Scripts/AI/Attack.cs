@@ -1,11 +1,26 @@
 ﻿using UnityEngine;
 
+[System.Serializable]
+public class AttackParameters {
+    [Range(0,1)]
+    ///<summary>
+    /// in which moment of the animation should mke effective the attack
+    /// </summary>
+    public float attackMoment;
+    public float impulse=40;
+    public Transform rejectedDirection;
+}
+
 public class Attack : StateMachineBehaviour {
     [HideInInspector]
     public CommonParameters commonParameters;
+    public AttackParameters parameters;
+
+    private bool _attackDone;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //OnStateEnter is called on the first frame of the state being played.
+        _attackDone = false;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -15,11 +30,24 @@ public class Attack : StateMachineBehaviour {
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
+        animator.SetBool("Near", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        //get the drop and do some action
+        float percentAnimation = stateInfo.normalizedTime;
+        if (!_attackDone && percentAnimation > parameters.attackMoment) {
+            CharacterControllerCustom controller = commonParameters.drop.GetComponent<CharacterControllerCustom>();
 
+            Vector3 direction = parameters.rejectedDirection.position - commonParameters.drop.transform.position;
+            direction.z = 0;
+            if (direction.y < 0) {
+                direction.y *= -1;
+            }
+            direction = direction.normalized;
+            direction *= parameters.impulse;
+            controller.SendFlying(direction);
+            _attackDone = true;
+        }
         //OnStateUpdate is called after MonoBehaviour Updates on every frame whilst the animator is playing the state this behaviour belongs to.
     }
 

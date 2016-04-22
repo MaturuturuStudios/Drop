@@ -35,6 +35,7 @@ public class DetectPlayer : StateMachineBehaviour {
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
+        animator.SetBool("Near", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -54,6 +55,8 @@ public class DetectPlayer : StateMachineBehaviour {
     }
 
     private void faceTarget() {
+        if (commonParameters.drop == null) return;
+
         Quaternion _lookRotation;
         Vector3 _direction;
         Transform targetTransform = commonParameters.drop.transform;

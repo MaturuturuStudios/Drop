@@ -41,7 +41,7 @@ public class GoAway : StateMachineBehaviour {
     /// <summary>
 	/// A reference to the entity's controller.
 	/// </summary>
-	private CharacterController controller;
+	private CharacterController _controller;
     /// <summary>
 	/// Enumerator of the path.
 	/// </summary>
@@ -51,7 +51,7 @@ public class GoAway : StateMachineBehaviour {
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         animator.SetBool("GoAway", false);
-        controller = commonParameters.enemy.GetComponent<CharacterController>();
+        _controller = commonParameters.enemy.GetComponent<CharacterController>();
         if (_pathEnumerator == null) {
             // Selects the current path type
             switch (parameters.pathType) {
@@ -80,6 +80,7 @@ public class GoAway : StateMachineBehaviour {
         animator.SetBool("Timer", false);
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
+        animator.SetBool("Near", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -112,9 +113,11 @@ public class GoAway : StateMachineBehaviour {
             faceTarget(finalPosition);
         }
 
-        //move the entity
+        //move the entity, and set the gravity
+        if (commonParameters.onFloor)
+            finalPosition.y -= 25 * Time.deltaTime;
         Vector3 move = finalPosition - originalPosition;
-        controller.Move(move);
+        _controller.Move(move);
 
         // Checks if the entity is close enough to the target point
         Vector3 position = commonParameters.enemy.transform.position;
