@@ -66,6 +66,10 @@ public class DetectPlayer : StateMachineBehaviour {
         //create the rotation we need to be in to look at the target
         _lookRotation = Quaternion.LookRotation(_direction);
 
+        if (commonParameters.onFloor) {
+            _lookRotation.x = 0;
+            _lookRotation.z = 0;
+        }
         //rotate us over time according to speed until we are in the required rotation
         enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
     }

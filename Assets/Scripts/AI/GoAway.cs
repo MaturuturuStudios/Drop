@@ -39,9 +39,9 @@ public class GoAway : StateMachineBehaviour {
 
     #region Private attribute
     /// <summary>
-	/// A reference to the entity's transform.
+	/// A reference to the entity's controller.
 	/// </summary>
-	private Transform _transform;
+	private CharacterController controller;
     /// <summary>
 	/// Enumerator of the path.
 	/// </summary>
@@ -51,7 +51,7 @@ public class GoAway : StateMachineBehaviour {
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         animator.SetBool("GoAway", false);
-        _transform = commonParameters.enemy.transform;
+        controller = commonParameters.enemy.GetComponent<CharacterController>();
         if (_pathEnumerator == null) {
             // Selects the current path type
             switch (parameters.pathType) {
@@ -86,43 +86,67 @@ public class GoAway : StateMachineBehaviour {
         //set the moving path
         if (_pathEnumerator == null || _pathEnumerator.Current == null)
             return;
-
+        
         // Saves the original position
-        Vector3 originalPosition = _transform.position;
+        Vector3 originalPosition = commonParameters.enemy.transform.position;
+        Vector3 finalPosition = originalPosition;
+        Vector3 target = _pathEnumerator.Current.position;
 
         // Moves the entity using the right function
         switch (parameters.followType) {
             case FollowType.MoveTowards:
-                _transform.position = Vector3.MoveTowards(_transform.position, _pathEnumerator.Current.position, parameters.speed * Time.deltaTime);
+                finalPosition = Vector3.MoveTowards(originalPosition, target, parameters.speed * Time.deltaTime);
                 break;
             case FollowType.Lerp:
-                _transform.position = Vector3.Lerp(_transform.position, _pathEnumerator.Current.position, parameters.speed * Time.deltaTime);
+                finalPosition = Vector3.Lerp(originalPosition, target, parameters.speed * Time.deltaTime);
                 break;
             default:
                 return;
         }
 
-        //TODO orientation does not work as expected
+        if (commonParameters.onFloor)
+            finalPosition.y = originalPosition.y;
+
         // Rotates the entity
         if (parameters.useOrientation) {
-            float traveledDistance = (_transform.position - originalPosition).magnitude;
-            float remainingDistance = (_pathEnumerator.Current.position - originalPosition).magnitude;
-            if (remainingDistance > 0.01f)
-                _transform.rotation = Quaternion.Lerp(_transform.rotation, _pathEnumerator.Current.rotation, traveledDistance / remainingDistance);
+            faceTarget(finalPosition);
         }
 
-
-        if (commonParameters.onFloor) {
-            float yPosition = originalPosition.y;
-            originalPosition = _transform.position;
-            originalPosition.y = yPosition;
-        }
+        //move the entity
+        Vector3 move = finalPosition - originalPosition;
+        controller.Move(move);
 
         // Checks if the entity is close enough to the target point
-        float squaredDistance = (_transform.position - _pathEnumerator.Current.position).sqrMagnitude;
+        Vector3 position = commonParameters.enemy.transform.position;
+        //ignore axis if on floor
+        if (commonParameters.onFloor)
+            position.y = target.y;
+        float squaredDistance = (position - target).sqrMagnitude;
         // The squared distance is used because a multiplication is cheaper than a square root
         if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal)
             _pathEnumerator.MoveNext();
+    }
+
+    private void faceTarget(Vector3 finalPosition) {
+        Quaternion _lookRotation;
+        Vector3 _direction;
+        Transform targetTransform = _pathEnumerator.Current.transform;
+        Transform enemyTransform = commonParameters.enemy.transform;
+
+        //find the vector pointing from our position to the target
+        _direction = (targetTransform.position - finalPosition).normalized;
+
+        if (_direction == Vector3.zero) return;
+
+        //create the rotation we need to be in to look at the target
+        _lookRotation = Quaternion.LookRotation(_direction);
+
+        if (commonParameters.onFloor) {
+            _lookRotation.x = 0;
+            _lookRotation.z = 0;
+        }
+        //rotate us over time according to speed until we are in the required rotation
+        enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
     }
     #endregion
 }
