@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
 using System.Collections.Generic;
 
 /// <summary>
 /// Defines the path an entity will follow using the MovingPlatformFollowPath script.
 /// </summary>
-public class PathDefinition : MonoBehaviour {
+[System.Serializable]
+public class PathDefinition {
 
 	#region Public Attributes
 
@@ -25,7 +25,7 @@ public class PathDefinition : MonoBehaviour {
 	/// it's end.
 	/// </summary>
 	/// <returns>A back and forward path enumerator</returns>
-	public IEnumerator<Transform> GetBackAndForwardEumerator() {
+	public IEnumerator<Transform> GetBackAndForwardEnumerator() {
 		// Only one point is required
 		if (points == null || points.Length < 1)
 			yield break;
@@ -69,6 +69,24 @@ public class PathDefinition : MonoBehaviour {
 				index++;
 		}
 	}
+
+    /// <summary>
+    /// Returns an enumerator that starts and continue at a random
+    /// point inside the path given.
+    /// </summary>
+    /// <returns>Random points inside the path</returns>
+    public IEnumerator<Transform> GetRandomEnumerator() {
+        UnityEngine.Random.seed = (int)Time.deltaTime*10;
+        if (points == null || points.Length < 1)
+            yield break;
+        
+        while (true) {
+            int index = UnityEngine.Random.Range(0,points.Length);
+
+            // Lazy return
+            yield return points[index];
+        }
+    }
 
 	/// <summary>
 	/// Unity's method called by the editor in order to draw the gizmos.
