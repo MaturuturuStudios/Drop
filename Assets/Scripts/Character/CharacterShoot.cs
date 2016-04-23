@@ -187,14 +187,11 @@ public class CharacterShoot : MonoBehaviour {
             }
 
             Gizmos.color = Color.white;
-        //Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt((5 * (9))));
-        for (int i = 1; i < GetComponent<CharacterSize>().GetSize(); ++i)
-        {
-            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), Mathf.Sqrt(5 * (ccc.GetComponent<CharacterSize>().GetSize() - i) * (25)));
-
+            //Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt((5 * (9))));
+            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (9) ));
+            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (1.5f)));
+            Debug.Log(" distance " + (5 * 9) * -25);
         }
-       // Debug.Log(" tam " + GetComponent<CharacterSize>().GetSize() + "sizeshot " + sizeshot);
-    }
     
 
     #endregion

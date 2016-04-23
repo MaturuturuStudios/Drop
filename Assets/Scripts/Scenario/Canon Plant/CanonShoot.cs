@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// <summary>
 /// This class is for the canon plant shoot
 /// </summary>
-public class CannonShoot : MonoBehaviour
+public class CanonShoot : MonoBehaviour
 {
     #region Private Attributes
 
@@ -25,7 +25,6 @@ public class CannonShoot : MonoBehaviour
     /// </summary>
     private CharacterControllerCustom cc;
     private CharacterControllerCustom ccc;
-   
 
     /// <summary>
     /// Vector which contain the information that we need to shoot a drop in the sendflying method
@@ -89,12 +88,7 @@ public class CannonShoot : MonoBehaviour
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
     void Awake()
-    {       
-        Vector3 start;
-        start.x = transform.position.x + 5;
-        start.y = transform.position.y + 5;
-        start.z = 0;
-
+    {
         cc = GameObject.FindGameObjectWithTag(Tags.Player)
                                 .GetComponent<CharacterControllerCustom>();
 
@@ -109,8 +103,6 @@ public class CannonShoot : MonoBehaviour
             trajectoryPoints.Insert(i, dot);
         }
 
-        
-
     }
 
     /// <summary>
@@ -118,10 +110,9 @@ public class CannonShoot : MonoBehaviour
     /// </summary>
     void Update()
     {
-
+        
         transform.eulerAngles = new Vector3(0, 0, angle ); //this is to face in the direction you are aming
         Vector3 pos = this.transform.position ;            // float speed = Mathf.Sqrt((power) * ccc.Parameters.Gravity.magnitude);
-
         float speed = Mathf.Sqrt((power) * cc.Parameters.Gravity.magnitude);
         setTrajectoryPoints(pos, angle, speed);
         setvisibility();
@@ -306,63 +297,5 @@ public class CannonShoot : MonoBehaviour
 
     }
 
-    public void OnDrawGizmos()
-    {
-        if (!Application.isPlaying)
-        {
-            
-            RaycastHit hitpoint;
-
-
-            //GameObject ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
- 
-            List<Vector3> puntos = new List<Vector3>();
- 
-            
-            float speed = Mathf.Sqrt((power) * (25));
-
-            transform.eulerAngles = new Vector3(0, 0, angle);
-            pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
-          
-            velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
-            // Debug.Log(" power " + speed);
-            float fTime = 0;
-
-            fTime += 0.1f;
-            for (int i = 0; i < numOfTrajectoryPoints; i++)
-            {
-                float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
-                float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - ((25) * fTime * fTime / 2.0f);
-                Vector3 posi = new Vector3(transform.position.x + dx, transform.position.y + dy, 0);
-                puntos.Insert(i, posi);
-                fTime += 0.1f;
-
-                if (i > 0)
-                {
-                    Vector3 f = puntos[i-1] - puntos[i];
-                    if ((Physics.Raycast(puntos[i], f, out hitpoint, f.magnitude)))
-                    {
-                        i = numOfTrajectoryPoints;
-                        Vector3 hitting = hitpoint.point;
-                        float displacement = -1;
-                        
-                        Gizmos.color = Color.red;
-                        Gizmos.DrawSphere(hitting + hitpoint.normal*displacement , 1);
-
-                    }
-                    else
-                    {
-                        //Vector3 fi = puntos[i] - puntos[i+1];
-                        Gizmos.color = Color.green;
-                        Gizmos.DrawRay(puntos[i], f);
-                    }
-                }
-
-            }
-            
-        }
-        
-    }
-
-        #endregion
-    }
+    #endregion
+}
