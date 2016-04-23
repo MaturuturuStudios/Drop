@@ -212,20 +212,40 @@ public class TriggerAction : ActionPerformer {
 		Vector3 separation = new Vector3(0, 0.1f, 0);
 		Gizmos.color = Color.green;
 		foreach (MethodInvoke methodInvoke in onActivate.AsList())
-			if (methodInvoke.target != null)
-				Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
+			DrawMethodInvoke(methodInvoke, separation);
 
-		Gizmos.color = Color.red;
-		foreach (MethodInvoke methodInvoke in onDeactivate.AsList())
-			if (methodInvoke.target != null)
-				Gizmos.DrawLine(transform.position - separation, methodInvoke.target.transform.position - separation);
+		if (triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) {
+			Gizmos.color = Color.red;
+			foreach (MethodInvoke methodInvoke in onDeactivate.AsList())
+				DrawMethodInvoke(methodInvoke, -separation);
+		}
 
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Color colliderColor = Color.cyan;
 		colliderColor.a = 0.5f;
 		Gizmos.color = colliderColor;
 		foreach (Collider collider in _colliders)
-			DrawCollider(collider);
+		DrawCollider(collider);
+	}
+
+	/// <summary>
+	/// Draws a line to the target of a method invoke.
+	/// Also draws a rect if it's parameter is one.
+	/// </summary>
+	/// <param name="methodInvoke">The method invoke to draw</param>
+	/// <param name="separation">The separation of the line</param>
+	private void DrawMethodInvoke(MethodInvoke methodInvoke, Vector3 separation = new Vector3()) {
+		if (methodInvoke.target != null) {
+			Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
+			if (methodInvoke.RectParameter != null) {
+				Color temp = Gizmos.color;
+				Color newColor = Color.yellow;
+				newColor.a = 0.25f;
+				Gizmos.color = newColor;
+				Gizmos.DrawCube(methodInvoke.RectParameter.center, methodInvoke.RectParameter.size);
+				Gizmos.color = temp;
+			}
+		}
 	}
 
 	/// <summary>

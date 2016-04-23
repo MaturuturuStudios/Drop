@@ -340,18 +340,17 @@ public class TriggerArea : MonoBehaviour {
 		Vector3 separation = new Vector3(0, 0.1f, 0);
 		Gizmos.color = Color.green;
 		foreach (MethodInvoke methodInvoke in onEnter.AsList())
-			if (methodInvoke.target != null)
-				Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
+			DrawMethodInvoke(methodInvoke, separation);
 
-		Gizmos.color = Color.yellow;
-		foreach (MethodInvoke methodInvoke in onStay.AsList())
-			if (methodInvoke.target != null)
-				Gizmos.DrawLine(transform.position, methodInvoke.target.transform.position);
+		if (triggerMode == TriggerMode.Sensor) {
+			Gizmos.color = Color.yellow;
+			foreach (MethodInvoke methodInvoke in onStay.AsList())
+				DrawMethodInvoke(methodInvoke);
+		}
 
 		Gizmos.color = Color.red;
 		foreach (MethodInvoke methodInvoke in onExit.AsList())
-			if (methodInvoke.target != null)
-				Gizmos.DrawLine(transform.position - separation, methodInvoke.target.transform.position - separation);
+			DrawMethodInvoke(methodInvoke, -separation);
 
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Color colliderColor = Color.cyan;
@@ -359,6 +358,26 @@ public class TriggerArea : MonoBehaviour {
 		Gizmos.color = colliderColor;
 		foreach (Collider collider in _colliders)
 			DrawCollider(collider);
+	}
+
+	/// <summary>
+	/// Draws a line to the target of a method invoke.
+	/// Also draws a rect if it's parameter is one.
+	/// </summary>
+	/// <param name="methodInvoke">The method invoke to draw</param>
+	/// <param name="separation">The separation of the line</param>
+	private void DrawMethodInvoke(MethodInvoke methodInvoke, Vector3 separation = new Vector3()) {
+		if (methodInvoke.target != null) {
+			Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
+			if (methodInvoke.RectParameter != null) {
+				Color temp = Gizmos.color;
+				Color newColor = Color.yellow;
+				newColor.a = 0.25f;
+				Gizmos.color = newColor;
+				Gizmos.DrawCube(methodInvoke.RectParameter.center, methodInvoke.RectParameter.size);
+				Gizmos.color = temp;
+			}
+		}
 	}
 
 	/// <summary>
