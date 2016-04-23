@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
 /// Defines the position where characters will appear grounded
@@ -56,7 +55,7 @@ public class CharacterSpawner : MonoBehaviour {
     public void Awake() {
 
         // If we can ground drop
-        if (CalculateSpawnPos() && CheckControl()) {
+        if (CalculateSpawnPos()) {
 
             // Get reference to independent control
             _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
@@ -82,7 +81,7 @@ public class CharacterSpawner : MonoBehaviour {
     /// </summary>
     public void OnDrawGizmos() {
 
-        if (!Application.isPlaying && CalculateSpawnPos() && CheckControl()) {
+        if (!Application.isPlaying && CalculateSpawnPos() ) {
 
             // Set the color
             Color color = new Color(0.5f, 1, 1, 0.75f);
@@ -131,32 +130,6 @@ public class CharacterSpawner : MonoBehaviour {
         }
         
         return res;
-    }
-
-
-
-    /// <summary>
-    /// Checks if there is a character setted as controller
-    /// </summary>
-    /// <returns>If there is a character setted as controller</returns>
-    private bool CheckControl() {
-
-        // Validate there allmost one drop under controll
-        int found = 0;
-
-        // Look for characters setted as controlled
-        CharacterSpawner[] spawners = (CharacterSpawner[])FindObjectsOfType(typeof(CharacterSpawner));
-        for (int i = 0; i < spawners.Length; ++i)
-            if (spawners[i].controlled == true) ++found;
-
-        // Check for invalid values
-        if (found == 0)
-            Debug.LogWarning("There isn't any character setted as controlled, please mark one as controlled.");
-
-        if (found > 1)
-            Debug.LogWarning("There are more than one character setted as controlled, please mark only one as controlled.");
-
-        return found == 1;
     }
 
 
