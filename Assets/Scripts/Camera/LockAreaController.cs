@@ -9,15 +9,27 @@ public class LockAreaController : MonoBehaviour {
     #region Attributes
 
     /// <summary>
+    /// Main camera reference
+    /// </summary>
+    private MainCameraController _cameraController;
+
+
+    /// <summary>
+    /// Reference to the independent control component from the scene's game controller.
+    /// </summary>
+    private GameControllerIndependentControl _independentControl;
+
+
+    /// <summary>
     /// Reference to the collider of end region.
     /// </summary>
     private BoxCollider _collider;
 
 
     /// <summary>
-    /// Main camera reference
+    /// Camera field of view
     /// </summary>
-    private MainCameraController _cameraController;
+    private Rect _area;
 
     #endregion
 
@@ -41,6 +53,9 @@ public class LockAreaController : MonoBehaviour {
 
         // Retrieves the components of the entity.
         _cameraController = Camera.main.GetComponent<MainCameraController>();
+
+        // Looks for the independent controller component
+        _independentControl = FindObjectOfType<GameControllerIndependentControl>();
     }
 
     /// <summary>
@@ -61,6 +76,11 @@ public class LockAreaController : MonoBehaviour {
 
         // Force rotation
         transform.rotation = new Quaternion(0, 0, transform.rotation.z, 0);
+
+        // Calculate parameters to send
+        _area = new Rect(transform.position.x, transform.position.y, transform.localScale.x, transform.localScale.y);
+
+
     }
 
 
@@ -71,14 +91,10 @@ public class LockAreaController : MonoBehaviour {
     void OnTriggerStay(Collider other) {
 
         //only active it with players
-        if (other.CompareTag(Tags.Player)) {
+        if (other.CompareTag(Tags.Player) && _independentControl.currentCharacter == other.gameObject) {
 
-            // Calculate parameters to send
-            Vector2 centerPosition = new Vector2(transform.position.x, transform.position.y);
-            Vector2 size = new Vector2(transform.localScale.x, transform.localScale.y);
-
-            // Fix the camera
-            _cameraController.FixCamera(centerPosition, size, other.gameObject.name);
+            // Lock the camera
+            _cameraController.LockCamera(_area);
         }
     }
 
@@ -93,7 +109,7 @@ public class LockAreaController : MonoBehaviour {
         if (other.CompareTag(Tags.Player)) {
 
             // Fix the camera
-            _cameraController.UnfixCamera();
+            _cameraController.UnlockCamera();
         }
     }
 
