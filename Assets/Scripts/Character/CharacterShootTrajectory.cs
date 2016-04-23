@@ -222,10 +222,10 @@ public class CharacterShootTrajectory : MonoBehaviour
         angle -= h;
 
         //Calculate the vector from the drop  where  be shooted 
-        Vector3 pos = this.transform.position + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<SphereCollider>().radius* ball.transform.lossyScale.x);
+        Vector3 pos = this.transform.position;// + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<SphereCollider>().radius* ball.transform.lossyScale.x);
         //The power of the shoot
         speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
-
+        Debug.Log(" trajectory position "+ pos +" trajectory distance " + speed);
         setTrajectoryPoints(pos, angle, speed);
         setvisibility();
         canshooot();
@@ -246,7 +246,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         Debug.DrawRay(spheredis, fwd, Color.green);
 
-        if (Physics.Raycast(spheredis, fwd, dis))
+        if (Physics.Raycast(spheredis, fwd, dis, Scene))
         {
             ball.GetComponent<Renderer>().enabled = false;
             sphere.GetComponent<Renderer>().enabled = false;
@@ -380,6 +380,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         colisiondetected = false;
 
     }
+
 
     #endregion
 }
