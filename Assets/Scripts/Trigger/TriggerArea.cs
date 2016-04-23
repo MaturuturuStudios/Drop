@@ -81,7 +81,7 @@ public class TriggerArea : MonoBehaviour {
 	/// <summary>
 	/// Amount of time after which the switch will be turned off.
 	/// </summary>
-	public float switchTime = 0.0f;
+	public float autoSwitchTime = 0.0f;
 
 	/// <summary>
 	/// If enabled, the trigger will be disabled after the OnExit
@@ -279,7 +279,7 @@ public class TriggerArea : MonoBehaviour {
 	private void DoEnter() {
 		// Activates the switch and starts the timer
 		switchActive = true;
-		_remainingTimeToDeactivateSwitch = switchTime;
+		_remainingTimeToDeactivateSwitch = autoSwitchTime;
 
 		// Performs the method invocations
 		foreach (MethodInvoke methodInvoke in onEnter.AsList())

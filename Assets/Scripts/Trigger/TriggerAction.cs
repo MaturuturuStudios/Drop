@@ -48,9 +48,14 @@ public class TriggerAction : ActionPerformer {
 	public bool switchActive = false;
 
 	/// <summary>
+	/// Amount of time between switch activations.
+	/// </summary>
+	public float delayBetweenUses = 0.0f;
+
+	/// <summary>
 	/// Amount of time after which the switch will be turned off.
 	/// </summary>
-	public float switchTime = 0.0f;
+	public float autoSwitchTime = 0.0f;
 
 	/// <summary>
 	/// If enabled, the Gizmos will be drawn in the editor even
@@ -82,6 +87,11 @@ public class TriggerAction : ActionPerformer {
 	/// </summary>
 	private float _remainingTimeToDeactivateSwitch;
 
+	/// <summary>
+	/// The remaining time until the switch is usable again.
+	/// </summary>
+	private float _remainingTimeBetweenUses;
+
 	#endregion
 
 	#region Methods
@@ -111,6 +121,9 @@ public class TriggerAction : ActionPerformer {
 	/// Unity's method called each frame.
 	/// </summary>
 	void Update() {
+		// Updates the switch use counter
+		_remainingTimeBetweenUses -= Time.deltaTime;
+
 		// Checks if the switch should be deactivated
 		if (switchActive && triggerMode == TriggerMode.TimedSwitch) {
 			_remainingTimeToDeactivateSwitch -= Time.deltaTime;
@@ -120,7 +133,16 @@ public class TriggerAction : ActionPerformer {
 		}
 	}
 
+	/// <summary>
+	/// Handles the character interaction with this object by an Action Button press.
+	/// </summary>
+	/// <param name="character">The character who interacts with the object</param>
 	protected override void OnAction(GameObject character) {
+		// Checks if the switch can be used
+		if (_remainingTimeBetweenUses > 0)
+			return;
+		_remainingTimeBetweenUses = delayBetweenUses;
+
 		switch (triggerMode) {
 			case TriggerMode.Button:
 				// Always calls the activatation methods
@@ -144,16 +166,23 @@ public class TriggerAction : ActionPerformer {
 		}
 	}
 	
+	/// <summary>
+	/// Activates the trigger, calling the proper methods.
+	/// </summary>
 	private void Activate() {
 		// Activates the switch and starts the timer
 		switchActive = true;
-		_remainingTimeToDeactivateSwitch = switchTime;
+		_remainingTimeToDeactivateSwitch = autoSwitchTime;
 
 		// Performs the method invocations
 		foreach (MethodInvoke methodInvoke in onActivate.AsList())
 			methodInvoke.Invoke();
 	}
 	
+	/// <summary>
+	/// Deactivates the trigger, calling the proper methods.
+	/// Not used on Button mode.
+	/// </summary>
 	private void Deactivate() {
 		// Deactivates the trigger
 		switchActive = false;

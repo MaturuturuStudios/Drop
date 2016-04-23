@@ -29,13 +29,16 @@ public class TriggerActionEditor : Editor {
 		EditorGUILayout.PropertyField(_serializedScript.FindProperty("triggerMode"), true);
 		TriggerAction.TriggerMode triggerMode = (TriggerAction.TriggerMode)Enum.GetValues(typeof(TriggerAction.TriggerMode)).GetValue(_serializedScript.FindProperty("triggerMode").enumValueIndex);
 
+		// Draws the delay field
+		EditorGUILayout.PropertyField(_serializedScript.FindProperty("delayBetweenUses"), true);
+
 		// If it's a switch, draws the active toggle field
 		if (triggerMode == TriggerAction.TriggerMode.Switch || triggerMode == TriggerAction.TriggerMode.TimedSwitch)
 			EditorGUILayout.PropertyField(_serializedScript.FindProperty("switchActive"), true);
 
 		// If it's a timed switch, draws the time field
 		if (triggerMode == TriggerAction.TriggerMode.TimedSwitch)
-			EditorGUILayout.PropertyField(_serializedScript.FindProperty("switchTime"), true);
+			EditorGUILayout.PropertyField(_serializedScript.FindProperty("autoSwitchTime"), true);
 
 		// Draws the auto disable field
 		EditorGUILayout.PropertyField(_serializedScript.FindProperty("autoDisable"), true);
