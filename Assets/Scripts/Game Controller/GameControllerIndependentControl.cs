@@ -7,12 +7,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// <summary>
     /// Current character controlled
     /// </summary>
-    [HideInInspector]
     public GameObject currentCharacter;
     /// <summary>
     /// All current characters controlled list
     /// </summary>
-    [HideInInspector]
     public List<GameObject> allCurrentCharacters;
 
 
