@@ -94,25 +94,9 @@ public class LockAreaController : MonoBehaviour {
         if (other.CompareTag(Tags.Player) && _independentControl.currentCharacter == other.gameObject) {
 
             // Lock the camera
-            _cameraController.LockCamera(_area);
+            _cameraController.LockCameraAndReset(_area);
         }
     }
-
-
-    /// <summary>
-    /// When player exits on the trigger unfix the camera
-    /// </summary>
-    /// <param name="other">Collider who exits out the trigger</param>
-    void OnTriggerExit(Collider other) {
-
-        //only active it with players
-        if (other.CompareTag(Tags.Player)) {
-
-            // Fix the camera
-            _cameraController.UnlockCamera();
-        }
-    }
-
 
 
     /// <summary>

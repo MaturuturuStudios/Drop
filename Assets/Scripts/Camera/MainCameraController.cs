@@ -120,8 +120,13 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Check for camera in locked area
     /// </summary>
-    private Vector3 _lockPosition;
+    private bool _resetLockState = false;
 
+
+    /// <summary>
+    /// Check for camera in locked area
+    /// </summary>
+    private Vector3 _lockPosition;    
 
     #endregion
 
@@ -173,12 +178,15 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     void FixedUpdate() {
 
-        //Camera Movement
+        // Camera Movement
         MoveCamera();
 
-        //LookAt player
+        // LookAt player
         LookAt();
 
+        // Reset state
+        if(_resetLockState)
+            _cameraLocked = false;
     }
 
 
@@ -309,12 +317,28 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
+    /// Locks the camera in a position and reset it at the end of the frame
+    /// </summary>
+    /// <param name="position"> Area that camera will see</param>
+    public void LockCameraAndReset(Rect area) {
+
+        // Setting lock reset state
+        _resetLockState = true;
+
+        // Lock camera
+        LockCamera(area);
+    }
+
+
+    /// <summary>
     /// Unfix camera when a player leaves a CameraLockArea
     /// </summary>
     public void UnlockCamera() {
 
         // Setting look arround values depending of the input
         _cameraLocked = false;
+
+        _resetLockState = false;
     }
 
 

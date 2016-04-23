@@ -49,10 +49,7 @@ public class CharacterSpawner : MonoBehaviour {
     #region Methods
 
     /// <summary>
-    /// Unity's method called as soon as this entity is created.
-    /// It will be called even if the entity is disabled.
     /// </summary>
-    public void Awake() {
 
         // If we can ground drop
         if (CalculateSpawnPos()) {
