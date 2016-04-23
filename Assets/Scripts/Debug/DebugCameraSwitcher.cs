@@ -28,9 +28,11 @@ public class DebugCameraSwitcher : MonoBehaviour {
 	/// Stores all the cameras.
 	/// </summary>
 	void Awake () {
+
 		// Adds the main camera to the list of cameras
 		_cameras = new List<Camera>();
-		Camera mainCamera = FindObjectOfType<MainCameraController>().GetComponent<Camera>();
+		Camera mainCamera = Camera.main;
+
 		if (mainCamera == null)
 			Debug.LogError("Couldn't find a Main Camera Controller!");
 		else

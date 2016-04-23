@@ -1,0 +1,159 @@
+fileFormatVersion: 2
+guid: 3a3d1b06d763a4cdbaf7b1630850b53f
+timeCreated: 1461325733
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Group61446
+    100004: petalo016
+    100006: petalo017
+    100008: petalo018
+    100010: petalo019
+    100012: petalo020
+    100014: petalo021
+    100016: petalo022
+    100018: petalo023
+    100020: petalo024
+    100022: petalo025
+    100024: petalo026
+    100026: petalo027
+    100028: petalo028
+    100030: petalo029
+    100032: petalo030
+    100034: petalo031
+    400000: //RootNode
+    400002: Group61446
+    400004: petalo016
+    400006: petalo017
+    400008: petalo018
+    400010: petalo019
+    400012: petalo020
+    400014: petalo021
+    400016: petalo022
+    400018: petalo023
+    400020: petalo024
+    400022: petalo025
+    400024: petalo026
+    400026: petalo027
+    400028: petalo028
+    400030: petalo029
+    400032: petalo030
+    400034: petalo031
+    2300000: Group61446
+    2300002: petalo016
+    2300004: petalo017
+    2300006: petalo018
+    2300008: petalo019
+    2300010: petalo020
+    2300012: petalo021
+    2300014: petalo022
+    2300016: petalo023
+    2300018: petalo024
+    2300020: petalo025
+    2300022: petalo026
+    2300024: petalo027
+    2300026: petalo028
+    2300028: petalo029
+    2300030: petalo030
+    2300032: petalo031
+    3300000: Group61446
+    3300002: petalo016
+    3300004: petalo017
+    3300006: petalo018
+    3300008: petalo019
+    3300010: petalo020
+    3300012: petalo021
+    3300014: petalo022
+    3300016: petalo023
+    3300018: petalo024
+    3300020: petalo025
+    3300022: petalo026
+    3300024: petalo027
+    3300026: petalo028
+    3300028: petalo029
+    3300030: petalo030
+    3300032: petalo031
+    4300000: petalo016
+    4300002: petalo017
+    4300004: petalo018
+    4300006: petalo019
+    4300008: petalo020
+    4300010: petalo021
+    4300012: petalo022
+    4300014: petalo023
+    4300016: petalo024
+    4300018: petalo025
+    4300020: petalo026
+    4300022: petalo027
+    4300024: petalo028
+    4300026: petalo029
+    4300028: petalo030
+    4300030: petalo031
+    4300032: Group61446
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.5
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -118,14 +118,14 @@ public static class Axis {
 	/// the screen.
 	/// Positive means right, negative means left.
 	/// </summary>
-	public static readonly string MouseX = "MouseX";
+	public static readonly string MouseX = "Mouse X";
 
 	/// <summary>
 	/// Used to read the mouse vertical displacement on
 	/// the screen.
 	/// Positive means up, negative means down.
 	/// </summary>
-	public static readonly string MouseY = "MouseY";
+	public static readonly string MouseY = "Mouse Y";
 
 	/// <summary>
 	/// Used as the submit button on menus and forms.

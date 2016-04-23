@@ -78,7 +78,7 @@ public class BuildManager {
                 Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
 
                 // Wait for all work done
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(15000);
 
                 // Share file
                 if (bm.bd.share)
@@ -144,11 +144,20 @@ public class BuildManager {
             if (bd == null)
                 bd = new BuildData();
 
+
+
             // Clear old scenes
             bd.scenes.Clear();
 
+            // Get where to start
+            int i = 0;
+
+            // If scene is in build settings we have to count one more scene
+            int handler = 0;
+
+
             // Get new scenes
-            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; ++i) {
+            for (; i < SceneManager.sceneCountInBuildSettings + handler; ++i) {
 
                 //Load next Scene
                 SceneManager.LoadScene(i);
@@ -156,11 +165,15 @@ public class BuildManager {
                 // Get scene path
                 string path = SceneManager.GetSceneAt(i).path;
                 if (i > 0) {
+
+                    // Add to scene list
                     bd.scenes.Add(path);
                     Debug.Log("Scene Loaded: " + path);
+
+                    // Check if scene is build settings
+                    if (SceneManager.GetSceneAt(0).name == SceneManager.GetSceneAt(i).name)
+                        handler = 1;
                 }
-
-
             }
 
             Debug.Log(bd.scenes.Count + " scenes catched");
@@ -231,7 +244,7 @@ public class BuildManager {
         string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_lin.x86";
 
         // Build it
-        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinux, (development ? BuildOptions.Development : BuildOptions.None));
+        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinuxUniversal, (development ? BuildOptions.Development : BuildOptions.None));
 
         Debug.Log("Build for Linux done");
 
@@ -253,7 +266,7 @@ public class BuildManager {
         string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_mac.app";
 
         // Build it
-        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinux, (development ? BuildOptions.Development : BuildOptions.None));
+        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneOSXUniversal, (development ? BuildOptions.Development : BuildOptions.None));
 
         Debug.Log("Build for Mac done");
 
@@ -278,7 +291,7 @@ public class BuildManager {
         try {
 
             // Get zip location
-            proc.StartInfo.FileName = MakeAbsolute(bm.bd.zipPath).Replace(@"\", @"\\").ToString();
+            proc.StartInfo.FileName = MakeAbsolute(bm.bd.zipPath);
 
             // Get directory where process will work
             proc.StartInfo.WorkingDirectory = MakeAbsolute(bm.bd.workPath);
@@ -313,7 +326,10 @@ public class BuildManager {
 
         Debug.Log("Sharing " + label + " build");
 
-        try {
+		String path = MakeAbsolute (bm.bd.sharedFolderPath);
+		System.IO.Directory.CreateDirectory (path);
+        
+		try {
 
             // Get folders
             string from = bm.bd.workPath + "/" + bm.bd.buildName + ".zip ";

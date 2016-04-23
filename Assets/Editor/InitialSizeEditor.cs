@@ -30,8 +30,12 @@ public class InitialSizeEditor : Editor {
                 finalSize = 1;
             }
             //set both initial size and scale size of character
-            characterSize.initialSize = finalSize;
-            characterSize.transform.localScale = Vector3.one * finalSize;
+            if (Application.isPlaying) {
+                characterSize.SetSize(finalSize);
+            } else {
+                characterSize.initialSize = finalSize;
+                characterSize.transform.localScale = Vector3.one * finalSize;
+            }
         }
     }
 }

@@ -39,6 +39,7 @@ public class GameControllerInput : MonoBehaviour {
 			// Retrieves current character's components
 			CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 			CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
+			CharacterAction actionComponent = _switcher.currentCharacter.GetComponent<CharacterAction>();
 
 			// Horizontal input
 			float hInput = Input.GetAxis(Axis.Horizontal);
@@ -81,7 +82,7 @@ public class GameControllerInput : MonoBehaviour {
 			float vLookInput = Input.GetAxis(Axis.CamVertical);
 			_mainCameraController.LookArround(hLookInput, vLookInput);
 
-			//Handle shoot input To delete
+			//Handle shoot input
 			if (Input.GetButtonDown(Axis.Action) || Input.GetButtonDown(Axis.Jump))
 				shootComponent.Shoot();
 			if (Input.GetButtonDown(Axis.ShootMode))
@@ -97,6 +98,10 @@ public class GameControllerInput : MonoBehaviour {
 			} else if (Input.GetAxis(Axis.ShootCounter) == 0)
 				_shootCounterPressed = false;
 
+			//Handle action input
+			if (Input.GetButtonDown(Axis.Action))
+				actionComponent.DoAction();
+
 			///NOT SETTED CONTROLS
 			//Shoot mode pointer inputs
 			if (Input.GetAxis(Axis.LookAtDir) != 0)
@@ -109,9 +114,8 @@ public class GameControllerInput : MonoBehaviour {
 			//Select button
 			if (Input.GetButtonDown(Axis.Back))
 				Debug.Log(Axis.Back);
-
-
-		} else if(_ui!=null){
+		}
+		else if(_ui!=null){
 			//Select button
 			if (Input.GetButtonDown(Axis.Back)) {
 				_ui.ComeBack();
@@ -121,6 +125,15 @@ public class GameControllerInput : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	/// <summary>
+	/// Stops the player and closes the input.
+	/// </summary>
+	public void StopInput() {
+		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+		cccp.Stop();
+		enabled = false;
 	}
 	#endregion
 }

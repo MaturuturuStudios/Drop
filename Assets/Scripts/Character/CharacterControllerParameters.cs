@@ -198,6 +198,11 @@ public class CharacterControllerParameters {
 	public float jumpMagnitude = 1;
 
 	/// <summary>
+	/// Amount of time allowed for the player to hold the jump button.
+	/// </summary>
+	public float jumpHoldTimeMax = 0.25f;
+
+	/// <summary>
 	/// Jumping height reached when wall jumping.
 	/// </summary>
 	public float wallJumpHeight = 1;
@@ -257,6 +262,7 @@ public class CharacterControllerParameters {
 		clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrequency = jumpFrequency;
 		clone.jumpMagnitude = jumpMagnitude;
+		clone.jumpHoldTimeMax = jumpHoldTimeMax;
 		clone.wallJumpHeight = wallJumpHeight;
 		clone.wallJumpDistance = wallJumpDistance;
 		clone.baseMass = baseMass;
@@ -287,6 +293,7 @@ public class CharacterControllerParameters {
 		sb.Append("Jump Bheaviour: ").Append(jumpBehaviour.ToString()).Append("\n");
 		sb.Append("Jump Frequency: ").Append(jumpFrequency).Append("\n");
 		sb.Append("Jump Magnitude: ").Append(jumpMagnitude).Append("\n");
+		sb.Append("Jump Hold Time: ").Append(jumpHoldTimeMax).Append("\n");
 		sb.Append("WallJ. Height: ").Append(wallJumpHeight).Append("\n");
 		sb.Append("WallJ. Distance: ").Append(wallJumpDistance).Append("\n");
 		sb.Append("Base Mass: ").Append(baseMass).Append("\n");

@@ -2,26 +2,48 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// This class active, desactive shoot-mode and shoot a drop 
+/// </summary>
 public class CharacterShoot : MonoBehaviour {
 
-    public GameObject BallPrefb;
+    #region Private Attributes
 
-   
+    /// <summary>
+	/// Defines the object that will use to create the drop shooted.
+	/// </summary> 
     private GameObject ball;
-	private bool  isBallThrown;
+    /// <summary>
+	/// Defines the size of the drop shooted.
+	/// </summary> 
+    private float sizeshot = 1;
 
+    #endregion
 
-    //Toni: At the moment I make it public but if you want, you can make a getShootMode() function
+    #region Public Attributes
+
+    /// <summary>
+	/// Defines the boolean to know if we are in shootmode or out of shootmode.
+	/// </summary> 
     public bool shootmode = false;
-    private float sizeshot=1;
 
+    /// <summary>
+    /// Defines the scripts objects that we will use it.
+    /// </summary> 
     CharacterController c;
     CharacterControllerCustom ccc;
     CharacterShootTrajectory st;
     GameControllerIndependentControl _gcic;
     CharacterSize size;
 
-    //---------------------------------------	
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+	/// Unity's method called when the entity is created.
+	/// Recovers the desired componentes of the entity.
+	/// </summary>
     void Awake (){
         c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
@@ -33,11 +55,17 @@ public class CharacterShoot : MonoBehaviour {
 
        
     }
+
+    /// <summary>
+	/// Method to know if if we are in shootmode or not.
+	/// </summary>
     public bool isShooting(){
         return shootmode;
     }
 
-    //---------------------------------------	
+    /// <summary>
+	/// Method to increase the size of the drop shooted
+	/// </summary>
     public void IncreaseSize() {
         if ((shootmode == true))
         {
@@ -51,6 +79,9 @@ public class CharacterShoot : MonoBehaviour {
         }
     }
 
+    /// <summary>
+	/// Method to decrease the size of the drop shooted
+	/// </summary>
     public void DecreaseSize()
     {
         if ((shootmode == true))
@@ -66,6 +97,9 @@ public class CharacterShoot : MonoBehaviour {
         }
     }
 
+    /// <summary>
+	/// Method to start the shootmode
+	/// </summary>
     public void Aim(){
         if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<10) )
         {
@@ -88,6 +122,9 @@ public class CharacterShoot : MonoBehaviour {
 
     }
 
+    /// <summary>
+	/// Method to shoot the drop
+	/// </summary>
     public void Shoot()
     {
         if ( (shootmode == true))
@@ -98,34 +135,37 @@ public class CharacterShoot : MonoBehaviour {
             st.enabled = false;
             GetComponent<CharacterSize>().SetSize((int)(GetComponent<CharacterSize>().GetSize()-sizeshot));
 
-            throwBall();
-            
+            throwBall();          
         }
-
-
     }
+
+    /// <summary>
+	/// Unity's method called each frame.
+	/// </summary>
 	void Update (){
 
+        //check if we shouldn't be in shootmode
         if ((shootmode== true) && (ccc.State.IsGrounded == false || size.GetSize()==1 ))
         {
             shootmode = false;
             st.QuitTrajectory();
             st.enabled = false;
-            // ccc.Parameters = CharacterControllerParameters.ShootingTube;
             ccc.Parameters = null;                      
         }
      }
-	//---------------------------------------	
-	// When ball is thrown, it will create new ball
-	//---------------------------------------	
-    //Set ball properties like createBall()
+
+    /// <summary>
+	/// Method to prepare the drop to be shooted.
+	/// </summary>
     private void prepareDropToFly()
     {
-
         ball.transform.position = this.transform.position + st.GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
 	    ball.SetActive(false);
     }
 
+    /// <summary>
+	/// Method to shoot the drop.
+	/// </summary>
 	private void throwBall(){
 
         ball = _gcic.CreateDrop(true); //AddDrop -> CreateDrop
@@ -136,4 +176,23 @@ public class CharacterShoot : MonoBehaviour {
 
 		ball.GetComponent<CharacterControllerCustom>().SendFlying(st.GetpVelocity());
 	}
+
+    
+
+        public void OnDrawGizmosSelected () {
+            if (!Application.isPlaying)
+            {
+                Awake();
+                Update();
+            }
+
+            Gizmos.color = Color.white;
+            //Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt((5 * (9))));
+            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (9) ));
+            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (1.5f)));
+            Debug.Log(" distance " + (5 * 9) * -25);
+        }
+    
+
+    #endregion
 }

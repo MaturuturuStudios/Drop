@@ -21,13 +21,13 @@ public class JumpMushroomEditor : Editor {
 
 		myScript.jumpFactor = EditorGUILayout.FloatField("Jump Compensation Factor", myScript.jumpFactor);
 
-		myScript.keepPerpendicularSpeed = GUILayout.Toggle(myScript.keepPerpendicularSpeed, "Keep Perpendicular Speed ");
+		myScript.keepPerpendicularSpeed = EditorGUILayout.Toggle("Keep Speed", myScript.keepPerpendicularSpeed);
 
-		myScript.lostControl = GUILayout.Toggle(myScript.lostControl, "Lost Control");
+		myScript.lostControl = EditorGUILayout.Toggle("Lost Control", myScript.lostControl);
 
 		// If Lost Control is enabled, shows the Temporary option
 		if (myScript.lostControl)
-			myScript.temporary = GUILayout.Toggle(myScript.temporary, "Lost Control Temporary");
+			myScript.temporary = EditorGUILayout.Toggle("Lost Control Temporary", myScript.temporary);
 
 		// If Temporary is enabled, shows the Time field
 		if (myScript.temporary)

@@ -1,61 +1,55 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Controller for main camera.
 /// </summary>
 public class MainCameraController : MonoBehaviour {
 
-    #region Attributes
-    // Target of the camera, it use to be the player
-    private GameObject target;
+    #region Public Attributes
+
 
     /// <summary>
     /// Distance from player to camera X position will be allways the same
     /// </summary>
-    //Offset Variable
     public Vector3 offset = new Vector3(0F, 2F, -15F);
-    //Offset Reference
-    private Vector3 _offset;
-	
+
+
     /// <summary>
-    /// Camera movement configuration options
+    /// Camera movement smooth on XY
     /// </summary>
-    public Movement movement;
-    [System.Serializable]
-	//  Movement Class
-    public class Movement {
-		//Smooth on XY movement
-        public float smooth = 2.0f;
-		//Smooth on Z movement
-        public float zSmooth = 1.0f;
-    }
-    // Movement position control
-    private Vector3 _lastObjective;
-	
+    public float smooth = 2.0f;
+
+
     /// <summary>
-    /// Camera look at configuration options
+    /// Camera movement smooth on XY
     /// </summary>
-    public LookingAt lookAt;
-    [System.Serializable]
-	//  Movement Class
-    public class LookingAt {
-		// Enable/Disable Look at player liberty when bound reached
-		public bool lookAtFixedOnBounds = true;
-		//Look at movement smooth
-        public float lookAtSmooth = 2.5f;
-		//Look arround movement smooth
-		public float lookArroundSmooth = 10F;
-    }
-    //Look Arround Offset
-    private Vector3 _lookArroundOffset;
-    
+    public float zSmooth = 1.0f;
+
+
     /// <summary>
-    /// Camera liberty movement bounds
+    /// Enable/Disable Look at player liberty when bound reached
     /// </summary>
-    //	Bounds Attributes
+    public bool lookAtFixedOnBounds = true;
+
+
+    /// <summary>
+    /// Look at movement smooth
+    /// </summary>
+    public float lookAtSmooth = 2.5f;
+
+
+    /// <summary>
+    /// Look arround movement smooth
+    /// </summary>
+    public float lookArroundSmooth = 10F;
+
+
+    /// <summary>
+    /// Bound of camera liberty movement area
+    /// </summary>
     public Boundary bounds;
-	//  Bounds Class
+    //  Bounds Class
     [System.Serializable]
     public class Boundary {
         public float top = 100.0f;
@@ -63,23 +57,93 @@ public class MainCameraController : MonoBehaviour {
         public float left = -100.0f;
         public float right = 100.0f;
     }
-    ///private bounds references
-	//bounds exceded controll
-    private float excededX = 0F;
-    private float excededY = 0F;
 
-    // Reference to the independent control component from the scene's game controller.
+
+    #endregion
+
+    #region Private Attributes
+
+
+    /// <summary>
+    /// Reference to the independent control component from the scene's game controller.
+    /// </summary>
     private GameControllerIndependentControl _independentControl;
 
-    //Reference to current caracter size
+
+    /// <summary>
+    /// Target of the camera, it use to be the player
+    /// </summary>
+    private GameObject target;
+
+
+    /// <summary>
+    /// Bounds exceded controll on X
+    /// </summary>
+    private float excededX = 0F;
+
+
+    /// <summary>
+    /// Bounds exceded controll on Y
+    /// </summary>
+    private float excededY = 0F;
+
+    /// <summary>
+    /// Offset Reference
+    /// </summary>
+    private Vector3 _offset;
+
+
+    /// <summary>
+    /// Movement position control
+    /// </summary>
+    private Vector3 _lastObjective;
+
+
+    /// <summary>
+    /// Look Arround Offset
+    /// </summary>
+    private Vector3 _lookArroundOffset;
+
+
+    /// <summary>
+    /// Reference to current caracter size
+    /// </summary>
     private float _dropSize;
+
+
+    /// <summary>
+    /// Check for camera in locked area
+    /// </summary>
+    private bool _cameraInLockArea = false;
+
+
+    /// <summary>
+    /// Check for camera in locked area
+    /// </summary>
+    private Vector3 _lockPosition;
+
+
+    /// <summary>
+    /// The time that camera will be looking at this place
+    /// </summary>
+    private float _lookAtPlaceTimmer = 0;
+
+
+    /// <summary>
+    /// The position that camera will be looking
+    /// </summary>
+    private Vector3 _lookAtPlacePos;
+
+
     #endregion
 
     #region Methods
+
     /// <summary>
     /// Unity's method called when this entity is created, even if it is disabled.
     /// </summary>
     void Awake() {
+
         // Looks for the independent controller component
         _independentControl = FindObjectOfType<GameControllerIndependentControl>();
 
@@ -87,10 +151,12 @@ public class MainCameraController : MonoBehaviour {
         RestoreTarget();
     }
 	
+
     /// <summary>
     /// Unity's method called on start script only one time
     /// </summary>
     void Start() {
+
         //Calculate offset
         _offset = new Vector3(offset.x, offset.y, offset.z);
 
@@ -98,73 +164,99 @@ public class MainCameraController : MonoBehaviour {
         _lastObjective = target.transform.position;
     }
 
+
     /// <summary>
     /// Update the state of the camera
     /// </summary>
     void Update() {
-        // Update status
-        UpdateState();
+
+        // Get drop size
+        _dropSize = target.GetComponent<CharacterSize>().GetSize();
+
+        // Update ofset and boundary depends of the size
+        if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
+            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
+
+        // Update look at place timmer if it's needed
+        if (_lookAtPlaceTimmer > 0)
+            _lookAtPlaceTimmer -= Time.deltaTime;
     }
+
 
     /// <summary>
     /// Update the camera phisics
     /// </summary>
     void FixedUpdate() {
+
         //Camera Movement
         MoveCamera();
 
         //LookAt player
         LookAt();
+
+        // Reset camera lock at place state
+        _cameraInLockArea = false;
     }
 
-    /// <summary>
-    /// Update the camera status
-    /// </summary>
-    private void UpdateState() {
-        //Get drop size
-        _dropSize = target.GetComponent<CharacterSize>().GetSize();
-
-        //Update ofset and boundary depends of the size
-        if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
-            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
-    }
 
     /// <summary>
     /// Move the camera to offset position of the player gradually
     /// </summary>
     private void MoveCamera() {
-		//Calculate destination
+		// Calculate destination
         Vector3 destination = target.transform.position + _offset;
 
-        //Add Loook around offset
-        destination += _lookArroundOffset;
+        if (_cameraInLockArea)
+            // Lock camera
+            destination = _lockPosition;
+        else
+            // Add Loook around offset
+            destination += _lookArroundOffset;
 
-        //Reset bounds exceded to recalculate
+
+        // Look at place time control
+        if (_lookAtPlaceTimmer > 0)
+            // Add Loook around offset
+            destination = _lookAtPlacePos;
+
+        // Reset bounds exceded to recalculate
         excededX = excededY = 0;
         
-        //Calculate if it is out of bounds
+        // Calculate if it is out of bounds
         float cameraRealBound = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
+
+        // If bottom bound exceded
         if (destination.x < bounds.left + cameraRealBound)
             excededX = destination.x = bounds.left + cameraRealBound;
+
+        // If top bound exceded
         else if (destination.x > bounds.right - cameraRealBound) {
             excededX = destination.x = bounds.right - cameraRealBound;
+
+            // If bottom bound exceded
             if (excededX < bounds.left + cameraRealBound)
                 excededX = destination.x = bounds.left + cameraRealBound;
         }
+
+        // If left bound exeded
         if (destination.y < bounds.bottom + offset.y + (cameraRealBound * 9 / 16))
             excededY = destination.y = bounds.bottom + offset.y  + (cameraRealBound * 9 / 16);
+
+        // If right bound exeded
         else if (destination.y > bounds.top - (cameraRealBound * 9 / 16)) {
             excededY = destination.y = bounds.top - (cameraRealBound * 9 / 16);
+
+            // If left bound exeded
             if (excededY < bounds.bottom + offset.y + (cameraRealBound * 9 / 16))
                 excededY = destination.y = bounds.bottom + offset.y + (cameraRealBound * 9 / 16);
         }
 
-		//Calculate next position
+		// Calculate next position
 		Vector3 newPosition;
-        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * movement.smooth);
-        newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * movement.zSmooth);
+        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * smooth);
+        newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * zSmooth);
 
-        //Set the position to the camera
+        // Set the position to the camera
         transform.position = newPosition;
     }
 
@@ -172,28 +264,44 @@ public class MainCameraController : MonoBehaviour {
     /// Makes the camera look to the player's position gradually
     /// </summary>
     private void LookAt() {
-		//Calculate objective of the camera
+		// Calculate objective of the camera
         Vector3 destination = target.transform.position;
 
-        //Add Loook around offset
+        // Add Loook around offset
         destination += _lookArroundOffset;
-        
-        //If there isn't liberty looking at, block it
-        if (lookAt.lookAtFixedOnBounds && excededX != 0) 
+
+        // Lock area control
+        if (_cameraInLockArea) {
+            Vector3 destinationOnZ = _lockPosition;
+            destinationOnZ.z = 0;
+            destination = destinationOnZ;
+        }
+
+        // Look at place time control
+        if (_lookAtPlaceTimmer > 0) {
+            Vector3 destinationOnZ = _lookAtPlacePos;
+            destinationOnZ.z = 0;
+            destination = destinationOnZ;
+        }
+
+
+        // If there isn't liberty looking at, block it
+        if (lookAtFixedOnBounds && excededX != 0) 
             destination.x = excededX;
-        if (lookAt.lookAtFixedOnBounds && excededY != 0) 
+        if (lookAtFixedOnBounds && excededY != 0) 
             destination.y = excededY - (offset.y * (_dropSize) );
 
 
-        //Calculate the look at position of the camera
-        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAt.lookAtSmooth);
+        // Calculate the look at position of the camera
+        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAtSmooth);
 
-		//Set the look at attribute
+		// Set the look at attribute
         transform.LookAt(destination);
 
-		//save the last position for future calculations
+		// Save the last position for future calculations
         _lastObjective = destination;
     }
+
 
     /// <summary>
     /// Set the objective of the camera
@@ -202,6 +310,7 @@ public class MainCameraController : MonoBehaviour {
     public void SetObjective(GameObject objective) {
         target = objective;
     }
+
 
     /// <summary>
     /// Restores the target of the camera to the currently controlled character.
@@ -214,24 +323,80 @@ public class MainCameraController : MonoBehaviour {
     /// Set the look arround offset
     /// </summary>
     public void LookArround(float OffsetX, float OffsetY) {
-        //Setting look arround values depending of the input
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookAt.lookArroundSmooth * _dropSize;
+
+        // Setting look arround values depending of the input
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth * _dropSize;
     }
 
+
     /// <summary>
-    /// Draws the movement bounds on the editor.
+    /// Looks at position for determinate time
+    /// </summary>
+    /// <param name="pos"> X & Y used for position that will be used, Z used for the time that will be watching</param>
+    public void LookAtPlace(Vector3 pos) {
+
+        // Set timmer
+        _lookAtPlaceTimmer = pos.z;
+
+        // Set place
+        _lookAtPlacePos = new Vector3(pos.x, pos.y, transform.position.z);
+
+    }
+
+
+    /// <summary>
+    /// Fix camera when a player comes into a CameraLockArea
+    /// </summary>
+    /// <param name="position"> Center position of lock area</param>
+    /// <param name="size"> Size of lock area</param>
+    /// <param name="objectName"> Name that is in the lock area</param>
+    public void FixCamera(Vector3 position, Vector3 size, string objectName) {
+
+        // If controlled caracter is inside the trigger
+        if (_independentControl.currentCharacter.name == objectName || _cameraInLockArea == true) {
+            // Setting look arround values depending of the input
+            _cameraInLockArea = true;
+
+            float cameraZPos = (size.y) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
+
+            _lockPosition = new Vector3(position.x, position.y, -cameraZPos);
+        } else {
+
+            // Unlock camera 
+            _cameraInLockArea = false;
+
+        }
+    }
+
+
+    /// <summary>
+    /// Unfix camera when a player leaves a CameraLockArea
+    /// </summary>
+    public void UnfixCamera() {
+
+        // Setting look arround values depending of the input
+        _cameraInLockArea = false;
+    }
+
+
+    /// <summary>
+    /// Draws the movement bounds and the camera frustum on the editor
     /// </summary>
     public void OnDrawGizmosSelected() {
+
+        // Draw camera bounds
         Gizmos.color = Color.green;
         Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.right, bounds.top, 0));
         Gizmos.DrawLine(new Vector3(bounds.left, bounds.top, 0), new Vector3(bounds.left, bounds.bottom, 0));
         Gizmos.DrawLine(new Vector3(bounds.left, bounds.bottom, 0), new Vector3(bounds.right, bounds.bottom, 0));
         Gizmos.DrawLine(new Vector3(bounds.right, bounds.bottom, 0), new Vector3(bounds.right, bounds.top, 0));
 
+        // Draw camera frustum
         Camera camera = GetComponent<Camera>();
         Gizmos.color = Color.yellow;
         Gizmos.matrix = camera.transform.localToWorldMatrix;
         Gizmos.DrawFrustum(Vector3.zero, camera.fieldOfView, camera.farClipPlane, camera.nearClipPlane, camera.aspect);
-   }
+    }
+
     #endregion
 }
