@@ -62,7 +62,7 @@ public class CharacterSpawner : MonoBehaviour {
             _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
 
             // Create the character
-            GameObject drop = _independentControl.CreateDrop(addToControlList, controlled);
+            GameObject drop = _independentControl.CreateDrop(controlled, addToControlList);
 
             // Set the character to its size
             drop.GetComponent<CharacterSize>().SetSize(size);
