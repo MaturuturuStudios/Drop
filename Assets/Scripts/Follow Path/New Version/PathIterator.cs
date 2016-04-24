@@ -23,23 +23,6 @@ public class PathIterator  : MonoBehaviour {
         /// </summary>
         Lerp
     }
-
-    /// <summary>
-    /// Defines how the entity looks for the next point in the path.
-    /// </summary>
-    public enum PathType {
-
-        /// <summary>
-        /// After reaching the end, returns using the reverse path.
-        /// </summary>
-        BackAndForward,
-
-        /// <summary>
-        /// After reaching the end, returns to the first point in the path
-        /// and starts again in the same order.
-        /// </summary>
-        Loop
-    }
     #endregion
 
     #region Public Attributes
@@ -54,11 +37,6 @@ public class PathIterator  : MonoBehaviour {
     /// Defines how will the entity move to the next point in the path.
     /// </summary>
     public FollowType followType = FollowType.MoveTowards;
-
-	/// <summary>
-	/// Defines how the entity looks for the next point in the path.
-	/// </summary>
-	public PathType pathType = PathType.BackAndForward;
 
 	/// <summary>
 	/// A reference to the path this entity will follow.
@@ -194,7 +172,7 @@ public class PathIterator  : MonoBehaviour {
         // The squared distance is used becouse a multiplication is cheaper than a square root
         if (squaredDistance < maxDistanceToGoal * maxDistanceToGoal) {
             // Move next
-            MoveNext();
+            path.MoveNext();
         }
 
     }
@@ -205,7 +183,7 @@ public class PathIterator  : MonoBehaviour {
     public void setActive(bool active) {
         isActive = active;
     }
-
+    /*
     /// <summary>
     /// Method for change comportament depending of the path type.
     /// </summary>
@@ -247,6 +225,6 @@ public class PathIterator  : MonoBehaviour {
                 _stepsToStop = numberOfSteps;
             isActive = false;
         }
-    }
+    }*/
 	#endregion
 }
