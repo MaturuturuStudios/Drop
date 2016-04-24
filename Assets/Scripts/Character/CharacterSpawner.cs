@@ -49,7 +49,10 @@ public class CharacterSpawner : MonoBehaviour {
     #region Methods
 
     /// <summary>
+    /// Unity's method (only called if the Object is active): 
+    /// This function is called just after the object is enabled. 
     /// </summary>
+    public void OnEnable() {
 
         // If we can ground drop
         if (CalculateSpawnPos()) {
