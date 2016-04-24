@@ -114,26 +114,19 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Check for camera in locked area
     /// </summary>
-    private bool _cameraInLockArea = false;
+    private bool _cameraLocked = false;
 
 
     /// <summary>
     /// Check for camera in locked area
     /// </summary>
-    private Vector3 _lockPosition;
+    private bool _resetLockState = false;
 
 
     /// <summary>
-    /// The time that camera will be looking at this place
+    /// Check for camera in locked area
     /// </summary>
-    private float _lookAtPlaceTimmer = 0;
-
-
-    /// <summary>
-    /// The position that camera will be looking
-    /// </summary>
-    private Vector3 _lookAtPlacePos;
-
+    private Vector3 _lockPosition;    
 
     #endregion
 
@@ -148,7 +141,7 @@ public class MainCameraController : MonoBehaviour {
         _independentControl = FindObjectOfType<GameControllerIndependentControl>();
 
         // Sets the camera's target to the current character
-        RestoreTarget();
+        SetObjective(_independentControl.currentCharacter);
     }
 	
 
@@ -177,9 +170,6 @@ public class MainCameraController : MonoBehaviour {
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
             _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
 
-        // Update look at place timmer if it's needed
-        if (_lookAtPlaceTimmer > 0)
-            _lookAtPlaceTimmer -= Time.deltaTime;
     }
 
 
@@ -188,14 +178,15 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     void FixedUpdate() {
 
-        //Camera Movement
+        // Camera Movement
         MoveCamera();
 
-        //LookAt player
+        // LookAt player
         LookAt();
 
-        // Reset camera lock at place state
-        _cameraInLockArea = false;
+        // Reset state
+        if(_resetLockState)
+            _cameraLocked = false;
     }
 
 
@@ -206,18 +197,12 @@ public class MainCameraController : MonoBehaviour {
 		// Calculate destination
         Vector3 destination = target.transform.position + _offset;
 
-        if (_cameraInLockArea)
+        if (_cameraLocked)
             // Lock camera
             destination = _lockPosition;
         else
             // Add Loook around offset
             destination += _lookArroundOffset;
-
-
-        // Look at place time control
-        if (_lookAtPlaceTimmer > 0)
-            // Add Loook around offset
-            destination = _lookAtPlacePos;
 
         // Reset bounds exceded to recalculate
         excededX = excededY = 0;
@@ -271,15 +256,8 @@ public class MainCameraController : MonoBehaviour {
         destination += _lookArroundOffset;
 
         // Lock area control
-        if (_cameraInLockArea) {
+        if (_cameraLocked) {
             Vector3 destinationOnZ = _lockPosition;
-            destinationOnZ.z = 0;
-            destination = destinationOnZ;
-        }
-
-        // Look at place time control
-        if (_lookAtPlaceTimmer > 0) {
-            Vector3 destinationOnZ = _lookAtPlacePos;
             destinationOnZ.z = 0;
             destination = destinationOnZ;
         }
@@ -313,13 +291,6 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Restores the target of the camera to the currently controlled character.
-    /// </summary>
-    public void RestoreTarget() {
-        SetObjective(_independentControl.currentCharacter);
-    }
-
-    /// <summary>
     /// Set the look arround offset
     /// </summary>
     public void LookArround(float OffsetX, float OffsetY) {
@@ -330,52 +301,44 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Looks at position for determinate time
+    /// Locks the camera in a position
     /// </summary>
-    /// <param name="pos"> X & Y used for position that will be used, Z used for the time that will be watching</param>
-    public void LookAtPlace(Vector3 pos) {
+    /// <param name="position"> Area that camera will see</param>
+    public void LockCamera(Rect area) {
 
-        // Set timmer
-        _lookAtPlaceTimmer = pos.z;
+        // Setting lock state
+        _cameraLocked = true;
 
-        // Set place
-        _lookAtPlacePos = new Vector3(pos.x, pos.y, transform.position.z);
+        float cameraZPos = (area.height) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
+
+        _lockPosition = new Vector3(area.x, area.y, -cameraZPos);
 
     }
 
 
     /// <summary>
-    /// Fix camera when a player comes into a CameraLockArea
+    /// Locks the camera in a position and reset it at the end of the frame
     /// </summary>
-    /// <param name="position"> Center position of lock area</param>
-    /// <param name="size"> Size of lock area</param>
-    /// <param name="objectName"> Name that is in the lock area</param>
-    public void FixCamera(Vector3 position, Vector3 size, string objectName) {
+    /// <param name="position"> Area that camera will see</param>
+    public void LockCameraAndReset(Rect area) {
 
-        // If controlled caracter is inside the trigger
-        if (_independentControl.currentCharacter.name == objectName || _cameraInLockArea == true) {
-            // Setting look arround values depending of the input
-            _cameraInLockArea = true;
+        // Setting lock reset state
+        _resetLockState = true;
 
-            float cameraZPos = (size.y) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
-
-            _lockPosition = new Vector3(position.x, position.y, -cameraZPos);
-        } else {
-
-            // Unlock camera 
-            _cameraInLockArea = false;
-
-        }
+        // Lock camera
+        LockCamera(area);
     }
 
 
     /// <summary>
     /// Unfix camera when a player leaves a CameraLockArea
     /// </summary>
-    public void UnfixCamera() {
+    public void UnlockCamera() {
 
         // Setting look arround values depending of the input
-        _cameraInLockArea = false;
+        _cameraLocked = false;
+
+        _resetLockState = false;
     }
 
 

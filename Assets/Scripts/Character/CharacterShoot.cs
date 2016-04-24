@@ -159,7 +159,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     private void prepareDropToFly()
     {
-        ball.transform.position = this.transform.position + st.GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
+        ball.transform.position = this.transform.position;// + st.GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
 	    ball.SetActive(false);
     }
 
@@ -185,12 +185,14 @@ public class CharacterShoot : MonoBehaviour {
                 Awake();
                 Update();
             }
-
-            Gizmos.color = Color.white;
-            //Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt((5 * (9))));
-            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (9) ));
-            UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1), (5 * (1.5f)));
-            Debug.Log(" distance " + (5 * 9) * -25);
+           
+            for (int i = 1; i < ccc.GetComponent<CharacterSize>().GetSize(); ++i)
+            {
+                 float rel=UnityEditor.HandleUtility.GetHandleSize(transform.position);
+                UnityEditor.Handles.color= Color.Lerp(Color.white, Color.black, (float)1/i );
+                UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1),5 * (ccc.GetComponent<CharacterSize>().GetSize() - i));
+                Debug.Log(" gizmo position " + transform.position + " gizmo distance " + Mathf.Sqrt((5 * (ccc.GetComponent<CharacterSize>().GetSize() - i)) * 25));
+            }
         }
     
 

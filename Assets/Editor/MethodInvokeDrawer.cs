@@ -21,7 +21,7 @@ class MethodInvokeDrawer : PropertyDrawer {
 	/// <returns></returns>
 	public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
 		// Returns a fixed height, since the space occupied by this element is fixed as well
-		return 40;
+		return 60;
 	}
 
 	/// <summary>
@@ -67,6 +67,14 @@ class MethodInvokeDrawer : PropertyDrawer {
 			else if (parameters.Length > 1)
 				Debug.LogWarning("Warning: The selected method has more than one parameter: " + selectedMethod.Name);
 		}
+
+		// Draws the auto disable field
+		Rect autoDisableRect = position;
+		autoDisableRect.y += 40;
+		autoDisableRect.height = 18;
+		EditorGUIUtility.labelWidth = GUI.skin.box.CalcSize(new GUIContent("Auto Disable")).x;
+		bool autoDisable = EditorGUI.Toggle(autoDisableRect, "Auto Disable", property.FindPropertyRelative("autoDisable").boolValue);
+		property.FindPropertyRelative("autoDisable").boolValue = autoDisable;
 	}
 
 	/// <summary>

@@ -10,8 +10,14 @@ using System.Reflection;
 /// </summary>
 [Serializable]
 public class MethodInvoke {
-	
+
 	#region Fields
+
+	/// <summary>
+	/// If enabled, the method will not be called again even
+	/// this object is said to.
+	/// </summary>
+	public bool autoDisable = false;
 
 	/// <summary>
 	/// The object whose method will be invoked.
@@ -96,15 +102,34 @@ public class MethodInvoke {
 
 	#endregion
 
+	#region Variables
+
+	/// <summary>
+	/// Flag that stores if the method invocation has been disabled.
+	/// </summary>
+	private bool _deactivated = false;
+
+	#endregion
+
 	#region Methods
 
 	/// <summary>
 	/// Invokes the selected method.
 	/// </summary>
 	public void Invoke() {
+		// Checks if the method should be invoked
+		if (autoDisable) {
+			if (_deactivated)
+				return;
+			else
+				_deactivated = true;
+		}
+
+		// Checks if the target is valid
 		if (target == null)
 			Debug.LogError("Error: No selected target for the invocation.");
 
+		// Invokes the method
 		MethodInfo selectedMethod = GetMethodsInfo(target)[selectedIndex];
 		ParameterInfo[] parameters = selectedMethod.GetParameters();
 		if (parameters.Length == 0)

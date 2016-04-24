@@ -48,9 +48,14 @@ public class TriggerAction : ActionPerformer {
 	public bool switchActive = false;
 
 	/// <summary>
+	/// Amount of time between switch activations.
+	/// </summary>
+	public float delayBetweenUses = 0.0f;
+
+	/// <summary>
 	/// Amount of time after which the switch will be turned off.
 	/// </summary>
-	public float switchTime = 0.0f;
+	public float autoSwitchTime = 0.0f;
 
 	/// <summary>
 	/// If enabled, the Gizmos will be drawn in the editor even
@@ -82,6 +87,11 @@ public class TriggerAction : ActionPerformer {
 	/// </summary>
 	private float _remainingTimeToDeactivateSwitch;
 
+	/// <summary>
+	/// The remaining time until the switch is usable again.
+	/// </summary>
+	private float _remainingTimeBetweenUses;
+
 	#endregion
 
 	#region Methods
@@ -111,6 +121,9 @@ public class TriggerAction : ActionPerformer {
 	/// Unity's method called each frame.
 	/// </summary>
 	void Update() {
+		// Updates the switch use counter
+		_remainingTimeBetweenUses -= Time.deltaTime;
+
 		// Checks if the switch should be deactivated
 		if (switchActive && triggerMode == TriggerMode.TimedSwitch) {
 			_remainingTimeToDeactivateSwitch -= Time.deltaTime;
@@ -120,7 +133,16 @@ public class TriggerAction : ActionPerformer {
 		}
 	}
 
+	/// <summary>
+	/// Handles the character interaction with this object by an Action Button press.
+	/// </summary>
+	/// <param name="character">The character who interacts with the object</param>
 	protected override void OnAction(GameObject character) {
+		// Checks if the switch can be used
+		if (_remainingTimeBetweenUses > 0)
+			return;
+		_remainingTimeBetweenUses = delayBetweenUses;
+
 		switch (triggerMode) {
 			case TriggerMode.Button:
 				// Always calls the activatation methods
@@ -144,16 +166,23 @@ public class TriggerAction : ActionPerformer {
 		}
 	}
 	
+	/// <summary>
+	/// Activates the trigger, calling the proper methods.
+	/// </summary>
 	private void Activate() {
 		// Activates the switch and starts the timer
 		switchActive = true;
-		_remainingTimeToDeactivateSwitch = switchTime;
+		_remainingTimeToDeactivateSwitch = autoSwitchTime;
 
 		// Performs the method invocations
 		foreach (MethodInvoke methodInvoke in onActivate.AsList())
 			methodInvoke.Invoke();
 	}
 	
+	/// <summary>
+	/// Deactivates the trigger, calling the proper methods.
+	/// Not used on Button mode.
+	/// </summary>
 	private void Deactivate() {
 		// Deactivates the trigger
 		switchActive = false;
@@ -183,20 +212,40 @@ public class TriggerAction : ActionPerformer {
 		Vector3 separation = new Vector3(0, 0.1f, 0);
 		Gizmos.color = Color.green;
 		foreach (MethodInvoke methodInvoke in onActivate.AsList())
-			if (methodInvoke.target != null)
-				Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
+			DrawMethodInvoke(methodInvoke, separation);
 
-		Gizmos.color = Color.red;
-		foreach (MethodInvoke methodInvoke in onDeactivate.AsList())
-			if (methodInvoke.target != null)
-				Gizmos.DrawLine(transform.position - separation, methodInvoke.target.transform.position - separation);
+		if (triggerMode == TriggerMode.Switch || triggerMode == TriggerMode.TimedSwitch) {
+			Gizmos.color = Color.red;
+			foreach (MethodInvoke methodInvoke in onDeactivate.AsList())
+				DrawMethodInvoke(methodInvoke, -separation);
+		}
 
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Color colliderColor = Color.cyan;
 		colliderColor.a = 0.5f;
 		Gizmos.color = colliderColor;
 		foreach (Collider collider in _colliders)
-			DrawCollider(collider);
+		DrawCollider(collider);
+	}
+
+	/// <summary>
+	/// Draws a line to the target of a method invoke.
+	/// Also draws a rect if it's parameter is one.
+	/// </summary>
+	/// <param name="methodInvoke">The method invoke to draw</param>
+	/// <param name="separation">The separation of the line</param>
+	private void DrawMethodInvoke(MethodInvoke methodInvoke, Vector3 separation = new Vector3()) {
+		if (methodInvoke.target != null) {
+			Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
+			if (methodInvoke.RectParameter != null) {
+				Color temp = Gizmos.color;
+				Color newColor = Color.yellow;
+				newColor.a = 0.25f;
+				Gizmos.color = newColor;
+				Gizmos.DrawCube(methodInvoke.RectParameter.center, methodInvoke.RectParameter.size);
+				Gizmos.color = temp;
+			}
+		}
 	}
 
 	/// <summary>

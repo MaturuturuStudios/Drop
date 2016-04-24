@@ -38,7 +38,7 @@ public class TriggerAreaEditor : Editor {
 
 		// If it's a timed switch, draws the time field
 		if (triggerMode == TriggerArea.TriggerMode.TimedSwitch)
-			EditorGUILayout.PropertyField(_serializedScript.FindProperty("switchTime"), true);
+			EditorGUILayout.PropertyField(_serializedScript.FindProperty("autoSwitchTime"), true);
 
 		// Draws the auto disable field
 		EditorGUILayout.PropertyField(_serializedScript.FindProperty("autoDisable"), true);

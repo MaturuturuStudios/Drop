@@ -17,7 +17,7 @@ Your goal is complete the level with the maximum number of drops.
 | Camera Vertical movement      | CamVertical   | Top & down arrow          | Right stick vertical     |
 | Jump                          | Jump          | Space                     | Button 1                 |
 | Sluice                        | Sluice        | Alt Gr                    | Button 2                 |
-| Do an action                  | Action        | Right Ctrl                | Button 3                 |
-| Enter & Exit shootmode        | ShootMode     | Left Ctrl                 | Button 4                 |
+| Do an action                  | Action        | Right Ctrl & F            | Button 3                 |
+| Enter & Exit shootmode        | ShootMode     | Left Ctrl & X             | Button 4                 |
 | Pause                         | Start         | P                         | Button 7                 |
 | Select                        | Back          | Tab                       | Button 6                 |
