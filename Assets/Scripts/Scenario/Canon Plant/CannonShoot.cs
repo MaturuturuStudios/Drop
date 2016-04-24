@@ -25,7 +25,8 @@ public class CannonShoot : MonoBehaviour
     /// </summary>
     private CharacterControllerCustom cc;
     private CharacterControllerCustom ccc;
-   
+   private float  oldangle=0;
+    private Vector3 oldvector;
 
     /// <summary>
     /// Vector which contain the information that we need to shoot a drop in the sendflying method
@@ -79,6 +80,8 @@ public class CannonShoot : MonoBehaviour
     ///  the power that the drop will be shooted
     /// </summary>
     public float power = 25;
+
+    public GameObject target;
 
     #endregion
 
@@ -313,26 +316,23 @@ public class CannonShoot : MonoBehaviour
             
             RaycastHit hitpoint;
 
-
-            //GameObject ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
- 
             List<Vector3> puntos = new List<Vector3>();
- 
-            
-            float speed = Mathf.Sqrt((power) * (25));
+        
+            velocity = 25* (target.transform.position.x - transform.position.x) * ((Mathf.Tan(angle) * Mathf.Tan(angle)) + 1) / (2 * Mathf.Tan(angle) - (2 * 25 * (target.transform.position.y - transform.position.y)) / (target.transform.position.x - transform.position.x)); 
 
-            transform.eulerAngles = new Vector3(0, 0, angle);
-            pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
-          
-            velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
-            // Debug.Log(" power " + speed);
+            Debug.Log(" velocity " + velocity);
+            
+            velocity= Mathf.Sqrt(velocity);
+
             float fTime = 0;
 
             fTime += 0.1f;
             for (int i = 0; i < numOfTrajectoryPoints; i++)
             {
                 float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
+               
                 float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - ((25) * fTime * fTime / 2.0f);
+               
                 Vector3 posi = new Vector3(transform.position.x + dx, transform.position.y + dy, 0);
                 puntos.Insert(i, posi);
                 fTime += 0.1f;
@@ -343,10 +343,10 @@ public class CannonShoot : MonoBehaviour
                     if ((Physics.Raycast(puntos[i], f, out hitpoint, f.magnitude)))
                     {
                         i = numOfTrajectoryPoints;
-                        Vector3 hitting = hitpoint.point;
-                        float displacement = -1;                       
-                        Gizmos.color = Color.red;
-                        Gizmos.DrawSphere(hitting + hitpoint.normal*displacement , 1);
+                       // Vector3 hitting = hitpoint.point;
+                       // float displacement = -1;                       
+                       // Gizmos.color = Color.red;
+                        //Gizmos.DrawSphere(hitting + hitpoint.normal*displacement , 1);
 
                     }
                     else
@@ -358,7 +358,8 @@ public class CannonShoot : MonoBehaviour
                 }
 
             }
-            
+
+           
         }
         
     }
