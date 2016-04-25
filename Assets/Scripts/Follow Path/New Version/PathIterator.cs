@@ -204,6 +204,8 @@ public class PathIterator  : MonoBehaviour {
 
         isActive = true;
 
+        elapsedTransition = 0;
+
         _previousPosition = _transform.position;
 
         int nextStep = numberOfSteps;
@@ -229,6 +231,8 @@ public class PathIterator  : MonoBehaviour {
     public void PrevStep() {
 
         isActive = true;
+
+        elapsedTransition = 0;
 
         _previousPosition = _transform.position;
 

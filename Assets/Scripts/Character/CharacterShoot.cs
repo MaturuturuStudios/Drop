@@ -30,7 +30,7 @@ public class CharacterShoot : MonoBehaviour {
     /// <summary>
     /// Defines the scripts objects that we will use it.
     /// </summary> 
-    CharacterController c;
+
     CharacterControllerCustom ccc;
     CharacterShootTrajectory st;
     GameControllerIndependentControl _gcic;
@@ -45,7 +45,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
     void Awake (){
-        c = GetComponent<CharacterController>();
+        
         ccc = GetComponent<CharacterControllerCustom>();
         st= GetComponent<CharacterShootTrajectory>();
         size= GetComponent<CharacterSize>();
@@ -188,7 +188,7 @@ public class CharacterShoot : MonoBehaviour {
            
             for (int i = 1; i < ccc.GetComponent<CharacterSize>().GetSize(); ++i)
             {
-                 float rel=UnityEditor.HandleUtility.GetHandleSize(transform.position);
+
                 UnityEditor.Handles.color= Color.Lerp(Color.white, Color.black, (float)1/i );
                 UnityEditor.Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1),5 * (ccc.GetComponent<CharacterSize>().GetSize() - i));
                 Debug.Log(" gizmo position " + transform.position + " gizmo distance " + Mathf.Sqrt((5 * (ccc.GetComponent<CharacterSize>().GetSize() - i)) * 25));
