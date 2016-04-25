@@ -79,7 +79,6 @@ public class CannonShoot : MonoBehaviour
     /// <summary>
     ///  the power that the drop will be shooted
     /// </summary>
-    public LayerMask CanonPlantTarget = 10;
 
     public GameObject target;
 
