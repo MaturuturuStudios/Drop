@@ -149,15 +149,25 @@ public class Walking : StateMachineBehaviour {
             finalPosition.y = originalPosition.y;
 
         // Rotates the entity
+        Quaternion finalRotation = Quaternion.identity;
         if (parameters.useOrientation) {
-            faceTarget(finalPosition);
+            //faceTarget(finalPosition);
+            Vector3 relativePos = finalPosition - originalPosition;
+            Quaternion rotation = Quaternion.LookRotation(relativePos);
+            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, 150 * Time.deltaTime);
+            commonParameters.enemy.transform.rotation = finalRotation;
         }
 
         //move the entity, and set the gravity
         if(commonParameters.onFloor)
             finalPosition.y -= 25 * Time.deltaTime;
         Vector3 move = finalPosition - originalPosition;
-        _controller.Move(move);
+        
+        //Vector3 os = finalPosition - originalPosition;
+        //os = os.normalized;
+        //os *= parameters.speed*Time.deltaTime;
+        //os = finalRotation * os;
+        _controller.Move(commonParameters.enemy.transform.forward*parameters.speed*Time.deltaTime);
 
         // Checks if the entity is close enough to the target point
         Vector3 position=commonParameters.enemy.transform.position;
