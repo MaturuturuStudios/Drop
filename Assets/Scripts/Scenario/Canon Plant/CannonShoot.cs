@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// <summary>
 /// This class is for the canon plant shoot
 /// </summary>
-public class CannonShoot : MonoBehaviour
+public class CannonShoot : ActionPerformer
 {
     #region Private Attributes
 
@@ -24,7 +24,7 @@ public class CannonShoot : MonoBehaviour
     /// These are the scripts objects
     /// </summary>
     private CharacterControllerCustom cc;
-    private CharacterControllerCustom ccc;
+   
 
     private Vector3 oldvector;
 
@@ -90,7 +90,7 @@ public class CannonShoot : MonoBehaviour
 	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
-    void Awake()
+    void Start()
     {       
         Vector3 start;
         start.x = transform.position.x + 5;
@@ -118,49 +118,34 @@ public class CannonShoot : MonoBehaviour
     /// <summary>
     /// Unity's method called each frame.
     /// </summary>
-    void Update()
+    /// 
+
+    public void Update()
     {
 
-        transform.eulerAngles = new Vector3(0, 0, angle ); //this is to face in the direction you are aming
-        Vector3 pos = this.transform.position ;            // float speed = Mathf.Sqrt((power) * ccc.Parameters.Gravity.magnitude);
+        transform.eulerAngles = new Vector3(0, 0, angle); //this is to face in the direction you are aming
+        Vector3 pos = this.transform.position;            // float speed = Mathf.Sqrt((power) * ccc.Parameters.Gravity.magnitude);
 
         velocity = (-cc.Parameters.Gravity.magnitude * (target.transform.position.x - transform.position.x) * (target.transform.position.x - transform.position.x)) / (2 * Mathf.Cos(angle * Mathf.Deg2Rad) * Mathf.Cos(angle * Mathf.Deg2Rad) * ((target.transform.position.y - transform.position.y) - Mathf.Tan(angle * Mathf.Deg2Rad) * (target.transform.position.x - transform.position.x)));
-   
+
         velocity = Mathf.Sqrt(velocity);
 
         setTrajectoryPoints(pos, angle, velocity);
         setvisibility();
 
-        if (Input.GetKeyDown(KeyCode.L) || Input.GetButtonDown(Axis.Action))
-        {
-            if (ontriger)
-            {
-                ontriger = false;
+
+    }
+    protected override void OnAction(GameObject character)
+    {
+        CharacterControllerCustom ccc = character.GetComponent<CharacterControllerCustom>();
+                
                 ccc.transform.position = this.transform.position;
                 ccc.Stop();
                 ccc.SendFlying(GetpVelocity());
-               // Debug.Log(" angle " + transform.eulerAngles);              
-            }
-        }
+               // Debug.Log(" angle " + transform.eulerAngles);                  
 
     }
 
-    /// <summary>
-    /// Method to use in Game Input Script
-    /// </summary>
-    public void Shoot()
-    {
-        if (ontriger)
-        {
-            ontriger = false;
-            ccc.transform.position = this.transform.position;
-            ccc.Stop();
-            ccc.SendFlying(GetpVelocity());
-            Debug.Log(" angle " + transform.eulerAngles);
-
-
-        }
-    }
 
     /// <summary>
     /// Method to change the angle and the power of the plant when drop touch the trigger
@@ -171,32 +156,7 @@ public class CannonShoot : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// Method that activate when the drop touch the trigger
-    /// </summary>
-    void OnTriggerEnter(Collider other)
-    {
-        ccc = other.GetComponent<CharacterControllerCustom>();
-        if( (ccc != null))
-        {                     
-            ontriger = true;
-        }
 
-    }
-
-    /// <summary>
-    /// Method that activate when the drop exit the trigger
-    /// </summary>
-    void OnTriggerExit(Collider other)
-    {
-        ccc = other.GetComponent<CharacterControllerCustom>();
-        if ((ccc != null))
-        {
-            ontriger = false;
-
-        }
-
-    }
 
     /// <summary>
     /// This fuctions delete the trajectory
