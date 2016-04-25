@@ -249,11 +249,13 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		for (int i = 0; i < numberOfRays; i++) {
 			// If the ray didn't hit anything, skips it
 			RaycastHit hitInfo;
-			Vector3 transformedDirection = _transform.TransformDirection(_rayDirections[i]);
+			Vector3 transformedDirection = _rayDirections[i];   // Patch: No modifications are done to the direction
 			if (!Physics.Raycast(center, transformedDirection, out hitInfo, rayDistance, layer)) {
 				deformations[i] = Vector3.zero;
 				continue;
 			}
+			else
+				Debug.DrawRay(center, transformedDirection * rayDistance, Color.red);
 
 			// Calculates the deformation
 			deformations[i] = transformedDirection * (hitInfo.distance - rayDistance);
