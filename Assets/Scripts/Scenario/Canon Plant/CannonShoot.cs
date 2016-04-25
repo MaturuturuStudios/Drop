@@ -91,7 +91,10 @@ public class CannonShoot : ActionPerformer
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
     void Start()
-    {       
+    {
+
+        target.GetComponent<Renderer>().enabled = false;
+
         Vector3 start;
         start.x = transform.position.x + 5;
         start.y = transform.position.y + 5;
@@ -322,10 +325,10 @@ public class CannonShoot : ActionPerformer
 
             }
 
-           
+
         }
-        
+
     }
 
-        #endregion
-    }
+    #endregion
+}
