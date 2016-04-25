@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: d49436bce670bb44690fce6c9e21df99
-timeCreated: 1461522245
+guid: f69e0443da70fb546b10edb6c926cde7
+timeCreated: 1461616561
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -38,40 +38,40 @@ ModelImporter:
     100060: Ant_Rig1:Ass_CTL
     100062: Ant_Rig1:Head_CTL
     100064: Antena_Der_CTL
-    100066: //RootNode
-    100068: Bee_Antena_Der
-    100070: Bee_Antena_Der2
-    100072: Bee_Antena_Der3
-    100074: Bee_Antena_Der4
-    100076: Bee_Antena_Der5
-    100078: Bee_Antena_Izq
-    100080: Bee_Antena_Izq2
-    100082: Bee_Antena_Izq3
-    100084: Bee_Antena_Izq4
-    100086: Bee_Antena_Izq5
-    100088: Bee_CTL
-    100090: Bee_Head
-    100092: Bee_Head2
-    100094: Bee_IkHandle
-    100096: Bee_Leg_A_Izq
-    100098: Bee_Leg_A_Izq2
-    100100: Bee_Leg_A_Izq3
-    100102: Bee_Leg_A_Izq4
-    100104: Bee_Leg_A_Izq5
-    100106: Bee_Leg_A_Izq6
-    100108: Bee_Leg_A_Izq7
-    100110: Bee_Leg_A_Izq8
-    100112: Bee_Leg_B_Izq
-    100114: Bee_Leg_B_Izq2
-    100116: Bee_Leg_B_Izq3
-    100118: Bee_Leg_B_Izq4
-    100120: Bee_Leg_B_Izq5
-    100122: Bee_Leg_B_Izq6
-    100124: Bee_Leg_B_Izq7
-    100126: Bee_Leg_B_Izq8
-    100128: Bee_Neck
-    100130: Bee_Ojos_CTL
-    100132: Bee_Rig
+    100066: Bee_Antena_Der
+    100068: Bee_Antena_Der2
+    100070: Bee_Antena_Der3
+    100072: Bee_Antena_Der4
+    100074: Bee_Antena_Der5
+    100076: Bee_Antena_Izq
+    100078: Bee_Antena_Izq2
+    100080: Bee_Antena_Izq3
+    100082: Bee_Antena_Izq4
+    100084: Bee_Antena_Izq5
+    100086: Bee_CTL
+    100088: Bee_Head
+    100090: Bee_Head2
+    100092: Bee_IkHandle
+    100094: Bee_Leg_A_Izq
+    100096: Bee_Leg_A_Izq2
+    100098: Bee_Leg_A_Izq3
+    100100: Bee_Leg_A_Izq4
+    100102: Bee_Leg_A_Izq5
+    100104: Bee_Leg_A_Izq6
+    100106: Bee_Leg_A_Izq7
+    100108: Bee_Leg_A_Izq8
+    100110: Bee_Leg_B_Izq
+    100112: Bee_Leg_B_Izq2
+    100114: Bee_Leg_B_Izq3
+    100116: Bee_Leg_B_Izq4
+    100118: Bee_Leg_B_Izq5
+    100120: Bee_Leg_B_Izq6
+    100122: Bee_Leg_B_Izq7
+    100124: Bee_Leg_B_Izq8
+    100126: Bee_Neck
+    100128: Bee_Ojos_CTL
+    100130: Bee_Rig
+    100132: //RootNode
     100134: Bee_Tail
     100136: Bee_Tail2
     100138: Bee_Tail3
@@ -152,40 +152,40 @@ ModelImporter:
     400060: Ant_Rig1:Ass_CTL
     400062: Ant_Rig1:Head_CTL
     400064: Antena_Der_CTL
-    400066: //RootNode
-    400068: Bee_Antena_Der
-    400070: Bee_Antena_Der2
-    400072: Bee_Antena_Der3
-    400074: Bee_Antena_Der4
-    400076: Bee_Antena_Der5
-    400078: Bee_Antena_Izq
-    400080: Bee_Antena_Izq2
-    400082: Bee_Antena_Izq3
-    400084: Bee_Antena_Izq4
-    400086: Bee_Antena_Izq5
-    400088: Bee_CTL
-    400090: Bee_Head
-    400092: Bee_Head2
-    400094: Bee_IkHandle
-    400096: Bee_Leg_A_Izq
-    400098: Bee_Leg_A_Izq2
-    400100: Bee_Leg_A_Izq3
-    400102: Bee_Leg_A_Izq4
-    400104: Bee_Leg_A_Izq5
-    400106: Bee_Leg_A_Izq6
-    400108: Bee_Leg_A_Izq7
-    400110: Bee_Leg_A_Izq8
-    400112: Bee_Leg_B_Izq
-    400114: Bee_Leg_B_Izq2
-    400116: Bee_Leg_B_Izq3
-    400118: Bee_Leg_B_Izq4
-    400120: Bee_Leg_B_Izq5
-    400122: Bee_Leg_B_Izq6
-    400124: Bee_Leg_B_Izq7
-    400126: Bee_Leg_B_Izq8
-    400128: Bee_Neck
-    400130: Bee_Ojos_CTL
-    400132: Bee_Rig
+    400066: Bee_Antena_Der
+    400068: Bee_Antena_Der2
+    400070: Bee_Antena_Der3
+    400072: Bee_Antena_Der4
+    400074: Bee_Antena_Der5
+    400076: Bee_Antena_Izq
+    400078: Bee_Antena_Izq2
+    400080: Bee_Antena_Izq3
+    400082: Bee_Antena_Izq4
+    400084: Bee_Antena_Izq5
+    400086: Bee_CTL
+    400088: Bee_Head
+    400090: Bee_Head2
+    400092: Bee_IkHandle
+    400094: Bee_Leg_A_Izq
+    400096: Bee_Leg_A_Izq2
+    400098: Bee_Leg_A_Izq3
+    400100: Bee_Leg_A_Izq4
+    400102: Bee_Leg_A_Izq5
+    400104: Bee_Leg_A_Izq6
+    400106: Bee_Leg_A_Izq7
+    400108: Bee_Leg_A_Izq8
+    400110: Bee_Leg_B_Izq
+    400112: Bee_Leg_B_Izq2
+    400114: Bee_Leg_B_Izq3
+    400116: Bee_Leg_B_Izq4
+    400118: Bee_Leg_B_Izq5
+    400120: Bee_Leg_B_Izq6
+    400122: Bee_Leg_B_Izq7
+    400124: Bee_Leg_B_Izq8
+    400126: Bee_Neck
+    400128: Bee_Ojos_CTL
+    400130: Bee_Rig
+    400132: //RootNode
     400134: Bee_Tail
     400136: Bee_Tail2
     400138: Bee_Tail3
@@ -248,7 +248,6 @@ ModelImporter:
     4300020: Abeja:Ala_A_Der
     4300022: Abeja:Ala_B_Der
     4300024: Abeja:Ojos
-    7400000: bee_anim_idle
     9500000: //RootNode
     13700000: Abeja:Aguijon
     13700002: Abeja:Ala_A_Der
