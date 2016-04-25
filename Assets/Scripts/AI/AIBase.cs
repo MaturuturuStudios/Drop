@@ -97,7 +97,7 @@ public class AIBase : MonoBehaviour {
 
     public void Update() {
         //Get the collisions/trigger area
-        LayerMask layerCast = (1 << LayerMask.NameToLayer("Character")); ;
+        LayerMask layerCast = (1 << LayerMask.NameToLayer("Character"));
         Vector3 center = triggerArea.origin + transform.position;
         Vector3 halfSize = triggerArea.size / 2;
         center.x += halfSize.x;
@@ -132,10 +132,9 @@ public class AIBase : MonoBehaviour {
             }
             //check if reached the drop
             DropReached();
-
-            //check if too near
-            DropNear();
         }
+        //check if too near
+        DropNear();
     }
 
     public void Scare() {
@@ -162,18 +161,20 @@ public class AIBase : MonoBehaviour {
 
     #region Private methods
     private void DropNear() {
-        if (commonParameters.drop == null){
+        LayerMask layerCast = (1 << LayerMask.NameToLayer("Character"));
+        Vector3 size = Vector3.one;
+        size *= commonParameters.near;
+        Collider[] drops = Physics.OverlapBox(commonParameters.enemy.transform.position, size, 
+            Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
+
+        if (drops.Length==0){
             return;
         }
-        
-        // Checks if the entity is close enough to the target point
-        float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
-        // The squared distance is used becouse a multiplication is cheaper than a square root
-        float distanceTolerance = _sizeDetected.GetSize();
-        distanceTolerance += commonParameters.near;
-        distanceTolerance *= distanceTolerance;
-        if (squaredDistance < distanceTolerance)
-            _animator.SetBool("Near", true);
+
+        commonParameters.drop = drops[0].gameObject;
+        _animator.SetBool("Near", true);
+        _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
+        _animator.SetInteger("SizeDrop", _sizeDetected.GetSize());
     }
 
     private void DropReached() {
