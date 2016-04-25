@@ -235,6 +235,7 @@ public class SmarterSphereDeform : MonoBehaviour {
 		// Reassignates the vertices and recalculates the normals of the vertices
 		_modifiedMesh.vertices = newVertices;
 		_modifiedMesh.RecalculateNormals();
+		_modifiedMesh.RecalculateBounds();
 	}
 
 	/// <summary>
