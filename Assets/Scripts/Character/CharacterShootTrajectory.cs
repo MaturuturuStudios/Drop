@@ -225,9 +225,6 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         angle -= h;
      
-
-        Debug.Log(" angulo " + angle + " v " + v);
-
         if (angle<90 || angle >270)
           angle += v;
 
@@ -308,7 +305,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     {
         //calculate the end vector of the trajectory
         pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
-        //magnitud of the pVelocity to calculate de distance
+        //magnitud of the pVelocity to calculate de distance que es igual al valor de speed
         velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
 
         float fTime = 0;

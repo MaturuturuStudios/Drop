@@ -25,7 +25,7 @@ public class CannonShoot : MonoBehaviour
     /// </summary>
     private CharacterControllerCustom cc;
     private CharacterControllerCustom ccc;
-   private float  oldangle=0;
+
     private Vector3 oldvector;
 
     /// <summary>
@@ -79,7 +79,7 @@ public class CannonShoot : MonoBehaviour
     /// <summary>
     ///  the power that the drop will be shooted
     /// </summary>
-    public float power = 25;
+    public LayerMask CanonPlantTarget = 10;
 
     public GameObject target;
 
@@ -125,8 +125,11 @@ public class CannonShoot : MonoBehaviour
         transform.eulerAngles = new Vector3(0, 0, angle ); //this is to face in the direction you are aming
         Vector3 pos = this.transform.position ;            // float speed = Mathf.Sqrt((power) * ccc.Parameters.Gravity.magnitude);
 
-        float speed = Mathf.Sqrt((power) * cc.Parameters.Gravity.magnitude);
-        setTrajectoryPoints(pos, angle, speed);
+        velocity = (-cc.Parameters.Gravity.magnitude * (target.transform.position.x - transform.position.x) * (target.transform.position.x - transform.position.x)) / (2 * Mathf.Cos(angle * Mathf.Deg2Rad) * Mathf.Cos(angle * Mathf.Deg2Rad) * ((target.transform.position.y - transform.position.y) - Mathf.Tan(angle * Mathf.Deg2Rad) * (target.transform.position.x - transform.position.x)));
+   
+        velocity = Mathf.Sqrt(velocity);
+
+        setTrajectoryPoints(pos, angle, velocity);
         setvisibility();
 
         if (Input.GetKeyDown(KeyCode.L) || Input.GetButtonDown(Axis.Action))
@@ -166,7 +169,6 @@ public class CannonShoot : MonoBehaviour
     public void Changeangle()
     {
         angle = 75;
-        power = 54;
 
     }
 
@@ -214,19 +216,17 @@ public class CannonShoot : MonoBehaviour
     /// </summary>
     public Vector3 GetpVelocity()
     {
-        return pVelocity; 
+
+        Vector2 pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * velocity, Mathf.Sin(angle * Mathf.Deg2Rad) * velocity, 0);
+        
+        return pVelocity;
     }
 
     ///  <summary>
     /// This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
     /// </summary>
-    void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed)
+    void setTrajectoryPoints(Vector3 pStartPosition, float angle, float velocity)
     {
-
-        pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
-       // Debug.Log(" APUNTANDO " + pVelocity);
-
-        velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
 
         float fTime = 0;
 
@@ -238,7 +238,7 @@ public class CannonShoot : MonoBehaviour
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100);
             trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (cc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
+            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(target.transform.position.y - (cc.Parameters.Gravity.magnitude) * fTime, target.transform.position.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
         }
 
@@ -318,10 +318,8 @@ public class CannonShoot : MonoBehaviour
 
             List<Vector3> puntos = new List<Vector3>();
         
-            velocity = 25* (target.transform.position.x - transform.position.x) * ((Mathf.Tan(angle) * Mathf.Tan(angle)) + 1) / (2 * Mathf.Tan(angle) - (2 * 25 * (target.transform.position.y - transform.position.y)) / (target.transform.position.x - transform.position.x)); 
-
-            Debug.Log(" velocity " + velocity);
-            
+            velocity = (-25* (target.transform.position.x - transform.position.x) * (target.transform.position.x - transform.position.x)) / (2 * Mathf.Cos(angle * Mathf.Deg2Rad) * Mathf.Cos(angle * Mathf.Deg2Rad) * ((target.transform.position.y - transform.position.y)- Mathf.Tan(angle * Mathf.Deg2Rad) * (target.transform.position.x - transform.position.x)));
+ 
             velocity= Mathf.Sqrt(velocity);
 
             float fTime = 0;
@@ -355,6 +353,12 @@ public class CannonShoot : MonoBehaviour
                         Gizmos.color = Color.green;
                         Gizmos.DrawRay(puntos[i], f);
                     }
+                }
+                if(i==0)
+                {
+                    Vector3 f = transform.position-puntos[i];
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawRay(puntos[i], f);
                 }
 
             }
