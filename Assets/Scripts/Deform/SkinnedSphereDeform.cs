@@ -301,8 +301,8 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		for (int i = 0; i < extraDeformationPoints.Length; i++)
 			extraDeformationPoints[i].position = _transform.TransformPoint(Vector3.Lerp(_transform.InverseTransformPoint(extraDeformationPoints[i].position), extraPoints[i], deformationSpeed * Time.deltaTime));
 
-		// Reassignates the vertices and recalculates the normals of the vertices
-		_modifiedMesh.vertices = newVertices;
+        // Reassignates the vertices and recalculates the normals of the vertices
+        _modifiedMesh.vertices = newVertices;
 		//_modifiedMesh.RecalculateNormals();   // These may break the model
 		//_modifiedMesh.RecalculateBounds();
 	}
