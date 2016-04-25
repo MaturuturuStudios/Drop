@@ -138,7 +138,7 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		_skinnedMeshRenderer.sharedMesh = _modifiedMesh;
 
 		// Saves the original extra point's positions
-		_originalExtraPointsPositions = extraDeformationPoints.Select(e => _transform.InverseTransformPoint(e.position)).ToArray();
+		_originalExtraPointsPositions = extraDeformationPoints.Select(e => e.localPosition).ToArray();
 
 		// Precalculates some data
 		PrecalculateData();
@@ -209,11 +209,12 @@ public class SkinnedSphereDeform : MonoBehaviour {
 					_deformationWeights[i][j] = 0;
 			}
 
-			// Calculates the deformation weights of the ray for the extra points
-			_extraPointsWeights[i] = new float[_originalExtraPointsPositions.Length];
-			for (int j = 0; j < _originalExtraPointsPositions.Length; j++) {
+            // Calculates the deformation weights of the ray for the extra points
+            Vector3[] localExtraPointsPosition = GetLocalExtraPointsPosition();
+			_extraPointsWeights[i] = new float[localExtraPointsPosition.Length];
+			for (int j = 0; j < localExtraPointsPosition.Length; j++) {
 				// Calculates the distance from the center to the point in local coordinates
-				Vector3 distanceToPoint = _originalExtraPointsPositions[j] - center;
+				Vector3 distanceToPoint = localExtraPointsPosition[j] - center;
 
 				// Isolates the Z coordinate, as the rays are not casted in that direction
 				float zDistance = Mathf.Abs(distanceToPoint.z);
@@ -232,16 +233,29 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		}
 	}
 
+    /// <summary>
+    /// Returns an array with the local positions on the current frame of each
+    /// extra point.
+    /// </summary>
+    /// <returns>Local positions of the extra points</returns>
+    private Vector3[] GetLocalExtraPointsPosition() {
+        Vector3[] localExtraPointsPosition = new Vector3[_originalExtraPointsPositions.Length];
+        for (int i = 0; i < _originalExtraPointsPositions.Length; i++)
+            localExtraPointsPosition[i] = _transform.InverseTransformPoint(extraDeformationPoints[i].parent.TransformPoint(_originalExtraPointsPositions[i]));
+        return localExtraPointsPosition;
+    }
+    
 	/// <summary>
 	/// Casts the rays and starts the deformation.
 	/// </summary>
 	private void Deform() {
 		// Initializes the arrays
 		Vector3[] modifiedVertices = (Vector3[])_originalVertices.Clone();
-		Vector3[] extraPoints = (Vector3[])_originalExtraPointsPositions.Clone();
+        Vector3[] localExtraPointsPositions = GetLocalExtraPointsPosition();
+        Vector3[] extraPoints = (Vector3[])localExtraPointsPositions.Clone();
 
-		// Calculates the needed information
-		Vector3 center = _transform.TransformPoint(sphereCollider.center);
+        // Calculates the needed information
+        Vector3 center = _transform.TransformPoint(sphereCollider.center);
 		float rayDistance = sphereCollider.radius * _transform.lossyScale.x;
 
 		// Casts the rays
@@ -265,7 +279,7 @@ public class SkinnedSphereDeform : MonoBehaviour {
 			DeformChamfVertices(i, deformations[i], _originalVertices, ref modifiedVertices);
 
 			// Deforms the extra points as well
-			DeformChamfVertices(i, deformations[i], _originalExtraPointsPositions, ref extraPoints);
+			DeformChamfVertices(i, deformations[i], localExtraPointsPositions, ref extraPoints);
 		}
 
 		// For each vertex, calculates the planar deformation to apply
@@ -274,7 +288,7 @@ public class SkinnedSphereDeform : MonoBehaviour {
 				DeformPlanarVertices(i, deformations[i], _originalVertices, ref modifiedVertices, _deformationWeights);
 
 				// Deforms the extra points as well
-				DeformPlanarVertices(i, deformations[i], _originalExtraPointsPositions, ref extraPoints, _extraPointsWeights);
+				DeformPlanarVertices(i, deformations[i], localExtraPointsPositions, ref extraPoints, _extraPointsWeights);
 			}
 
 		// Moves the vertices to their desired position
@@ -289,8 +303,8 @@ public class SkinnedSphereDeform : MonoBehaviour {
 
 		// Reassignates the vertices and recalculates the normals of the vertices
 		_modifiedMesh.vertices = newVertices;
-		_modifiedMesh.RecalculateNormals();
-		_modifiedMesh.RecalculateBounds();
+		//_modifiedMesh.RecalculateNormals();   // These may break the model
+		//_modifiedMesh.RecalculateBounds();
 	}
 
 	/// <summary>

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 1a1d2eb20cb2c334cb7c1f40ff58d646
-timeCreated: 1461537268
+guid: 62f995c0c7c54c74d83e442468200266
+timeCreated: 1461608812
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -26,17 +26,18 @@ ModelImporter:
     100036: Drop_Ojo_Der
     100038: Drop_Ojo_Izq
     100040: Drop_Ojos
-    100042: //RootNode
-    100044: Drop_Rig
-    100046: Drop_Spine
-    100048: Drop_Spine2
-    100050: Drop_Up
-    100052: Drop_Up2
-    100054: Drop_Up3
-    100056: Drop_Up4
-    100058: Hat
+    100042: Drop_Rig
+    100044: Drop_Spine
+    100046: Drop_Spine2
+    100048: Drop_Up
+    100050: Drop_Up2
+    100052: Drop_Up3
+    100054: Drop_Up4
+    100056: Hat
+    100058: Locators
     100060: Ojo_Der
     100062: Ojo_Izq
+    100064: //RootNode
     400000: Drop3
     400002: Drop_Hat
     400004: Drop_Hat2
@@ -58,17 +59,18 @@ ModelImporter:
     400036: Drop_Ojo_Der
     400038: Drop_Ojo_Izq
     400040: Drop_Ojos
-    400042: //RootNode
-    400044: Drop_Rig
-    400046: Drop_Spine
-    400048: Drop_Spine2
-    400050: Drop_Up
-    400052: Drop_Up2
-    400054: Drop_Up3
-    400056: Drop_Up4
-    400058: Hat
+    400042: Drop_Rig
+    400044: Drop_Spine
+    400046: Drop_Spine2
+    400048: Drop_Up
+    400050: Drop_Up2
+    400052: Drop_Up3
+    400054: Drop_Up4
+    400056: Hat
+    400058: Locators
     400060: Ojo_Der
     400062: Ojo_Izq
+    400064: //RootNode
     4300000: Ojo_Izq
     4300002: Ojo_Der
     4300004: Drop3
