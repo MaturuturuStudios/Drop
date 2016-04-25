@@ -21,7 +21,12 @@ public class PathIterator  : MonoBehaviour {
         /// <summary>
         /// Moves towards the points at decreasing speed.
         /// </summary>
-        Lerp
+        Lerp,
+
+        /// <summary>
+        /// Moves towards the points at constant time
+        /// </summary>
+        Time
     }
     #endregion
 
@@ -43,25 +48,26 @@ public class PathIterator  : MonoBehaviour {
 	/// </summary>
 	public SimplePathDefinition path;
 
-	/// <summary>
-	/// Speed of the entity.
-	/// </summary>
-	public float speed = 10;
-
-	/// <summary>
-	/// Distance tolerance for the entity to look for a new point in the path.
-	/// </summary>
-	public float maxDistanceToGoal = 0.1f;
-
-	/// <summary>
-	/// If enabled, the entity will also rotate to fit the point's rotation.
-	/// </summary>
-	public bool useOrientation = false;
+    /// <summary>
+    /// Speed of the entity.
+    /// </summary>
+    public float speed = 10;
 
     /// <summary>
-    /// Indicates the direction of the platform
+    /// Distance tolerance for the entity to look for a new point in the path.
     /// </summary>
-    public bool moveForward = true;
+    public float maxDistanceToGoal = 0.1f;
+
+    /// <summary>
+    /// Duration of the transitions between points
+    /// </summary>
+    [Range(0,10)]
+    public float transitionDuration = 1F;
+
+    /// <summary>
+    /// If enabled, the entity will also rotate to fit the point's rotation.
+    /// </summary>
+    public bool useOrientation = false;
 
     /// <summary>
     /// Set the step that you want to start
@@ -100,6 +106,16 @@ public class PathIterator  : MonoBehaviour {
     /// </summary>
     private int _stepsToStop = 1;
 
+    /// <summary>
+    /// Elapsed time of the current transitions between points
+    /// </summary>
+    private float elapsedTransition = 0;
+
+    /// <summary>
+    /// Elapsed time of the current transitions between points
+    /// </summary>
+    private Vector3 _previousPosition;
+
     #endregion
 
     #region Methods
@@ -122,12 +138,6 @@ public class PathIterator  : MonoBehaviour {
         startStep = Mathf.Clamp(startStep, 0, path.points.Count - 1);
         numberOfSteps = Mathf.Clamp(numberOfSteps, 1, path.points.Count - 1);
 
-        //Correct direction at the beggining and the end
-        if (startStep == 0 )
-            moveForward = true;
-        if (startStep == path.points.Count - 1)
-            moveForward = false;
-
         //calculate steps to stop
         _stepsToStop = 1;
 
@@ -141,21 +151,27 @@ public class PathIterator  : MonoBehaviour {
 	/// if it's close enough to it.
 	/// </summary>
 	public void FixedUpdate() {
+
         if (!isActive)
             return;
 
         // Saves the original position
         Vector3 originalPosition = _transform.position;
-
-		// Moves the entity using the right function
-		switch (followType) {
+        float percent;
+        // Moves the entity using the right function
+        switch (followType) {
 			case FollowType.MoveTowards:
 				_transform.position = Vector3.MoveTowards(_transform.position, path.GetCurrent().position, speed * Time.deltaTime);
 				break;
-			case FollowType.Lerp:
-				_transform.position = Vector3.Lerp(_transform.position, path.GetCurrent().position, speed * Time.deltaTime);
-				break;
-			default:
+            case FollowType.Lerp:
+                _transform.position = Vector3.Lerp(_transform.position, path.GetCurrent().position, speed * Time.deltaTime);
+                break;
+            case FollowType.Time:
+                elapsedTransition += Time.deltaTime;
+                percent = (elapsedTransition / transitionDuration);
+                _transform.position = Vector3.Lerp( _previousPosition, path.GetCurrent().position, percent);
+                break;
+            default:
 				return;
 		}
 
@@ -170,61 +186,66 @@ public class PathIterator  : MonoBehaviour {
 		// Checks if the entity is close enough to the target point
 		float squaredDistance = (_transform.position - path.GetCurrent().position).sqrMagnitude;
         // The squared distance is used becouse a multiplication is cheaper than a square root
-        if (squaredDistance < maxDistanceToGoal * maxDistanceToGoal) {
+        if (transitionDuration < elapsedTransition || squaredDistance < maxDistanceToGoal * maxDistanceToGoal) {
             // Move next
-            path.MoveNext();
+            isActive = false;
+            //NextStep();
+
+            elapsedTransition = 0;
+
         }
 
     }
 
-    /// <summary>
-    /// Method to call when we want to set it active
-    /// </summary>
-    public void setActive(bool active) {
-        isActive = active;
-    }
-    /*
     /// <summary>
     /// Method for change comportament depending of the path type.
     /// </summary>
-    private void MoveNext() {
-        int nextStep;
+    public void NextStep() {
 
-        if (directly) {
-            nextStep = numberOfSteps;
-            if (!moveForward)
-                nextStep *= -1;
-        } else {
+        isActive = true;
+
+        _previousPosition = _transform.position;
+
+        int nextStep = numberOfSteps;
+
+        if (!directly)
             nextStep = 1;
-            if (!moveForward)
-                nextStep = -1;
-            --_stepsToStop;
-        }
+        
+        path.MoveNext(numberOfSteps);
 
-        nextStep += path.GetCurrentIndex();
-
-        if (path.MoveAt(nextStep) == null) {
-            // Moves it depending of its type
-            if (pathType == PathType.BackAndForward) {
-                moveForward = !moveForward;
-                MoveNext();
-                if (!directly)
-                    ++_stepsToStop;
-            }else {//PathType.Loop:
-                if (moveForward)
-                    nextStep -= path.Count();
-                else
-                    nextStep += path.Count();
-                path.MoveAt(nextStep);
-            }
-        }
-
+        /*
         // Ask for stop
         if (stepByStep && (directly || (!directly && _stepsToStop == 0))) {
             if (!directly)
                 _stepsToStop = numberOfSteps;
             isActive = false;
-        }
-    }*/
-	#endregion
+        }*/
+    }
+
+
+    /// <summary>
+    /// Method for change comportament depending of the path type.
+    /// </summary>
+    public void PrevStep() {
+
+        isActive = true;
+
+        _previousPosition = _transform.position;
+
+        int nextStep = numberOfSteps;
+
+        if (!directly)
+            nextStep = 1;
+
+        path.MovePrevious(numberOfSteps);
+        /*
+        // Ask for stop
+        if (stepByStep && (directly || (!directly && _stepsToStop == 0))) {
+            if (!directly)
+                _stepsToStop = numberOfSteps;
+            isActive = false;
+        }*/
+    }
+
+    #endregion
 }

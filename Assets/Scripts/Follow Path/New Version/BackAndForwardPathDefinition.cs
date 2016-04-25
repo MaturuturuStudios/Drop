@@ -6,6 +6,15 @@ using System.Collections.Generic;
 /// </summary>
 public class BackAndForwardPathDefinition : SimplePathDefinition {
 
+    #region Attributes
+
+    /// <summary>
+    /// Change direction when reaches the end
+    /// </summary>
+    public bool reverseAtEnd = false;
+
+    #endregion
+
     #region Abstract Methods
 
     /// <summary>
@@ -15,6 +24,8 @@ public class BackAndForwardPathDefinition : SimplePathDefinition {
     /// <returns>Advanced position</returns>
     public override Transform MoveNext(int steps = 1) {
 
+        steps = Mathf.Clamp(steps, 0, points.Count - 1);
+
         if (points.Count < 2) {
             return GetCurrent();
         }
@@ -22,8 +33,10 @@ public class BackAndForwardPathDefinition : SimplePathDefinition {
         int target = current + steps;
 
         if (target >= points.Count) {
-            target = (points.Count - (target - points.Count));
-            return null;
+            target = ((points.Count - 1) - (target - (points.Count - 1)));
+            if(!reverseAtEnd)
+                return null;
+
         }
 
         current = target;
@@ -39,6 +52,8 @@ public class BackAndForwardPathDefinition : SimplePathDefinition {
     /// <returns>retroceded position</returns>
     public override Transform MovePrevious(int steps = 1) {
 
+        steps = Mathf.Clamp(steps, 0, points.Count - 1);
+
         if (points.Count < 2) {
             return GetCurrent();
         }
@@ -47,7 +62,8 @@ public class BackAndForwardPathDefinition : SimplePathDefinition {
 
         if (target < 0) {
             target *= -1;
-            return null;
+            if (!reverseAtEnd)
+                return null;
         }
 
         current = target;
