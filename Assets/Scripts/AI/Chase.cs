@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public struct ChaseParameters {
+public class ChaseParameters {
     /// <summary>
     /// The chasing speed
     /// </summary>
-    public float speed;
+    public float speed=10;
+    /// <summary>
+    /// 
+    /// </summary>
+    public float rotationVelocity=170;
 }
 
 public class Chase : StateMachineBehaviour {
@@ -58,40 +62,26 @@ public class Chase : StateMachineBehaviour {
 
         if (commonParameters.onFloor)
             finalPosition.y = originalPosition.y;
+        
 
-        //always face it
-        faceTarget(finalPosition);
+        // Rotates the entity
+        Vector3 relativePos = finalPosition - originalPosition;
+        Quaternion rotation = Quaternion.LookRotation(relativePos);
+        Quaternion finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, parameters.rotationVelocity * Time.deltaTime);
+        commonParameters.enemy.transform.rotation = finalRotation;
+        
 
+
+        Vector3 move = commonParameters.enemy.transform.forward * parameters.speed * Time.deltaTime;
         //move the entity, and set the gravity
-        if (commonParameters.onFloor)
-            finalPosition.y -= 25 * Time.deltaTime;
-        Vector3 move = finalPosition - originalPosition;
+        if (commonParameters.onFloor) {
+            move += (commonParameters.enemy.transform.up * -1) * 25 * Time.deltaTime;
+        }
+
         _controller.Move(move);
 
         //reached calculation is on specific IA
     }
-
-    private void faceTarget(Vector3 finalPosition) {
-        if (commonParameters.drop == null) return;
-
-        Quaternion _lookRotation;
-        Vector3 _direction;
-        Transform targetTransform = commonParameters.drop.transform;
-        Transform enemyTransform = commonParameters.enemy.transform;
-
-        //find the vector pointing from our position to the target
-        _direction = (targetTransform.position - finalPosition).normalized;
-
-        if (_direction == Vector3.zero) return;
-        //create the rotation we need to be in to look at the target
-        _lookRotation = Quaternion.LookRotation(_direction);
-
-        if (commonParameters.onFloor) {
-            _lookRotation.x = 0;
-            _lookRotation.z = 0;
-        }
-        //rotate us over time according to speed until we are in the required rotation
-        enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
-    }
+    
 
 }

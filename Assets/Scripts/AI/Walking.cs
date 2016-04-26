@@ -33,6 +33,10 @@ public class WalkingParameters {
     /// </summary>
     public bool useOrientation = false;
     /// <summary>
+    /// Velocity rotation when walking
+    /// </summary>
+    public float rotationVelocity = 150;
+    /// <summary>
     /// Defines how the entity looks for the next point in the path.
     /// </summary>
     public PathType pathType = PathType.Random;
@@ -149,14 +153,21 @@ public class Walking : StateMachineBehaviour {
             finalPosition.y = originalPosition.y;
 
         // Rotates the entity
+        Quaternion finalRotation = Quaternion.identity;
         if (parameters.useOrientation) {
-            faceTarget(finalPosition);
+            Vector3 relativePos = finalPosition - originalPosition;
+            Quaternion rotation = Quaternion.LookRotation(relativePos);
+            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, parameters.rotationVelocity * Time.deltaTime);
+            commonParameters.enemy.transform.rotation = finalRotation;
         }
 
+
+        Vector3 move = commonParameters.enemy.transform.forward * parameters.speed * Time.deltaTime;
         //move the entity, and set the gravity
-        if(commonParameters.onFloor)
-            finalPosition.y -= 25 * Time.deltaTime;
-        Vector3 move = finalPosition - originalPosition;
+        if (commonParameters.onFloor) {
+            move += (commonParameters.enemy.transform.up*-1) * 25 * Time.deltaTime;
+        }
+        
         _controller.Move(move);
 
         // Checks if the entity is close enough to the target point
@@ -180,26 +191,6 @@ public class Walking : StateMachineBehaviour {
         }
     }
 
-    private void faceTarget(Vector3 finalPosition) {
-        Quaternion _lookRotation;
-        Vector3 _direction;
-        Transform enemyTransform = commonParameters.enemy.transform;
-
-        //find the vector pointing from our position to the target
-        _direction = (_targetPosition - finalPosition).normalized;
-
-        if (_direction == Vector3.zero) return;
-
-        //create the rotation we need to be in to look at the target
-        _lookRotation = Quaternion.LookRotation(_direction);
-
-        if (commonParameters.onFloor) {
-            _lookRotation.x = 0;
-            _lookRotation.z = 0;
-        }
-        //rotate us over time according to speed until we are in the required rotation
-        enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
-    }
     #endregion
 
 }

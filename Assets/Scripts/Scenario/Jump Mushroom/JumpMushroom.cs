@@ -116,6 +116,10 @@
 			float minheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * minHeight);
 			float maxheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * maxHeight);
 
+
+            Debug.Log(" drop velocity " + speed);
+            Debug.Log(" mushroom max velocity " + maxheightvelocity);
+
 			// Clamps the speed
 			if (speed < minheightvelocity)
 				speed = minheightvelocity;
@@ -152,7 +156,9 @@
 		// Draws the box
 		Gizmos.color = color;
 		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawWireCube(new Vector3(0, minHeight + height / 2, 0f), new Vector3(GetComponent<BoxCollider>().size.x, height, 0.5f));
+        BoxCollider collider = GetComponent<BoxCollider>();
+        Vector3 origin = collider.center + Vector3.up * collider.size.y / 2;
+		Gizmos.DrawWireCube(origin + new Vector3(0, minHeight + height / 2, 0f), new Vector3(collider.size.x, height, 0.5f));
 	}
 
 	#endregion
