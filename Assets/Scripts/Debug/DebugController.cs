@@ -226,7 +226,7 @@ public class DebugController : MonoBehaviour {
 			GameObject informationText = cameraPanel.transform.Find("Camera Information Text").gameObject;
 			if (cameraButton == null)
 				Debug.LogError("Couldn't find Camera Information Text on the camera panel's children for: " + camera.ToString());
-			else
+			else if (!_camerasInformationTexts.ContainsKey(camera))
 				_camerasInformationTexts.Add(camera, informationText);
 		}
 	}

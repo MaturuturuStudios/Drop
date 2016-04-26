@@ -1,0 +1,144 @@
+fileFormatVersion: 2
+guid: 62f995c0c7c54c74d83e442468200266
+timeCreated: 1461608812
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Drop3
+    100002: Drop_Hat
+    100004: Drop_Hat2
+    100006: Drop_Hat3
+    100008: Drop_Hat4
+    100010: Drop_Hat5
+    100012: Drop_Head
+    100014: Drop_Inf
+    100016: Drop_Inf2
+    100018: Drop_Inf3
+    100020: Drop_Inf4
+    100022: Drop_Lct_Der
+    100024: Drop_Lct_Izq
+    100026: Drop_Med
+    100028: Drop_Med2
+    100030: Drop_Med3
+    100032: Drop_Med4
+    100034: Drop_Modelo
+    100036: Drop_Ojo_Der
+    100038: Drop_Ojo_Izq
+    100040: Drop_Ojos
+    100042: Drop_Rig
+    100044: Drop_Spine
+    100046: Drop_Spine2
+    100048: Drop_Up
+    100050: Drop_Up2
+    100052: Drop_Up3
+    100054: Drop_Up4
+    100056: Hat
+    100058: Locators
+    100060: Ojo_Der
+    100062: Ojo_Izq
+    100064: //RootNode
+    400000: Drop3
+    400002: Drop_Hat
+    400004: Drop_Hat2
+    400006: Drop_Hat3
+    400008: Drop_Hat4
+    400010: Drop_Hat5
+    400012: Drop_Head
+    400014: Drop_Inf
+    400016: Drop_Inf2
+    400018: Drop_Inf3
+    400020: Drop_Inf4
+    400022: Drop_Lct_Der
+    400024: Drop_Lct_Izq
+    400026: Drop_Med
+    400028: Drop_Med2
+    400030: Drop_Med3
+    400032: Drop_Med4
+    400034: Drop_Modelo
+    400036: Drop_Ojo_Der
+    400038: Drop_Ojo_Izq
+    400040: Drop_Ojos
+    400042: Drop_Rig
+    400044: Drop_Spine
+    400046: Drop_Spine2
+    400048: Drop_Up
+    400050: Drop_Up2
+    400052: Drop_Up3
+    400054: Drop_Up4
+    400056: Hat
+    400058: Locators
+    400060: Ojo_Der
+    400062: Ojo_Izq
+    400064: //RootNode
+    4300000: Ojo_Izq
+    4300002: Ojo_Der
+    4300004: Drop3
+    9500000: //RootNode
+    13700000: Drop3
+    13700002: Ojo_Der
+    13700004: Ojo_Izq
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 5
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

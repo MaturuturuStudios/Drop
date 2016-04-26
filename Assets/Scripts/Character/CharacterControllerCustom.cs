@@ -105,6 +105,11 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	private CharacterSize _characterSize;
 
+	/// <summary>
+	/// A reference to the animator of the object (and the entire hierarchy).
+	/// </summary>
+	private Animator _animator;
+
 	#endregion
 
 	#region Variables
@@ -165,6 +170,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 		_transform = transform;
 		_controller = GetComponent<CharacterController>();
 		_characterSize = GetComponent<CharacterSize>();
+		_animator = GetComponentInChildren<Animator>();
+
+		// Ignores the collisions with the hat layer
+		Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Character"), LayerMask.NameToLayer("Cloth"), true);
 	}
 
 	/// <summary>
@@ -464,6 +473,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		}
 
 		_jumpingTime = Parameters.jumpFrequency;
+
+		// Calls the animator
+		_animator.SetTrigger(CharacterAnimatorParameters.Jump);
 	}
 
 	/// <summary>
@@ -565,6 +577,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Tries the movement of the entity according to it's velocity
 		Move(Velocity * Time.fixedDeltaTime);
+
+		/// Updates the animator with the right information
+		// Updates the speed
+		float normalizedSpeed = GetHorizontalVelocityRelative().magnitude / (Parameters.maxSpeed * Mathf.Sqrt(GetSize()));
+		_animator.SetFloat(CharacterAnimatorParameters.Speed, normalizedSpeed);
+
+		// Updates the grounded state
+		_animator.SetBool(CharacterAnimatorParameters.Grounded, State.IsGrounded);
 	}
 
 	#region Movement Methods
