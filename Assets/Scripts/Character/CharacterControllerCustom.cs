@@ -171,6 +171,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		_controller = GetComponent<CharacterController>();
 		_characterSize = GetComponent<CharacterSize>();
 		_animator = GetComponentInChildren<Animator>();
+
+		// Ignores the collisions with the hat layer
+		Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Character"), LayerMask.NameToLayer("Cloth"), true);
 	}
 
 	/// <summary>
