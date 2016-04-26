@@ -237,14 +237,12 @@ public class TriggerAction : ActionPerformer {
 	private void DrawMethodInvoke(MethodInvoke methodInvoke, Vector3 separation = new Vector3()) {
 		if (methodInvoke.target != null) {
 			Gizmos.DrawLine(transform.position + separation, methodInvoke.target.transform.position + separation);
-			if (methodInvoke.RectParameter != null) {
-				Color temp = Gizmos.color;
-				Color newColor = Color.yellow;
-				newColor.a = 0.25f;
-				Gizmos.color = newColor;
-				Gizmos.DrawCube(methodInvoke.RectParameter.center, methodInvoke.RectParameter.size);
-				Gizmos.color = temp;
-			}
+			Color temp = Gizmos.color;
+			Color newColor = Color.yellow;
+			newColor.a = 0.25f;
+			Gizmos.color = newColor;
+			Gizmos.DrawCube(methodInvoke.RectParameter.center, methodInvoke.RectParameter.size);
+			Gizmos.color = temp;
 		}
 	}
 
