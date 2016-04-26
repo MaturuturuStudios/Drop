@@ -55,6 +55,11 @@ public class MeshAttacher : MonoBehaviour {
 		// Retrieves the desired components
 		_transform = transform;
 		_skinnedMeshRenderer = meshObject.GetComponent<SkinnedMeshRenderer>();
+		if (_skinnedMeshRenderer == null) {
+			Debug.LogError("Error no SkinnedMeshRenderer found on the entity!");
+			enabled = false;
+			return;
+		}
 
 		// Gets the vertices positions
 		Mesh bakedMesh = new Mesh();

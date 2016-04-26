@@ -1,21 +1,57 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Manages the orientation of the character's model.
+/// </summary>
 public class CharacterModelController : MonoBehaviour {
 
-	public Transform hatRoot;
+	#region Public Attributes
 
-	public float rotationAngle = 45.0f;
+	/// <summary>
+	/// The angle this entity will face when walking
+	/// sideways.
+	/// </summary>
+	public float rotationAngle = 60.0f;
 
+	/// <summary>
+	/// The angular velocity the character will use
+	/// to turn.
+	/// </summary>
 	public float rotationAngularSpeed = 720.0f;
 
+	/// <summary>
+	/// Minimum speed to start rotating.
+	/// </summary>
 	public float speedTolerance = 0.1f;
 
+	#endregion
+
+	#region Private Attributes
+
+	/// <summary>
+	/// A reference to the CharacterControllerCustom on
+	/// this entity's parent.
+	/// </summary>
 	private CharacterControllerCustom _ccc;
 
+	/// <summary>
+	/// A reference to the CharacterSize component on
+	/// this entity's parent.
+	/// </summary>
 	private CharacterSize _characterSize;
 
+	/// <summary>
+	/// A reference to this entity's Transform component.
+	/// </summary>
 	private Transform _transform;
 
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// Unity's method called right after the object is created.
+	/// </summary>
 	void Awake() {
 		// Retrieves the desired components
 		_ccc = GetComponentInParent<CharacterControllerCustom>();
@@ -26,6 +62,9 @@ public class CharacterModelController : MonoBehaviour {
 		_transform.rotation = Quaternion.Euler(0, -rotationAngle, 0);
 	}
 
+	/// <summary>
+	/// Unity's method called each frame.
+	/// </summary>
 	void Update() {
 		// Makes the object face the right direction
 		float speed = _ccc.Velocity.x;
@@ -36,4 +75,6 @@ public class CharacterModelController : MonoBehaviour {
 			_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
 		}
 	}
+
+	#endregion
 }
