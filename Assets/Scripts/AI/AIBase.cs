@@ -118,6 +118,11 @@ public class AIBase : MonoBehaviour {
             _animator.SetInteger("SizeDrop", sizeDrop);
 
         } else {
+            //update his size
+            int sizeDrop = 0;
+            sizeDrop = _sizeDetected.GetSize();
+
+
             //check if is outside of trigger
             bool outside = true;
             foreach (Collider dropCollider in drops) {
@@ -129,9 +134,9 @@ public class AIBase : MonoBehaviour {
             if (outside) {
                 _animator.SetInteger("SizeDrop", 0);
                 commonParameters.drop = null;
+            } else {
+                _animator.SetInteger("SizeDrop", sizeDrop);
             }
-            //check if reached the drop
-            DropReached();
         }
         //check if too near
         DropNear();
@@ -175,21 +180,6 @@ public class AIBase : MonoBehaviour {
         _animator.SetBool("Near", true);
         _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
         _animator.SetInteger("SizeDrop", _sizeDetected.GetSize());
-    }
-
-    private void DropReached() {
-        if (commonParameters.drop == null) {
-            return;
-        }
- 
-        // Checks if the entity is close enough to the target point
-        float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
-        // The squared distance is used becouse a multiplication is cheaper than a square root
-        float distanceTolerance= _sizeDetected.GetSize();
-        distanceTolerance += commonParameters.toleranteDistanceAttack;
-        distanceTolerance *= distanceTolerance;
-        if (squaredDistance < distanceTolerance)
-            _animator.SetBool("Reached", true);
     }
     #endregion
 

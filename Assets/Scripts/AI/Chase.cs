@@ -25,10 +25,15 @@ public class Chase : StateMachineBehaviour {
     /// A reference to the entity's controller.
     /// </summary>
     private CharacterController _controller;
+    /// <summary>
+    /// Minimum distance to goal
+    /// </summary>
+    private float _minimumDistance;
     #endregion
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
+        _minimumDistance = GetMinimumDistance() + commonParameters.toleranteDistanceAttack;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -81,7 +86,30 @@ public class Chase : StateMachineBehaviour {
         _controller.Move(move);
 
         //reached calculation is on specific IA
+        DropReached(animator);
     }
-    
+
+    private void DropReached(Animator animator) {
+        if (commonParameters.drop == null) {
+            return;
+        }
+
+        // Checks if the entity is close enough to the target point
+        float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
+        // The squared distance is used becouse a multiplication is cheaper than a square root
+        float distanceTolerance = animator.GetInteger("SizeDrop");
+        distanceTolerance += _minimumDistance;
+        distanceTolerance *= distanceTolerance;
+        if (squaredDistance < distanceTolerance)
+            animator.SetBool("Reached", true);
+    }
+
+    private float GetMinimumDistance() {
+        float time = 360 / parameters.rotationVelocity;
+        float longitude = parameters.speed * time;
+        float radius = longitude / (2 * Mathf.PI);
+        return radius;
+    }
+
 
 }

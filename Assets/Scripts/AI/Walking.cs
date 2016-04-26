@@ -71,6 +71,10 @@ public class Walking : StateMachineBehaviour {
     /// The next point to move toward
     /// </summary>
     private Vector3 _targetPosition;
+    /// <summary>
+    /// Minimum distance to goal
+    /// </summary>
+    private float _minimumDistance;
     #endregion
 
     #region Methods
@@ -78,6 +82,7 @@ public class Walking : StateMachineBehaviour {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
         //start timer
         _deltaTime = parameters.timeUntilIddle;
+        _minimumDistance = GetMinimumDistance() + parameters.maxDistanceToGoal;
         //get path
         if (parameters.usePath && _pathEnumerator == null) {
             // Selects the current path type
@@ -98,7 +103,7 @@ public class Walking : StateMachineBehaviour {
         }
 
         // Moves the enumerator to the first/next position
-        getNextTarget();
+        GetNextTarget();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -176,12 +181,13 @@ public class Walking : StateMachineBehaviour {
         if (commonParameters.onFloor)
             position.y = _targetPosition.y;
         float squaredDistance = (position - _targetPosition).sqrMagnitude;
+        float distanceGoal = _minimumDistance *_minimumDistance;
         // The squared distance is used because a multiplication is cheaper than a square root
-        if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal)
-            getNextTarget();
+        if (squaredDistance < distanceGoal)
+            GetNextTarget();
     }
 
-    void getNextTarget() {
+    private void GetNextTarget() {
         if (parameters.usePath) {
             _pathEnumerator.MoveNext();
             _targetPosition = _pathEnumerator.Current.position;
@@ -189,6 +195,13 @@ public class Walking : StateMachineBehaviour {
             //select random point in the area
             _targetPosition = parameters.walkArea.GetRandomPoint() + commonParameters.rootEntityPosition.position;
         }
+    }
+
+    private float GetMinimumDistance() {
+        float time = 360 / parameters.rotationVelocity;
+        float longitude = parameters.speed * time;
+        float radius = longitude / (2 * Mathf.PI);
+        return radius; 
     }
 
     #endregion

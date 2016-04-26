@@ -50,12 +50,17 @@ public class GoAway : StateMachineBehaviour {
 	/// Enumerator of the path.
 	/// </summary>
 	private IEnumerator<Transform> _pathEnumerator;
+    /// <summary>
+    /// Minimum distance to goal
+    /// </summary>
+    private float _minimumDistance;
     #endregion
 
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         animator.SetBool("GoAway", false);
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
+        _minimumDistance = GetMinimumDistance() + parameters.maxDistanceToGoal;
         if (_pathEnumerator == null) {
             // Selects the current path type
             switch (parameters.pathType) {
@@ -133,8 +138,9 @@ public class GoAway : StateMachineBehaviour {
         if (commonParameters.onFloor)
             position.y = target.y;
         float squaredDistance = (position - target).sqrMagnitude;
+        float distanceGoal = _minimumDistance * _minimumDistance;
         // The squared distance is used because a multiplication is cheaper than a square root
-        if (squaredDistance < parameters.maxDistanceToGoal * parameters.maxDistanceToGoal) {
+        if (squaredDistance < distanceGoal) { 
             Transform last = _pathEnumerator.Current;
             _pathEnumerator.MoveNext();
             if (last == _pathEnumerator.Current) {
@@ -142,6 +148,13 @@ public class GoAway : StateMachineBehaviour {
             }
         }
     }
-    
+
+    private float GetMinimumDistance() {
+        float time = 360 / parameters.rotationVelocity;
+        float longitude = parameters.speed * time;
+        float radius = longitude / (2 * Mathf.PI);
+        return radius;
+    }
+
     #endregion
 }

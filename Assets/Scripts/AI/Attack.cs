@@ -21,6 +21,8 @@ public class Attack : StateMachineBehaviour {
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //OnStateEnter is called on the first frame of the state being played.
         _attackDone = false;
+        //face him!
+        faceTarget();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -61,5 +63,28 @@ public class Attack : StateMachineBehaviour {
         //It is important to note that OnStateIK will only be called if the state is on a layer that has an IK pass. 
         //By default, layers do not have an IK pass and so this function will not be called. 
         //For more information on IK see the information linked below.
+    }
+
+    private void faceTarget() {
+        if (commonParameters.drop == null) return;
+
+        Quaternion _lookRotation;
+        Vector3 _direction;
+        Transform targetTransform = commonParameters.drop.transform;
+        Transform enemyTransform = commonParameters.enemy.transform;
+
+        //find the vector pointing from our position to the target
+        _direction = (targetTransform.position - enemyTransform.position).normalized;
+
+        if (_direction == Vector3.zero) return;
+        //create the rotation we need to be in to look at the target
+        _lookRotation = Quaternion.LookRotation(_direction);
+
+        if (commonParameters.onFloor) {
+            _lookRotation.x = 0;
+            _lookRotation.z = 0;
+        }
+        //rotate us over time according to speed until we are in the required rotation
+        enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
     }
 }
