@@ -104,7 +104,7 @@ public class PathIterator  : MonoBehaviour {
     /// <summary>
     /// reference to know when we have to stop moving
     /// </summary>
-    private int _stepsToStop = 1;
+    //private int _stepsToStop = 1;
 
     /// <summary>
     /// Elapsed time of the current transitions between points
@@ -139,7 +139,7 @@ public class PathIterator  : MonoBehaviour {
         numberOfSteps = Mathf.Clamp(numberOfSteps, 1, path.points.Count - 1);
 
         //calculate steps to stop
-        _stepsToStop = 1;
+        //_stepsToStop = 1;
 
         // Get the desire path
         _transform.position = path.MoveAt(startStep).position;
@@ -213,7 +213,7 @@ public class PathIterator  : MonoBehaviour {
         if (!directly)
             nextStep = 1;
         
-        path.MoveNext(numberOfSteps);
+        path.MoveNext(nextStep);
 
         /*
         // Ask for stop
@@ -241,7 +241,7 @@ public class PathIterator  : MonoBehaviour {
         if (!directly)
             nextStep = 1;
 
-        path.MovePrevious(numberOfSteps);
+        path.MovePrevious(nextStep);
         /*
         // Ask for stop
         if (stepByStep && (directly || (!directly && _stepsToStop == 0))) {
