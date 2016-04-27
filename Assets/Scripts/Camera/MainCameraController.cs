@@ -224,16 +224,16 @@ public class MainCameraController : MonoBehaviour {
         }
 
         // If left bound exeded
-        if (destination.y < bounds.bottom + offset.y + (cameraRealBound * 9 / 16))
-            excededY = destination.y = bounds.bottom + offset.y  + (cameraRealBound * 9 / 16);
+        if (destination.y < bounds.bottom + _offset.y + (cameraRealBound * 9 / 16))
+            excededY = destination.y = bounds.bottom + _offset.y  + (cameraRealBound * 9 / 16);
 
         // If right bound exeded
         else if (destination.y > bounds.top - (cameraRealBound * 9 / 16)) {
             excededY = destination.y = bounds.top - (cameraRealBound * 9 / 16);
 
             // If left bound exeded
-            if (excededY < bounds.bottom + offset.y + (cameraRealBound * 9 / 16))
-                excededY = destination.y = bounds.bottom + offset.y + (cameraRealBound * 9 / 16);
+            if (excededY < bounds.bottom + _offset.y + (cameraRealBound * 9 / 16))
+                excededY = destination.y = bounds.bottom + _offset.y + (cameraRealBound * 9 / 16);
         }
 
 		// Calculate next position
@@ -267,7 +267,7 @@ public class MainCameraController : MonoBehaviour {
         if (lookAtFixedOnBounds && excededX != 0) 
             destination.x = excededX;
         if (lookAtFixedOnBounds && excededY != 0) 
-            destination.y = excededY - (offset.y * (_dropSize) );
+            destination.y = excededY - (_offset.y );
 
 
         // Calculate the look at position of the camera
