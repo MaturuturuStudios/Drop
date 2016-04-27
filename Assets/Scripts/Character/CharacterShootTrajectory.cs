@@ -25,7 +25,6 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// These are the scripts objects
     /// </summary>
     private CharacterControllerCustom ccc;
-    private CharacterController c;
 
     /// <summary>
     /// Ray cast to know where the trajectory points are hitting
@@ -141,7 +140,6 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         angle = 45;
 
-        c = GetComponent<CharacterController>();
         ccc = GetComponent<CharacterControllerCustom>();
         
 
@@ -223,6 +221,7 @@ public class CharacterShootTrajectory : MonoBehaviour
   
         angle -= h;
         angle += v;
+
 
 
         //Calculate the vector from the drop  where  be shooted 

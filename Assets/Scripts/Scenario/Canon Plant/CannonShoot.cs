@@ -33,10 +33,6 @@ public class CannonShoot : ActionPerformer
     /// </summary>
     private Vector3  pVelocity;
 
-    /// <summary>
-    /// To know if we tauch the trigger
-    /// </summary>
-    private bool ontriger = false;
 
     /// <summary>
     /// Ray cast to know where the trajectory points are hitting
