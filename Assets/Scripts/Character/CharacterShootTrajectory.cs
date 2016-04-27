@@ -220,17 +220,9 @@ public class CharacterShootTrajectory : MonoBehaviour
         h = Input.GetAxis(Axis.Horizontal);
         v = Input.GetAxis(Axis.Vertical);
 
-        if (angle == 360)
-            angle = 0;
-
+  
         angle -= h;
-     
-        if (angle<90 || angle >270)
-          angle += v;
-
-       else  if (angle > 90 || (angle < 270))
-            angle -= v;
-
+        angle += v;
 
 
         //Calculate the vector from the drop  where  be shooted 
