@@ -311,7 +311,7 @@ public class MainCameraController : MonoBehaviour {
 
         float cameraZPos = (area.height) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
 
-        _lockPosition = new Vector3(area.x, area.y, -cameraZPos);
+        _lockPosition = new Vector3(area.x, area.y, cameraZPos);
 
     }
 
