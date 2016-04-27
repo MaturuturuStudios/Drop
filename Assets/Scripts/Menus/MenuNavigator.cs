@@ -293,10 +293,10 @@ public class MenuNavigator : MonoBehaviour {
         confirmQuit.interactable = false;
         confirmQuit.blocksRaycasts = false;
 
-        if (_menuPanel.Count > 0) {
-            _menuPanel.Peek().disable();
-            _menuPanel.Peek().enable();
-        }
+        //if (_menuPanel.Count > 0) {
+        //    _menuPanel.Peek().disable();
+        //    _menuPanel.Peek().enable();
+        //}
     }
 
     /// <summary>
