@@ -1,23 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CreditsMenu : MonoBehaviour {
-	#region Private Attributes
-	/// <summary>
-	/// Menu navigator
-	/// </summary>
-	private MenuNavigator _menuNavigator;
-	#endregion
-
-	#region Methods
-	public void Awake() {
-		_menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
-			.GetComponent<MenuNavigator>();
+public class CreditsMenu : IngameMenu {
+    #region Methods
+    public new void Awake() {
+        base.Awake();
 	}
 
-    public void Update() {
-		//A
-		if (Input.GetButtonDown (Axis.Jump))
+    public new void Update() {
+        base.Update();
+        //A
+        if (Input.GetButtonDown (Axis.Jump))
 			_menuNavigator.ComeBack();
 
 		//B

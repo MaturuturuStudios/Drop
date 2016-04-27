@@ -15,11 +15,6 @@ public class PauseMenu : IngameMenu {
 
 	#region Private Attributes
 	/// <summary>
-	/// The menu navigator
-	/// </summary>
-	private MenuNavigator _menuNavigator;
-
-	/// <summary>
 	/// Reference to the scene's game controller input
 	/// </summary>
 	private GameControllerInput _gameControllerInput;
@@ -33,9 +28,6 @@ public class PauseMenu : IngameMenu {
 	#region Methods
 	public new void Awake() {
 		base.Awake();
-
-		_menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
-								.GetComponent<MenuNavigator>();
 		_gameControllerInput = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
 	}
 

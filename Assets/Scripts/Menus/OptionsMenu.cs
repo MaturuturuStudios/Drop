@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class OptionsMenu : MonoBehaviour {
+public class OptionsMenu : IngameMenu {
     #region Public Attributes
     /// <summary>
     /// first option to be selected
@@ -39,25 +39,22 @@ public class OptionsMenu : MonoBehaviour {
     /// Control if I have to select a default option
     /// </summary>
     private bool _selectOption;
-    /// <summary>
-	/// Menu navigator
-	/// </summary>
-	private MenuNavigator _menuNavigator;
     #endregion
 
     #region Methods
-    public void Awake() {
+    public new void Awake() {
+        base.Awake();
         _actualPanel = graphics;
-        _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
-            .GetComponent<MenuNavigator>();
     }
 
-    public void OnEnable() {
+    public new void OnEnable() {
+        base.OnEnable();
         //we have to select the option in update
         _selectOption = true;
     }
 
-    public void Update() {
+    public new void Update() {
+        base.Update();
         //if we have to select the option...
         if (_selectOption) {
             //only once!

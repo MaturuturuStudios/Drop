@@ -5,12 +5,11 @@ using UnityEngine.EventSystems;
 /// <summary>
 /// Control all about the main menu
 /// </summary>
-public class MainMenu : MonoBehaviour {
+public class MainMenu : IngameMenu {
     #region Public Atributes
     /// <summary>
     /// Scene to be opened when starting a new game
     /// </summary>
-    /// TODO: editor for drag scenes
     public Scene NewGameScene;
     /// <summary>
     /// The option to be selected
@@ -20,26 +19,25 @@ public class MainMenu : MonoBehaviour {
 
     #region Private Attributes
     /// <summary>
-    /// Menu navigator
-    /// </summary>
-    private MenuNavigator _menuNavigator;
-    /// <summary>
     /// Control if I have to select a default option
     /// </summary>
     private bool _selectOption;
     #endregion
 
     #region Methods
-    public void Awake() {
+    public new void Awake() {
+        base.Awake();
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
                                 .GetComponent<MenuNavigator>();
     }
 
-    public void OnEnable() {
+    public new void OnEnable() {
+        base.OnEnable();
         _selectOption = true;
     }
-    
-    public void Update() {
+
+    public new void Update() {
+        base.Update();
         if (_selectOption) {
             _selectOption = false;
             //select the option
