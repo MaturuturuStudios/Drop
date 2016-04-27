@@ -65,6 +65,8 @@ public class InheritParentVelocity : MonoBehaviour {
 	/// Unity's method called each frame.
 	/// </summary>
 	void Update() {
+        //if pause don't continue or it will be a division by zero
+        if (Time.deltaTime == 0) return;
 		// Adds force to the object using the parent's displacement
 		Vector3 displacement = _parent.position - _lastParentPosition;
 		_rigidbody.AddForce(- forceFactor * displacement / Time.deltaTime);
