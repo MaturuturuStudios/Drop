@@ -126,8 +126,10 @@ public class MethodInvoke {
 		}
 
 		// Checks if the target is valid
-		if (target == null)
+		if (target == null) {
 			Debug.LogError("Error: No selected target for the invocation.");
+			return;
+		}
 
 		// Invokes the method
 		MethodInfo selectedMethod = GetMethodsInfo(target)[selectedIndex];
