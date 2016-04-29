@@ -54,7 +54,7 @@ public class PauseMenu : IngameMenu {
 	/// Quit the pause
 	/// </summary>
 	public void ContinueGame() {
-		_menuNavigator.PauseGame(false);
+		menuNavigator.PauseGame(false);
 	}
 
 	/// <summary>
@@ -66,15 +66,15 @@ public class PauseMenu : IngameMenu {
 		_gameControllerInput.StopInput();
 
 		//unpause just in case
-		_menuNavigator.PauseGame(false);
-		_menuNavigator.MainMenu();
+		menuNavigator.PauseGame(false);
+		menuNavigator.MainMenu();
 	}
 
 	/// <summary>
 	/// Open the map and levels menu
 	/// </summary>
 	public void LoadLevel() {
-		_menuNavigator.OpenMenu(MenuNavigator.Menu.MAP_LEVEL_MENU);
+		menuNavigator.OpenMenu(MenuNavigator.Menu.MAP_LEVEL_MENU);
 	}
 
 	/// <summary>
@@ -84,29 +84,29 @@ public class PauseMenu : IngameMenu {
 		//TODO: avoid input game and another triggers like win game, attack...
 		_gameControllerInput.StopInput();
 
-		_menuNavigator.PauseGame(false);
-		_menuNavigator.ChangeScene(SceneManager.GetActiveScene().name);
+		menuNavigator.PauseGame(false);
+		menuNavigator.ChangeScene(SceneManager.GetActiveScene().name);
 	}
 
 	/// <summary>
 	/// Show the option menu
 	/// </summary>
 	public void Options() {
-		_menuNavigator.OpenMenu(MenuNavigator.Menu.OPTION_MENU);
+		menuNavigator.OpenMenu(MenuNavigator.Menu.OPTION_MENU);
 	}
 
 	/// <summary>
 	/// Show the credits
 	/// </summary>
 	public void Credits() {
-		_menuNavigator.OpenMenu(MenuNavigator.Menu.CREDITS_MENU);
+		menuNavigator.OpenMenu(MenuNavigator.Menu.CREDITS_MENU);
 	}
 
 	/// <summary>
 	/// Quit the game
 	/// </summary>
 	public void ExitGame() {
-		_menuNavigator.ExitGame();
+		menuNavigator.ExitGame();
 	}
 	#endregion
 }
