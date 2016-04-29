@@ -71,7 +71,6 @@ public class MeshAttacher : MonoBehaviour {
 		Vector3 originalPosition = _transform.position;
 		for (int i = 0; i < vertices.Length; i++) {
 			float distance = Vector3.Distance(originalPosition, GetVertexPosition(bakedMesh.vertices[i]));
-			Debug.DrawLine(meshObject.position, GetVertexPosition(bakedMesh.vertices[i]), Color.cyan, 100);
 			if (distance < nearestDistance) {
 				nearestDistance = distance;
 				vertexIndex = i;

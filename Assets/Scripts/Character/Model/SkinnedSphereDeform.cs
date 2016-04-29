@@ -268,8 +268,6 @@ public class SkinnedSphereDeform : MonoBehaviour {
 				deformations[i] = Vector3.zero;
 				continue;
 			}
-			else
-				Debug.DrawRay(center, transformedDirection * rayDistance, Color.red);
 
 			// Calculates the deformation
 			deformations[i] = transformedDirection * (hitInfo.distance - rayDistance);

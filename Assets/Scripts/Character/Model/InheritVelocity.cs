@@ -2,9 +2,9 @@
 
 /// <summary>
 /// Makes an object with a rigidbody attached inherit the
-/// velocity from it's parent movement.
+/// velocity from other object's movement.
 /// </summary>
-public class InheritParentVelocity : MonoBehaviour {
+public class InheritVelocity : MonoBehaviour {
 
 	#region Public Attributes
 
@@ -12,6 +12,11 @@ public class InheritParentVelocity : MonoBehaviour {
 	/// Velocity multiplication factor.
 	/// </summary>
 	public float forceFactor = 1;
+
+	/// <summary>
+	/// The object providing the velocity..
+	/// </summary>
+	public Transform reference;
 
 	#endregion
 
@@ -23,19 +28,14 @@ public class InheritParentVelocity : MonoBehaviour {
 	private Transform _transform;
 
 	/// <summary>
-	/// A reference to this entity's parent.
-	/// </summary>
-	private Transform _parent;
-
-	/// <summary>
 	/// A reference to this entity's Rigidbody component.
 	/// </summary>
 	private Rigidbody _rigidbody;
 
 	/// <summary>
-	/// Parent's position on the last frame.
+	/// Object's position on the last frame.
 	/// </summary>
-	private Vector3 _lastParentPosition;
+	private Vector3 _lastFramePosition;
 
 	#endregion
 
@@ -47,30 +47,32 @@ public class InheritParentVelocity : MonoBehaviour {
 	void Awake() {
 		// Retrieves the desired components
 		_transform = transform;
-		_parent = _transform.parent;
 		_rigidbody = GetComponent<Rigidbody>();
 		if (_rigidbody == null) {
 			Debug.LogError("Error: No Rigidbody attached to the entity!");
 			enabled = false;
 		}
-		if (_parent == null) {
-			Debug.LogError("Error: This entity has no parent!");
+		if (reference == null) {
+			Debug.LogError("Error: The referenced object was not specified!");
 			enabled = false;
 		}
 		else
-			_lastParentPosition = _parent.position;
+			_lastFramePosition = reference.position;
 	}
 
 	/// <summary>
 	/// Unity's method called each frame.
 	/// </summary>
 	void Update() {
-        //if pause don't continue or it will be a division by zero
-        if (Time.deltaTime == 0) return;
-		// Adds force to the object using the parent's displacement
-		Vector3 displacement = _parent.position - _lastParentPosition;
-		_rigidbody.AddForce(- forceFactor * displacement / Time.deltaTime);
-		_lastParentPosition = _parent.position;
+		// If the game is paused, abort this operation
+		if (Time.deltaTime == 0)
+			return;
+
+		// Adds force to the object using the object's displacement
+		Vector3 displacement = reference.position - _lastFramePosition;
+		Vector3 force = -forceFactor * displacement / Time.deltaTime;
+		_rigidbody.AddForce(force);
+		_lastFramePosition = reference.position;
 	}
 
 	#endregion

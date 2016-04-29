@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-
-using System.Linq;
+using System.Collections.Generic;
 
 /// <summary>
 /// The size of the character. Control if the character can grow up or decrease and how.
 /// </summary>
 public class CharacterSize : MonoBehaviour {
+
 	#region Public Attributes
 	/// <summary>
 	/// Initial size of the character
@@ -40,6 +40,30 @@ public class CharacterSize : MonoBehaviour {
 		public Vector3 offset;
 		public bool block;
 	};
+	#endregion
+
+	#region Custom Classes
+	/// <summary>
+	/// Interface for the listeners to size changes.
+	/// </summary>
+	public interface CharacterSizeListener {
+		/// <summary>
+		/// Callback called when the character starts changing it's size.
+		/// Called each frame prior to the scale change.
+		/// </summary>
+		/// <param name="character">The character changing size.</param>
+		/// <param name="previousScale">The scale prior to the scale change.</param>
+		/// <param name="nextScale">The scale after the scale change.</param>
+		void OnChangeSizeStart(GameObject character, Vector3 previousScale, Vector3 nextScale);
+		/// <summary>
+		/// Callback called when the character stops changing it's size.
+		/// Called each frame after the scale change.
+		/// </summary>
+		/// <param name="character">The character changing size.</param>
+		/// <param name="previousScale">The scale prior to the scale change.</param>
+		/// <param name="nextScale">The scale after the scale change.</param>
+		void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale);
+	}
 	#endregion
 
 	#region Variables
@@ -90,6 +114,10 @@ public class CharacterSize : MonoBehaviour {
 	/// Controller of the drop
 	/// </summary>
 	private CharacterControllerCustom _controller;
+	/// <summary>
+	/// List of listeners subscribed to size changes.
+	/// </summary>
+	private List<CharacterSizeListener> _listeners;
 	#endregion
 
 	#region Methods
@@ -99,6 +127,7 @@ public class CharacterSize : MonoBehaviour {
 	/// The character start with size one
 	/// </summary>
 	public void Awake() {
+		// Retrieves the desired components
 		_layerCast = (1 << LayerMask.NameToLayer("Scene"));
 		_dropTransform = gameObject.transform;
 		_ratioRadius = GetComponent<CharacterController>().radius;
@@ -107,15 +136,13 @@ public class CharacterSize : MonoBehaviour {
 		_independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
 								.GetComponent<GameControllerIndependentControl>();
 
+		// Initialization
 		_setState = false;
+		_listeners = new List<CharacterSizeListener>();
 
 		//set the motionless situation clear
 		_motionless = false;
 		_motionlessTime = 0;
-
-		// Joint information
-		_joints = GetComponentsInChildren<Joint>();
-		_originalJointsPosition = _joints.Select(e => e.transform.localPosition).ToArray();
 
 		//set the initial size
 		if (initialSize <= 0) {
@@ -215,6 +242,32 @@ public class CharacterSize : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Subscribes a listener to the size changes.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(CharacterSizeListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the size changes.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(CharacterSizeListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
+	}
+
+	/// <summary>
 	/// Get the actual size
 	/// </summary>
 	/// <returns>The actual/Targeted size, may not be the actual size of the character</returns>
@@ -225,29 +278,22 @@ public class CharacterSize : MonoBehaviour {
 
 	#region Private Methods
 
-	Joint[] _joints;
-	Vector3[] _originalJointsPosition;
-
 	/// <summary>
 	/// Modifies the scale of the object keeping all the constraints.
 	/// </summary>
 	/// <param name="scale">The new scale of the object</param>
 	private void ChangeScale(Vector3 scale) {
-		// Saves the joints connected bodies and dettachs them
-		Rigidbody[] jointsConnectedBodies = new Rigidbody[_joints.Length];
-		for (int i = 0; i < _joints.Length; i++) {
-			jointsConnectedBodies[i] = _joints[i].connectedBody;
-			_joints[i].connectedBody = null;
-			_joints[i].transform.localPosition = _originalJointsPosition[i];
-			_joints[i].transform.localRotation = Quaternion.identity;
-		}
+		// Notifies of the start of the start of a scale change
+		Vector3 previousScale = _dropTransform.localScale;
+		foreach (CharacterSizeListener listener in _listeners)
+			listener.OnChangeSizeStart(gameObject, previousScale, scale);
 
 		// Modifies the scale
 		_dropTransform.localScale = scale;
 
-		// Reattachs the connected bodies
-		for (int i = 0; i < _joints.Length; i++)
-			_joints[i].connectedBody = jointsConnectedBodies[i];
+		// Notifies of the start of the end of a scale change
+		foreach (CharacterSizeListener listener in _listeners)
+			listener.OnChangeSizeEnd(gameObject, previousScale, scale);
 	}
 
 	/// <summary>
