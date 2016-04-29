@@ -126,8 +126,10 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Check for camera in locked area
     /// </summary>
-    private Vector3 _lockPosition;    
+    private Vector3 _lockPosition;
 
+    private float _savedSmooth = 12;
+    private float _savedZSmooth = 8;
     #endregion
 
     #region Methods
@@ -167,9 +169,9 @@ public class MainCameraController : MonoBehaviour {
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
         // Update ofset and boundary depends of the size
-        if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying)
+        if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
             _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
-
+        }
     }
 
 
@@ -243,6 +245,13 @@ public class MainCameraController : MonoBehaviour {
 
         // Set the position to the camera
         transform.position = newPosition;
+
+
+        float squaredDistance = (transform.position - destination).magnitude;
+        if (squaredDistance < 0.01f) {
+            smooth = _savedSmooth;
+            zSmooth = _savedZSmooth;
+        }
     }
 
     /// <summary>
@@ -286,6 +295,12 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     /// <param name="objective">GameObject who is the target of the camera</param>
     public void SetObjective(GameObject objective) {
+        if (_savedSmooth < smooth) {
+            _savedSmooth = smooth;
+            _savedZSmooth = zSmooth;
+        }
+        smooth = lookAtSmooth = 12;
+        zSmooth = 8;
         target = objective;
     }
 
