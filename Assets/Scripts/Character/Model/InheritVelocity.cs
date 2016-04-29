@@ -23,11 +23,6 @@ public class InheritVelocity : MonoBehaviour {
 	#region Private Attributes
 
 	/// <summary>
-	/// A reference to the entity's Transform component.
-	/// </summary>
-	private Transform _transform;
-
-	/// <summary>
 	/// A reference to this entity's Rigidbody component.
 	/// </summary>
 	private Rigidbody _rigidbody;
@@ -46,7 +41,6 @@ public class InheritVelocity : MonoBehaviour {
 	/// </summary>
 	void Awake() {
 		// Retrieves the desired components
-		_transform = transform;
 		_rigidbody = GetComponent<Rigidbody>();
 		if (_rigidbody == null) {
 			Debug.LogError("Error: No Rigidbody attached to the entity!");
