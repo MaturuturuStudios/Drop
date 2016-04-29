@@ -249,7 +249,7 @@ public class MainCameraController : MonoBehaviour {
 
         float squaredDistance = (transform.position - destination).magnitude;
         if (squaredDistance < 0.01f) {
-            smooth = _savedSmooth;
+            smooth = lookAtSmooth = _savedSmooth;
             zSmooth = _savedZSmooth;
         }
     }
