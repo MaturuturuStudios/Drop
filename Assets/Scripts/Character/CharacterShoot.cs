@@ -125,11 +125,11 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     public void Shoot()
     {
-        if ( (shootmode == true))
+        if ( (shootmode == true) && !st.animation())
         {
             ccc.Parameters = null;
             shootmode = false;
-            st.QuitTrajectory();
+            st.finishing();
             st.enabled = false;
             GetComponent<CharacterSize>().SetSize((int)(GetComponent<CharacterSize>().GetSize()-sizeshot));
 
@@ -146,7 +146,7 @@ public class CharacterShoot : MonoBehaviour {
         if ((shootmode== true) && (ccc.State.IsGrounded == false || size.GetSize()==1 ))
         {
             shootmode = false;
-            st.QuitTrajectory();
+            st.finishing();
             st.enabled = false;
             ccc.Parameters = null;                      
         }

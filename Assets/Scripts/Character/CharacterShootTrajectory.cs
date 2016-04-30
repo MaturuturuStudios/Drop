@@ -9,8 +9,9 @@ public class CharacterShootTrajectory : MonoBehaviour
 {
     #region Private Attributes
 
-    private bool animshot = false;
+    private bool animshot = true;
     private bool endscript = false;
+  
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
     /// </summary>
@@ -124,6 +125,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     public LayerMask Scene=8;
     public LayerMask Character=9;
 
+    public float speedini = 30;
     /// <summary>
     /// Variable to calculate the max distance of the trajectory path
     /// </summary>
@@ -179,6 +181,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     {
         shootsize = 1;
         endscript = false;
+        
         sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
         sphere.GetComponent<Collider>().enabled = false;
         sphere.GetComponent<Renderer>().enabled = false;
@@ -217,9 +220,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (endscript)
         {
             QuitTrajectory();
-        }
-        else
-        {
+        }else{
             if (animshot == false)
             {
                 if (selecting)
@@ -290,6 +291,23 @@ public class CharacterShootTrajectory : MonoBehaviour
         
         endscript = true;
     }
+
+    public bool animation()
+    {
+        return animshot;
+    }
+
+    public void finishing()
+    {
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+             trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
+
+        }
+        sphere.GetComponent<Renderer>().enabled = false;
+        ball.GetComponent<Renderer>().enabled = false;
+    }
+
     /// <summary>
     /// This fuctions delete the trajectory
     /// </summary>
@@ -302,7 +320,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         }
 
         Vector3 fullPath = trajectoryPoints[finalnextWaypoint].transform.position - trajectoryPoints[finallastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-        faction_of_path_traveled += 20 * Time.deltaTime; //animate along the path
+        faction_of_path_traveled += speedini * Time.deltaTime; //animate along the path
         
 
         if (faction_of_path_traveled > 1) //move to next waypoint
@@ -375,7 +393,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             }
 
             Vector3 fullPath = trajectoryPoints[nextWaypoint].transform.position - trajectoryPoints[lastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-            if(animshot) faction_of_path_traveled += 20 * Time.deltaTime; //animate along the path
+            if(animshot) faction_of_path_traveled += speedini * Time.deltaTime; //animate along the path
             else faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime;
 
             if (faction_of_path_traveled > 1) //move to next waypoint
@@ -426,11 +444,11 @@ public class CharacterShootTrajectory : MonoBehaviour
                 ball.transform.position = hitting + hitpoint.normal * displacement;
                 colisiondetected = true;
 
-                finalWaypoint = i;
+                finalWaypoint = i+1;
                 finalnextWaypoint = finalWaypoint - 1;
                 finallastWaypoint = finalWaypoint;
 
-                for (j = i ; j < numOfTrajectoryPoints - 1; j++)
+                for (j = i+1 ; j < numOfTrajectoryPoints - 1; j++)
                 {
                     trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
 
