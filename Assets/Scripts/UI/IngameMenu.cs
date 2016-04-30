@@ -52,9 +52,9 @@ public class IngameMenu : MonoBehaviour {
 	/// Shows the cursor if the player has moved it.
 	/// </summary>
 	protected void Update() {
-		if (_cursorEnabled)
-			if (Input.GetAxis(Axis.MouseX) != 0 || Input.GetAxis(Axis.MouseY) != 0)
-				_cursorController.ShowCursor();
+		//if (_cursorEnabled)
+		//	if (Input.GetAxis(Axis.MouseX) != 0 || Input.GetAxis(Axis.MouseY) != 0)
+		//		_cursorController.ShowCursor();
 	}
 
 	/// <summary>
