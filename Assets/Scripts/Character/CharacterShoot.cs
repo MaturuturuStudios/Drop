@@ -111,8 +111,8 @@ public class CharacterShoot : MonoBehaviour {
             else if ((shootmode == true))
             {
                 shootmode = false;
-                st.QuitTrajectory();
-                st.enabled = false;
+                st.endingd();
+                
                 ccc.Parameters = null;
             }
         }
