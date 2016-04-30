@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+
 /// <summary>
 /// This class active, desactive shoot-mode and shoot a drop 
 /// </summary>
@@ -189,7 +190,7 @@ public class CharacterShoot : MonoBehaviour {
 
                 //Handles.color= Color.Lerp(Color.white, Color.black, (float)1/i );
                 //Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1),5 * (ccc.GetComponent<CharacterSize>().GetSize() - i));
-                Debug.Log(" gizmo position " + transform.position + " gizmo distance " + Mathf.Sqrt((5 * (ccc.GetComponent<CharacterSize>().GetSize() - i)) * 25));
+                //Debug.Log(" gizmo position " + transform.position + " gizmo distance " + Mathf.Sqrt((5 * (ccc.GetComponent<CharacterSize>().GetSize() - i)) * 25));
             }
         }
     
