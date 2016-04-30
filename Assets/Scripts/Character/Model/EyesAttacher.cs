@@ -145,25 +145,17 @@ public class EyesAttacher : MonoBehaviour {
 		Vector3 direction = Quaternion.Euler(eyeSeparation.y, -eyeSeparation.x, 0) * -center.forward;
 		RaycastHit hit = GetEyePosition(direction, radius);
 		leftEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
-
-		// The rotation and scale will not work on edit mode
-		if (true || Application.isPlaying) {
-			leftEye.LookAt(hit.point + hit.normal);
-			leftEye.rotation *= _leftEyeOriginalRotation;
-			leftEye.localScale = _leftEyeOriginalScale * eyeScale;
-		}
+		leftEye.LookAt(hit.point + hit.normal);
+		leftEye.rotation *= _leftEyeOriginalRotation;
+		leftEye.localScale = _leftEyeOriginalScale * eyeScale;
 
 		// Right eye
 		direction = Quaternion.Euler(eyeSeparation.y, eyeSeparation.x, 0) * -center.forward;
 		hit = GetEyePosition(direction, radius);
 		rightEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
-
-		// The rotation and scale will not work on edit mode
-		if (true || Application.isPlaying) {
-			rightEye.LookAt(hit.point + hit.normal);
-			rightEye.rotation *= _rightEyeOriginalRotation;
-			rightEye.localScale = _rightEyeOriginalScale * eyeScale;
-		}
+		rightEye.LookAt(hit.point + hit.normal);
+		rightEye.rotation *= _rightEyeOriginalRotation;
+		rightEye.localScale = _rightEyeOriginalScale * eyeScale;
 	}
 
 	/// <summary>
