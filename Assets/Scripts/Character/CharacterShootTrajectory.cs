@@ -437,9 +437,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             if ((Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis, Character)) || (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis,Scene)))
             {
-                if(animshot)
-                    ball.GetComponent<Renderer>().enabled = false;
-                else ball.GetComponent<Renderer>().enabled = true;
+                 ball.GetComponent<Renderer>().enabled = true;
 
                 Vector3 hitting = hitpoint.point;
                 float displacement = ball.transform.lossyScale.x * ball.GetComponent<SphereCollider>().radius;
