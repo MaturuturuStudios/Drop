@@ -31,10 +31,13 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 
 	#region Public Attributes
 
+	#region Rotation
+
 	/// <summary>
 	/// Determines wich direction will the charater be
 	/// facing when the game starts.
 	/// </summary>
+	[Header("Rotation")]
 	public InitialRotation initialRotation = InitialRotation.None;
 
 	/// <summary>
@@ -49,10 +52,59 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	public float rotationAngularSpeed = 720.0f;
 
+	#endregion
+
+	#region Scale
+
 	/// <summary>
-	/// Minimum speed to start rotating.
+	/// The minimum scale the character will have.
 	/// </summary>
-	public float speedTolerance = 0.1f;
+	[Header("Scale")]
+	public float minScale = 1;
+
+	/// <summary>
+	/// The maximum scale the character will have.
+	/// </summary>
+	public float maxScale = 9;
+
+	#endregion
+
+	#region Eye Scale
+
+	/// <summary>
+	/// Eye separation when the character is at minimum
+	/// scale.
+	/// </summary>
+	[Header("Eye scale")]
+	public Vector2 minEyeSeparation = new Vector2(20, 0);
+
+	/// <summary>
+	/// Eye separation when the character is at maximum
+	/// scale.
+	/// </summary>
+	public Vector3 maxEyeSeparation = new Vector2(20, 0);
+
+	/// <summary>
+	/// Eye size when the character is at minimum scale.
+	/// </summary>
+	public float minEyeScale = 1;
+
+	/// <summary>
+	/// Eye size when the character is at maximum scale.
+	/// </summary>
+	public float maxEyeScale = 1;
+
+	/// <summary>
+	/// Eye penetration when the character is at minimum scale.
+	/// </summary>
+	public float minEyePenetration = 0;
+
+	/// <summary>
+	/// Eye penetration when the character is at maximum scale.
+	/// </summary>
+	public float maxEyePenetration = 0;
+
+	#endregion
 
 	#endregion
 
@@ -69,6 +121,12 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// this entity's parent.
 	/// </summary>
 	private CharacterSize _characterSize;
+
+	/// <summary>
+	/// A reference to the EyesAttacher component on
+	/// this entity.
+	/// </summary>
+	private EyesAttacher _eyesAttacher;
 
 	/// <summary>
 	/// A reference to this entity's Transform component.
@@ -101,6 +159,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		// Retrieves the desired components
 		_ccc = GetComponentInParent<CharacterControllerCustom>();
 		_characterSize = GetComponentInParent<CharacterSize>();
+		_eyesAttacher = GetComponent<EyesAttacher>();
 		_transform = transform;
 	}
 
@@ -123,6 +182,9 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 				break;
 		}
 
+		// Sets the eye scale
+		ScaleEyes(_transform.lossyScale.x);
+
 		// Subscribes itself to the size's changes
 		_characterSize.AddListener(this);
 	}
@@ -133,12 +195,13 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	void Update() {
 		// Makes the object face the right direction
 		float speed = _ccc.Velocity.x;
-		if (Mathf.Abs(speed) >= speedTolerance) {
-			float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
-			Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
-			float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
-			_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
-		}
+		float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
+		Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
+		float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
+		_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
+
+		// Scales the eyes
+		ScaleEyes(_transform.lossyScale.x);
 	}
 	
 	/// <summary>
@@ -168,6 +231,36 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		// Reattachs the connected bodies
 		for (int i = 0; i < _joints.Length; i++)
 			_joints[i].connectedBody = _jointsConnectedBodies[i];
+	}
+
+	/// <summary>
+	/// Scales the eyes to fit the parameters.
+	/// </summary>
+	/// <param name="scale">The current scale of the character</param>
+	private void ScaleEyes(float scale) {
+		float trueScale = GetInterpolatedScale(scale);
+		_eyesAttacher.eyeScale = Mathf.Lerp(minEyeScale, maxEyeScale, trueScale);
+		_eyesAttacher.eyeSeparation = Vector2.Lerp(minEyeSeparation, maxEyeSeparation, trueScale);
+		_eyesAttacher.eyePenetration = Mathf.Lerp(minEyePenetration, maxEyePenetration, trueScale);
+	}
+
+	/// <summary>
+	/// Interpolates the scale between it's minimum and maximum
+	/// values and returns a normalized factor.
+	/// </summary>
+	/// <param name="scale">The current scale of the character</param>
+	/// <returns>Normalized scale factor</returns>
+	private float GetInterpolatedScale(float scale) {
+		return Mathf.InverseLerp(minScale, maxScale, scale);
+	}
+	
+	/// <summary>
+	/// Unity's method called in the editor to draw helpers.
+	/// </summary>
+	void OnDrawGizmos() {
+		// Scales the eyes
+		_eyesAttacher = GetComponent<EyesAttacher>();
+		ScaleEyes(_transform.lossyScale.x);
 	}
 
 	#endregion
