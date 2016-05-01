@@ -209,8 +209,8 @@ public class SkinnedSphereDeform : MonoBehaviour {
 					_deformationWeights[i][j] = 0;
 			}
 
-            // Calculates the deformation weights of the ray for the extra points
-            Vector3[] localExtraPointsPosition = GetLocalExtraPointsPosition();
+			// Calculates the deformation weights of the ray for the extra points
+			Vector3[] localExtraPointsPosition = GetLocalExtraPointsPosition();
 			_extraPointsWeights[i] = new float[localExtraPointsPosition.Length];
 			for (int j = 0; j < localExtraPointsPosition.Length; j++) {
 				// Calculates the distance from the center to the point in local coordinates
@@ -233,17 +233,17 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		}
 	}
 
-    /// <summary>
-    /// Returns an array with the local positions on the current frame of each
-    /// extra point.
-    /// </summary>
-    /// <returns>Local positions of the extra points</returns>
-    private Vector3[] GetLocalExtraPointsPosition() {
-        Vector3[] localExtraPointsPosition = new Vector3[_originalExtraPointsPositions.Length];
-        for (int i = 0; i < _originalExtraPointsPositions.Length; i++)
-            localExtraPointsPosition[i] = _transform.InverseTransformPoint(extraDeformationPoints[i].parent.TransformPoint(_originalExtraPointsPositions[i]));
-        return localExtraPointsPosition;
-    }
+	/// <summary>
+	/// Returns an array with the local positions on the current frame of each
+	/// extra point.
+	/// </summary>
+	/// <returns>Local positions of the extra points</returns>
+	private Vector3[] GetLocalExtraPointsPosition() {
+		Vector3[] localExtraPointsPosition = new Vector3[_originalExtraPointsPositions.Length];
+		for (int i = 0; i < _originalExtraPointsPositions.Length; i++)
+			localExtraPointsPosition[i] = _transform.InverseTransformPoint(extraDeformationPoints[i].parent.TransformPoint(_originalExtraPointsPositions[i]));
+		return localExtraPointsPosition;
+	}
     
 	/// <summary>
 	/// Casts the rays and starts the deformation.
@@ -251,11 +251,11 @@ public class SkinnedSphereDeform : MonoBehaviour {
 	private void Deform() {
 		// Initializes the arrays
 		Vector3[] modifiedVertices = (Vector3[])_originalVertices.Clone();
-        Vector3[] localExtraPointsPositions = GetLocalExtraPointsPosition();
-        Vector3[] extraPoints = (Vector3[])localExtraPointsPositions.Clone();
+		Vector3[] localExtraPointsPositions = GetLocalExtraPointsPosition();
+		Vector3[] extraPoints = (Vector3[])localExtraPointsPositions.Clone();
 
-        // Calculates the needed information
-        Vector3 center = _transform.TransformPoint(sphereCollider.center);
+		// Calculates the needed information
+		Vector3 center = _transform.TransformPoint(sphereCollider.center);
 		float rayDistance = sphereCollider.radius * _transform.lossyScale.x;
 
 		// Casts the rays
@@ -299,8 +299,8 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		for (int i = 0; i < extraDeformationPoints.Length; i++)
 			extraDeformationPoints[i].position = _transform.TransformPoint(Vector3.Lerp(_transform.InverseTransformPoint(extraDeformationPoints[i].position), extraPoints[i], deformationSpeed * Time.deltaTime));
 
-        // Reassignates the vertices and recalculates the normals of the vertices
-        _modifiedMesh.vertices = newVertices;
+		// Reassignates the vertices and recalculates the normals of the vertices
+		_modifiedMesh.vertices = newVertices;
 		//_modifiedMesh.RecalculateNormals();   // These may break the model
 		//_modifiedMesh.RecalculateBounds();
 	}

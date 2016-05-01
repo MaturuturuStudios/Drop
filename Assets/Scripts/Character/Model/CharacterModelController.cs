@@ -134,6 +134,37 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 
 	#endregion
 
+	#region Hat
+
+	/// <summary>
+	/// Reference to the hat's root bone (the one with the
+	/// kinematic Rigidbody).
+	/// </summary>
+	[Header("Hat")]
+	public Transform hatRootBone;
+
+	/// <summary>
+	/// Hat rotation when the character is at minimum scale.
+	/// </summary>
+	public Vector3 minHatRotation = new Vector3(0, 30, 0);
+
+	/// <summary>
+	/// Hat rotation when the character is at maximum scale.
+	/// </summary>
+	public Vector3 maxHatRotation = new Vector3(0, 30, 0);
+
+	/// <summary>
+	/// Hat scale when the character is at minimum scale.
+	/// </summary>
+	public float minHatScale = 1;
+
+	/// <summary>
+	/// Hat scale when the character is at maximum scale.
+	/// </summary>
+	public float maxHatScale = 1;
+
+	#endregion
+
 	#endregion
 
 	#region Private Attributes
@@ -200,6 +231,16 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		_jointsConnectedBodies = _joints.Select(e => e.connectedBody).ToArray();
 		_originalJointsPosition = _joints.Select(e => e.transform.localPosition).ToArray();
 
+		// Resets the joints to fit the character's current scale
+		float hatScale = Mathf.Lerp(minHatScale, maxHatScale, GetInterpolatedScale(_transform.lossyScale.x));
+		for (int i = 0; i < _joints.Length; i++) {
+			Rigidbody temp = _joints[i].connectedBody;
+			_joints[i].connectedBody = null;
+			_joints[i].transform.localPosition = _originalJointsPosition[i] * hatScale;
+			_joints[i].transform.localRotation = Quaternion.identity;
+			_joints[i].connectedBody = temp;
+		}
+
 		// Sets the right orientation to the object
 		switch (initialRotation) {
 			case InitialRotation.Right:
@@ -210,8 +251,9 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 				break;
 		}
 
-		// Sets the eye scale
+		// Sets the eyes and hat scale
 		ScaleEyes(_transform.lossyScale.x);
+		ScaleHat(_transform.lossyScale.x);
 
 		// Subscribes itself to the size's changes
 		_characterSize.AddListener(this);
@@ -231,6 +273,14 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		// Scales the eyes
 		ScaleEyes(_transform.lossyScale.x);
 	}
+
+	/// <summary>
+	/// Unity's method called at the end of each frame.
+	/// </summary>
+	void LateUpdate() {
+		// Scales the hat
+		ScaleHat(_transform.lossyScale.x);
+	}
 	
 	/// <summary>
 	/// Callback called when the character starts changing it's size.
@@ -240,10 +290,13 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// <param name="previousScale">The scale prior to the scale change.</param>
 	/// <param name="nextScale">The scale after the scale change.</param>
 	public void OnChangeSizeStart(GameObject character, Vector3 previousScale, Vector3 nextScale) {
+		// Scales the hat positions and rotations
+		float hatScale = Mathf.Lerp(minHatScale, maxHatScale, GetInterpolatedScale(nextScale.x));
+
 		// Saves the joints connected bodies and dettachs them
 		for (int i = 0; i < _joints.Length; i++) {
 			_joints[i].connectedBody = null;
-			_joints[i].transform.localPosition = _originalJointsPosition[i];
+			_joints[i].transform.localPosition = _originalJointsPosition[i] * hatScale;
 			_joints[i].transform.localRotation = Quaternion.identity;
 		}
 	}
@@ -270,6 +323,15 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		_eyesAttacher.eyeScale = Mathf.Lerp(minEyeScale, maxEyeScale, trueScale);
 		_eyesAttacher.eyeSeparation = Vector2.Lerp(minEyeSeparation, maxEyeSeparation, trueScale);
 		_eyesAttacher.eyePenetration = Mathf.Lerp(minEyePenetration, maxEyePenetration, trueScale);
+	}
+
+	/// <summary>
+	/// Scales the hat to fit the parameters.
+	/// </summary>
+	/// <param name="scale">The current scale of the character</param>
+	private void ScaleHat(float scale) {
+		float trueScale = GetInterpolatedScale(scale);
+		hatRootBone.localRotation = Quaternion.Euler(Vector3.Lerp(minHatRotation, maxHatRotation, trueScale));
 	}
 
 	/// <summary>
@@ -300,6 +362,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		// Scales the eyes
 		Awake();
 		ScaleEyes(_transform.lossyScale.x);
+		ScaleHat(_transform.lossyScale.x);
 	}
 
 	#endregion
