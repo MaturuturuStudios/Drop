@@ -9,7 +9,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	#region Custom Enumerations
 
 	/// <summary>
-	/// Determines wich direction will the charater be
+	/// Determines which direction will the charater be
 	/// facing when the game starts.
 	/// </summary>
 	public enum InitialRotation {
@@ -25,6 +25,28 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		/// The character will be facing left.
 		/// </summary>
 		Left
+	}
+
+	/// <summary>
+	/// Determines which interpolation method will be
+	/// used to scale the character's attributes.
+	/// </summary>
+	public enum InterpolationMethod {
+		/// <summary>
+		/// Linear interpolation between the minimum and
+		/// maximum scale.
+		/// </summary>
+		Linear,
+		/// <summary>
+		/// Cuadratic interpolation between the minimum and
+		/// maximum scale.
+		/// </summary>
+		Cuadratic,
+		/// <summary>
+		/// Square rooted interpolation between the minimum
+		/// and maximum scale.
+		/// </summary>
+		Squared
 	}
 
 	#endregion
@@ -67,6 +89,12 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	public float maxScale = 9;
 
+	/// <summary>
+	/// The interpolation method used to scale the character's
+	/// attributes.
+	/// </summary>
+	public InterpolationMethod interpolationMethod = InterpolationMethod.Linear;
+
 	#endregion
 
 	#region Eye Scale
@@ -82,7 +110,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// Eye separation when the character is at maximum
 	/// scale.
 	/// </summary>
-	public Vector3 maxEyeSeparation = new Vector2(20, 0);
+	public Vector2 maxEyeSeparation = new Vector2(20, 0);
 
 	/// <summary>
 	/// Eye size when the character is at minimum scale.
@@ -251,7 +279,18 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// <param name="scale">The current scale of the character</param>
 	/// <returns>Normalized scale factor</returns>
 	private float GetInterpolatedScale(float scale) {
-		return Mathf.InverseLerp(minScale, maxScale, scale);
+		float factor = Mathf.InverseLerp(minScale, maxScale, scale);
+		switch (interpolationMethod) {
+			case InterpolationMethod.Linear:
+				return factor;
+			case InterpolationMethod.Cuadratic:
+				return factor * factor;
+			case InterpolationMethod.Squared:
+				return Mathf.Sqrt(factor);
+			default:
+				Debug.LogError("Error: No valid interpolation method: " + interpolationMethod);
+				return -1;
+		}
 	}
 	
 	/// <summary>
@@ -259,7 +298,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	void OnDrawGizmos() {
 		// Scales the eyes
-		_eyesAttacher = GetComponent<EyesAttacher>();
+		Awake();
 		ScaleEyes(_transform.lossyScale.x);
 	}
 
