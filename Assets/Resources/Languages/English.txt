@@ -1,0 +1,6 @@
+MenuGraphics=GraphicsJiji
+MenuAudio=Audio
+MenuInput=Input
+MenuLanguage=Language
+MenuHelp=Help
+MenuBack=Back

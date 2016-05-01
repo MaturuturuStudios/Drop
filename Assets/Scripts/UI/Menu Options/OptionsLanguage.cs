@@ -2,19 +2,10 @@
 using System.Collections;
 
 public class OptionsLanguage : SubOption {
-
-    /// <summary>
-    /// Get the panel of this option (itself)
-    /// </summary>
-    /// <returns></returns>
-    public override GameObject GetPanel() {
-        return gameObject;
-    }
-
     /// <summary>
     /// Get the focus to the panel
     /// </summary>
-    public override void GetFocus() {
-
+    public new void GetFocus() {
+        Debug.Log(Application.systemLanguage);
     }
 }

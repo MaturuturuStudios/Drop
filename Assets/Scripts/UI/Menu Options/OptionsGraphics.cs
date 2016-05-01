@@ -56,17 +56,9 @@ public class OptionsGraphics : SubOption {
 
     #region Method
     /// <summary>
-    /// Get the panel of this option (itself)
-    /// </summary>
-    /// <returns></returns>
-    public override GameObject GetPanel() {
-        return gameObject;
-    }
-
-    /// <summary>
     /// Get the focus to the panel
     /// </summary>
-    public override void GetFocus() {
+    public new void GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(resolution.gameObject);
     }
