@@ -1,37 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
-
-[System.Serializable]
-public struct OptionsAudio {
-    public GameObject panel;
-}
-
-[System.Serializable]
-public struct OptionsInput {
-    public GameObject panel;
-}
-
-[System.Serializable]
-public struct OptionsLanguage {
-    public GameObject panel;
-}
-
-[System.Serializable]
-public struct OptionsHelp {
-    public GameObject panel;
-}
 
 public class OptionsMenu : IngameMenu {
 	#region Public Attributes
 	/// <summary>
-	/// first option to be selected
+	/// first option to be selected (button)
 	/// </summary>
 	public GameObject firstSelected;
+    /// <summary>
+    /// first panel to be selected
+    /// Must match with firstSelected
+    /// </summary>
     public GameObject firstPanelSelected;
-	#endregion
+    #endregion
 
-	#region Private Attributes
+    #region Private Attributes
+    private GameObject _actualSelected;
 	/// <summary>
 	/// the actual panel selected
 	/// </summary>
@@ -48,6 +32,7 @@ public class OptionsMenu : IngameMenu {
         //make sure the option is visible and running
         _actualPanel = firstPanelSelected.GetComponent<SubOption>();
         _actualPanel.GetPanel().SetActive(true);
+        _actualSelected = firstSelected;
         //we have to select the option in update
         _selectOption = true;
 	}
@@ -81,20 +66,21 @@ public class OptionsMenu : IngameMenu {
 	/// </summary>
 	/// <param name="panel">new panel</param>
 	public void ChangePanel(GameObject panel) {
-        //get the script and get it running
+        //get the script
         SubOption subOption = panel.GetComponent<SubOption>();
 
-        //unload the previous suboption
+        //unload the previous suboption and deselect the button associated
         _actualPanel.GetPanel().SetActive(false);
+        _actualSelected.GetComponent<Animator>().SetBool("Setted", false);
 
-        //store new suboption
+        //store new suboption and get it setted
         _actualPanel = subOption;
+        _actualSelected = EventSystem.current.currentSelectedGameObject;
         _actualPanel.GetPanel().SetActive(true);
-
-        
-
-        
-	}
+        _actualSelected.GetComponent<Animator>().SetBool("Setted", true);
+        //send the focus to the suboption panel
+        _actualPanel.GetFocus();
+    }
 
 	#endregion
 }

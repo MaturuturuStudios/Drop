@@ -10,4 +10,11 @@ public class OptionsHelp : SubOption {
     public override GameObject GetPanel() {
         return gameObject;
     }
+
+    /// <summary>
+    /// Get the focus to the panel
+    /// </summary>
+    public override void GetFocus() {
+
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine.EventSystems;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,6 +61,14 @@ public class OptionsGraphics : SubOption {
     /// <returns></returns>
     public override GameObject GetPanel() {
         return gameObject;
+    }
+
+    /// <summary>
+    /// Get the focus to the panel
+    /// </summary>
+    public override void GetFocus() {
+        //select the option
+        EventSystem.current.SetSelectedGameObject(resolution.gameObject);
     }
 
 
