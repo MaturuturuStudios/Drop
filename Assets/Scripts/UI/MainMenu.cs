@@ -26,8 +26,8 @@ public class MainMenu : IngameMenu {
 	#region Methods
 
 	public new void OnEnable() {
-		base.OnEnable();
-		_selectOption = true;
+        base.OnEnable();
+        _selectOption = true;
 	}
 
 	public new void Update() {

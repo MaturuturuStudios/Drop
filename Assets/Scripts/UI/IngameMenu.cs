@@ -11,16 +11,16 @@ public class IngameMenu : MonoBehaviour {
 	/// If enabled, the cursor will be shown as soon
 	/// as the player moves it.
 	/// </summary>
-	protected bool EnableCursor {
-		get {
-			return _cursorEnabled;
-		}
-		set {
-			_cursorEnabled = value;
-			if (!_cursorEnabled)
-				_cursorController.HideCursor();
-		}
-	}
+	//protected bool EnableCursor {
+		//get {
+		//	return _cursorEnabled;
+		//}
+		//set {
+		//	_cursorEnabled = value;
+		//	if (!_cursorEnabled)
+		//		_cursorController.HideCursor();
+		//}
+	//}
 
 	/// <summary>
 	/// A reference to the menu's navigator.
@@ -43,7 +43,7 @@ public class IngameMenu : MonoBehaviour {
 	/// Retrieves the desired components.
 	/// </summary>
 	public void Awake() {
-		_cursorController = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerCursorController>();
+		//_cursorController = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerCursorController>();
 		menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
 	}
 
@@ -57,19 +57,19 @@ public class IngameMenu : MonoBehaviour {
 		//		_cursorController.ShowCursor();
 	}
 
-	/// <summary>
-	/// Unity's method called when this entity is enabled.
-	/// Enables the cursor.
-	/// </summary>
-	protected void OnEnable() {
-		EnableCursor = true;
-	}
+    /// <summary>
+    /// Unity's method called when this entity is enabled.
+    /// Enables the cursor.
+    /// </summary>
+    protected void OnEnable() {
+        //EnableCursor = true;
+    }
 
-	/// <summary>
-	/// Unity's method called when this entity is disabled.
-	/// Disables the cursor.
-	/// </summary>
-	protected void OnDisable() {
-		EnableCursor = false;
-	}
+    /// <summary>
+    /// Unity's method called when this entity is disabled.
+    /// Disables the cursor.
+    /// </summary>
+    protected void OnDisable() {
+        //EnableCursor = false;
+    }
 }
