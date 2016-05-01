@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class OptionsMenu : IngameMenu {
 	#region Public Attributes
@@ -24,6 +25,8 @@ public class OptionsMenu : IngameMenu {
 	/// Control if I have to select a default option
 	/// </summary>
 	private bool _selectOption;
+
+    
 	#endregion
 
 	#region Methods
@@ -47,19 +50,33 @@ public class OptionsMenu : IngameMenu {
 			EventSystem.current.SetSelectedGameObject(firstSelected);
         }
 
-		//B
-		if (Input.GetButtonDown(Axis.Irrigate))
-			menuNavigator.ComeBack();
-
-		//return
-		if (Input.GetButtonDown(Axis.Back))
-			menuNavigator.ComeBack();
-
-		//start
-		if (Input.GetButtonDown(Axis.Start))
-			menuNavigator.ComeBack();
+        //B, back or start
+        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start))
+            //check if focus is inside the suboption
+            if (IsUnderSubOption())
+                //if yes, put focus on the button (the actual option selected
+                EventSystem.current.SetSelectedGameObject(_actualSelected);
+            else
+                //if not, the focus is already on the buttons menu, come back
+                menuNavigator.ComeBack();
 
 	}
+
+    private bool IsUnderSubOption() {
+        Button currentSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        //if null, for sure is not a button on list of options
+        if (currentSelected == null) return true;
+        
+        //get all buttons of the panel
+        Component[] components = _actualPanel.GetPanel().GetComponentsInChildren(currentSelected.GetType(), false);
+        //check if some of them is the selected button
+        foreach(Component compponent in components) {
+            //if is, the selected is inside the panel
+            if (compponent == currentSelected) return true;
+        }
+        //if not, is a button from the menu options
+        return false;
+    }
 
 	/// <summary>
 	/// Change the panel, the game object is the panel with the script suboption
