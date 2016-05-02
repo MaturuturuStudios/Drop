@@ -11,6 +11,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     private bool animshot = true;
     private bool endscript = false;
+    private float radio;
   
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
@@ -143,6 +144,8 @@ public class CharacterShootTrajectory : MonoBehaviour
     {      
         this.enabled = false;
 
+        radio = this.GetComponent<CharacterController>().radius;
+
         angle = 45;
 
         ccc = GetComponent<CharacterControllerCustom>();
@@ -188,9 +191,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         ball = (GameObject)Instantiate(TrajectorySizeIndicator);
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
-        ball.GetComponent<Collider>().enabled = false;
-
-        ball.GetComponent<Renderer>().enabled =false;
+        ball.SetActive(false);
     
         nextWaypoint = 1;
         lastWaypoint = 0;
@@ -205,7 +206,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void OnDisable()
     {
         if (ball != null)
-            ball.GetComponent<Renderer>().enabled = false;
+            ball.SetActive(false);
 
         Destroy(sphere);
         Destroy(ball);      
@@ -268,7 +269,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         if (Physics.Raycast(spheredis, fwd, dis, Scene))
         {
-            ball.GetComponent<Renderer>().enabled = false;
+            ball.SetActive(false);
             sphere.GetComponent<Renderer>().enabled = false;
             for (int j = 1; j < numOfTrajectoryPoints - 1; j++)
             {
@@ -305,7 +306,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         }
         sphere.GetComponent<Renderer>().enabled = false;
-        ball.GetComponent<Renderer>().enabled = false;
+        ball.SetActive(false);
     }
 
     /// <summary>
@@ -399,7 +400,7 @@ public class CharacterShootTrajectory : MonoBehaviour
            
         if (animshot)
         {
-            ball.GetComponent<Renderer>().enabled = true;
+            ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
             ball.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
             trajectoryPoints[lastWaypoint].GetComponent<Renderer>().enabled = true;
@@ -437,10 +438,10 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             if ((Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis, Character)) || (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis,Scene)))
             {
-                 ball.GetComponent<Renderer>().enabled = true;
+                ball.SetActive(true);
 
                 Vector3 hitting = hitpoint.point;
-                float displacement = ball.transform.lossyScale.x * ball.GetComponent<SphereCollider>().radius;
+                float displacement = ball.transform.lossyScale.x * (radio*shootsize);
                 ball.transform.position = hitting + hitpoint.normal * displacement;
                 colisiondetected = true;
 
