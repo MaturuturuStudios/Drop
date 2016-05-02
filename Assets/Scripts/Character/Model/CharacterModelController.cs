@@ -97,13 +97,13 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 
 	#endregion
 
-	#region Eye Scale
+	#region Eyes
 
 	/// <summary>
 	/// Eye separation when the character is at minimum
 	/// scale.
 	/// </summary>
-	[Header("Eye scale")]
+	[Header("Eyes")]
 	public Vector2 minEyeSeparation = new Vector2(20, 0);
 
 	/// <summary>
@@ -165,6 +165,42 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 
 	#endregion
 
+	#region Deformation
+
+	/// <summary>
+	/// Reference to the deformation script on the model.
+	/// </summary>
+	[Header("Deformation")]
+	public SkinnedSphereDeform deformationScript;
+
+	/// <summary>
+	/// The deformation the character will have when at
+	/// minimum scale. Not this will change the character's
+	/// visual scale.
+	/// </summary>
+	public float minDeformationScale = 1;
+
+	/// <summary>
+	/// The deformation the character will have when at
+	/// maximum scale. Not this will change the character's
+	/// visual scale.
+	/// </summary>
+	public float maxDeformationScale = 1;
+
+	/// <summary>
+	/// The chamf scale the character will have when at
+	/// minimum scale;
+	/// </summary>
+	public float minChamfScale = 1;
+
+	/// <summary>
+	/// The chamf scale the character will have when at
+	/// maximum scale;
+	/// </summary>
+	public float maxChamfScale = 1;
+
+	#endregion
+
 	#endregion
 
 	#region Private Attributes
@@ -188,6 +224,11 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	private EyesAttacher _eyesAttacher;
 
 	/// <summary>
+	/// A reference to the model's parent.
+	/// </summary>
+	private Transform _parent;
+
+	/// <summary>
 	/// A reference to this entity's Transform component.
 	/// </summary>
 	private Transform _transform;
@@ -207,6 +248,11 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	private Vector3[] _originalJointsPosition;
 
+	/// <summary>
+	/// The saved offset of the model when the game starts.
+	/// </summary>
+	private Vector3 _originalModelOffset;
+
 	#endregion
 
 	#region Methods
@@ -220,6 +266,10 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		_characterSize = GetComponentInParent<CharacterSize>();
 		_eyesAttacher = GetComponent<EyesAttacher>();
 		_transform = transform;
+		_parent = _transform.parent;
+
+		// Saves the model offset
+		_originalModelOffset = _transform.localPosition;
 	}
 
 	/// <summary>
@@ -251,9 +301,10 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 				break;
 		}
 
-		// Sets the eyes and hat scale
-		ScaleEyes(_transform.lossyScale.x);
-		ScaleHat(_transform.lossyScale.x);
+		// Sets the eyes, hat and deformation scale
+		ScaleEyes(_parent.lossyScale.x);
+		ScaleHat(_parent.lossyScale.x);
+		ScaleDeformation(_parent.lossyScale.x);
 
 		// Subscribes itself to the size's changes
 		_characterSize.AddListener(this);
@@ -271,7 +322,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
 
 		// Scales the eyes
-		ScaleEyes(_transform.lossyScale.x);
+		ScaleEyes(_parent.lossyScale.x);
 	}
 
 	/// <summary>
@@ -279,7 +330,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	void LateUpdate() {
 		// Scales the hat
-		ScaleHat(_transform.lossyScale.x);
+		ScaleHat(_parent.lossyScale.x);
 	}
 	
 	/// <summary>
@@ -309,6 +360,9 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// <param name="previousScale">The scale prior to the scale change.</param>
 	/// <param name="nextScale">The scale after the scale change.</param>
 	public void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale) {
+		// Scales the deformation
+		ScaleDeformation(_parent.lossyScale.x);
+
 		// Reattachs the connected bodies
 		for (int i = 0; i < _joints.Length; i++)
 			_joints[i].connectedBody = _jointsConnectedBodies[i];
@@ -319,10 +373,10 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	/// <param name="scale">The current scale of the character</param>
 	private void ScaleEyes(float scale) {
-		float trueScale = GetInterpolatedScale(scale);
-		_eyesAttacher.eyeScale = Mathf.Lerp(minEyeScale, maxEyeScale, trueScale);
-		_eyesAttacher.eyeSeparation = Vector2.Lerp(minEyeSeparation, maxEyeSeparation, trueScale);
-		_eyesAttacher.eyePenetration = Mathf.Lerp(minEyePenetration, maxEyePenetration, trueScale);
+		float scaleFactor = GetInterpolatedScale(scale);
+		_eyesAttacher.eyeScale = Mathf.Lerp(minEyeScale, maxEyeScale, scaleFactor);
+		_eyesAttacher.eyeSeparation = Vector2.Lerp(minEyeSeparation, maxEyeSeparation, scaleFactor);
+		_eyesAttacher.eyePenetration = Mathf.Lerp(minEyePenetration, maxEyePenetration, scaleFactor);
 	}
 
 	/// <summary>
@@ -330,8 +384,22 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	/// <param name="scale">The current scale of the character</param>
 	private void ScaleHat(float scale) {
-		float trueScale = GetInterpolatedScale(scale);
-		hatRootBone.localRotation = Quaternion.Euler(Vector3.Lerp(minHatRotation, maxHatRotation, trueScale));
+		float scaleFactor = GetInterpolatedScale(scale);
+		hatRootBone.localRotation = Quaternion.Euler(Vector3.Lerp(minHatRotation, maxHatRotation, scaleFactor));
+	}
+
+	/// <summary>
+	/// Scales the deformation to fit the parameters.
+	/// </summary>
+	/// <param name="scale">The current scale of the character</param>
+	private void ScaleDeformation(float scale) {
+		float scaleFactor = GetInterpolatedScale(scale);
+		deformationScript.chamfScale = Mathf.Lerp(minChamfScale, maxChamfScale, scaleFactor);
+
+		// Scales the model to scale the deformation. Simulates a "size change"
+		float modelScale = Mathf.Lerp(minDeformationScale, maxDeformationScale, scaleFactor);
+		_transform.localScale = new Vector3(modelScale, modelScale, modelScale);
+		_transform.localPosition = _originalModelOffset * modelScale;
 	}
 
 	/// <summary>
@@ -359,10 +427,13 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// Unity's method called in the editor to draw helpers.
 	/// </summary>
 	void OnDrawGizmos() {
+		if (Application.isPlaying)
+			return;
+
 		// Scales the eyes
 		Awake();
-		ScaleEyes(_transform.lossyScale.x);
-		ScaleHat(_transform.lossyScale.x);
+		ScaleEyes(_parent.lossyScale.x);
+		ScaleHat(_parent.lossyScale.x);
 	}
 
 	#endregion

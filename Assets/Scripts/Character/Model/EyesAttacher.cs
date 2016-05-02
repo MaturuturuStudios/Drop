@@ -28,8 +28,6 @@ public class EyesAttacher : MonoBehaviour {
 	/// </summary>
 	public Vector2 eyeSeparation;
 
-
-
 	/// <summary>
 	/// Scales the eyes to make them bigger or smaller.
 	/// </summary>
@@ -52,6 +50,12 @@ public class EyesAttacher : MonoBehaviour {
 	/// the rays will be casted from.
 	/// </summary>
 	public Transform center;
+
+	/// <summary>
+	/// Rate the eyes will rotate to fit their desired
+	/// orientation.
+	/// </summary>
+	public float rotationSpeed = 2;
 
 	/// <summary>
 	/// The maximum radius of the character. Avoid small
@@ -145,16 +149,16 @@ public class EyesAttacher : MonoBehaviour {
 		Vector3 direction = Quaternion.Euler(eyeSeparation.y, -eyeSeparation.x, 0) * -center.forward;
 		RaycastHit hit = GetEyePosition(direction, radius);
 		leftEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
-		leftEye.LookAt(hit.point + hit.normal);
-		leftEye.rotation *= _leftEyeOriginalRotation;
+		Quaternion targetRotation = Quaternion.LookRotation(hit.normal) * _leftEyeOriginalRotation;
+        leftEye.rotation = Quaternion.RotateTowards(leftEye.rotation, targetRotation, rotationSpeed);
 		leftEye.localScale = _leftEyeOriginalScale * eyeScale;
 
 		// Right eye
 		direction = Quaternion.Euler(eyeSeparation.y, eyeSeparation.x, 0) * -center.forward;
 		hit = GetEyePosition(direction, radius);
 		rightEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
-		rightEye.LookAt(hit.point + hit.normal);
-		rightEye.rotation *= _rightEyeOriginalRotation;
+		targetRotation = Quaternion.LookRotation(hit.normal) * _rightEyeOriginalRotation;
+		rightEye.rotation = Quaternion.RotateTowards(rightEye.rotation, targetRotation, rotationSpeed);
 		rightEye.localScale = _rightEyeOriginalScale * eyeScale;
 	}
 
