@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OptionsGraphics : SubOption {
+public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     #region Public attributes
     /// <summary>
     /// A DropDown in which resolutions will show
@@ -56,9 +56,17 @@ public class OptionsGraphics : SubOption {
 
     #region Method
     /// <summary>
+    /// Get the panel of this option (itself)
+    /// </summary>
+    /// <returns></returns>
+    public GameObject GetPanel() {
+        return gameObject;
+    }
+
+    /// <summary>
     /// Get the focus to the panel
     /// </summary>
-    public new void GetFocus() {
+    public void GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(resolution.gameObject);
     }
@@ -113,6 +121,10 @@ public class OptionsGraphics : SubOption {
         antialiasing.onValueChanged.RemoveAllListeners();
     }
 
+    public override void OnChangeLanguage(LanguageManager languageManager) {
+        FillQuality();
+    }
+
     #region Private Methods
     /// <summary>
     /// Get all available quality level and present it to the user
@@ -124,8 +136,10 @@ public class OptionsGraphics : SubOption {
 
         //fill the dropdown
         quality.ClearOptions();
+        LanguageManager languageManager = LanguageManager.Instance;
         foreach (string name in names) {
-            quality.options.Add(new Dropdown.OptionData(name));
+            string translated = languageManager.GetText(name);
+            quality.options.Add(new Dropdown.OptionData(translated));
         }
 
         //store the actual quality

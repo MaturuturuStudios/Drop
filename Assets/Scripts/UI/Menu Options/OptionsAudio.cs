@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class OptionsAudio : SubOption {
+public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     #region Public attributes
     /// <summary>
     /// A DropDown in which resolutions will show
@@ -28,9 +28,17 @@ public class OptionsAudio : SubOption {
 
     #region Methods
     /// <summary>
+    /// Get the panel of this option (itself)
+    /// </summary>
+    /// <returns></returns>
+    public GameObject GetPanel() {
+        return gameObject;
+    }
+
+    /// <summary>
     /// Get the focus to the panel
     /// </summary>
-    public new void GetFocus() {
+    public void GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(master.gameObject);
     }

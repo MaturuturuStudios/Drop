@@ -2,8 +2,13 @@
 using UnityEngine.UI;
 
 public class TextInternationalization : InterfaceLanguage {
+    /// <summary>
+    /// Key for the string
+    /// </summary>
     public string keyText;
-
+    /// <summary>
+    /// The text in which will write
+    /// </summary>
 	private Text textObject;
 
     void Start() {

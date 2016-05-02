@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using System.Collections;
 
-public class SubOption : MonoBehaviour {
+public class OptionsDummy : MonoBehaviour, SubOptionInterface {
     /// <summary>
     /// Get the panel of this option (itself)
     /// </summary>
@@ -13,6 +14,6 @@ public class SubOption : MonoBehaviour {
     /// Get the focus to the panel
     /// </summary>
     public void GetFocus() {
-        Debug.Log(Application.systemLanguage);
+
     }
 }

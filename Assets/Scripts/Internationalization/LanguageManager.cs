@@ -70,10 +70,9 @@ public class LanguageManager : ScriptableObject {
         _observers = new List<InterfaceLanguage>();
         _textTable = new Dictionary<string, string>();
         _languagePath = _folder + "/";
-        //Get available languages
-        //CollectLanguages();
         //Set the default language
-        LoadLanguage(_fallbackLanguage);
+        //TODO system language / option user...
+        LoadLanguage(Application.systemLanguage.ToString());
     }
 
     /// <summary>
@@ -111,9 +110,6 @@ public class LanguageManager : ScriptableObject {
     /// </summary>
     /// <returns>List of the names of languages</returns>
     public string[] GetLanguages() {
-        if (languages == null) {
-            languages = new string[0];
-        }
         return languages;
     }
 

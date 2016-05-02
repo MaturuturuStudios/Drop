@@ -20,7 +20,7 @@ public class OptionsMenu : IngameMenu {
 	/// <summary>
 	/// the actual panel selected
 	/// </summary>
-	private SubOption _actualPanel;
+	private SubOptionInterface _actualPanel;
 	/// <summary>
 	/// Control if I have to select a default option
 	/// </summary>
@@ -33,7 +33,7 @@ public class OptionsMenu : IngameMenu {
 	public new void OnEnable() {
 		base.OnEnable();
         //make sure the option is visible and running
-        _actualPanel = firstPanelSelected.GetComponent<SubOption>();
+        _actualPanel = firstPanelSelected.GetComponent<SubOptionInterface>();
         _actualPanel.GetPanel().SetActive(true);
         _actualSelected = firstSelected;
         //we have to select the option in update
@@ -84,7 +84,7 @@ public class OptionsMenu : IngameMenu {
 	/// <param name="panel">new panel</param>
 	public void ChangePanel(GameObject panel) {
         //get the script
-        SubOption subOption = panel.GetComponent<SubOption>();
+        SubOptionInterface subOption = panel.GetComponent<SubOptionInterface>();
 
         //unload the previous suboption and deselect the button associated
         _actualPanel.GetPanel().SetActive(false);
