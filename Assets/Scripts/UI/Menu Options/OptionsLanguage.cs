@@ -62,8 +62,6 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
         if (_selectedLanguage < 0) _selectedLanguage = englishIndex;
         languages.value = _selectedLanguage;
         languages.RefreshShownValue();
-
-        //LanguageChanged(languages);
     }
 
     public void LanguageChanged(Dropdown target) {

@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class OptionsMenu : IngameMenu {
+public class OptionsMenu : MonoBehaviour {
 	#region Public Attributes
 	/// <summary>
 	/// first option to be selected (button)
@@ -25,13 +25,20 @@ public class OptionsMenu : IngameMenu {
 	/// Control if I have to select a default option
 	/// </summary>
 	private bool _selectOption;
+    /// <summary>
+	/// A reference to the menu's navigator.
+	/// </summary>
+	protected MenuNavigator _menuNavigator;
 
-    
-	#endregion
 
-	#region Methods
-	public new void OnEnable() {
-		base.OnEnable();
+    #endregion
+
+    #region Methods
+    public void Awake() {
+        _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
+    }
+
+	public void OnEnable() {
         //make sure the option is visible and running
         _actualPanel = firstPanelSelected.GetComponent<SubOptionInterface>();
         _actualPanel.GetPanel().SetActive(true);
@@ -40,8 +47,7 @@ public class OptionsMenu : IngameMenu {
         _selectOption = true;
 	}
 
-	public new void Update() {
-		base.Update();
+	public void Update() {
 		//if we have to select the option...
 		if (_selectOption) {
 			//only once!
@@ -58,7 +64,7 @@ public class OptionsMenu : IngameMenu {
                 EventSystem.current.SetSelectedGameObject(_actualSelected);
             else
                 //if not, the focus is already on the buttons menu, come back
-                menuNavigator.ComeBack();
+                _menuNavigator.ComeBack();
 
 	}
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Control the flow between menus and specials action taken between thems
@@ -42,6 +43,10 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Public Attributes
+    /// <summary>
+	/// Scene to be opened when starting a new game
+	/// </summary>
+	public Scene NewGameScene;
     /// <summary>
     /// Seconds waiting before the reaction of a button/text action
     /// </summary>
@@ -103,13 +108,17 @@ public class MenuNavigator : MonoBehaviour {
     /// </summary>
     private SceneFadeInOut _fading;
     /// <summary>
+	/// Reference to the scene's game controller input
+	/// </summary>
+	private GameControllerInput _gameControllerInput;
+    /// <summary>
     /// Variable to know if I have to open a menu
     /// </summary>
-    private Menu openMenu;
+    private Menu _openMenu;
     /// <summary>
     /// The previous selected game object
     /// </summary>
-    private GameObject selected;
+    private GameObject _selected;
     #endregion
 
     #region Methods
@@ -123,22 +132,33 @@ public class MenuNavigator : MonoBehaviour {
 
         //get the fading
         _fading = GetComponent<SceneFadeInOut>();
+        //get input controller
+        _gameControllerInput = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
     }
 
     public void Update() {
         //if is some menu to open, open it
-        if (openMenu != Menu.NONE) {
-            OpenMenu(openMenu);
-            openMenu = Menu.NONE;
+        if (_openMenu != Menu.NONE) {
+            OpenMenu(_openMenu);
+            _openMenu = Menu.NONE;
         }
-        
+
         if (IsMenuActive()) {
             GameObject actualSelected = EventSystem.current.currentSelectedGameObject;
 
             if (actualSelected == null) {
-                EventSystem.current.SetSelectedGameObject(selected);
-            } else if (actualSelected != selected) {
-                selected = actualSelected;
+                EventSystem.current.SetSelectedGameObject(_selected);
+            } else if (actualSelected != _selected) {
+                _selected = actualSelected;
+            }
+
+            //if credits menu, watch input to come back if needed
+            if (_menuPanel.Peek().IdMenu == Menu.CREDITS_MENU) {
+                //A, B, return, start
+                if (Input.GetButtonDown(Axis.Jump) || Input.GetButtonDown(Axis.Irrigate)
+                        || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start)) {
+                    ComeBack();
+                }
             }
         }
     }
@@ -167,7 +187,7 @@ public class MenuNavigator : MonoBehaviour {
     public void OpenMenu(Menu menu, bool delayReaction = true) {
         MenuInstance last = null;
         
-        if (openMenu == Menu.NONE && delayReaction) {
+        if (_openMenu == Menu.NONE && delayReaction) {
             //retrieve the last menu
             if (_menuPanel.Count > 0) {
                 StartCoroutine(waitReaction(menu));
@@ -251,35 +271,6 @@ public class MenuNavigator : MonoBehaviour {
     }
 
     /// <summary>
-    /// Change to the given menu waiting few seconds before that
-    /// </summary>
-    /// <param name="menu">menu to open</param>
-    /// <returns></returns>
-    private IEnumerator waitReaction(Menu menu) {
-        yield return WaitForRealSeconds(secondsReaction);
-        openMenu = menu;
-    }
-
-    /// <summary>
-    /// Come back as a routine
-    /// </summary>
-    /// <returns>IEnumerator</returns>
-    private IEnumerator ComeBackWait() {
-        yield return WaitForRealSeconds(secondsReaction);
-        MenuInstance panel = _menuPanel.Pop();
-        panel.disable();
-
-        //if no more menus, close it
-        if (_menuPanel.Count == 0) {
-            CloseMenu();
-        } else {
-            panel = _menuPanel.Peek();
-            panel.enable();
-        }
-
-    }
-
-    /// <summary>
 	/// Called if clicked on No (confirmation)
 	/// </summary>
 	public void DoConfirmQuitNo() {
@@ -331,6 +322,67 @@ public class MenuNavigator : MonoBehaviour {
         }
     }
 
+
+
+    /// <summary>
+	/// Start a new game
+	/// </summary>
+	public void NewGame() {
+        ChangeScene(NewGameScene.name);
+    }
+
+    /// <summary>
+	/// Load a previous game
+	/// </summary>
+	public void LoadGame() {
+        //TODO: load previous game
+    }
+
+    /// <summary>
+	/// Open the map and levels menu
+	/// </summary>
+	public void LoadLevel() {
+        OpenMenu(MenuNavigator.Menu.MAP_LEVEL_MENU);
+    }
+
+    /// <summary>
+	/// Quit the actual game and return to the main menu
+	/// </summary>
+	public void ReturnToMainMenu() {
+        //TODO: need to control other actions as save game, quit the actual scene...
+        //stop the player!
+        _gameControllerInput.StopInput();
+
+        //unpause just in case
+        PauseGame(false);
+        MainMenu();
+    }
+
+    /// <summary>
+	/// Reset the level
+	/// </summary>
+	public void RestartLevel() {
+        //TODO: avoid input game and another triggers like win game, attack...
+        _gameControllerInput.StopInput();
+
+        PauseGame(false);
+        ChangeScene(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>
+	/// Show the credits
+	/// </summary>
+	public void Credits() {
+        OpenMenu(MenuNavigator.Menu.CREDITS_MENU);
+    }
+
+    /// <summary>
+    /// Show the options
+    /// </summary>
+    public void Options() {
+        OpenMenu(MenuNavigator.Menu.OPTION_MENU);
+    }
+
     /// <summary>
     /// Close the game
     /// TODO: needs a confirmation and probably more actions to close it correctly
@@ -350,10 +402,41 @@ public class MenuNavigator : MonoBehaviour {
         //set selected option by default NO
         EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
     }
+
+
     
     #endregion
 
     #region Other Methods
+    /// <summary>
+    /// Change to the given menu waiting few seconds before that
+    /// </summary>
+    /// <param name="menu">menu to open</param>
+    /// <returns></returns>
+    private IEnumerator waitReaction(Menu menu) {
+        yield return WaitForRealSeconds(secondsReaction);
+        _openMenu = menu;
+    }
+
+    /// <summary>
+    /// Come back as a routine
+    /// </summary>
+    /// <returns>IEnumerator</returns>
+    private IEnumerator ComeBackWait() {
+        yield return WaitForRealSeconds(secondsReaction);
+        MenuInstance panel = _menuPanel.Pop();
+        panel.disable();
+
+        //if no more menus, close it
+        if (_menuPanel.Count == 0) {
+            CloseMenu();
+        } else {
+            panel = _menuPanel.Peek();
+            panel.enable();
+        }
+
+    }
+
     /// <summary>
     /// Check if there exists any menu
     /// </summary>
