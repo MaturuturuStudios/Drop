@@ -29,4 +29,9 @@ public static class Tags {
 	/// Tag for wall where the character can perform a wall jump.
 	/// </summary>
 	public static readonly string WallJump = "WallJump";
+
+	/// <summary>
+	/// Tag for wall where the character can perform a wall jump.
+	/// </summary>
+	public static readonly string Level = "Level";
 }
