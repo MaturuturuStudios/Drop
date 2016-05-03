@@ -12,6 +12,10 @@ public class CharacterShootTrajectory : MonoBehaviour
     private bool animshot = true;
     private bool endscript = false;
     private float radio;
+    private float oldspeed;
+    private bool moving = false;
+    private Vector3 oldpVelocity;
+    private bool retrajectoring = false;
   
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
@@ -123,8 +127,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Layer to indicate with what things the raycast will hit
     /// </summary>
-    public LayerMask Scene=8;
-    public LayerMask Character=9;
+    public LayerMask mask;
 
     public float speedAnimation = 30;
     /// <summary>
@@ -143,7 +146,8 @@ public class CharacterShootTrajectory : MonoBehaviour
     void Awake()
     {      
         this.enabled = false;
-
+        speed = 0;
+        oldspeed = 0;
         radio = this.GetComponent<CharacterController>().radius;
 
         angle = 45;
@@ -172,6 +176,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// </summary>
     public void selectingsize(float size)
     {
+        oldspeed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
         shootsize = size;
         selecting = true;
 
@@ -222,29 +227,49 @@ public class CharacterShootTrajectory : MonoBehaviour
         {
             QuitTrajectory();
         }else{
+
             if (animshot == false)
             {
-                if (selecting)
+                if (!retrajectoring)
                 {
-                    ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
-                    selecting = false;
+                    if (selecting)
+                    {
+                        ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
+                        selecting = false;
+                        moving = true;
+                    }
+
+                    h = Input.GetAxis(Axis.Horizontal);
+                    v = Input.GetAxis(Axis.Vertical);
+
+
+                    angle -= h;
+                    angle += v;
+
+                    if (angle < 0) angle = 0;
+                    if (angle > 180) angle = 180;
                 }
-
-                h = Input.GetAxis(Axis.Horizontal);
-                v = Input.GetAxis(Axis.Vertical);
-
-
-                angle -= h;
-                angle += v;
-
-            }
+            }         
 
             //Calculate the vector from the drop  where  be shooted 
             Vector3 pos = this.transform.position;// + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<SphereCollider>().radius* ball.transform.lossyScale.x);
                                                   //The power of the shoot
             speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
 
-            setTrajectoryPoints(pos, angle, speed);
+            if (moving)
+            {
+                retrajectoring = true;
+                oldspeed = Mathf.MoveTowards(oldspeed, speed, 5 * Time.deltaTime); ;
+
+                setTrajectoryPoints(pos, angle, oldspeed);
+
+                if (oldspeed == speed) moving = false;
+            }
+            else
+            {
+                setTrajectoryPoints(pos, angle, speed);
+                retrajectoring = false;
+            }
             setvisibility();
             canshooot();
             ParticleTrip();
@@ -267,7 +292,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         Debug.DrawRay(spheredis, fwd, Color.green);
 
-        if (Physics.Raycast(spheredis, fwd, dis, Scene))
+        if (Physics.Raycast(spheredis, fwd, dis, mask))
         {
             ball.SetActive(false);
             sphere.GetComponent<Renderer>().enabled = false;
@@ -365,7 +390,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         //magnitud of the pVelocity to calculate de distance que es igual al valor de speed
         velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
 
-        float fTime = 0;
+       float fTime = 0;
 
         fTime += 0.1f;
         for (int i = 0; i < numOfTrajectoryPoints; i++)
@@ -373,7 +398,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
             float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
-            trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100);
+             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100);
            // trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
             trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
@@ -436,12 +461,12 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             dis = fwd.magnitude;
 
-            if ((Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis, Character)) || (Physics.Raycast(trajectoryPoints[i].transform.position, fwd, out hitpoint, dis,Scene)))
+            if ((Physics.SphereCast(trajectoryPoints[i].transform.position,radio, fwd, out hitpoint, dis, mask)))
             {
                 ball.SetActive(true);
 
                 Vector3 hitting = hitpoint.point;
-                float displacement = ball.transform.lossyScale.x * (radio*shootsize);
+                float displacement = ball.transform.lossyScale.x * (radio);
                 ball.transform.position = hitting + hitpoint.normal * displacement;
                 colisiondetected = true;
 
