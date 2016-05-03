@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections.Generic;
 
 public class WaterRepulsion : MonoBehaviour {
@@ -9,11 +10,11 @@ public class WaterRepulsion : MonoBehaviour {
     #endregion
 
     #region Private attributes
-    private Vector3 _velocity;
     private List<GameObject> _enteredDrop;
     private Bounds _ownCollider;
     private Vector3 positionExpulsion;
     private Vector3 positionDirection;
+    private Vector3 _velocity;
     #endregion
 
     #region Methods
@@ -33,6 +34,7 @@ public class WaterRepulsion : MonoBehaviour {
         //set the velocity the drop will be send flying
         _velocity = (positionDirection - positionExpulsion).normalized;
         _velocity *= impulse;
+
     }
 
     public void Update() {
@@ -68,6 +70,19 @@ public class WaterRepulsion : MonoBehaviour {
                 //put drop on point expulsion
                 controller.Stop();
                 drop.transform.position = positionExpulsion;
+
+                //if on editor, update the values to see onfly changes options
+                if (EditorApplication.isPlaying) {
+                    //get the setted positions
+                    positionDirection = direction.position;
+                    positionDirection.z = 0;
+                    positionExpulsion = pointExpulsion.position;
+                    positionExpulsion.z = 0;
+
+                    //set the velocity the drop will be send flying
+                    _velocity = (positionDirection - positionExpulsion).normalized;
+                    _velocity *= impulse;
+                }
                 //send it flying
                 controller.SendFlying(_velocity);
             }
