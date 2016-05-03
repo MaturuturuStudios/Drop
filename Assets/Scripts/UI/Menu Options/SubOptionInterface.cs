@@ -8,7 +8,12 @@ public interface SubOptionInterface {
     GameObject GetPanel();
 
     /// <summary>
-    /// Get the focus to the panel
+    /// Get the focus to the panel (mark the title as panel under focus)
     /// </summary>
     void GetFocus();
+
+    /// <summary>
+    /// Set the panel as not focused and unselect focus
+    /// </summary>
+    void LoseFocus();
 }

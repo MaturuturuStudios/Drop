@@ -5,6 +5,10 @@ using UnityEngine.EventSystems;
 public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
     #region Attributes
     /// <summary>
+    /// Title of the panel
+    /// </summary>
+    public Text title;
+    /// <summary>
     /// Dropdown of languages
     /// </summary>
     public Dropdown languages;
@@ -33,6 +37,17 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
     public void GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(languages.gameObject);
+        if (title != null) {
+            //mark title as panel selected
+            title.color = Color.cyan;
+        }
+    }
+
+    public void LoseFocus() {
+        if (title != null) {
+            title.color = Color.white;
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     public void Awake() {

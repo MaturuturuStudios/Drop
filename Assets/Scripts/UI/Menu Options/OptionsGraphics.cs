@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     #region Public attributes
     /// <summary>
+    /// Title of the panel
+    /// </summary>
+    public Text title;
+    /// <summary>
     /// A DropDown in which resolutions will show
     /// </summary>
     public Dropdown resolution;
@@ -69,6 +73,17 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     public void GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(resolution.gameObject);
+        if (title!=null){
+            //mark title as panel selected
+            title.color = Color.cyan;
+        }
+    }
+
+    public void LoseFocus() {
+        if (title != null) {
+            title.color = Color.white;
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
 
@@ -98,7 +113,7 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         //get the antialiasing
         _selectedAntiAliasing = QualitySettings.antiAliasing / 2;
         antialiasing.value = _selectedAntiAliasing;
-        
+
     }
 
     public void Start() {

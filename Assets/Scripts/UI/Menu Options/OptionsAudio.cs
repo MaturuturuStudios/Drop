@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     #region Public attributes
+    /// <summary>
+    /// Title of the panel
+    /// </summary>
+    public Text title;
     /// <summary>
     /// A DropDown in which resolutions will show
     /// </summary>
@@ -41,6 +46,17 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     public void GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(master.gameObject);
+        if (title != null) {
+            //mark title as panel selected
+            title.color = Color.cyan;
+        }
+    }
+
+    public void LoseFocus() {
+        if (title != null) {
+            title.color = Color.white;
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     public void Awake() {

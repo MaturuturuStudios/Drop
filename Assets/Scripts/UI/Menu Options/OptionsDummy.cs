@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class OptionsDummy : MonoBehaviour, SubOptionInterface {
+    /// <summary>
+    /// Title of the panel
+    /// </summary>
+    public Text title;
+
     /// <summary>
     /// Get the panel of this option (itself)
     /// </summary>
@@ -15,5 +21,12 @@ public class OptionsDummy : MonoBehaviour, SubOptionInterface {
     /// </summary>
     public void GetFocus() {
 
+    }
+
+    public void LoseFocus() {
+        if (title != null) {
+            title.color = Color.white;
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 }

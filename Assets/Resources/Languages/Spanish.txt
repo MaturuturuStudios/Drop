@@ -5,7 +5,7 @@ MenuRestart=Reiniciar
 MenuSelectLevel=Seleccionar Nivel
 MenuOptions=Opciones
 MenuPause=Pausa
-MenuMainMenu=Menu Principal
+MenuMainMenu=Menú Principal
 MenuExit=Salir
 MenuLoadGame=Cargar Juego
 MenuNewGame=Nuevo Juego
@@ -13,7 +13,7 @@ MenuNewGame=Nuevo Juego
 #Menu options
 MenuGraphics=Gráficos
 MenuAudio=Audio
-MenuInput=Entrada
+MenuInput=Controles
 MenuLanguage=Lenguaje
 MenuHelp=Ayuda
 MenuBack=Atrás

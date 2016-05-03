@@ -16,7 +16,7 @@ public class OptionsMenu : MonoBehaviour {
     #endregion
 
     #region Private Attributes
-    private GameObject _actualSelected;
+    private GameObject _actualMenuSelected;
 	/// <summary>
 	/// the actual panel selected
 	/// </summary>
@@ -39,10 +39,17 @@ public class OptionsMenu : MonoBehaviour {
     }
 
 	public void OnEnable() {
+        if (_actualPanel != null) {
+            _actualPanel.GetPanel().SetActive(false);
+        }
+        if (_actualMenuSelected!=null) {
+            _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
+        }
+
         //make sure the option is visible and running
         _actualPanel = firstPanelSelected.GetComponent<SubOptionInterface>();
         _actualPanel.GetPanel().SetActive(true);
-        _actualSelected = firstSelected;
+        _actualMenuSelected = firstSelected;
         //we have to select the option in update
         _selectOption = true;
 	}
@@ -60,8 +67,8 @@ public class OptionsMenu : MonoBehaviour {
         if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start))
             //check if focus is inside the suboption
             if (IsUnderSubOption())
-                //if yes, put focus on the button (the actual option selected
-                EventSystem.current.SetSelectedGameObject(_actualSelected);
+                //if yes, unselect the option
+                UnfocusOption();
             else
                 //if not, the focus is already on the buttons menu, come back
                 _menuNavigator.ComeBack();
@@ -84,6 +91,24 @@ public class OptionsMenu : MonoBehaviour {
         return false;
     }
 
+    public void UnfocusOption() {
+        //deselect the main option as a panel's option focused
+        _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
+        //and set the focus to the button
+        EventSystem.current.SetSelectedGameObject(_actualMenuSelected);
+    }
+
+    public void FocusOption() {
+        //get the option selected
+        _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
+        //mark it as selected (focusing in its panel)
+        _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", true);
+
+        //send the focus to the suboption panel
+        //set the focus on an element of the panel and get its title as panel under focus
+        _actualPanel.GetFocus();
+    }
+
 	/// <summary>
 	/// Change the panel, the game object is the panel with the script suboption
 	/// </summary>
@@ -94,15 +119,14 @@ public class OptionsMenu : MonoBehaviour {
 
         //unload the previous suboption and deselect the button associated
         _actualPanel.GetPanel().SetActive(false);
-        _actualSelected.GetComponent<Animator>().SetBool("Setted", false);
+        _actualPanel.LoseFocus();
 
         //store new suboption and get it setted
         _actualPanel = subOption;
-        _actualSelected = EventSystem.current.currentSelectedGameObject;
+        _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
         _actualPanel.GetPanel().SetActive(true);
-        _actualSelected.GetComponent<Animator>().SetBool("Setted", true);
-        //send the focus to the suboption panel
-        _actualPanel.GetFocus();
+        //_actualMenuSelected.GetComponent<Animator>().SetBool("Setted", true);
+        
     }
 
 	#endregion
