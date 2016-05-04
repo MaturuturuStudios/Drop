@@ -106,9 +106,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private CharacterSize _characterSize;
 
 	/// <summary>
-	/// A reference to the animator of the object (and the entire hierarchy).
+	/// List of observers subscribed to the character controller's
+	/// events.
 	/// </summary>
-	private Animator _animator;
+	private List<CharacterControllerListener> _listeners;
 
 	#endregion
 
@@ -162,15 +163,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Creates the original state
 		State = new CharacterControllerState();
 
-		// Initializes the parameter's stack and collisions list
+		// Initializes the parameter's stack and lists
 		_overrideParameters = new Stack<CharacterControllerParameters>();
 		_collisions = new List<Collider>();
+		_listeners = new List<CharacterControllerListener>();
 
 		// Recovers the desired components
 		_transform = transform;
 		_controller = GetComponent<CharacterController>();
 		_characterSize = GetComponent<CharacterSize>();
-		_animator = GetComponentInChildren<Animator>();
 
 		// Ignores the collisions with the hat layer
 		Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Character"), LayerMask.NameToLayer("Cloth"), true);
@@ -182,6 +183,32 @@ public class CharacterControllerCustom : MonoBehaviour {
 	void OnEnable() {
 		// Resets the state
 		State.Reset();
+	}
+
+	/// <summary>
+	/// Subscribes a listener to the controller's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(CharacterControllerListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the controller's events.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(CharacterControllerListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
 	}
 
 	#region Force Methods
@@ -474,8 +501,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		_jumpingTime = Parameters.jumpFrequency;
 
-		// Calls the animator
-		_animator.SetTrigger(CharacterAnimatorParameters.Jump);
+		// Notifies the listeners
+		foreach (CharacterControllerListener listener in _listeners)
+			listener.OnJump(this);
 	}
 
 	/// <summary>
@@ -577,14 +605,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Tries the movement of the entity according to it's velocity
 		Move(Velocity * Time.fixedDeltaTime);
-
-		/// Updates the animator with the right information
-		// Updates the speed
-		float normalizedSpeed = GetHorizontalVelocityRelative().magnitude / (Parameters.maxSpeed * Mathf.Sqrt(GetSize()));
-		_animator.SetFloat(CharacterAnimatorParameters.Speed, normalizedSpeed);
-
-		// Updates the grounded state
-		_animator.SetBool(CharacterAnimatorParameters.Grounded, State.IsGrounded);
 	}
 
 	#region Movement Methods
@@ -672,6 +692,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <param name="hit">Information of the collision</param>
 	public void OnControllerColliderHit(ControllerColliderHit hit) {
+		// Notifies the listeners
+		_listeners.ForEach(e => e.OnPreCollision(this, hit));
+
 		// There has been collisions this frame. Stops the wall jumping
 		State.HasCollisions = true;
 		_collisions.Add(hit.collider);
@@ -742,6 +765,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Calls the special method on the collided object
 		hit.gameObject.SendMessage("OnCustomControllerCollision", hit, SendMessageOptions.DontRequireReceiver);
+
+		// Notifies the listeners
+		_listeners.ForEach(e => e.OnPostCollision(this, hit));
 	}
 
 	#endregion
