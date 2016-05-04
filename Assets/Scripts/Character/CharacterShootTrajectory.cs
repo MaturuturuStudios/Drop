@@ -522,7 +522,12 @@ public class CharacterShootTrajectory : MonoBehaviour
             if (trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
             {
                 aux.Insert(i, trajectoryPoints[i].transform.position);
-            }       
+            }
+            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == false)
+            {
+                aux.Insert(i, trajectoryPoints[i].transform.position);
+                i = numOfTrajectoryPoints;
+            }
         }
         
         // pongo en el line renderer la capacidad del vector auxiliar donde hemos guardado la posicion de ls puntos de la trayectoria
