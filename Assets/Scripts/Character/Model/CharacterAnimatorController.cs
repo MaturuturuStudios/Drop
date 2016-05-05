@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Controls the animator and maps the right
+/// parameters.
+/// </summary>
 [RequireComponent(typeof(Animator))]
 public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener {
 	
@@ -19,6 +23,9 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	/// </summary>
 	private Animator _animator;
 
+	/// <summary>
+	/// Unity's method called right after the object is created.
+	/// </summary>
 	void Awake() {
 		// Retrieves the desired components
 		_ccc = GetComponentInParent<CharacterControllerCustom>();
@@ -26,11 +33,18 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		_animator = GetComponent<Animator>();
 	}
 
+	/// <summary>
+	/// Unity's method called at the beginning of the first
+	/// frame this object is active.
+	/// </summary>
 	void Start() {
 		// Subscribes itself to the controller events
 		_ccc.AddListener(this);
 	}
 
+	/// <summary>
+	/// Unity's method called each frame.
+	/// </summary>
 	void Update() {
 		// Updates the size
 		float sqrtSize = Mathf.Sqrt(_characterSize.GetSize());

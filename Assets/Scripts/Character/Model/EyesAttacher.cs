@@ -54,7 +54,7 @@ public class EyesAttacher : MonoBehaviour {
 	/// Rate the eyes will rotate to fit their desired
 	/// orientation.
 	/// </summary>
-	public float rotationSpeed = 2;
+	public float rotationSpeed = 10;
 
 	/// <summary>
 	/// The maximum radius of the character. Avoid small
@@ -149,17 +149,17 @@ public class EyesAttacher : MonoBehaviour {
 		RaycastHit hit = GetEyePosition(direction, radius);
 		leftEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
 		Quaternion targetRotation = Quaternion.LookRotation(hit.normal) * _leftEyeOriginalRotation;
-		//leftEye.rotation = Quaternion.Lerp(leftEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-		leftEye.rotation = targetRotation;
-        leftEye.localScale = _leftEyeOriginalScale * eyeScale;
+		leftEye.rotation = Quaternion.Lerp(leftEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+		//leftEye.rotation = targetRotation;
+		leftEye.localScale = _leftEyeOriginalScale * eyeScale;
 
 		// Right eye
 		direction = Quaternion.Euler(eyeSeparation.y, eyeSeparation.x, 0) * -center.forward;
 		hit = GetEyePosition(direction, radius);
 		rightEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
 		targetRotation = Quaternion.LookRotation(hit.normal) * _rightEyeOriginalRotation;
-		//rightEye.rotation = Quaternion.Lerp(rightEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-		rightEye.rotation = targetRotation;
+		rightEye.rotation = Quaternion.Lerp(rightEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+		//rightEye.rotation = targetRotation;
 		rightEye.localScale = _rightEyeOriginalScale * eyeScale;
 	}
 
