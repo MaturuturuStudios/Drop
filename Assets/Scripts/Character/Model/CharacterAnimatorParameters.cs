@@ -30,7 +30,17 @@ public static class CharacterAnimatorParameters {
 	public static readonly string Grounded = "grounded";
 
 	/// <summary>
-	/// Triggered when the player jumps.
+	/// Triggered when the player begins to jump.
 	/// </summary>
-	public static readonly string Jump = "jump";
+	public static readonly string BeginJump = "begin_jump";
+
+	/// <summary>
+	/// Time for the jump anticipation's animation to end.
+	/// </summary>
+	public static readonly string JumpDelay = "jump_delay";
+
+	/// <summary>
+	/// Triggered when the player performs the jump.
+	/// </summary>
+	public static readonly string PerformJump = "jump";
 }

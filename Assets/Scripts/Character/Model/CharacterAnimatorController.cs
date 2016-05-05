@@ -62,11 +62,6 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		_animator.SetBool(CharacterAnimatorParameters.Grounded, _ccc.State.IsGrounded);
 	}
 
-	public void OnJump(CharacterControllerCustom ccc) {
-		// Sets the jump trigger on the animator
-		_animator.SetTrigger(CharacterAnimatorParameters.Jump);
-	}
-
 	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		// Updates the collision speed
 		float collisionSpeed = -_ccc.Velocity.y;
@@ -74,6 +69,23 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	}
 
 	public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
+		// Do nothing
+	}
+
+	public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
+		// Sets the jump animation's delay on the animator
+		_animator.SetFloat(CharacterAnimatorParameters.JumpDelay, 1.0f / delay);
+
+		// Sets the jump trigger on the animator
+		_animator.SetTrigger(CharacterAnimatorParameters.BeginJump);
+	}
+
+	public void OnPerformJump(CharacterControllerCustom ccc) {
+		// Sets the jump trigger on the animator
+		_animator.SetTrigger(CharacterAnimatorParameters.PerformJump);
+	}
+
+	public void OnWallJump(CharacterControllerCustom ccc) {
 		// Do nothing
 	}
 }

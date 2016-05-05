@@ -142,6 +142,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private bool _wasSliding;
 
 	/// <summary>
+	/// If the character is waiting for the anticipation to end before jumping.
+	/// </summary>
+	private bool _waitingForJump;
+
+	/// <summary>
+	/// Remaining time for the jump anticipation to end.
+	/// </summary>
+	private float _jumpDelayTime;
+
+	/// <summary>
 	/// Position on the global coordinates of the entity while standing on a platform.
 	/// </summary>
 	private Vector3 _activeGlobalPlatformPoint;
@@ -462,17 +472,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Normal jump
 		if (!State.IsOnSlope) {
-			// Calculates the jump speed to reach the desired height
-			float jumpHeight = errorFactor * GetSize() * Parameters.jumpMagnitude;
-			float gravity = Parameters.Gravity.magnitude;
-			float jumpSpeed = -2 * gravity * Parameters.jumpHoldTimeMax;
-			float root = -jumpSpeed;
-			root *= root;
-			root += 8 * gravity * jumpHeight;
-			jumpSpeed += Mathf.Sqrt(root);
-			jumpSpeed /= 2;
-			SetVerticalForceRelative(jumpSpeed);
-			_jumpHoldTime = Parameters.jumpHoldTimeMax;
+			// Starts the jump anticipation
+			_waitingForJump = true;
+			_jumpDelayTime = Parameters.jumpDelay * Mathf.Sqrt(GetSize());
+
+			// Notifies the listeners
+			_listeners.ForEach(e => e.OnBeginJump(this, _jumpDelayTime));
 		}
 		// Wall jump
 		else if (Collisions.Where(o => o.CompareTag(Tags.WallJump)).Count() > 0) {
@@ -497,13 +502,34 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// Sends the player flying using the wall jump speed
 			Vector3 finalVelocity = Quaternion.Euler(0, 0, -gravityAngle) * new Vector3(horizontalSpeed, verticalSpeed, 0);
 			SendFlying(finalVelocity, false, true, timeToPeak);
+
+			_jumpingTime = Parameters.jumpFrequency;
+
+			// Notifies the listeners
+			_listeners.ForEach(e => e.OnWallJump(this));
 		}
+	}
+
+	private void PerformJump() {
+		// Calculates the jump speed to reach the desired height
+		float jumpHeight = errorFactor * GetSize() * Parameters.jumpMagnitude;
+		float gravity = Parameters.Gravity.magnitude;
+		float jumpSpeed = -2 * gravity * Parameters.jumpHoldTimeMax;
+		float root = -jumpSpeed;
+		root *= root;
+		root += 8 * gravity * jumpHeight;
+		jumpSpeed += Mathf.Sqrt(root);
+		jumpSpeed /= 2;
+		SetVerticalForceRelative(jumpSpeed);
+		_jumpHoldTime = Parameters.jumpHoldTimeMax;
 
 		_jumpingTime = Parameters.jumpFrequency;
 
+		// Resets the flags
+		_waitingForJump = false;
+
 		// Notifies the listeners
-		foreach (CharacterControllerListener listener in _listeners)
-			listener.OnJump(this);
+		_listeners.ForEach(e => e.OnPerformJump(this));
 	}
 
 	/// <summary>
@@ -521,6 +547,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public bool CanJump() {
 		// If it has recently jumped, it cannot jump again
 		if (_jumpingTime > 0)
+			return false;
+
+		// If it's waiting to jump, it cannot jump again
+		if (_waitingForJump)
 			return false;
 
 		// Checks the jumping behaviour
@@ -589,10 +619,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 		_jumpingTime -= Time.fixedDeltaTime;
 		_flyingTime -= Time.fixedDeltaTime;
 		_jumpHoldTime -= Time.fixedDeltaTime;
+		_jumpDelayTime -= Time.fixedDeltaTime;
+
+		// If the jump anticipation has ended, performs the jump
+		if (_jumpDelayTime < 0 && _waitingForJump)
+			PerformJump();
 
 		// If the flying timer has expired, stops the flight
 		if (_flyingTime < 0)
-			StopFlying();
+		StopFlying();
 
 		// Adds the gravity to the velocity. If sliding, multiply it by a drag factor.
 		float dragFactor = 1;
