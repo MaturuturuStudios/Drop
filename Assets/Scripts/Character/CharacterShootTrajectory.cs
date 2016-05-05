@@ -19,6 +19,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private float oldsize;
     private LineRenderer linerenderer;
     private List<Vector3> aux ;
+    private bool sizeanimation;
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
     /// </summary>
@@ -211,6 +212,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         lastWaypoint = 0;
     
         animshot = true;
+        sizeanimation = false;
 
     }
 
@@ -268,6 +270,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             if (moving)
             {
+                sizeanimation = true;
+
                 retrajectoring = true;
                 oldspeed = Mathf.MoveTowards(oldspeed, speed, 5 * Time.deltaTime); 
                 oldsize= Mathf.MoveTowards(oldsize, shootsize, Time.deltaTime);
@@ -276,10 +280,16 @@ public class CharacterShootTrajectory : MonoBehaviour
 
                 setTrajectoryPoints(pos, angle, oldspeed);
 
-                if (oldspeed == speed) moving = false;
+                if (oldspeed == speed)
+                {
+                    moving = false;
+                    sizeanimation = false;
+
+                }
             }
             else
             {
+                //animshot = false;
                 setTrajectoryPoints(pos, angle, speed);
                 retrajectoring = false;
             }
@@ -325,6 +335,13 @@ public class CharacterShootTrajectory : MonoBehaviour
             return true;
         }
     }
+
+    public bool sizeAnimation()
+    {
+        return sizeanimation;
+
+    }
+
    public void endingd()
     {
         

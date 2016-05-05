@@ -126,7 +126,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     public void Shoot()
     {
-        if ( (shootmode == true) && !st.animation())
+        if ( (shootmode == true) && !st.animation() && !st.sizeAnimation())
         {
             ccc.Parameters = null;
             shootmode = false;
