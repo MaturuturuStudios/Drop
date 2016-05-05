@@ -20,6 +20,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private LineRenderer linerenderer;
     private List<Vector3> aux ;
     private bool sizeanimation;
+    private GameObject listtrajectory;
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
     /// </summary>
@@ -163,6 +164,9 @@ public class CharacterShootTrajectory : MonoBehaviour
         linerenderer = (LineRenderer) Instantiate(renderer);
 
         linerenderer.transform.parent = ccc.transform;
+        listtrajectory = new GameObject();
+        listtrajectory.name = " List Trajectory ";
+        listtrajectory.transform.parent = ccc.transform;
 
         trajectoryPoints = new List<GameObject>();
 
@@ -171,7 +175,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             GameObject dot = (GameObject)Instantiate(TrajectoryPointPrefeb);
             dot.GetComponent<Renderer>().enabled = false;
             //dot.tag = ("Trajectory"+i);
-            dot.transform.parent = ccc.transform;
+            dot.transform.parent = listtrajectory.transform;
             trajectoryPoints.Insert(i, dot);
         }
 
@@ -226,7 +230,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             ball.SetActive(false);
 
         Destroy(sphere);
-        Destroy(ball);      
+        Destroy(ball);
 
     }
 
