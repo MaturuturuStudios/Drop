@@ -21,6 +21,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private List<Vector3> aux ;
     private bool sizeanimation;
     private GameObject listtrajectory;
+    private float oldrenderwidth,renderwidth;
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
     /// </summary>
@@ -151,10 +152,11 @@ public class CharacterShootTrajectory : MonoBehaviour
     void Awake()
     {      
         this.enabled = false;
+
         speed = 0;
         oldspeed = 0;
         radio = this.GetComponent<CharacterController>().radius;
-
+      
         aux = new List<Vector3>();
 
         angle = 45;
@@ -167,6 +169,9 @@ public class CharacterShootTrajectory : MonoBehaviour
         listtrajectory = new GameObject();
         listtrajectory.name = " List Trajectory ";
         listtrajectory.transform.parent = ccc.transform;
+
+        renderwidth = 1;
+        
 
         trajectoryPoints = new List<GameObject>();
 
@@ -194,6 +199,16 @@ public class CharacterShootTrajectory : MonoBehaviour
         shootsize = size;
         selecting = true;
 
+        oldrenderwidth = renderwidth;
+
+        if (oldsize > size)
+        {
+            renderwidth-=1;
+        }else if( size > oldsize)
+        {
+            renderwidth+=1;
+        }
+
     }
 
     /// <summary>
@@ -217,6 +232,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     
         animshot = true;
         sizeanimation = false;
+        
 
     }
 
@@ -249,8 +265,7 @@ public class CharacterShootTrajectory : MonoBehaviour
                 if (!retrajectoring)
                 {
                     if (selecting)
-                    {
-                        //ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
+                    {                      
                         selecting = false;
                         moving = true;
                     }
@@ -284,6 +299,9 @@ public class CharacterShootTrajectory : MonoBehaviour
 
                 setTrajectoryPoints(pos, angle, oldspeed);
 
+                oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime); ;
+
+                linerenderer.SetWidth(oldrenderwidth, oldrenderwidth);
                 if (oldspeed == speed)
                 {
                     moving = false;
@@ -297,6 +315,7 @@ public class CharacterShootTrajectory : MonoBehaviour
                 setTrajectoryPoints(pos, angle, speed);
                 retrajectoring = false;
             }
+            
             setvisibility();
             canshooot();
             ParticleTrip();
