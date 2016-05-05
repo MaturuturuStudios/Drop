@@ -72,7 +72,7 @@ public class CharacterShoot : MonoBehaviour {
 
             oldsize = sizeshot;
             sizeshot++;
-            if (sizeshot < GetComponent<CharacterSize>().GetSize())
+            if (sizeshot <= ( GetComponent<CharacterSize>().GetSize()/2))
                 st.selectingsize(sizeshot);
             else sizeshot = oldsize;
         }
@@ -89,7 +89,7 @@ public class CharacterShoot : MonoBehaviour {
       
             oldsize = sizeshot;
             sizeshot--;
-            
+
             if (sizeshot > 0)
                 st.selectingsize(sizeshot);
             else sizeshot = oldsize;
@@ -126,7 +126,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     public void Shoot()
     {
-        if ( (shootmode == true) && !st.animation() && !st.sizeAnimation())
+        if ((shootmode == true) && !st.animation() && !st.sizeAnimation() )
         {
             ccc.Parameters = null;
             shootmode = false;
