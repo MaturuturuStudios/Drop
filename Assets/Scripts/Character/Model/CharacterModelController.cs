@@ -422,19 +422,6 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 				return -1;
 		}
 	}
-	
-	/// <summary>
-	/// Unity's method called in the editor to draw helpers.
-	/// </summary>
-	void OnDrawGizmos() {
-		if (Application.isPlaying)
-			return;
-
-		// Scales the eyes
-		Awake();
-		ScaleEyes(_parent.lossyScale.x);
-		ScaleHat(_parent.lossyScale.x);
-	}
 
 	#endregion
 }

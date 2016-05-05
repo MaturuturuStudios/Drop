@@ -37,7 +37,7 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		_animator.SetFloat(CharacterAnimatorParameters.SizeFactor, 1.0f / sqrtSize);
 
 		// Updates the speed
-		float normalizedSpeed = _ccc.Velocity.x / (_ccc.Parameters.maxSpeed * sqrtSize);
+		float normalizedSpeed = Mathf.Abs(_ccc.Velocity.x / (_ccc.Parameters.maxSpeed * sqrtSize));
 		_animator.SetFloat(CharacterAnimatorParameters.Speed, normalizedSpeed);
 
 		// Updates the falling speed

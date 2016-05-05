@@ -7,7 +7,6 @@ using System.Linq;
 /// separation, scale and penetration.
 /// </summary>
 [RequireComponent(typeof(MeshCollider))]
-[ExecuteInEditMode]
 public class EyesAttacher : MonoBehaviour {
 
 	#region Public Attributes
@@ -150,15 +149,17 @@ public class EyesAttacher : MonoBehaviour {
 		RaycastHit hit = GetEyePosition(direction, radius);
 		leftEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
 		Quaternion targetRotation = Quaternion.LookRotation(hit.normal) * _leftEyeOriginalRotation;
-        leftEye.rotation = Quaternion.RotateTowards(leftEye.rotation, targetRotation, rotationSpeed);
-		leftEye.localScale = _leftEyeOriginalScale * eyeScale;
+		//leftEye.rotation = Quaternion.Lerp(leftEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+		leftEye.rotation = targetRotation;
+        leftEye.localScale = _leftEyeOriginalScale * eyeScale;
 
 		// Right eye
 		direction = Quaternion.Euler(eyeSeparation.y, eyeSeparation.x, 0) * -center.forward;
 		hit = GetEyePosition(direction, radius);
 		rightEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
 		targetRotation = Quaternion.LookRotation(hit.normal) * _rightEyeOriginalRotation;
-		rightEye.rotation = Quaternion.RotateTowards(rightEye.rotation, targetRotation, rotationSpeed);
+		//rightEye.rotation = Quaternion.Lerp(rightEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+		rightEye.rotation = targetRotation;
 		rightEye.localScale = _rightEyeOriginalScale * eyeScale;
 	}
 
