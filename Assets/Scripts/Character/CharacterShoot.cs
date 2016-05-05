@@ -66,7 +66,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to increase the size of the drop shooted
 	/// </summary>
     public void IncreaseSize() {
-        if ((shootmode == true))
+        if ((shootmode == true) && !st.animation())
         {
             float oldsize;
 
@@ -83,7 +83,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     public void DecreaseSize()
     {
-        if ((shootmode == true))
+        if ((shootmode == true) && !st.animation())
         {
             float oldsize;
       
