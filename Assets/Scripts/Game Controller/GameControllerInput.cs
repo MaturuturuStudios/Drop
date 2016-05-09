@@ -6,6 +6,7 @@ public class GameControllerInput : MonoBehaviour {
 	// Internal references
 	private GameControllerIndependentControl _switcher;
 	private MainCameraController _mainCameraController;
+	private GameControllerHelp _helpController;
 
 	//menu navigator of the scene
 	private MenuNavigator _ui;
@@ -26,6 +27,7 @@ public class GameControllerInput : MonoBehaviour {
 		// Retrives the independent control component
 		_switcher = GetComponent<GameControllerIndependentControl>();
 		_mainCameraController = GetComponentInChildren<MainCameraController>();
+		_helpController = GetComponent<GameControllerHelp>();
 
 		_ui = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
 	}
@@ -52,7 +54,13 @@ public class GameControllerInput : MonoBehaviour {
 			// Jump input
 			float jumpInput = Input.GetAxis(Axis.Jump);
 			cccp.JumpInput = jumpInput;
-			
+
+			// Help input
+			bool help = Input.GetButtonDown(Axis.Back);
+			if (help)
+				_helpController.ToggleHelp();
+			_helpController.UpdateAutoShow(hInput, vInput);
+
 			// Control that triggers are pressed only one time
 			if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
 				_switcher.ControlNextDrop();
