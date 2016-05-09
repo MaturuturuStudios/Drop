@@ -54,7 +54,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Size of the drop that will be shooted
     /// </summary>
-    private float shootsize = 1;
+    public float shootsize = 1;	// Changed by Nacho: Other objects may need to read this
 
     /// <summary>
     /// Vector auxiliar to keep data
