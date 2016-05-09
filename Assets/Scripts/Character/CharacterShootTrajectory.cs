@@ -402,10 +402,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void QuitTrajectory()
     {
 
-        if (ball.transform.position.magnitude < sphere.transform.position.magnitude)
-        {
-            sphere.GetComponent<Renderer>().enabled = false;
-        }
+        
 
         if (finalnextWaypoint ==0)
         {
@@ -431,8 +428,12 @@ public class CharacterShootTrajectory : MonoBehaviour
         }
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
         ball.transform.position = (fullPath * faction_of_traveled) + trajectoryPoints[finallastWaypoint].transform.position;
-        trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;            
+        trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;
 
+        if (ball.transform.position.magnitude <= sphere.transform.position.magnitude)
+        {
+            sphere.GetComponent<Renderer>().enabled = false;
+        }
 
     }
 

@@ -109,7 +109,7 @@ public class CharacterShoot : MonoBehaviour {
                 sizeshot = 1;
                 ccc.Parameters = CharacterControllerParameters.ShootingParameters;
             }
-            else if ((shootmode == true))
+            else if ((shootmode == true) && !st.animation())
             {
                 shootmode = false;
                 st.endingd();
