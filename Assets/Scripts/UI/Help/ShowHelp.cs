@@ -15,7 +15,7 @@ public abstract class ShowHelp : MonoBehaviour {
 	/// <summary>
 	/// Unity's method called right after the object is created.
 	/// </summary>
-	void Awake() {
+	protected void Awake() {
 		// Retrieves the desired components
 		_helpController = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerHelp>();
 	}
@@ -24,7 +24,7 @@ public abstract class ShowHelp : MonoBehaviour {
 	/// Unity's method called at the beginning of the first frame
 	/// this object is active.
 	/// </summary>
-	void Start() {
+	protected void Start() {
 		// Hides the help by default
 		Hide();
 	}
@@ -32,15 +32,15 @@ public abstract class ShowHelp : MonoBehaviour {
 	/// <summary>
 	/// Unity's method called when this object becomes active.
 	/// </summary>
-	void OnEnable() {
+	protected void OnEnable() {
 		// Subscribes itself to the help controller
 		_helpController.AddListener(this);
 	}
-	
+
 	/// <summary>
 	/// Unity's method called when this object becomes inactive.
 	/// </summary>
-	void OnDisable() {
+	protected void OnDisable() {
 		// Unsubscribes itself to the help controller
 		_helpController.RemoveListener(this);
 	}

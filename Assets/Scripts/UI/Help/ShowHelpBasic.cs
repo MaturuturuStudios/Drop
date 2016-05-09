@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// Simple help component that shows and hides another
 /// game object.
 /// </summary>
@@ -10,13 +8,13 @@ public class ShowHelpBasic : ShowHelp {
 	/// The game object containing the help. It will be
 	/// activated and deactivated.
 	/// </summary>
-	public GameObject helpObject;
+	public HelpItem helpObject;
 
 	protected override void OnShow() {
-		helpObject.SetActive(true);
+		helpObject.Show();
 	}
 
 	protected override void OnHide() {
-		helpObject.SetActive(false);
+		helpObject.Hide();
 	}
 }

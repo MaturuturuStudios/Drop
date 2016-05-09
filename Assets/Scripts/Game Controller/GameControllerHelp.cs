@@ -36,7 +36,7 @@ public class GameControllerHelp : MonoBehaviour {
 	/// List of the help elements registed on the
 	/// scene.
 	/// </summary>
-	private List<ShowHelp> _helpListeners;
+	private List<ShowHelp> _helpListeners = new List<ShowHelp>();
 
 	#endregion
 
@@ -66,17 +66,15 @@ public class GameControllerHelp : MonoBehaviour {
 	/// </summary>
 	private bool _helpShown;
 
+	/// <summary>
+	/// Flag that indicates if the help was shown
+	/// automatically.
+	/// </summary>
+	private bool _autoShown;
+
 	#endregion
 
 	#region Methods
-
-	/// <summary>
-	/// Unity's method called right after this objet
-	/// is created.
-	/// </summary>
-	void Awake() {
-		_helpListeners = new List<ShowHelp>();
-    }
 
 	/// <summary>
 	/// Toggles the help elements, showing or
@@ -116,6 +114,8 @@ public class GameControllerHelp : MonoBehaviour {
 	/// </summary>
 	public void HideHelp() {
 		_helpShown = false;
+		_autoShown = false;
+		_autoShowTimer = autoShowTime;
 		foreach (ShowHelp listener in _helpListeners)
 			listener.Hide();
 	}
@@ -129,20 +129,34 @@ public class GameControllerHelp : MonoBehaviour {
 	public void UpdateAutoShow(float horizontalInput, float verticalInput) {
 		if (horizontalInput != 0 || verticalInput != 0)
 			if (autoShow)
-				_autoShowTimer = autotHideTime;
+				_autoShowTimer = autoShowTime;
 	}
+
+	/// <summary>
+	/// Unity's method called when the component is
+	/// enabled.
+	/// </summary>
+	void OnEnable() {
+		_autoShowTimer = autoShowTime;
+		_autoShown = false;
+    }
 
 	/// <summary>
 	/// Unity's method called each frame.
 	/// </summary>
 	void Update() {
 		_autoHideTimer -= Time.deltaTime;
-		if (_autoHide && _autoHideTimer < 0)
+		if (!_autoShown && _helpShown && _autoHide && _autoHideTimer < 0)
 			HideHelp();
 
 		_autoShowTimer -= Time.deltaTime;
-		if (autoShow && _autoShowTimer < 0)
+		if (autoShow && _autoShowTimer < 0) {
 			ShowHelp();
+			_autoShown = true;
+        }
+		else if (autoShow && _autoShown && _helpShown) {
+			HideHelp();
+		}
 	}
 
 	/// <summary>

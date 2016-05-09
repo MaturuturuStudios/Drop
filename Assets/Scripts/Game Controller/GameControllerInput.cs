@@ -55,12 +55,6 @@ public class GameControllerInput : MonoBehaviour {
 			float jumpInput = Input.GetAxis(Axis.Jump);
 			cccp.JumpInput = jumpInput;
 
-			// Help input
-			bool help = Input.GetButtonDown(Axis.Back);
-			if (help)
-				_helpController.ToggleHelp();
-			_helpController.UpdateAutoShow(hInput, vInput);
-
 			// Control that triggers are pressed only one time
 			if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
 				_switcher.ControlNextDrop();
@@ -121,8 +115,10 @@ public class GameControllerInput : MonoBehaviour {
 				Debug.Log(Axis.Irrigate);
 
 			//Select button
-			if (Input.GetButtonDown(Axis.Back))
-				Debug.Log(Axis.Back);
+			bool help = Input.GetButtonDown(Axis.Back);
+			if (help)
+				_helpController.ToggleHelp();
+			_helpController.UpdateAutoShow(hInput, vInput);
 		}
 		else if(_ui!=null){
 			//Select button

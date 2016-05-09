@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// Help component which shows or hides another game objects
 /// containing the actual help. Depending on a condition, it
 /// may show different information.
@@ -10,35 +8,43 @@ public abstract class ShowHelpSpecial : ShowHelp {
 	/// <summary>
 	/// Object containing the normal help information.
 	/// </summary>
-	public GameObject helpObjectNormal;
+	public HelpItem helpObjectNormal;
 
 	/// <summary>
 	/// Object containing the special help information.
 	/// </summary>
-	public GameObject helpObjectSpecial;
+	public HelpItem helpObjectSpecial;
 
 	/// <summary>
 	/// Unity's method called each frame.
 	/// </summary>
 	void Update() {
-		if (_shown)
-			OnShow();
+		if (_shown) {
+			if (IsSpecialTriggered()) {
+				helpObjectNormal.gameObject.SetActive(false);
+				helpObjectSpecial.gameObject.SetActive(true);
+			}
+			else {
+				helpObjectNormal.gameObject.SetActive(true);
+				helpObjectSpecial.gameObject.SetActive(false);
+			}
+		}
 	}
 
 	protected override void OnShow() {
 		if (IsSpecialTriggered()) {
-			helpObjectNormal.SetActive(false);
-			helpObjectSpecial.SetActive(true);
+			helpObjectNormal.Hide();
+			helpObjectSpecial.Show();
 		}
 		else {
-			helpObjectNormal.SetActive(true);
-			helpObjectSpecial.SetActive(false);
+			helpObjectNormal.Show();
+			helpObjectSpecial.Hide();
 		}
 	}
 
 	protected override void OnHide() {
-		helpObjectNormal.SetActive(false);
-		helpObjectSpecial.SetActive(false);
+		helpObjectNormal.Hide();
+		helpObjectSpecial.Hide();
 	}
 
 	/// <summary>
