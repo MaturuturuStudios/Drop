@@ -216,6 +216,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
+
         shootsize = 1;
         endscript = false;
         
@@ -241,7 +242,6 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// </summary>
     public void OnDisable()
     {
-       
         if (ball != null)
             ball.SetActive(false);
 
@@ -276,6 +276,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 
                     angle -= h;
                     angle += v;
+
+                   // Debug.Log(" axis horizontal " + h);
 
                     if (angle < 0) angle = 0;
                     if (angle > 180) angle = 180;
@@ -377,7 +379,8 @@ public class CharacterShootTrajectory : MonoBehaviour
     }
 
     public void finishing()
-    {
+    {      
+
         for (int i = 0; i < numOfTrajectoryPoints; i++)
         {
              trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
@@ -393,11 +396,13 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void QuitTrajectory()
     {
-        
+
         if (finalnextWaypoint ==0)
         {
             trajectoryPoints[finalnextWaypoint].GetComponent<Renderer>().enabled = false;
-           
+
+            renderwidth = 1;
+            linerenderer.SetWidth(1, 1);
             this.enabled = false;
         }
 
@@ -421,6 +426,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         sphere.GetComponent<Renderer>().enabled = false;
 
         drawlinerenderer();
+
     }
 
 
