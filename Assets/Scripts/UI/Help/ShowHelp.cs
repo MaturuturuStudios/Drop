@@ -3,12 +3,18 @@
 /// <summary>
 /// Manages the help elements on the object.
 /// </summary>
-public abstract class ShowHelp : MonoBehaviour {
+public class ShowHelp : MonoBehaviour {
 
-	/// <summary>
-	/// Reference to the game controller's help component.
-	/// </summary>
-	protected GameControllerHelp _helpController;
+    /// <summary>
+    /// The game object containing the help. It will be
+    /// activated and deactivated.
+    /// </summary>
+    public HelpItem helpObject;
+
+    /// <summary>
+    /// Reference to the game controller's help component.
+    /// </summary>
+    protected GameControllerHelp _helpController;
 
 	protected bool _shown;
 
@@ -50,7 +56,7 @@ public abstract class ShowHelp : MonoBehaviour {
 	/// </summary>
 	public void Show() {
 		_shown = true;
-		OnShow();
+        helpObject.Show();
 	}
 
 	/// <summary>
@@ -58,18 +64,6 @@ public abstract class ShowHelp : MonoBehaviour {
 	/// </summary>
 	public void Hide() {
 		_shown = false;
-		OnHide();
-	}
-
-	/// <summary>
-	/// Delegate for the child classes to specify how the help
-	/// is shown.
-	/// </summary>
-	protected abstract void OnShow();
-	
-	/// <summary>
-	/// Delegate for the child classes to specify how the help
-	/// is hidden.
-	/// </summary>
-	protected abstract void OnHide();
+        helpObject.Hide();
+    }
 }
