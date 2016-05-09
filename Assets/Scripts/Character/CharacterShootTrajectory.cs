@@ -27,6 +27,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     private float journeyLength;
     private float faction_of_path_traveled;
+    private float faction_of_traveled;
     private int lastWaypoint, nextWaypoint, finalWaypoint;
 
     private int finallastWaypoint, finalnextWaypoint;
@@ -256,9 +257,11 @@ public class CharacterShootTrajectory : MonoBehaviour
     void Update()
     {
         if (endscript)
-        {
+        {         
             QuitTrajectory();
-        }else{
+            drawlinerenderer();
+        }
+        else{
 
             if (animshot == false)
             {
@@ -277,7 +280,7 @@ public class CharacterShootTrajectory : MonoBehaviour
                     angle -= h;
                     angle += v;
 
-                   // Debug.Log(" axis horizontal " + h);
+                    //Debug.Log(" axis horizontal " + h);
 
                     if (angle < 0) angle = 0;
                     if (angle > 180) angle = 180;
@@ -298,10 +301,11 @@ public class CharacterShootTrajectory : MonoBehaviour
                 oldsize= Mathf.MoveTowards(oldsize, shootsize, Time.deltaTime);
 
                 ball.transform.localScale = new Vector3(oldsize, oldsize, oldsize);
+                sphere.transform.localScale=new Vector3(oldsize, oldsize, oldsize);
 
                 setTrajectoryPoints(pos, angle, oldspeed);
 
-                oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime); ;
+                oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime); ;               
 
                 linerenderer.SetWidth(oldrenderwidth, oldrenderwidth);
                 if (oldspeed == speed)
@@ -320,10 +324,11 @@ public class CharacterShootTrajectory : MonoBehaviour
             
             setvisibility();
             canshooot();
-            ParticleTrip();
+            
             drawlinerenderer();
 
         }
+        ParticleTrip();
     }
 
 
@@ -397,6 +402,11 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void QuitTrajectory()
     {
 
+        if (ball.transform.position.magnitude < sphere.transform.position.magnitude)
+        {
+            sphere.GetComponent<Renderer>().enabled = false;
+        }
+
         if (finalnextWaypoint ==0)
         {
             trajectoryPoints[finalnextWaypoint].GetComponent<Renderer>().enabled = false;
@@ -407,30 +417,24 @@ public class CharacterShootTrajectory : MonoBehaviour
         }
 
         Vector3 fullPath = trajectoryPoints[finalnextWaypoint].transform.position - trajectoryPoints[finallastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-        faction_of_path_traveled += speedAnimation * Time.deltaTime; //animate along the path
+        faction_of_traveled += speedAnimation * Time.deltaTime; //animate along the path
         
 
-        if (faction_of_path_traveled > 1) //move to next waypoint
+        if (faction_of_traveled > 1) //move to next waypoint
         {
             finallastWaypoint--;
             finalnextWaypoint--;
 
-            faction_of_path_traveled = 0;
+            faction_of_traveled = 0;
 
             
         }
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
-        ball.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[finallastWaypoint].transform.position;
-        trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;
-        
-        sphere.GetComponent<Renderer>().enabled = false;
+        ball.transform.position = (fullPath * faction_of_traveled) + trajectoryPoints[finallastWaypoint].transform.position;
+        trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;            
 
-        drawlinerenderer();
 
     }
-
-
-
 
     ///  <summary>
     /// This fuctions return the shoot vector for the shoot script
@@ -488,6 +492,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
             ball.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
+            sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
             trajectoryPoints[lastWaypoint].GetComponent<Renderer>().enabled = true;
             finalnextWaypoint = lastWaypoint;
             finallastWaypoint = nextWaypoint;
