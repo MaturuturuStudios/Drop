@@ -168,6 +168,8 @@ public class GameControllerHelp : MonoBehaviour {
 		if (_helpListeners.Contains(listener))
 			return false;
 		_helpListeners.Add(listener);
+		if (_helpShown)
+			listener.Show();
 		return true;
 	}
 
@@ -180,6 +182,8 @@ public class GameControllerHelp : MonoBehaviour {
 		if (!_helpListeners.Contains(listener))
 			return false;
 		_helpListeners.Remove(listener);
+		if (!_helpShown)
+			listener.Hide();
 		return true;
 	}
 

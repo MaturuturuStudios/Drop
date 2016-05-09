@@ -16,7 +16,11 @@ public class ShowHelp : MonoBehaviour {
     /// </summary>
     protected GameControllerHelp _helpController;
 
-	protected bool _shown;
+	/// <summary>
+	/// Flag that indicates the object has already made it's
+	/// Start call.
+	/// </summary>
+	protected bool _started = false;
 
 	/// <summary>
 	/// Unity's method called right after the object is created.
@@ -31,16 +35,18 @@ public class ShowHelp : MonoBehaviour {
 	/// this object is active.
 	/// </summary>
 	protected void Start() {
-		// Hides the help by default
-		Hide();
-	}
+		// Subscribes itself to the help controller
+		_helpController.AddListener(this);
+		_started = true;
+    }
 
 	/// <summary>
 	/// Unity's method called when this object becomes active.
 	/// </summary>
 	protected void OnEnable() {
 		// Subscribes itself to the help controller
-		_helpController.AddListener(this);
+		if (_started)
+			_helpController.AddListener(this);
 	}
 
 	/// <summary>
@@ -48,14 +54,14 @@ public class ShowHelp : MonoBehaviour {
 	/// </summary>
 	protected void OnDisable() {
 		// Unsubscribes itself to the help controller
-		_helpController.RemoveListener(this);
+		if (_started)
+			_helpController.RemoveListener(this);
 	}
 
 	/// <summary>
 	/// Shows the help element.
 	/// </summary>
 	public void Show() {
-		_shown = true;
         helpObject.Show();
 	}
 
@@ -63,7 +69,6 @@ public class ShowHelp : MonoBehaviour {
 	/// Hides the help element.
 	/// </summary>
 	public void Hide() {
-		_shown = false;
         helpObject.Hide();
     }
 }

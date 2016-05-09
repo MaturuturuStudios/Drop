@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Help item for showing character's information.
+/// Help item for showing characters' information.
 /// </summary>
 [RequireComponent(typeof(TextMesh))]
 public class CharacterHelpItem : HelpItem {
