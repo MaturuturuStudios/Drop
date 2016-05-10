@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 
 public class WaterRepulsion : MonoBehaviour {
@@ -30,10 +29,11 @@ public class WaterRepulsion : MonoBehaviour {
         //no drop? get out
         if (_enteredDrop.Count == 0) return;
 		Vector3 directionShoot = pointTarget.position - pointExpulsion.position;
-		if (directionShoot.x < 0 && angle < 90)	angle += 90;
+        if (directionShoot.x < 0 && angle < 90) angle += (90 - angle) * 2;
+        else if (directionShoot.x > 0 && angle > 90) angle += (90 - angle) * 2;
 
         //for every drop in water...
-        foreach(GameObject drop in _enteredDrop) {
+        foreach (GameObject drop in _enteredDrop) {
             //get position and bounds
             Vector3 position = drop.transform.position;
             float halfSize = drop.GetComponent<CharacterSize>().GetSize() * 0.5f;
@@ -59,9 +59,8 @@ public class WaterRepulsion : MonoBehaviour {
             if (result) {
                 CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
                 //put drop on point expulsion
-                controller.Stop();
+                //controller.Stop();
 				drop.transform.position = pointExpulsion.position;
-
                 //send it flying
 				controller.SendFlying(GetNeededVelocityVector());
             }
@@ -70,7 +69,8 @@ public class WaterRepulsion : MonoBehaviour {
 
 	public Vector3 GetNeededVelocityVector(){
 		Vector3 velocityVector=Vector3.zero;
-		float angleRadian = angle * Mathf.Deg2Rad;
+       
+        float angleRadian = angle * Mathf.Deg2Rad;
 		float velocity = GetNeededVelocity(angleRadian);
 
 		velocityVector.x = Mathf.Cos (angleRadian) * velocity;
