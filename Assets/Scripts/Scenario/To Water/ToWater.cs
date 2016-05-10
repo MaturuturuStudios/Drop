@@ -20,6 +20,10 @@ public class ToWater : ActionPerformer
 
     private bool not_change_guizmo = false;
 
+    private bool lerping = false;
+
+    private CharacterControllerCustom ccc;
+
     #endregion
 
     #region Public Attributes
@@ -51,37 +55,44 @@ public class ToWater : ActionPerformer
     public void Update()
     {
 
+        if (lerping)
+        {
+            if (ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed > 0)
+            {
+                 
+                
 
+                size = ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed;
+                oldsize = ccc.GetComponent<CharacterSize>().GetSize();
+
+                oldsize = Mathf.MoveTowards(oldsize, size, Time.deltaTime); ;
+                ccc.GetComponent<CharacterSize>().SetSize((int)oldsize);
+
+
+                float oldy = this.transform.position.y;
+                height = Mathf.MoveTowards(height, max_height, Time.deltaTime); 
+
+                float newy = this.transform.position.y;
+                newy += newy - oldy;
+                Vector3 aux;
+                aux.x = this.transform.position.x;
+                aux.z = this.transform.position.z;
+                aux.y = height;
+                this.transform.position = aux;
+            }
+            lerping = false;
+
+        }
     }
 
 
     protected override void OnAction(GameObject character)
     {
-        CharacterControllerCustom ccc = character.GetComponent<CharacterControllerCustom>();
+        ccc = character.GetComponent<CharacterControllerCustom>();
 
         if (ccc != null)
         {
-            Debug.Log(" entrammos ");
-            if (ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed > 0)
-            {
-                float oldy=this.transform.position.y;
-                //height=Mathf.MoveTowards(height, max_height, Time.deltaTime);  
-                this.transform.localScale = new Vector3(1, max_height,1);
-
-                size = ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed;
-                oldsize = ccc.GetComponent<CharacterSize>().GetSize();
-
-                //oldsize = Mathf.MoveTowards(oldsize, size, Time.deltaTime); ;
-                ccc.GetComponent<CharacterSize>().SetSize((int)size);
-
-                float newy = this.transform.position.y;
-                newy+=newy-oldy;
-                Vector3 aux;
-                aux.x = this.transform.position.x;
-                aux.z = this.transform.position.z;
-                aux.y = this.transform.position.y+ max_height/2 ;
-                this.transform.position = aux;
-            }
+            lerping = true;
         }   
                // Debug.Log(" angle " + transform.eulerAngles);                  
 
