@@ -19,8 +19,8 @@ public class OptionsDummy : MonoBehaviour, SubOptionInterface {
     /// <summary>
     /// Get the focus to the panel
     /// </summary>
-    public void GetFocus() {
-
+    public bool GetFocus() {
+        return false;
     }
 
     public void LoseFocus() {

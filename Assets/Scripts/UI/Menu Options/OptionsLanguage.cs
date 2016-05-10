@@ -34,13 +34,14 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
     /// <summary>
     /// Get the focus to the panel
     /// </summary>
-    public void GetFocus() {
+    public bool GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(languages.gameObject);
         if (title != null) {
             //mark title as panel selected
             title.color = Color.cyan;
         }
+        return true;
     }
 
     public void LoseFocus() {

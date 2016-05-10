@@ -10,7 +10,8 @@ public interface SubOptionInterface {
     /// <summary>
     /// Get the focus to the panel (mark the title as panel under focus)
     /// </summary>
-    void GetFocus();
+    /// <returns>true if have a focus, false if there is nothing to focus</returns>
+    bool GetFocus();
 
     /// <summary>
     /// Set the panel as not focused and unselect focus

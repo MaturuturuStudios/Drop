@@ -31,7 +31,7 @@ public class OptionsMenu : MonoBehaviour {
 	/// </summary>
 	protected MenuNavigator _menuNavigator;
 
-
+    private bool _triggerPressed;
     #endregion
 
     #region Methods
@@ -64,40 +64,34 @@ public class OptionsMenu : MonoBehaviour {
 			EventSystem.current.SetSelectedGameObject(firstSelected);
         }
 
-		/*
+		
 		// Control that triggers are pressed only one time
-		if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
-			_switcher.ControlNextDrop();
+		if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) != 0) {
 			_triggerPressed = true;
-		}
-		else if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) < 0) {
-			_switcher.ControlBackDrop();
-			_triggerPressed = true;
-		}
-		else if (Input.GetAxis(Axis.SelectDrop) == 0)
+
+            //change options with triggers
+            Selectable select = null;
+            Selectable actualSelected;
+            bool setFocusInOption = IsUnderSubOption();
+            actualSelected = _actualMenuSelected.GetComponent<Selectable>();
+
+            //check if left or rigth
+            if (Input.GetAxis(Axis.SelectDrop) > 0) {
+                select = actualSelected.FindSelectableOnDown();
+            } else {
+                select = actualSelected.FindSelectableOnUp();
+            }
+
+            //if have a selection, select it
+            if (select != null) {
+                //if suboption, quit the actual selection and give it to the next
+                //TODO
+                StartCoroutine(DelaySelect(select));
+            }
+		
+        }else if (Input.GetAxis(Axis.SelectDrop) == 0)
 			_triggerPressed = false;
-		*/
-
-		//change options with triggers
-		if(Input.GetAxis(Axis.SelectDrop)!=0){
-			Selectable select = null;
-			Selectable actualSelected;
-			bool setFocusInOption = IsUnderSubOption ();
-			actualSelected = _actualMenuSelected.GetComponent<Selectable>();
-
-			//check if left or rigth
-			if (Input.GetAxis (Axis.SelectDrop) > 0) {
-				select = actualSelected.FindSelectableOnDown();
-			} else {
-				select = actualSelected.FindSelectableOnUp();
-			}
-			if (select != null) {
-				//if suboption, quit the actual selection and give it to the next
-				//TODO
-
-				StartCoroutine (DelaySelect (select));
-			}
-		}
+		
 
         //B, back or start
         if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start))
@@ -151,12 +145,14 @@ public class OptionsMenu : MonoBehaviour {
     public void FocusOption() {
         //get the option selected
         _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
-        //mark it as selected (focusing in its panel)
-        _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", true);
+        
 
         //send the focus to the suboption panel
         //set the focus on an element of the panel and get its title as panel under focus
-        _actualPanel.GetFocus();
+        if (_actualPanel.GetFocus()) {
+            //if there is something to focus, mark it as selected (focusing in its panel)
+            _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", true);
+        }
     }
 
 	/// <summary>
@@ -164,6 +160,11 @@ public class OptionsMenu : MonoBehaviour {
 	/// </summary>
 	/// <param name="panel">new panel</param>
 	public void ChangePanel(GameObject panel) {
+        if (panel == null) {
+            //option nullable (come back) only set the focus
+            _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
+            return;
+        }
         //get the script
         SubOptionInterface subOption = panel.GetComponent<SubOptionInterface>();
 
