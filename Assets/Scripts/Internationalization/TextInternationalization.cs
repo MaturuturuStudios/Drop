@@ -15,11 +15,12 @@ public class TextInternationalization : InterfaceLanguage {
         textObject = this.GetComponent<Text>();
 
         //Run the method one first time
-        LanguageManager languageManager = LanguageManager.Instance;
+		LanguageManager languageManager = LanguageManager.Instance;
         OnChangeLanguage(languageManager);
     }
 
     public override void OnChangeLanguage(LanguageManager languageManager) {
-        textObject.text = LanguageManager.Instance.GetText(keyText);
+		if(textObject!=null)
+        	textObject.text = LanguageManager.Instance.GetText(keyText);
     }
 }

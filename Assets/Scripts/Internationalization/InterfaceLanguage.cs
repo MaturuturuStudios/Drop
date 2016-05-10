@@ -2,8 +2,13 @@
 using System.Collections;
 
 public abstract class InterfaceLanguage : MonoBehaviour {
+	
     //suscribe to the language manager
 	void OnEnable () {
+		//get the posible changes during being disabled
+
+		OnChangeLanguage(LanguageManager.Instance);
+
         //Subscribe to the change language event
         LanguageManager languageManager = LanguageManager.Instance;
         languageManager.AddListener(this);
