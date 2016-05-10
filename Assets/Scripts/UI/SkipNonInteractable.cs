@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 /// <summary>
 /// Skip non interactable.
-/// Original author: user TechCor forum.unity3d.com/members/techcor.811569
+/// Modified script of original author: user TechCor forum.unity3d.com/members/techcor.811569
 /// </summary>
 public class SkipNonInteractable : MonoBehaviour, ISelectHandler {
 
@@ -23,36 +23,41 @@ public class SkipNonInteractable : MonoBehaviour, ISelectHandler {
 	/// </summary>
 	/// <param name="evData">Ev data.</param>
 	public void OnSelect(BaseEventData evData){
+		//if interactable, nothing to do
 		if (_selectable.interactable) return;
 
+		Selectable select = null;
 		if (Input.GetAxis("Horizontal") < 0) {
-			Selectable select = _selectable.FindSelectableOnLeft();
+			select = _selectable.FindSelectableOnLeft();
 			if (select == null || !select.gameObject.activeInHierarchy)
 				select = _selectable.FindSelectableOnRight();
 			
-			StartCoroutine(DelaySelect(select));
+
 		
 		}else if (Input.GetAxis("Horizontal") > 0) {
-			Selectable select = _selectable.FindSelectableOnRight();
+			select = _selectable.FindSelectableOnRight();
 			if (select == null || !select.gameObject.activeInHierarchy)
 				select = _selectable.FindSelectableOnLeft();
+		}
 
-			StartCoroutine(DelaySelect (select));
-		
-		} else if (Input.GetAxis("Vertical") < 0) {
-			Selectable select = _selectable.FindSelectableOnDown();
-			if (select == null || !select.gameObject.activeInHierarchy)
-				select = _selectable.FindSelectableOnUp();
-			
-			StartCoroutine(DelaySelect(select));
-		
-		} else if (Input.GetAxis("Vertical") > 0) {
-			Selectable select = _selectable.FindSelectableOnUp();
-			if (select == null || !select.gameObject.activeInHierarchy)
+		//if nothing selected with horizontal, check vertical
+		if(select==null){
+			if (Input.GetAxis("Vertical") < 0) {
 				select = _selectable.FindSelectableOnDown();
+				Debug.Log ("down");
+				if (select == null || !select.gameObject.activeInHierarchy) {
+					select = _selectable.FindSelectableOnUp ();
+					Debug.Log ("up");
+				}
+			
+			} else if (Input.GetAxis("Vertical") > 0) {
+				select = _selectable.FindSelectableOnUp();
+				if (select == null || !select.gameObject.activeInHierarchy)
+					select = _selectable.FindSelectableOnDown();
+			}
+		}
 
-			StartCoroutine(DelaySelect(select));
-		}	
+		if(select!=null) StartCoroutine(DelaySelect (select));
 	
 	}
 
