@@ -363,8 +363,9 @@ public class MenuNavigator : MonoBehaviour {
 	/// </summary>
 	public void RestartLevel() {
         //TODO: avoid input game and another triggers like win game, attack...
-        _gameControllerInput.StopInput();
-
+		if(_gameControllerInput!=null)
+        	_gameControllerInput.StopInput();
+		
         PauseGame(false);
         ChangeScene(SceneManager.GetActiveScene().name);
     }
