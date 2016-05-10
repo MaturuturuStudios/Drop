@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections;
 using UnityEngine.UI;
 
 public class OptionsMenu : MonoBehaviour {
@@ -63,6 +64,41 @@ public class OptionsMenu : MonoBehaviour {
 			EventSystem.current.SetSelectedGameObject(firstSelected);
         }
 
+		/*
+		// Control that triggers are pressed only one time
+		if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
+			_switcher.ControlNextDrop();
+			_triggerPressed = true;
+		}
+		else if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) < 0) {
+			_switcher.ControlBackDrop();
+			_triggerPressed = true;
+		}
+		else if (Input.GetAxis(Axis.SelectDrop) == 0)
+			_triggerPressed = false;
+		*/
+
+		//change options with triggers
+		if(Input.GetAxis(Axis.SelectDrop)!=0){
+			Selectable select = null;
+			Selectable actualSelected;
+			bool setFocusInOption = IsUnderSubOption ();
+			actualSelected = _actualMenuSelected.GetComponent<Selectable>();
+
+			//check if left or rigth
+			if (Input.GetAxis (Axis.SelectDrop) > 0) {
+				select = actualSelected.FindSelectableOnDown();
+			} else {
+				select = actualSelected.FindSelectableOnUp();
+			}
+			if (select != null) {
+				//if suboption, quit the actual selection and give it to the next
+				//TODO
+
+				StartCoroutine (DelaySelect (select));
+			}
+		}
+
         //B, back or start
         if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start))
             //check if focus is inside the suboption
@@ -73,6 +109,20 @@ public class OptionsMenu : MonoBehaviour {
                 //if not, the focus is already on the buttons menu, come back
                 _menuNavigator.ComeBack();
 
+	}
+
+	/// <summary>
+	/// Delaies the select until the end of the frame.
+	/// If we do not the current object will be selected instead
+	/// </summary>
+	/// <param name="select">Select.</param>
+	private IEnumerator DelaySelect(Selectable select){
+		yield return new WaitForEndOfFrame();
+
+		if (select != null || !select.gameObject.activeInHierarchy)
+			select.Select();
+		else
+			Debug.Log ("Please make sure your explicit navigation is configured correctly.");
 	}
 
     private bool IsUnderSubOption() {
