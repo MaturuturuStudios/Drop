@@ -44,10 +44,8 @@ public class SkipNonInteractable : MonoBehaviour, ISelectHandler {
 		if(select==null){
 			if (Input.GetAxis("Vertical") < 0) {
 				select = _selectable.FindSelectableOnDown();
-				Debug.Log ("down");
 				if (select == null || !select.gameObject.activeInHierarchy) {
 					select = _selectable.FindSelectableOnUp ();
-					Debug.Log ("up");
 				}
 			
 			} else if (Input.GetAxis("Vertical") > 0) {

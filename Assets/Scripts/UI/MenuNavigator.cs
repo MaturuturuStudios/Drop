@@ -47,6 +47,11 @@ public class MenuNavigator : MonoBehaviour {
 	/// Scene to be opened when starting a new game
 	/// </summary>
 	public Scene NewGameScene;
+	/// <summary>
+	/// The background main menu. Show when used the main menu and still showed when changed to other options when
+	/// main menu is in stack
+	/// </summary>
+	public GameObject backgroundMainMenu;
     /// <summary>
     /// Seconds waiting before the reaction of a button/text action
     /// </summary>
@@ -207,6 +212,8 @@ public class MenuNavigator : MonoBehaviour {
         if (last==null || menu != last.IdMenu) {
             switch (menu) {
                 case Menu.MAIN_MENU:
+					//activate the background
+					if(backgroundMainMenu!=null) backgroundMainMenu.SetActive(true);
                     _menuPanel.Push(mainMenu);
                     break;
                 case Menu.PAUSE_MENU:
@@ -245,6 +252,8 @@ public class MenuNavigator : MonoBehaviour {
         }
         //disable background
         background.SetActive(false);
+		//disable main menu background just in case
+		if(backgroundMainMenu!=null) backgroundMainMenu.SetActive(false);
 
         //make sure to quit the confirmation
         DoConfirmQuitNo();
@@ -426,6 +435,8 @@ public class MenuNavigator : MonoBehaviour {
     private IEnumerator ComeBackWait() {
         yield return WaitForRealSeconds(secondsReaction);
         MenuInstance panel = _menuPanel.Pop();
+		//if main menu, disable background
+		if(panel.IdMenu == Menu.MAIN_MENU && backgroundMainMenu!=null) backgroundMainMenu.SetActive(false);
         panel.disable();
 
         //if no more menus, close it
