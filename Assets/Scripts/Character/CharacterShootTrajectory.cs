@@ -305,7 +305,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
                 setTrajectoryPoints(pos, angle, oldspeed);
 
-                oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime); ;               
+                oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime);               
 
                 linerenderer.SetWidth(oldrenderwidth, oldrenderwidth);
                 if (oldspeed == speed)
