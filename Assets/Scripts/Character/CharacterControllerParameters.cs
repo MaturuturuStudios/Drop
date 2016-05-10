@@ -198,6 +198,12 @@ public class CharacterControllerParameters {
 	public float jumpMagnitude = 1;
 
 	/// <summary>
+	/// Duration of the jump anticipation's animation. The character will perform the real jump
+	/// once this time has passed.
+	/// </summary>
+	public float jumpDelay = 0.1f;
+
+	/// <summary>
 	/// Amount of time allowed for the player to hold the jump button.
 	/// </summary>
 	public float jumpHoldTimeMax = 0.25f;
@@ -262,7 +268,8 @@ public class CharacterControllerParameters {
 		clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrequency = jumpFrequency;
 		clone.jumpMagnitude = jumpMagnitude;
-		clone.jumpHoldTimeMax = jumpHoldTimeMax;
+		clone.jumpDelay = jumpDelay;
+        clone.jumpHoldTimeMax = jumpHoldTimeMax;
 		clone.wallJumpHeight = wallJumpHeight;
 		clone.wallJumpDistance = wallJumpDistance;
 		clone.baseMass = baseMass;
@@ -293,6 +300,7 @@ public class CharacterControllerParameters {
 		sb.Append("Jump Bheaviour: ").Append(jumpBehaviour.ToString()).Append("\n");
 		sb.Append("Jump Frequency: ").Append(jumpFrequency).Append("\n");
 		sb.Append("Jump Magnitude: ").Append(jumpMagnitude).Append("\n");
+		sb.Append("Jump Delay: ").Append(jumpDelay).Append("\n");
 		sb.Append("Jump Hold Time: ").Append(jumpHoldTimeMax).Append("\n");
 		sb.Append("WallJ. Height: ").Append(wallJumpHeight).Append("\n");
 		sb.Append("WallJ. Distance: ").Append(wallJumpDistance).Append("\n");

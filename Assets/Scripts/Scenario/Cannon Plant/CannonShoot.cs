@@ -149,9 +149,9 @@ public class CannonShoot : ActionPerformer
     /// <summary>
     /// Method to change the angle and the power of the plant when drop touch the trigger
     /// </summary>
-    public void Changeangle()
+    public void Changeangle(float vangle)
     {
-        angle = 75;
+        angle = vangle;
 
     }
 

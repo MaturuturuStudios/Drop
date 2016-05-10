@@ -106,9 +106,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private CharacterSize _characterSize;
 
 	/// <summary>
-	/// A reference to the animator of the object (and the entire hierarchy).
+	/// List of observers subscribed to the character controller's
+	/// events.
 	/// </summary>
-	private Animator _animator;
+	private List<CharacterControllerListener> _listeners;
 
 	#endregion
 
@@ -141,6 +142,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 	private bool _wasSliding;
 
 	/// <summary>
+	/// If the character is waiting for the anticipation to end before jumping.
+	/// </summary>
+	private bool _waitingForJump;
+
+	/// <summary>
+	/// Remaining time for the jump anticipation to end.
+	/// </summary>
+	private float _jumpDelayTime;
+
+	/// <summary>
 	/// Position on the global coordinates of the entity while standing on a platform.
 	/// </summary>
 	private Vector3 _activeGlobalPlatformPoint;
@@ -162,15 +173,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Creates the original state
 		State = new CharacterControllerState();
 
-		// Initializes the parameter's stack and collisions list
+		// Initializes the parameter's stack and lists
 		_overrideParameters = new Stack<CharacterControllerParameters>();
 		_collisions = new List<Collider>();
+		_listeners = new List<CharacterControllerListener>();
 
 		// Recovers the desired components
 		_transform = transform;
 		_controller = GetComponent<CharacterController>();
 		_characterSize = GetComponent<CharacterSize>();
-		_animator = GetComponentInChildren<Animator>();
 
 		// Ignores the collisions with the hat layer
 		Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Character"), LayerMask.NameToLayer("Cloth"), true);
@@ -182,6 +193,32 @@ public class CharacterControllerCustom : MonoBehaviour {
 	void OnEnable() {
 		// Resets the state
 		State.Reset();
+	}
+
+	/// <summary>
+	/// Subscribes a listener to the controller's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(CharacterControllerListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the controller's events.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(CharacterControllerListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
 	}
 
 	#region Force Methods
@@ -435,17 +472,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Normal jump
 		if (!State.IsOnSlope) {
-			// Calculates the jump speed to reach the desired height
-			float jumpHeight = errorFactor * GetSize() * Parameters.jumpMagnitude;
-			float gravity = Parameters.Gravity.magnitude;
-			float jumpSpeed = -2 * gravity * Parameters.jumpHoldTimeMax;
-			float root = -jumpSpeed;
-			root *= root;
-			root += 8 * gravity * jumpHeight;
-			jumpSpeed += Mathf.Sqrt(root);
-			jumpSpeed /= 2;
-			SetVerticalForceRelative(jumpSpeed);
-			_jumpHoldTime = Parameters.jumpHoldTimeMax;
+			// Starts the jump anticipation
+			_waitingForJump = true;
+			_jumpDelayTime = Parameters.jumpDelay * Mathf.Sqrt(GetSize());
+
+			// Notifies the listeners
+			_listeners.ForEach(e => e.OnBeginJump(this, _jumpDelayTime));
 		}
 		// Wall jump
 		else if (Collisions.Where(o => o.CompareTag(Tags.WallJump)).Count() > 0) {
@@ -470,12 +502,34 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// Sends the player flying using the wall jump speed
 			Vector3 finalVelocity = Quaternion.Euler(0, 0, -gravityAngle) * new Vector3(horizontalSpeed, verticalSpeed, 0);
 			SendFlying(finalVelocity, false, true, timeToPeak);
+
+			_jumpingTime = Parameters.jumpFrequency;
+
+			// Notifies the listeners
+			_listeners.ForEach(e => e.OnWallJump(this));
 		}
+	}
+
+	private void PerformJump() {
+		// Calculates the jump speed to reach the desired height
+		float jumpHeight = errorFactor * GetSize() * Parameters.jumpMagnitude;
+		float gravity = Parameters.Gravity.magnitude;
+		float jumpSpeed = -2 * gravity * Parameters.jumpHoldTimeMax;
+		float root = -jumpSpeed;
+		root *= root;
+		root += 8 * gravity * jumpHeight;
+		jumpSpeed += Mathf.Sqrt(root);
+		jumpSpeed /= 2;
+		SetVerticalForceRelative(jumpSpeed);
+		_jumpHoldTime = Parameters.jumpHoldTimeMax;
 
 		_jumpingTime = Parameters.jumpFrequency;
 
-		// Calls the animator
-		_animator.SetTrigger(CharacterAnimatorParameters.Jump);
+		// Resets the flags
+		_waitingForJump = false;
+
+		// Notifies the listeners
+		_listeners.ForEach(e => e.OnPerformJump(this));
 	}
 
 	/// <summary>
@@ -493,6 +547,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 	public bool CanJump() {
 		// If it has recently jumped, it cannot jump again
 		if (_jumpingTime > 0)
+			return false;
+
+		// If it's waiting to jump, it cannot jump again
+		if (_waitingForJump)
 			return false;
 
 		// Checks the jumping behaviour
@@ -561,10 +619,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 		_jumpingTime -= Time.fixedDeltaTime;
 		_flyingTime -= Time.fixedDeltaTime;
 		_jumpHoldTime -= Time.fixedDeltaTime;
+		_jumpDelayTime -= Time.fixedDeltaTime;
+
+		// If the jump anticipation has ended, performs the jump
+		if (_jumpDelayTime < 0 && _waitingForJump)
+			PerformJump();
 
 		// If the flying timer has expired, stops the flight
 		if (_flyingTime < 0)
-			StopFlying();
+		StopFlying();
 
 		// Adds the gravity to the velocity. If sliding, multiply it by a drag factor.
 		float dragFactor = 1;
@@ -577,14 +640,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Tries the movement of the entity according to it's velocity
 		Move(Velocity * Time.fixedDeltaTime);
-
-		/// Updates the animator with the right information
-		// Updates the speed
-		float normalizedSpeed = GetHorizontalVelocityRelative().magnitude / (Parameters.maxSpeed * Mathf.Sqrt(GetSize()));
-		_animator.SetFloat(CharacterAnimatorParameters.Speed, normalizedSpeed);
-
-		// Updates the grounded state
-		_animator.SetBool(CharacterAnimatorParameters.Grounded, State.IsGrounded);
 	}
 
 	#region Movement Methods
@@ -672,6 +727,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <param name="hit">Information of the collision</param>
 	public void OnControllerColliderHit(ControllerColliderHit hit) {
+		// Notifies the listeners
+		_listeners.ForEach(e => e.OnPreCollision(this, hit));
+
 		// There has been collisions this frame. Stops the wall jumping
 		State.HasCollisions = true;
 		_collisions.Add(hit.collider);
@@ -742,6 +800,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Calls the special method on the collided object
 		hit.gameObject.SendMessage("OnCustomControllerCollision", hit, SendMessageOptions.DontRequireReceiver);
+
+		// Notifies the listeners
+		_listeners.ForEach(e => e.OnPostCollision(this, hit));
 	}
 
 	#endregion

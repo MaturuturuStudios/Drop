@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+
 /// <summary>
 /// This class active, desactive shoot-mode and shoot a drop 
 /// </summary>
@@ -65,13 +66,13 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to increase the size of the drop shooted
 	/// </summary>
     public void IncreaseSize() {
-        if ((shootmode == true))
+        if ((shootmode == true) && !st.animation())
         {
             float oldsize;
 
             oldsize = sizeshot;
             sizeshot++;
-            if (sizeshot < GetComponent<CharacterSize>().GetSize())
+            if (sizeshot <= ( GetComponent<CharacterSize>().GetSize()/2))
                 st.selectingsize(sizeshot);
             else sizeshot = oldsize;
         }
@@ -82,13 +83,13 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     public void DecreaseSize()
     {
-        if ((shootmode == true))
+        if ((shootmode == true) && !st.animation())
         {
             float oldsize;
       
             oldsize = sizeshot;
             sizeshot--;
-            
+
             if (sizeshot > 0)
                 st.selectingsize(sizeshot);
             else sizeshot = oldsize;
@@ -108,11 +109,11 @@ public class CharacterShoot : MonoBehaviour {
                 sizeshot = 1;
                 ccc.Parameters = CharacterControllerParameters.ShootingParameters;
             }
-            else if ((shootmode == true))
+            else if ((shootmode == true) && !st.animation())
             {
                 shootmode = false;
-                st.QuitTrajectory();
-                st.enabled = false;
+                st.endingd();
+                
                 ccc.Parameters = null;
             }
         }
@@ -125,11 +126,11 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     public void Shoot()
     {
-        if ( (shootmode == true))
+        if ((shootmode == true) && !st.animation() && !st.sizeAnimation() )
         {
             ccc.Parameters = null;
             shootmode = false;
-            st.QuitTrajectory();
+            st.finishing();
             st.enabled = false;
             GetComponent<CharacterSize>().SetSize((int)(GetComponent<CharacterSize>().GetSize()-sizeshot));
 
@@ -146,7 +147,7 @@ public class CharacterShoot : MonoBehaviour {
         if ((shootmode== true) && (ccc.State.IsGrounded == false || size.GetSize()==1 ))
         {
             shootmode = false;
-            st.QuitTrajectory();
+            st.finishing();
             st.enabled = false;
             ccc.Parameters = null;                      
         }
@@ -189,7 +190,7 @@ public class CharacterShoot : MonoBehaviour {
 
                 //Handles.color= Color.Lerp(Color.white, Color.black, (float)1/i );
                 //Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1),5 * (ccc.GetComponent<CharacterSize>().GetSize() - i));
-                Debug.Log(" gizmo position " + transform.position + " gizmo distance " + Mathf.Sqrt((5 * (ccc.GetComponent<CharacterSize>().GetSize() - i)) * 25));
+                //Debug.Log(" gizmo position " + transform.position + " gizmo distance " + Mathf.Sqrt((5 * (ccc.GetComponent<CharacterSize>().GetSize() - i)) * 25));
             }
         }
     
