@@ -124,6 +124,10 @@ public class MenuNavigator : MonoBehaviour {
     /// The previous selected game object
     /// </summary>
     private GameObject _selected;
+    /// <summary>
+    /// The option selected before asking the exit of application
+    /// </summary>
+    private GameObject _previousSelectionExit;
     #endregion
 
     #region Methods
@@ -292,6 +296,11 @@ public class MenuNavigator : MonoBehaviour {
         confirmQuit.alpha = 0;
         confirmQuit.interactable = false;
         confirmQuit.blocksRaycasts = false;
+
+        confirmQuit.gameObject.SetActive(false);
+
+        //recover focus
+        EventSystem.current.SetSelectedGameObject(_previousSelectionExit);
     }
 
     /// <summary>
@@ -398,6 +407,11 @@ public class MenuNavigator : MonoBehaviour {
     /// TODO: needs a confirmation and probably more actions to close it correctly
     /// </summary>
     public void ExitGame() {
+        confirmQuit.gameObject.SetActive(true);
+
+        //store the selection
+        _previousSelectionExit = EventSystem.current.currentSelectedGameObject;
+
         //reduce the visibility of normal UI, and disable all interraction
         uiCanvasGroup.alpha = 0.3f;
         uiCanvasGroup.interactable = false;
