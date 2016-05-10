@@ -84,9 +84,10 @@ public class OptionsMenu : MonoBehaviour {
 
             //if have a selection, select it
             if (select != null) {
-                //if suboption, quit the actual selection and give it to the next
-                //TODO
-                StartCoroutine(DelaySelect(select));
+                //always disable permament focus
+                UnfocusOption();
+                //if suboption, set the focus
+                StartCoroutine(DelaySelect(select, setFocusInOption));
             }
 		
         }else if (Input.GetAxis(Axis.SelectDrop) == 0)
@@ -110,13 +111,16 @@ public class OptionsMenu : MonoBehaviour {
 	/// If we do not the current object will be selected instead
 	/// </summary>
 	/// <param name="select">Select.</param>
-	private IEnumerator DelaySelect(Selectable select){
+	private IEnumerator DelaySelect(Selectable select, bool setFocus=false){
 		yield return new WaitForEndOfFrame();
 
-		if (select != null || !select.gameObject.activeInHierarchy)
-			select.Select();
-		else
-			Debug.Log ("Please make sure your explicit navigation is configured correctly.");
+        if (select != null || !select.gameObject.activeInHierarchy) {
+            select.Select();
+            if (setFocus) {
+                FocusOption();
+            }
+        } else
+            Debug.Log("Please make sure your explicit navigation is configured correctly.");
 	}
 
     private bool IsUnderSubOption() {
