@@ -127,9 +127,9 @@ public class WaterRepulsion : MonoBehaviour {
 
     private IEnumerator ExpelDrop(GameObject drop) {
         _expelDrop.Add(drop);
-        //drop.SetActive(false);
+        drop.SetActive(false);
         yield return new WaitForSeconds(delay);
-        //drop.SetActive(true);
+        drop.SetActive(true);
         CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
         //put drop on point expulsion
         drop.transform.position = pointExpulsion.position;
