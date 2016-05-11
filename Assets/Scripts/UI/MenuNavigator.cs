@@ -313,7 +313,8 @@ public class MenuNavigator : MonoBehaviour {
     //Region of methods with special/specific actions when pushed or poped from stack
     #region Specifics menu actions
     public void MainMenu() {
-		ChangeScene(startSceneMainMenu.name);
+        PauseGame(false);
+        ChangeScene(startSceneMainMenu.name);
     }
 
     /// <summary>
