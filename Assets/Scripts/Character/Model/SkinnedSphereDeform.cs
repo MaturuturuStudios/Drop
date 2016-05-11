@@ -133,10 +133,6 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		_lastFrameNumberOfRays = numberOfRays;
 	}
 
-	void OnEnable() {
-		Start();
-	}
-
 	/// <summary>
 	/// Unity's method called at the end of each frame.
 	/// Does the deformation.
