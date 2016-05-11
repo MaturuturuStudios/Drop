@@ -1,18 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class WaterRepulsion : MonoBehaviour {
     #region Public attributes
+    /// <summary>
+    /// Point in which the drop will be expulsed
+    /// </summary>
     public Transform pointExpulsion;
+    /// <summary>
+    /// Point in which the drop will end
+    /// </summary>
     public Transform pointTarget;
 	/// <summary>
 	/// Angle of the trajectory
 	/// </summary>
 	public float angle=45;
+    /// <summary>
+    /// Delay
+    /// </summary>
+    public float delay = 0.8f;
     #endregion
 
     #region Private attributes
+    /// <summary>
+    /// Drops that touched the water
+    /// </summary>
     private List<GameObject> _enteredDrop;
+
+    private List<GameObject> _expelDrop;
+
+    /// <summary>
+    /// Bounds of the water
+    /// </summary>
     private Bounds _ownCollider;
     #endregion
 
@@ -23,6 +43,7 @@ public class WaterRepulsion : MonoBehaviour {
         _ownCollider = GetComponent<Collider>().bounds;
         //create list
         _enteredDrop = new List<GameObject>();
+        _expelDrop = new List<GameObject>();
     }
 
     public void Update() {
@@ -33,7 +54,8 @@ public class WaterRepulsion : MonoBehaviour {
         else if (directionShoot.x > 0 && angle > 90) angle += (90 - angle) * 2;
 
         //for every drop in water...
-        foreach (GameObject drop in _enteredDrop) {
+        for (int i = _enteredDrop.Count; i > 0; i--) {
+            GameObject drop = _enteredDrop[i-1];
             //get position and bounds
             Vector3 position = drop.transform.position;
             float halfSize = drop.GetComponent<CharacterSize>().GetSize() * 0.5f;
@@ -49,24 +71,25 @@ public class WaterRepulsion : MonoBehaviour {
             vertices[3].y += halfSize;
 
 
-            //check if al points are inside the water
+            //check if all points are inside the water
             bool result = true;
-            for(int i=0; i<vertices.Length && result; i++) {
-                result = _ownCollider.Contains(vertices[i]);
+            for(int j=0; j<vertices.Length && result; j++) {
+                result = _ownCollider.Contains(vertices[j]);
             }
 
             //is inside? get the drop out!
             if (result) {
-                CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
-                //put drop on point expulsion
-                //controller.Stop();
-				drop.transform.position = pointExpulsion.position;
-                //send it flying
-				controller.SendFlying(GetNeededVelocityVector());
+                _enteredDrop.RemoveAt(i-1);
+                //start the delay
+                StartCoroutine(ExpelDrop(drop));
             }
         }
     }
 
+    /// <summary>
+    /// Get the necessary velocity to send the drop to the destiny point
+    /// </summary>
+    /// <returns></returns>
 	public Vector3 GetNeededVelocityVector(){
 		Vector3 velocityVector=Vector3.zero;
        
@@ -79,22 +102,44 @@ public class WaterRepulsion : MonoBehaviour {
 		return velocityVector;
 	}
 
+    /// <summary>
+    /// Check the drop inside the water
+    /// </summary>
+    /// <param name="other"></param>
     public void OnTriggerEnter(Collider other) {
         //get the component if is a drop
         GameObject drop = other.gameObject;
         if (drop.tag != Tags.Player) return;
-        _enteredDrop.Add(drop);
+        if(!_expelDrop.Contains(drop)) _enteredDrop.Add(drop);
     }
 
+    /// <summary>
+    /// Remove the drops that is outside the water
+    /// </summary>
+    /// <param name="other"></param>
     public void OnTriggerExit(Collider other) {
         //get the component if is a drop
         GameObject drop = other.gameObject;
         if (drop.tag != Tags.Player) return;
         _enteredDrop.Remove(drop);
+        _expelDrop.Remove(drop);
+    }
+
+    private IEnumerator ExpelDrop(GameObject drop) {
+        _expelDrop.Add(drop);
+        //drop.SetActive(false);
+        yield return new WaitForSeconds(delay);
+        //drop.SetActive(true);
+        CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
+        //put drop on point expulsion
+        drop.transform.position = pointExpulsion.position;
+        //send it flying (stop previous flying)
+        controller.StopFlying();
+        controller.SendFlying(GetNeededVelocityVector());
     }
 
 	/// <summary>
-	/// Gets the needed velocity.
+	/// Gets the needed velocity depending on angle
 	/// </summary>
 	/// <returns>The needed velocity.</returns>
 	/// <param name="angleRadian">Angle in radian.</param>
