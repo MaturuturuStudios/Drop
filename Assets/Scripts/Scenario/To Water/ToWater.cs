@@ -24,6 +24,8 @@ public class ToWater : ActionPerformer
 
     private CharacterControllerCustom ccc;
 
+    private float mfY;
+
     #endregion
 
     #region Public Attributes
@@ -43,8 +45,9 @@ public class ToWater : ActionPerformer
     void Start()
     {
         onguizmos_max_height = max_height;
-        
+        height = transform.localScale.y;
 
+        mfY = transform.position.y - transform.localScale.y / 2.0f;
     }
 
     /// <summary>
@@ -57,30 +60,29 @@ public class ToWater : ActionPerformer
 
         if (lerping)
         {
-            if (ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed > 0)
-            {
-                 
+
                 
 
-                size = ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed;
-                oldsize = ccc.GetComponent<CharacterSize>().GetSize();
+          oldsize = Mathf.MoveTowards(oldsize, size, 0.5f*Time.deltaTime); 
+          ccc.GetComponent<CharacterSize>().SetSize((int)oldsize);
 
-                oldsize = Mathf.MoveTowards(oldsize, size, Time.deltaTime); ;
-                ccc.GetComponent<CharacterSize>().SetSize((int)oldsize);
+            Vector3 aux;
+            aux.x = transform.position.x;
+            aux.y = transform.position.y ;
+            aux.z = transform.position.z;
 
+            height = Mathf.MoveTowards(height, max_height, 5*Time.deltaTime);
 
-                float oldy = this.transform.position.y;
-                height = Mathf.MoveTowards(height, max_height, Time.deltaTime); 
+    
+           this.transform.localScale = new Vector3(1,height,1);
 
-                float newy = this.transform.position.y;
-                newy += newy - oldy;
-                Vector3 aux;
-                aux.x = this.transform.position.x;
-                aux.z = this.transform.position.z;
-                aux.y = height;
-                this.transform.position = aux;
-            }
-            lerping = false;
+            transform.position = new Vector3(transform.position.x, mfY + transform.localScale.y / 2.0f, 0);
+
+            if (height == max_height)
+                {
+                    lerping = false;
+                }
+                      
 
         }
     }
@@ -92,9 +94,14 @@ public class ToWater : ActionPerformer
 
         if (ccc != null)
         {
-            lerping = true;
-        }   
-               // Debug.Log(" angle " + transform.eulerAngles);                  
+            if (ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed > 0)
+            {
+                size = ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed;
+                oldsize = ccc.GetComponent<CharacterSize>().GetSize();
+
+                lerping = true;
+            }
+        }                
 
     }
 
@@ -104,7 +111,7 @@ public class ToWater : ActionPerformer
     {
         if (!Application.isPlaying)
         {
-            // float height = maxHeight - minHeight;
+            float mheight = max_height - height;
             Color color = Color.yellow;
             color.a = 0.25f;
 
@@ -112,10 +119,7 @@ public class ToWater : ActionPerformer
             Gizmos.color = color;
             Gizmos.matrix = transform.localToWorldMatrix;
 
-            collider = GetComponent<BoxCollider>();
-            origin = collider.center + Vector3.up * collider.size.y / 2;
-
-            Gizmos.DrawWireCube(new Vector3(0, max_height / 2, 0f), new Vector3(collider.size.x, max_height, 0.5f));
+            Gizmos.DrawWireCube(new Vector3(0, (height + mheight) / 2, 0f), new Vector3(0.5f, mheight, 0.5f));
         }
     }
 
