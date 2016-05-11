@@ -6,26 +6,26 @@
 /// </summary>
 public class IngameMenu : MonoBehaviour {
 
-	/// <summary>
-	/// Defines if the cursor should be shown.
-	/// If enabled, the cursor will be shown as soon
-	/// as the player moves it.
-	/// </summary>
-	protected bool EnableCursor {
-		get {
-			return _cursorEnabled;
-		}
-		set {
-			_cursorEnabled = value;
-			if (!_cursorEnabled)
-				_cursorController.HideCursor();
-		}
-	}
+    /// <summary>
+    /// Defines if the cursor should be shown.
+    /// If enabled, the cursor will be shown as soon
+    /// as the player moves it.
+    /// </summary>
+    protected bool EnableCursor {
+        get {
+            return _cursorEnabled;
+        }
+        set {
+            _cursorEnabled = value;
+            if (!_cursorEnabled)
+                _cursorController.HideCursor();
+        }
+    }
 
-	/// <summary>
-	/// A reference to the menu's navigator.
-	/// </summary>
-	protected MenuNavigator menuNavigator;
+    /// <summary>
+    /// A reference to the menu's navigator.
+    /// </summary>
+    protected MenuNavigator menuNavigator;
 
 	/// <summary>
 	/// Backing field for the EnableCursor property.
@@ -52,24 +52,24 @@ public class IngameMenu : MonoBehaviour {
 	/// Shows the cursor if the player has moved it.
 	/// </summary>
 	protected void Update() {
-		if (_cursorEnabled)
-			if (Input.GetAxis(Axis.MouseX) != 0 || Input.GetAxis(Axis.MouseY) != 0)
-				_cursorController.ShowCursor();
-	}
+        if (_cursorEnabled)
+            if (Input.GetAxis(Axis.MouseX) != 0 || Input.GetAxis(Axis.MouseY) != 0)
+                _cursorController.ShowCursor();
+    }
 
-	/// <summary>
-	/// Unity's method called when this entity is enabled.
-	/// Enables the cursor.
-	/// </summary>
-	protected void OnEnable() {
-		EnableCursor = true;
-	}
+    /// <summary>
+    /// Unity's method called when this entity is enabled.
+    /// Enables the cursor.
+    /// </summary>
+    protected void OnEnable() {
+        EnableCursor = true;
+    }
 
-	/// <summary>
-	/// Unity's method called when this entity is disabled.
-	/// Disables the cursor.
-	/// </summary>
-	protected void OnDisable() {
-		EnableCursor = false;
-	}
+    /// <summary>
+    /// Unity's method called when this entity is disabled.
+    /// Disables the cursor.
+    /// </summary>
+    protected void OnDisable() {
+        EnableCursor = false;
+    }
 }

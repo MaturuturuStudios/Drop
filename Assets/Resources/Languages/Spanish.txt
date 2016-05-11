@@ -1,0 +1,64 @@
+﻿#Menus
+MenuCredits=Créditos
+MenuContinue=Continuar
+MenuRestart=Reiniciar
+MenuSelectLevel=Seleccionar Nivel
+MenuOptions=Opciones
+MenuPause=Pausa
+MenuMainMenu=Menú Principal
+MenuExit=Salir
+MenuLoadGame=Cargar Juego
+MenuNewGame=Nuevo Juego
+
+#Menu options
+MenuGraphics=Gráficos
+MenuAudio=Audio
+MenuInput=Controles
+MenuLanguage=Lenguaje
+MenuHelp=Ayuda
+MenuBack=Atrás
+
+#Graphics Options
+GraphicsResolution=Resolución
+GraphicsQuality=Calidad
+GraphicsFullscreen=Pantalla completa
+GraphicsAntialiasing=Antialiasing
+
+#Audio options
+AudioMaster=Master
+AudioMusic=Música
+AudioAmbient=Ambiente
+AudioEffects=Efectos
+
+#Language options
+Language=Lenguaje
+
+#Input option
+MenuInputPause=Pausa
+MenuInputMove=Mover
+MenuInputIncreaseDrop=Más gotas a disparar
+MenuInputDecreaseDrop=Menos gotas a disparar
+MenuInputTurnLeft=Girar a la izquierda
+MenuInputTurnRight=Girar a la derecha
+MenuInputNextDrop=Siguiente gota
+MenuInputPreviousDrop=Gota anterior
+MenuInputShowNumberDrop=Mostrar número gotas
+MenuInputEnterExitShoot=Entrar/Salir modo disparo
+MenuInputIrrigate=Regar
+MenuInputJumpShoot=Saltar/Disparar en modo disparo
+MenuInputAction=Acción
+MenuInputLookAround=Mirar alrededor
+
+#Help option
+HelpText=Pobre pequeña gota... ¿Dónde están tus amigos? ¿Dónde están tus compañeros, tu familia? Te ves perdida y lejos de todos ellos.\n\nTe voy a contar un secreto. Eres una gota. Y todas las gotas tienen un destino. El mar.\n\nVe al mar, pequeña gota, ve al mar y encuentra a tus seres queridos. Usa todas tus habilidades para pasar todos los obstáculos y dificultades del viaje. Salta en las paredes, únete a otras gotas, divídete y entra en sitios pequeños, dispárate a lo alto, riega plantas...\n\nSé inteligente, sé el agua amigo mío.
+
+#Quality options name
+Fastest=El más rápido
+Fast=Rápido
+Simple=Simple
+Good=Bueno
+Beautiful=Bonito
+Fantastic=Fantástico
+
+#Common strings in options
+SaveChanges=Guardar cambios

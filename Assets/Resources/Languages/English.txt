@@ -1,0 +1,65 @@
+﻿#Menus
+MenuCredits=Credits
+MenuContinue=Continue
+MenuRestart=Restart
+MenuSelectLevel=Select Level
+MenuOptions=Options
+MenuPause=Pause
+MenuMainMenu=Main Menu
+MenuExit=Exit
+MenuLoadGame=Load Game
+MenuNewGame=New Game
+
+#Menu options
+MenuGraphics=Graphics
+MenuAudio=Audio
+MenuInput=Input
+MenuLanguage=Language
+MenuHelp=Help
+MenuBack=Back
+
+#Graphics Options
+GraphicsResolution=Resolution
+GraphicsQuality=Quality
+GraphicsFullscreen=Fullscreen
+GraphicsAntialiasing=Antialiasing
+
+#Audio options
+AudioMaster=Master
+AudioMusic=Music
+AudioAmbient=Ambient
+AudioEffects=Effects
+
+#Language options
+Language=Language
+
+
+#Input option
+MenuInputPause=Pause
+MenuInputMove=Move
+MenuInputIncreaseDrop=Increase drops to shoot
+MenuInputDecreaseDrop=Decrease drops to shoot
+MenuInputTurnLeft=Turn left
+MenuInputTurnRight=Turn right
+MenuInputNextDrop=Next Drop
+MenuInputPreviousDrop=Previous Drop
+MenuInputShowNumberDrop=Show number drops
+MenuInputEnterExitShoot=Enter/Exit shoot mode
+MenuInputIrrigate=Irrigate
+MenuInputJumpShoot=Jump/Shoot in shoot mode
+MenuInputAction=Action
+MenuInputLookAround=Look around
+
+#Help option
+HelpText=Little and poor drop... Where are your friends? Where are your mates, your family? You look lost and away from all of them.\n\nI'm going to tell you a secret. You are a drop. And all drops have one destiny. The sea.\n\nGo to the sea, little drop, go to the sea and find your beloved people. Use all your abilities to pass all the obstacles and difficulties of the journey. Jump in the walls, join other drops, split yourself and fit small sites, shoot yourself at high, irrigate plants...\n\nBe smart, be water my friend.
+
+#Quality options name
+Fastest=Fastest
+Fast=Fast
+Simple=Simple
+Good=Good
+Beautiful=Beautiful
+Fantastic=Fantastic
+
+#Common strings in options
+SaveChanges=Save changes

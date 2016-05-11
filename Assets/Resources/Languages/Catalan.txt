@@ -1,0 +1,65 @@
+﻿#Menus
+MenuCredits=Crèdits
+MenuContinue=Continuar
+MenuRestart=Reiniciar
+MenuSelectLevel=Seleccionar Nivell
+MenuOptions=Opcions
+MenuPause=Pausa
+MenuMainMenu=Menú Principal
+MenuExit=Sortir
+MenuLoadGame=Cargar Joc
+MenuNewGame=Nou Joc
+
+#Menu options
+MenuGraphics=Gràfics
+MenuAudio=Àudio
+MenuInput=Controls
+MenuLanguage=Llenguatge
+MenuHelp=Ajuda
+MenuBack=Tornar
+
+#Graphics Options
+GraphicsResolution=Resolució
+GraphicsQuality=Qualitat
+GraphicsFullscreen=Pantalla completa
+GraphicsAntialiasing=Antialiasing
+
+#Audio options
+AudioMaster=Master
+AudioMusic=Música
+AudioAmbient=Ambient
+AudioEffects=Efectes
+
+#Language options
+Language=Lenguaje
+
+
+#Input option
+MenuInputPause=Pause
+MenuInputMove=Move
+MenuInputIncreaseDrop=Increase drops to shoot
+MenuInputDecreaseDrop=Decrease drops to shoot
+MenuInputTurnLeft=Turn left
+MenuInputTurnRight=Turn right
+MenuInputNextDrop=Next Drop
+MenuInputPreviousDrop=Previous Drop
+MenuInputShowNumberDrop=Show number drops
+MenuInputEnterExitShoot=Enter/Exit shoot mode
+MenuInputIrrigate=Irrigate
+MenuInputJumpShoot=Jump/Shoot in shoot mode
+MenuInputAction=Action
+MenuInputLookAround=Look around
+
+#Help option
+HelpText=Pobre petita gota ... On són els teus amics? On són els teus companys i la teva família? Et veus perduda i lluny de tots ells.\n\nT’explicaré un secret. Ets una gota. I totes les gotes tenen un destí. El mar. \n\nVes al mar, petita gota, ves al mar i trova las tus éssers estimats. Utilitza totes les teves habilitas per superar els obstacles i les dificultats del viatge. Salta a las parets, uneix-te a altres gotes, divideix-te i entra a petits llocs, dispara’t ven amunt, rega plantes...\n\nSigues intel·ligent, sigues aigua amic meu.
+
+#Quality options name
+Fastest=El més ràpid
+Fast=Ràpid
+Simple=Simple
+Good=Bo
+Beautiful=Bonic
+Fantastic=Fantàstic
+
+#Common strings in options
+SaveChanges=Guardar cambios
