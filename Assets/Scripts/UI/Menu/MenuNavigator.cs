@@ -334,7 +334,6 @@ public class MenuNavigator : MonoBehaviour {
         if (paused) {
             Time.timeScale = 0;
             OpenMenu(MenuNavigator.Menu.PAUSE_MENU);
-
         } else {
             CloseMenu();
             Time.timeScale = 1;

@@ -51,9 +51,14 @@ public class GameControllerInput : MonoBehaviour {
 			float vInput = Input.GetAxis(Axis.Vertical);
 			cccp.VerticalInput = vInput;
 
-			// Jump input
-			float jumpInput = Input.GetAxis(Axis.Jump);
-			cccp.JumpInput = jumpInput;
+            // Jump input
+            if (Input.GetButtonDown(Axis.Jump)) {
+                float jumpInput = Input.GetAxis(Axis.Jump);
+                cccp.JumpInput = jumpInput;
+            }else if (Input.GetButtonUp(Axis.Jump)) {
+                float jumpInput = Input.GetAxis(Axis.Jump);
+                cccp.JumpInput = jumpInput;
+            }
 
 			// Control that triggers are pressed only one time
 			if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
@@ -140,5 +145,5 @@ public class GameControllerInput : MonoBehaviour {
 		cccp.Stop();
 		enabled = false;
 	}
-	#endregion
+    #endregion
 }
