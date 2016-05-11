@@ -61,10 +61,9 @@ public class ToWater : ActionPerformer
         if (lerping)
         {
 
-                
 
-          oldsize = Mathf.MoveTowards(oldsize, size, 0.5f*Time.deltaTime); 
-          ccc.GetComponent<CharacterSize>().SetSize((int)oldsize);
+         // oldsize = Mathf.MoveTowards(oldsize, size, Time.deltaTime); 
+          ccc.GetComponent<CharacterSize>().SetSize((int)size);
 
             Vector3 aux;
             aux.x = transform.position.x;
