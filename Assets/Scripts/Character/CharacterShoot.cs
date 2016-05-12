@@ -100,7 +100,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to start the shootmode
 	/// </summary>
     public void Aim(){
-        if ( ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize()<10) )
+        if (ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize() < 10) && _gcic.allCurrentCharacters.Count<4)
         {
             if (shootmode == false)
             {
