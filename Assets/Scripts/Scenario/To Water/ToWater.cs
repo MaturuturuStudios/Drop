@@ -22,6 +22,8 @@ public class ToWater : ActionPerformer
 
     private bool lerping = false;
 
+    private bool firstime = false;
+
     private CharacterControllerCustom ccc;
 
     private float mfY;
@@ -58,7 +60,7 @@ public class ToWater : ActionPerformer
     public void Update()
     {
 
-        if (lerping)
+        if (lerping )
         {
 
 
@@ -80,6 +82,8 @@ public class ToWater : ActionPerformer
             if (height == max_height)
                 {
                     lerping = false;
+                    firstime = true;
+
                 }
                       
 
@@ -93,7 +97,7 @@ public class ToWater : ActionPerformer
 
         if (ccc != null)
         {
-            if (ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed > 0)
+            if (ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed > 0 && !firstime)
             {
                 size = ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed;
                 oldsize = ccc.GetComponent<CharacterSize>().GetSize();
