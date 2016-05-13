@@ -6,7 +6,6 @@ using System.Linq;
 /// to it's mesh. It also allows to change the eye
 /// separation, scale and penetration.
 /// </summary>
-[RequireComponent(typeof(MeshCollider))]
 public class EyesAttacher : MonoBehaviour {
 
 	#region Public Attributes
@@ -56,20 +55,14 @@ public class EyesAttacher : MonoBehaviour {
 	/// </summary>
 	public float rotationSpeed = 10;
 
-	/// <summary>
-	/// The maximum radius of the character. Avoid small
-	/// numbers to prevent the eyes from dissapearing.
-	/// </summary>
-	public float maxRadius = 10;
-
 	#endregion
 
 	#region Private Fields
 
 	/// <summary>
-	/// A reference to the entity's Mesh Collider component.
+	/// Reference to the MeshRenderer's Transform component.
 	/// </summary>
-	private MeshCollider _meshCollider;
+	private Transform _meshTransform;
 
 	/// <summary>
 	/// Mesh where the skinned mesh will be baked on.
@@ -106,31 +99,28 @@ public class EyesAttacher : MonoBehaviour {
 	/// Unity's method called right after this object is created.
 	/// </summary>
 	void Awake() {
-		// Retireves the desired components
-		_meshCollider = GetComponent<MeshCollider>();
-
 		// Initialization
-		_bakedMesh = new Mesh();
-	}
+		_meshTransform = skinnedMeshRenderer.transform;
+        _bakedMesh = new Mesh();
+    }
 
 	/// <summary>
 	/// Unity's method called on the first frame this object is active.
 	/// </summary>
 	void Start() {
-		// Updates the mesh in the collider
+		// Updates the mesh from the mesh renderer
 		UpdateMesh();
 
 		// Left eye
-		float radius = maxRadius * center.lossyScale.x;
 		Vector3 direction = leftEye.position - center.position;
-		RaycastHit hit = GetEyePosition(direction, radius);
+		RaycastHit hit = GetEyePosition(direction);
 		_leftEyeOriginalRotation = Quaternion.FromToRotation(hit.normal, leftEye.forward);
 		_leftEyeOriginalRotation.x *= -1;
 		_leftEyeOriginalScale = leftEye.localScale;
 
 		// Right eye
 		direction = rightEye.position - center.position;
-		hit = GetEyePosition(direction, radius);
+		hit = GetEyePosition(direction);
 		_rightEyeOriginalRotation = Quaternion.FromToRotation(hit.normal, rightEye.forward);
 		_rightEyeOriginalRotation.x *= -1;
 		_rightEyeOriginalScale = rightEye.localScale;
@@ -140,44 +130,39 @@ public class EyesAttacher : MonoBehaviour {
 	/// Unity's method called at the end of each frame.
 	/// </summary>
 	void LateUpdate () {
-		// Updates the mesh in the collider
+		// Updates the mesh from the mesh renderer
 		UpdateMesh();
 
 		// Left eye
-		float radius = maxRadius * center.lossyScale.x;
 		Vector3 direction = Quaternion.Euler(eyeSeparation.y, -eyeSeparation.x, 0) * -center.forward;
-		RaycastHit hit = GetEyePosition(direction, radius);
+		RaycastHit hit = GetEyePosition(direction);
 		leftEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
 		Quaternion targetRotation = Quaternion.LookRotation(hit.normal) * _leftEyeOriginalRotation;
 		leftEye.rotation = Quaternion.Lerp(leftEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-		//leftEye.rotation = targetRotation;
 		leftEye.localScale = _leftEyeOriginalScale * eyeScale;
 
 		// Right eye
 		direction = Quaternion.Euler(eyeSeparation.y, eyeSeparation.x, 0) * -center.forward;
-		hit = GetEyePosition(direction, radius);
+		hit = GetEyePosition(direction);
 		rightEye.position = hit.point - hit.normal * eyePenetration * eyeScale * center.lossyScale.x;
 		targetRotation = Quaternion.LookRotation(hit.normal) * _rightEyeOriginalRotation;
 		rightEye.rotation = Quaternion.Lerp(rightEye.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-		//rightEye.rotation = targetRotation;
 		rightEye.localScale = _rightEyeOriginalScale * eyeScale;
 	}
 
 	/// <summary>
-	/// Updates the mesh information in the Mesh Collider.
+	/// Updates the mesh information from the SkinnedMeshRenderer.
 	/// </summary>
 	private void UpdateMesh() {
 		// Copy the mesh from the renderer
 		skinnedMeshRenderer.BakeMesh(_bakedMesh);
 
-		// As the baked mesh is already scaled, we should shrink it
-		float shrinkFactor = 1.0f / skinnedMeshRenderer.transform.lossyScale.x;
+		// Transforms the mesh points to global coordinates. As the baked mesh is already scaled, ignores it
+		float shrinkFactor = 1.0f / _meshTransform.lossyScale.x;
 		Vector3[] vertices = _bakedMesh.vertices;
-		vertices = vertices.Select(e => e * shrinkFactor).ToArray();
+		for (int i = 0; i < vertices.Length; i++)
+			vertices[i] *= shrinkFactor;
 		_bakedMesh.vertices = vertices;
-
-		// Updates the emsh in the collider
-		_meshCollider.sharedMesh = _bakedMesh;
 	}
 	
 	/// <summary>
@@ -185,12 +170,14 @@ public class EyesAttacher : MonoBehaviour {
 	/// be standing on.
 	/// </summary>
 	/// <param name="direction"> The direction for the eye to be</param>
-	/// <param name="radius">The maximum distance the eye should be</param>
 	/// <returns>A RaycastHit with the position information</returns>
-	private RaycastHit GetEyePosition(Vector3 direction, float radius) {
+	private RaycastHit GetEyePosition(Vector3 direction) {
 		// Casts a ray to look for the eye's position
 		RaycastHit hit;
-		_meshCollider.Raycast(new Ray(center.position + direction * radius, -direction), out hit, radius);
+		if (!_bakedMesh.Raycast(_meshTransform.InverseTransformPoint(center.position + 10 * direction), _meshTransform.InverseTransformDirection(-direction), out hit))
+			Debug.LogError("Error: Eye raycast failed it's target!");
+		hit.point = _meshTransform.TransformPoint(hit.point);
+		hit.normal = _meshTransform.TransformDirection(hit.normal);
 		return hit;
 	}
 

@@ -39,18 +39,6 @@ public class SkinnedSphereDeform : MonoBehaviour {
 	/// </summary>
 	public float chamfScale = 1;
 
-	/// <summary>
-	/// If enabled, the planar deformation will compensate the chamf
-	/// deformation. Note that this will prevent the entity from keeping
-	/// its volume.
-	/// </summary>
-	public bool compensateChamf = true;
-
-	/// <summary>
-	/// Extra points that will be deformed with the mesh.
-	/// </summary>
-	public Transform[] extraDeformationPoints;
-
 	#endregion
 
 	#region Private Attributes
@@ -74,11 +62,6 @@ public class SkinnedSphereDeform : MonoBehaviour {
 	/// The modified mesh that will be deformed.
 	/// </summary>
 	private Mesh _modifiedMesh;
-
-	/// <summary>
-	/// Original positions of the extra deformation points.
-	/// </summary>
-	private Vector3[] _originalExtraPointsPositions;
 
 	#endregion
 
@@ -125,9 +108,6 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		// Assigns the new mesh
 		_skinnedMeshRenderer.sharedMesh = _modifiedMesh;
 
-		// Saves the original extra point's positions
-		_originalExtraPointsPositions = extraDeformationPoints.Select(e => e.localPosition).ToArray();
-
 		// Precalculates some data
 		PrecalculateData();
 		_lastFrameNumberOfRays = numberOfRays;
@@ -171,18 +151,6 @@ public class SkinnedSphereDeform : MonoBehaviour {
 			_deformationPoints[i] = center + sphereCollider.radius * _rayDirections[i];
 		}
 	}
-
-	/// <summary>
-	/// Returns an array with the local positions on the current frame of each
-	/// extra point.
-	/// </summary>
-	/// <returns>Local positions of the extra points</returns>
-	private Vector3[] GetLocalExtraPointsPosition() {
-		Vector3[] localExtraPointsPosition = new Vector3[_originalExtraPointsPositions.Length];
-		for (int i = 0; i < _originalExtraPointsPositions.Length; i++)
-			localExtraPointsPosition[i] = _transform.InverseTransformPoint(extraDeformationPoints[i].parent.TransformPoint(_originalExtraPointsPositions[i]));
-		return localExtraPointsPosition;
-	}
     
 	/// <summary>
 	/// Casts the rays and starts the deformation.
@@ -190,8 +158,6 @@ public class SkinnedSphereDeform : MonoBehaviour {
 	private void Deform() {
 		// Initializes the arrays
 		Vector3[] modifiedVertices = (Vector3[])_originalVertices.Clone();
-		Vector3[] localExtraPointsPositions = GetLocalExtraPointsPosition();
-		Vector3[] extraPoints = (Vector3[])localExtraPointsPositions.Clone();
 
 		// Calculates the needed information
 		Vector3 center = _transform.TransformPoint(sphereCollider.center);
@@ -202,43 +168,30 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		for (int i = 0; i < numberOfRays; i++) {
 			// If the ray didn't hit anything, skips it
 			RaycastHit hitInfo;
-			Vector3 transformedDirection = _rayDirections[i];   // Patch: No modifications are done to the direction
-			if (!Physics.Raycast(center, transformedDirection, out hitInfo, rayDistance, layer)) {
+			if (!Physics.Raycast(center, _rayDirections[i], out hitInfo, rayDistance, layer)) {
 				deformations[i] = Vector3.zero;
 				continue;
 			}
 
 			// Calculates the deformation
-			deformations[i] = transformedDirection * (hitInfo.distance - rayDistance);
+			deformations[i] = _rayDirections[i] * (hitInfo.distance - rayDistance);
 			deformations[i] = Vector3.Project(deformations[i], hitInfo.normal);
 
 			// For each vertex, calculates the chamf deformation to apply
 			DeformChamfVertices(i, deformations[i], _originalVertices, ref modifiedVertices);
-
-			// Deforms the extra points as well
-			DeformChamfVertices(i, deformations[i], localExtraPointsPositions, ref extraPoints);
 		}
 
 		// For each vertex, calculates the planar deformation to apply
 		for (int i = 0; i < numberOfRays; i++)
-			if (deformations[i] != Vector3.zero) {
-				// Deforms the vertices
-				DeformPlanarVertices(i, deformations[i], _originalVertices, ref modifiedVertices, _originalVertices);
-
-				// Deforms the extra points as well
-				DeformPlanarVertices(i, deformations[i], localExtraPointsPositions, ref extraPoints, _originalExtraPointsPositions);
-			}
+			if (deformations[i] != Vector3.zero)
+				DeformPlanarVertices(i, deformations[i], _originalVertices, ref modifiedVertices);
 
 		// Moves the vertices to their desired position
 		Vector3[] newVertices = new Vector3[modifiedVertices.Length];
 		Vector3[] lastFrameVertices = _modifiedMesh.vertices;
 		for (int i = 0; i < newVertices.Length; i++)
 			newVertices[i] = Vector3.Lerp(lastFrameVertices[i], modifiedVertices[i], deformationSpeed * Time.deltaTime);
-
-		// Moves the extra points to their desired position
-		for (int i = 0; i < extraDeformationPoints.Length; i++)
-			extraDeformationPoints[i].position = _transform.TransformPoint(Vector3.Lerp(_transform.InverseTransformPoint(extraDeformationPoints[i].position), extraPoints[i], deformationSpeed * Time.deltaTime));
-
+		
 		// Reassignates the vertices
 		_modifiedMesh.vertices = newVertices;
 	}
@@ -252,17 +205,26 @@ public class SkinnedSphereDeform : MonoBehaviour {
 	/// <param name="vertexToModify">A reference to the vertices to modify</param>
 	private void DeformChamfVertices(int rayIndex, Vector3 deformation, Vector3[] originalVertices, ref Vector3[] vertexToModify) {
 		// Precalculates some data
-		float deformationFactor = deformation.magnitude * chamfScale;
+		Vector3 center = _transform.TransformPoint(sphereCollider.center);
+		float deformationFactor = chamfScale;
 		deformationFactor /= sphereCollider.radius * _transform.lossyScale.x * Mathf.Sqrt(numberOfRays);
+		Vector3 chamfDirection = Vector3.Cross(deformation, Vector3.forward);
+		float deformationMagnitudeFactor = 1.0f / deformation.magnitude;
 
 		// For each vertex, calculates it's deformation
 		for (int i = 0; i < vertexToModify.Length; i++) {
 			// Calculates the distance to the deformation point
-			Vector3 vertexDistance = _transform.TransformVector(originalVertices[i] - _deformationPoints[rayIndex]);
-			Vector3 distanceProjection = Vector3.ProjectOnPlane(vertexDistance, deformation);
+			//Vector3 vertexDistance = _transform.TransformVector(originalVertices[i] - _deformationPoints[rayIndex]);
+			//Vector3 distanceProjection = Vector3.ProjectOnPlane(vertexDistance, deformation);
+
+			// Calculates the distance from the center to the vertex in global coordinates
+			Vector3 distanceToVertex = _transform.TransformPoint(originalVertices[i]) - center;
+
+			// Calculates the deformation to apply
+			Vector3 chamfDeformation = chamfDirection * Vector3.Dot(chamfDirection, distanceToVertex) * deformationMagnitudeFactor;
 
 			// Applys the chamf to the vertex
-			vertexToModify[i] += _transform.InverseTransformVector(distanceProjection * deformationFactor);
+			vertexToModify[i] += _transform.InverseTransformVector(chamfDeformation * deformationFactor);
 		}
 	}
 
@@ -273,7 +235,7 @@ public class SkinnedSphereDeform : MonoBehaviour {
 	/// <param name="rayIndex">Index of the ray causing the deformation</param>
 	/// <param name="deformation">Deformation performed by the ray</param>
 	/// <param name="vertexToModify">A reference to the vertices to modify</param>
-	private void DeformPlanarVertices(int rayIndex, Vector3 deformation, Vector3[] originalVertices, ref Vector3[] vertexToModify, Vector3[] originalPositions) {
+	private void DeformPlanarVertices(int rayIndex, Vector3 deformation, Vector3[] originalVertices, ref Vector3[] vertexToModify) {
 		// Precalculates some data
 		Vector3 center = _transform.TransformPoint(sphereCollider.center);
 		float radiusFactor = 1.0f / (sphereCollider.radius * _transform.lossyScale.x);
@@ -284,31 +246,19 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		// For each vertex, calculates it's deformation
 		for (int i = 0; i < vertexToModify.Length; i++) {
 			// Calculates the distance from the center to the vertex in global coordinates
-			Vector3 distanceToVertex = _transform.TransformPoint(originalPositions[i]) - center;
-
-			// Isolates the Z coordinate, as the rays are not casted in that direction
-			float zDistance = Mathf.Abs(distanceToVertex.z);
-			distanceToVertex.z = 0;
+			Vector3 distanceToVertex = _transform.TransformPoint(originalVertices[i]) - center;
 
 			// Checks if the vertex is near the ray using the angle between rays
-			float vertexAngle = Mathf.Atan2(distanceToVertex.y, distanceToVertex.x);
-			float angle = Mathf.Abs(rayAngle - vertexAngle);
-			float weigth = 0;
-			if (angle <= angleBetweenRays) {
-				// Calculates the weight of the vertex
-				float zFactor = 1 - zDistance  * radiusFactor;
-				weigth = (1 - angle * angleBetweenRaysFactor) * zFactor;
-			}
+			float angle = Mathf.Abs(rayAngle - Mathf.Atan2(distanceToVertex.y, distanceToVertex.x));
+			if (angle > angleBetweenRays)
+				continue;
 
-			// Calculates the chamf compensation
-			Vector3 chamfDistance = Vector3.zero;
-			if (compensateChamf) {
-				chamfDistance = _transform.TransformVector(originalVertices[i] - vertexToModify[i]);
-				chamfDistance = Vector3.Project(chamfDistance, deformation);
-			}
+			// Calculates the weight of the vertex
+			float zFactor = 1 - Mathf.Abs(distanceToVertex.z) * radiusFactor;
+			float weigth = (1 - angle * angleBetweenRaysFactor) * zFactor;
 
 			// Adds the deformation to the vertex
-			vertexToModify[i] += _transform.InverseTransformVector((deformation + chamfDistance) * weigth);
+			vertexToModify[i] += _transform.InverseTransformVector(deformation * weigth);
 		}
 	}
 
