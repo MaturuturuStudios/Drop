@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// <summary>
 /// This class is for the canon plant shoot
 /// </summary>
-public class ToWater : ActionPerformer
+public class Irrigate : ActionPerformer
 {
     #region Private Attributes
 
