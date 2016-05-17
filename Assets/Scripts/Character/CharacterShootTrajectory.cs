@@ -278,12 +278,22 @@ public class CharacterShootTrajectory : MonoBehaviour
 
 
                     angle -= h;
-                    angle += v;
+                    
 
                     //Debug.Log(" axis horizontal " + h);
 
+                    if (angle < 90)
+                    {
+                        angle += v;
+                        Debug.Log(" angulo " + angle + " v" + v);
+                    }
+
+                    if (angle > 90) angle -= v;
+
                     if (angle < 0) angle = 0;
                     if (angle > 180) angle = 180;
+
+                   
                 }
             }         
 
@@ -345,11 +355,13 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         Debug.DrawRay(spheredis, fwd, Color.green);
 
-        if (Physics.Raycast(spheredis, fwd, dis, mask))
+       
+
+        if (Physics.SphereCast(spheredis,radio, fwd,out hitpoint, dis, mask))
         {
             ball.SetActive(false);
             sphere.GetComponent<Renderer>().enabled = false;
-            for (int j = 1; j < numOfTrajectoryPoints - 1; j++)
+            for (int j = 0; j < numOfTrajectoryPoints - 1; j++)
             {
                 trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
 
