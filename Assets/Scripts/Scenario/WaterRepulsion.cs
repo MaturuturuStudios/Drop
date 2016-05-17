@@ -20,6 +20,8 @@ public class WaterRepulsion : MonoBehaviour {
     /// Delay
     /// </summary>
     public float delay = 0.8f;
+
+    public ParticleSystem particleEffect;
     #endregion
 
     #region Private attributes
@@ -110,7 +112,15 @@ public class WaterRepulsion : MonoBehaviour {
         //get the component if is a drop
         GameObject drop = other.gameObject;
         if (drop.tag != Tags.Player) return;
-        if(!_expelDrop.Contains(drop)) _enteredDrop.Add(drop);
+        
+        if (!_expelDrop.Contains(drop)) {
+            _enteredDrop.Add(drop);
+
+            //set particle effect (and inmediately destroy it)
+            GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
+            particleSystem.GetComponent<Transform>().position = drop.transform.position;
+            Destroy(particleSystem, particleEffect.startLifetime);
+        }
     }
 
     /// <summary>
@@ -133,6 +143,12 @@ public class WaterRepulsion : MonoBehaviour {
         CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
         //put drop on point expulsion
         drop.transform.position = pointExpulsion.position;
+
+        //set particle effect (and inmediately destroy it)
+        GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
+        particleSystem.GetComponent<Transform>().position = drop.transform.position;
+        Destroy(particleSystem, particleEffect.startLifetime);
+
         //send it flying (stop previous flying)
         controller.StopFlying();
         controller.SendFlying(GetNeededVelocityVector());
