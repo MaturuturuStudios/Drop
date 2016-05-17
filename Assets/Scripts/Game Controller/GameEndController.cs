@@ -18,13 +18,7 @@ public class GameEndController : MonoBehaviour {
     /// <summary>
     /// UI text object reference
     /// </summary>
-    public Text levelCompleteText;
-
-
-    /// <summary>
-    /// Displayed phrase
-    /// </summary>
-    public string phrase = "Level Complete!";
+    public GameObject levelComplete;
     
 
     /// <summary>
@@ -71,8 +65,7 @@ public class GameEndController : MonoBehaviour {
     /// </summary>
     void Start(){
         // Set the phrase to the text label and disable it
-        levelCompleteText.text = phrase;
-        levelCompleteText.enabled = false;
+        levelComplete.SetActive(false);
 
         // In case that the scene is empty, by default we use StartScene
         // TODO improve this part, try to avoid hardcoded strings
@@ -125,7 +118,7 @@ public class GameEndController : MonoBehaviour {
             _gci.StopInput();
 
             // Show message
-            levelCompleteText.enabled = true;
+            levelComplete.SetActive(true);
         }
     }
 

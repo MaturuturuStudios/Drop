@@ -63,3 +63,7 @@ Fantastic=Fantàstic
 
 #Common strings in options
 SaveChanges=Guardar cambios
+Yes=Yes
+No=No
+ConfirmQuit=Confirm quit?
+LevelComplete=Level complete!

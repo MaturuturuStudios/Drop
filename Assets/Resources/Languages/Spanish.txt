@@ -62,3 +62,8 @@ Fantastic=Fantástico
 
 #Common strings in options
 SaveChanges=Guardar cambios
+Yes=Si
+No=No
+#Quit
+ConfirmQuit=¿Confirmar salida?
+LevelComplete=¡Nivel completado!
