@@ -28,6 +28,16 @@ public class MenuMapLevel : MonoBehaviour {
         }
     }
 
+    private class OnSelectLevel: MonoBehaviour, ISelectHandler {
+        public int world;
+        public int level;
+        public Transform levelPosition;
+        public MenuMapLevel delegateAction;
+        public void OnSelect(BaseEventData eventData) {
+            delegateAction.Displacement(world, levelPosition.position);
+        }
+    }
+
     private RectTransform[] worldsTransform;
     //world and level unblocked
     //with return/b... if level, come back to world, if world, come back menu
@@ -45,16 +55,22 @@ public class MenuMapLevel : MonoBehaviour {
     public void Awake() {
         worldsTransform = new RectTransform[worlds.Length];
 		levels = new GameObject[worlds.Length];
-        for(int i=0; i<worlds.Length; i++) {
+
+        ConfigureWorlds();  
+    }
+
+    private void ConfigureWorlds() {
+        for (int i = 0; i < worlds.Length; i++) {
             GameObject aWorld = worlds[i];
             worldsTransform[i] = aWorld.GetComponent<RectTransform>();
             //get the button of the world (title)
             foreach (Transform childTransform in aWorld.transform) {
                 GameObject child = childTransform.gameObject;
-				if (child.tag==Tags.Level) {
-					levels [i] = child;
-					continue;
-				}
+                if (child.tag == Tags.Level) {
+                    levels[i] = child;
+                    ConfigureLevels(i);
+                    continue;
+                }
 
                 Text title = child.GetComponent<Text>();
                 //when found...
@@ -67,9 +83,24 @@ public class MenuMapLevel : MonoBehaviour {
                 }
             }
         }
-        
-           
     }
+
+    private void ConfigureLevels(int world) {
+        GameObject allLevelWorld = levels[world];
+        int i = 0;
+        foreach (Transform childTransform in allLevelWorld.transform) {
+            GameObject child = childTransform.gameObject;
+
+            //add a script to watch
+            child.AddComponent(typeof(OnSelectLevel));
+            OnSelectLevel script = child.GetComponent<OnSelectLevel>();
+            script.world = world;
+            script.level = i;
+            script.levelPosition = childTransform;
+            script.delegateAction = this;
+            i++;
+        }
+}
 
     public void Update() {
         //if we have to select the option...
@@ -86,41 +117,51 @@ public class MenuMapLevel : MonoBehaviour {
     /// Center the world
     /// </summary>
     public void Displacement(int world) {
+        Displacement(world, levels[world].transform.GetChild(0).transform.position);
+    }
+
+    public void Displacement(int world, Vector3 center) {
         RectTransform worldData = worldsTransform[world];
 
-        float displacement = 0;
-        if (world > 0) {
-            //get half width canvas
-            float halfWidthScreen = Screen.width / 2.0f;
-            //get point world to center
-            float worldPosition = worldData.localPosition.x;
-            //get width world/2
-            float halfWorldWidth = worldData.rect.width / 2.0f;
-            //calculate position...
-            float worldCenter = worldPosition;
-            
-            
-            displacement = worldCenter + halfWidthScreen;
-            if (displacement < 0) {
-                displacement = 0;
-            }
+        center -= map.localPosition;
+        Debug.Log(center);
+
+        float screenWidthHalf = Screen.width / 2;
+        
+        Vector2 displacement = Vector2.zero;
+        float offset = center.x - Screen.width;
+        if (offset < 0) {
+            displacement.x = center.x + (center.x - screenWidthHalf);
+        } else {
+            displacement.x = center.x - offset - (Screen.width / 2);
         }
 
+
+        offset = center.y - Screen.height;
+        if (offset < 0) offset = 0;
+        displacement.y = center.y - offset - (Screen.height / 2);
+        
+        if (displacement.x < 0) displacement.x = 0;
+        if (displacement.y < 0) displacement.y = 0;
+
+
         Vector3 finalPosition = map.localPosition;
-        Vector2 delta = map.sizeDelta;
-        delta.y = 0;
-        delta.x = -displacement;
-        finalPosition.x = -displacement;
-        map.localPosition = finalPosition;
+        //Vector2 delta = map.sizeDelta;
+        //delta.y = 0;
+        //delta.x = -displacement.x;
+        finalPosition.x = -displacement.x;
+        map.localPosition += finalPosition;
 
-		if (previousWorld >= 0)
-			levels [previousWorld].SetActive (false);
-		levels[world].SetActive (true);
-		previousWorld = world;
+        //if (previousWorld >= 0)
+        //    levels[previousWorld].SetActive(false);
+        //levels[world].SetActive(true);
+        //previousWorld = world;
 
-
-		//map.localScale = Vector3.one * 1.5f;
-		//Zoom (true, finalPosition);
+        //placed! now I need to zoom it until the width of the image is the width of the screen
+        //float scale = Screen.width / worldData.rect.width;
+        //scale += 1;
+        //Debug.Log(scale);
+        //map.localScale = Vector3.one * scale;
     }
 
 	private void ShowLevels(int world){
