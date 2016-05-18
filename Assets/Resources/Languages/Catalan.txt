@@ -7,7 +7,7 @@ MenuOptions=Opcions
 MenuPause=Pausa
 MenuMainMenu=Menú Principal
 MenuExit=Sortir
-MenuLoadGame=Cargar Joc
+MenuLoadGame=Continuar Joc
 MenuNewGame=Nou Joc
 
 #Menu options
