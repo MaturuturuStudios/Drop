@@ -14,10 +14,18 @@ public class MenuMapLevel : MonoBehaviour {
 	/// The first option to be selected
 	/// </summary>
 	public GameObject firstSelected;
-	/// <summary>
-	/// The previous world actived.
-	/// </summary>
-	private int actualWorldActive;
+    /// <summary>
+    /// The image of the map, to calculate the bounds
+    /// </summary>
+    public RectTransform sizeImage;
+    /// <summary>
+    /// The calculated limit of the image map
+    /// </summary>
+    private Vector2 limitImage;
+    /// <summary>
+    /// The previous world actived.
+    /// </summary>
+    private int actualWorldActive;
 	/// <summary>
 	/// The levels' panels (canvas).
 	/// </summary>
@@ -46,6 +54,7 @@ public class MenuMapLevel : MonoBehaviour {
     //when hit, show under world and zoom in
 
     //detect navigation between worlds and levels
+    //fade in and out the worlds
 
     public void OnEnable() {
         //we have to select the option in update
@@ -55,6 +64,9 @@ public class MenuMapLevel : MonoBehaviour {
     public void Awake() {
 		levelsCanvas = new CanvasGroup[worlds.Length];
 		levelPositions = new List<Vector2[]>();
+        
+        limitImage = sizeImage.sizeDelta;
+        limitImage -= new Vector2(map.sizeDelta.x, map.sizeDelta.y);
         ConfigureWorlds();  
     }
 
@@ -89,7 +101,8 @@ public class MenuMapLevel : MonoBehaviour {
             OnSelectLevel script = child.GetComponent<OnSelectLevel>();
             script.world = world; //which world belongs
             script.level = i; //number of level
-			levelPositions[world][i]=childTransform.position;
+            Vector2 screenpoint = RectTransformUtility.WorldToScreenPoint(null, childTransform.localPosition);
+            levelPositions[world][i]= screenpoint;
             script.delegateAction = this; //script to delegate
             i++;
         }
@@ -155,32 +168,27 @@ public class MenuMapLevel : MonoBehaviour {
 	/// </summary>
 	/// <param name="center">Center.</param>
 	private void MoveView(Vector3 center) {
-        float screenWidthHalf = Screen.width / 2;
+        Debug.Log(center);
         
-        Vector2 displacement = Vector2.zero;
-		displacement.x = center.x;
-		/*
-        float offset = center.x - Screen.width;
-		//if negative, center is inside the view
-        if (offset < 0) offset = 0;
-        displacement.x = center.x - offset - (Screen.width / 2);
+        //put the point at bottom left of screen
+        Vector2 position = center;
+        //move the point to the x center of screen
+        float halfWidth = map.sizeDelta.x / 2.0f;
+        position.x -= halfWidth;
         
+        //move the point to the y center of screen
+        float halfHeight = map.sizeDelta.y / 2.0f;
+        position.y -= halfHeight;
 
+        //none of them should be zero (less than the left/bottom side of image)
+        if (position.x < 0) position.x = 0;
+        if (position.y < 0) position.y = 0;
 
-        offset = center.y - Screen.height;
-        if (offset < 0) offset = 0;
-        displacement.y = center.y - offset - (Screen.height / 2);
-        
-        if (displacement.x < 0) displacement.x = 0;
-        if (displacement.y < 0) displacement.y = 0;
-		*/
+        //none of them should be more than the right/up side of the image
+        if (position.x > limitImage.x) position.x = limitImage.x;
+        if (position.y > limitImage.y) position.y = limitImage.y;
 
-        Vector3 finalPosition = map.localPosition;
-        //Vector2 delta = map.sizeDelta;
-        //delta.y = 0;
-        //delta.x = -displacement.x;
-        finalPosition.x = -displacement.x;
-        map.localPosition = finalPosition;
+        map.localPosition = new Vector3(-position.x, -position.y,0);
 
         //placed! now I need to zoom it until the width of the image is the width of the screen
         //float scale = Screen.width / worldData.rect.width;
