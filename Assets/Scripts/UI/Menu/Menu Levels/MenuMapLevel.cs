@@ -35,6 +35,15 @@ public class MenuMapLevel : MonoBehaviour {
 	/// </summary>
 	private bool _selectOption;
 
+    public float zoomIn=1.8f;
+    public float zoomOut=1f;
+
+    private Vector2 _targetPoint;
+    public float durationTravel=1.0f;
+    private float _startTime;
+
+    private float scale;
+
 	/// <summary>
 	/// On select level class to react a events.
 	/// </summary>
@@ -64,10 +73,17 @@ public class MenuMapLevel : MonoBehaviour {
     public void Awake() {
 		levelsCanvas = new CanvasGroup[worlds.Length];
 		levelPositions = new List<Vector2[]>();
+
         
+
         limitImage = sizeImage.sizeDelta;
         limitImage -= new Vector2(map.sizeDelta.x, map.sizeDelta.y);
-        ConfigureWorlds();  
+        ConfigureWorlds();
+
+        //scale = 1.8f;
+        //map.localScale = new Vector3(scale, scale, scale);
+
+        SelectLevel(1, 0);  
     }
 
     private void ConfigureWorlds() {
@@ -116,6 +132,15 @@ public class MenuMapLevel : MonoBehaviour {
             //select the option
             EventSystem.current.SetSelectedGameObject(firstSelected);
         }
+        
+        Vector2 actualPosition = map.localPosition;
+        float t = (Time.time - _startTime) / durationTravel;
+        float positionX = Mathf.SmoothStep(actualPosition.x, _targetPoint.x, t);
+        float positionY = Mathf.SmoothStep(actualPosition.y, _targetPoint.y, t);
+        Zoom();
+        map.localPosition = new Vector3(positionX, positionY, 0);
+        
+        
     }
 
 	/// <summary>
@@ -168,8 +193,8 @@ public class MenuMapLevel : MonoBehaviour {
 	/// </summary>
 	/// <param name="center">Center.</param>
 	private void MoveView(Vector3 center) {
-        Debug.Log(center);
-        
+        _startTime = Time.time;
+
         //put the point at bottom left of screen
         Vector2 position = center;
         //move the point to the x center of screen
@@ -188,13 +213,10 @@ public class MenuMapLevel : MonoBehaviour {
         if (position.x > limitImage.x) position.x = limitImage.x;
         if (position.y > limitImage.y) position.y = limitImage.y;
 
-        map.localPosition = new Vector3(-position.x, -position.y,0);
+        //position.x *= scale;
 
-        //placed! now I need to zoom it until the width of the image is the width of the screen
-        //float scale = Screen.width / worldData.rect.width;
-        //scale += 1;
-        //Debug.Log(scale);
-        //map.localScale = Vector3.one * scale;
+        _targetPoint = new Vector2(-position.x, -position.y);
+
     }
 
 	/// <summary>
@@ -213,7 +235,14 @@ public class MenuMapLevel : MonoBehaviour {
 		title.text = "World " + (world+1);
 	}
 
-	public void Zoom(bool zoomIn, Vector3 point) {
-				
+	public void Zoom() {
+        //float t = (Time.time - _startTime) / durationTravel;
+        //float zoom;
+        //if (t <= 0.5f) {
+        //    zoom=Mathf.Lerp(zoomIn, zoomOut, t);
+        //} else {
+        //    zoom=Mathf.Lerp(zoomOut, zoomIn, t);
+        //}
+        //map.localScale = new Vector3(zoom,zoom, zoom);
     }
 }
