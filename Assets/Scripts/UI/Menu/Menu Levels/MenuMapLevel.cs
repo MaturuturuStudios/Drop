@@ -42,7 +42,7 @@ public class MenuMapLevel : MonoBehaviour {
     public float durationTravel=1.0f;
     private float _startTime;
 
-    private float scale;
+    private float scale=1.5f;
 
 	/// <summary>
 	/// On select level class to react a events.
@@ -74,17 +74,24 @@ public class MenuMapLevel : MonoBehaviour {
 		levelsCanvas = new CanvasGroup[worlds.Length];
 		levelPositions = new List<Vector2[]>();
 
-        
-
-        limitImage = sizeImage.sizeDelta;
-        limitImage -= new Vector2(map.sizeDelta.x, map.sizeDelta.y);
+		ResizeLimits ();
         ConfigureWorlds();
 
         //scale = 1.8f;
-        //map.localScale = new Vector3(scale, scale, scale);
+        map.localScale = new Vector3(scale, scale, scale);
 
         SelectLevel(1, 0);  
     }
+
+	private void ResizeLimits(){
+		limitImage = RectTransformUtility.WorldToScreenPoint(null, sizeImage.sizeDelta);
+		limitImage *= scale;
+		Vector2 sizeDeltaScaled = RectTransformUtility.WorldToScreenPoint(null, map.sizeDelta);
+		//sizeDeltaScaled *= scale;
+		Debug.Log(map.sizeDelta);
+		Debug.Log(map.sizeDelta*scale);
+		limitImage -= new Vector2(sizeDeltaScaled.x, sizeDeltaScaled.y);
+	}
 
     private void ConfigureWorlds() {
 		for (int i = 0; i < worlds.Length; i++) {
@@ -196,7 +203,7 @@ public class MenuMapLevel : MonoBehaviour {
         _startTime = Time.time;
 
         //put the point at bottom left of screen
-        Vector2 position = center;
+        Vector2 position = center*scale;
         //move the point to the x center of screen
         float halfWidth = map.sizeDelta.x / 2.0f;
         position.x -= halfWidth;
@@ -210,7 +217,8 @@ public class MenuMapLevel : MonoBehaviour {
         if (position.y < 0) position.y = 0;
 
         //none of them should be more than the right/up side of the image
-        if (position.x > limitImage.x) position.x = limitImage.x;
+		ResizeLimits();
+        if (position.x > limitImage.x*scale) position.x = limitImage.x*scale;
         if (position.y > limitImage.y) position.y = limitImage.y;
 
         //position.x *= scale;
@@ -228,7 +236,7 @@ public class MenuMapLevel : MonoBehaviour {
 			return;
 
 		if (actualWorldActive >= 0)
-			levelsCanvas[actualWorldActive].alpha=0;
+			levelsCanvas[actualWorldActive].alpha=0.5f;
 
 		levelsCanvas[world].alpha=1;
 		actualWorldActive = world;
