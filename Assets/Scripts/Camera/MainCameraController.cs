@@ -202,7 +202,7 @@ public class MainCameraController : MonoBehaviour {
     private void MoveCamera() {
 		// Calculate destination
         Vector3 destination = target.transform.position + _offset;
-        destination.y += raisingPosition;
+        destination.y += raisingPosition * _dropSize;
 
         if (_cameraLocked)
             // Lock camera
@@ -265,7 +265,7 @@ public class MainCameraController : MonoBehaviour {
     private void LookAt() {
 		// Calculate objective of the camera
         Vector3 destination = target.transform.position;
-        destination.y += raisingPosition;
+        destination.y += raisingPosition * _dropSize;
 
         // Add Loook around offset
         destination += _lookArroundOffset;
@@ -330,7 +330,7 @@ public class MainCameraController : MonoBehaviour {
         // Setting lock state
         _cameraLocked = true;
 
-        float cameraZPos = (area.height) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
+        float cameraZPos = -(area.height) / Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg);
 
         _lockPosition = new Vector3(area.x, area.y, cameraZPos);
 
