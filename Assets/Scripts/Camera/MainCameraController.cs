@@ -59,6 +59,10 @@ public class MainCameraController : MonoBehaviour {
     }
 
 
+    /// <summary>
+    /// camera raising position respect to the objective
+    /// </summary>
+    public float raisingPosition = 2.5F;
     #endregion
 
     #region Private Attributes
@@ -198,6 +202,7 @@ public class MainCameraController : MonoBehaviour {
     private void MoveCamera() {
 		// Calculate destination
         Vector3 destination = target.transform.position + _offset;
+        destination.y += raisingPosition;
 
         if (_cameraLocked)
             // Lock camera
@@ -260,6 +265,7 @@ public class MainCameraController : MonoBehaviour {
     private void LookAt() {
 		// Calculate objective of the camera
         Vector3 destination = target.transform.position;
+        destination.y += raisingPosition;
 
         // Add Loook around offset
         destination += _lookArroundOffset;
@@ -311,7 +317,7 @@ public class MainCameraController : MonoBehaviour {
     public void LookArround(float OffsetX, float OffsetY) {
 
         // Setting look arround values depending of the input
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F) * lookArroundSmooth * _dropSize;
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY * (9f / 16f), 0F) * lookArroundSmooth * _dropSize;
     }
 
 
