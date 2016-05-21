@@ -12,37 +12,37 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Distance from player to camera X position will be allways the same
     /// </summary>
-    public Vector3 offset = new Vector3(0F, 2F, -15F);
+    public Vector3 offset = new Vector3(0F, 0F, -7.5F);
 
 
     /// <summary>
-    /// Camera movement smooth on XY
+    /// Camera movement velocity on XY
     /// </summary>
-    public float smooth = 2.0f;
+    public float velocity = 20f;
 
 
     /// <summary>
-    /// Camera movement smooth on XY
+    /// Camera movement velocity on XY
     /// </summary>
-    public float zSmooth = 1.0f;
+    public float zVelocity = 5f;
+
+
+    /// <summary>
+    /// Look at movement velocity
+    /// </summary>
+    public float lookAtVelocity = 20f;
+
+
+    /// <summary>
+    /// Look arround max distance
+    /// </summary>
+    public float lookArroundDistance = 6F;
 
 
     /// <summary>
     /// Enable/Disable Look at player liberty when bound reached
     /// </summary>
     public bool lookAtFixedOnBounds = true;
-
-
-    /// <summary>
-    /// Look at movement smooth
-    /// </summary>
-    public float lookAtSmooth = 2.5f;
-
-
-    /// <summary>
-    /// Look arround movement smooth
-    /// </summary>
-    public float lookArroundSmooth = 10F;
 
 
     /// <summary>
@@ -132,8 +132,17 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private Vector3 _lockPosition;
 
-    private float _savedSmooth = 12;
-    private float _savedZSmooth = 8;
+
+    /// <summary>
+    /// Saved camera movement velocity on XY When it changes
+    /// </summary>
+    private float _savedVelocity = 12;
+
+
+    /// <summary>
+    /// Saved camera movement velocity on Z When it changes
+    /// </summary>
+    private float _savedZVelocity = 8;
     #endregion
 
     #region Methods
@@ -149,7 +158,7 @@ public class MainCameraController : MonoBehaviour {
         // Sets the camera's target to the current character
         SetObjective(_independentControl.currentCharacter);
     }
-	
+
 
     /// <summary>
     /// Unity's method called on start script only one time
@@ -191,7 +200,7 @@ public class MainCameraController : MonoBehaviour {
         LookAt();
 
         // Reset state
-        if(_resetLockState)
+        if (_resetLockState)
             _cameraLocked = false;
     }
 
@@ -200,7 +209,7 @@ public class MainCameraController : MonoBehaviour {
     /// Move the camera to offset position of the player gradually
     /// </summary>
     private void MoveCamera() {
-		// Calculate destination
+        // Calculate destination
         Vector3 destination = target.transform.position + _offset;
         destination.y += raisingPosition * _dropSize;
 
@@ -213,7 +222,7 @@ public class MainCameraController : MonoBehaviour {
 
         // Reset bounds exceded to recalculate
         excededX = excededY = 0;
-        
+
         // Calculate if it is out of bounds
         float cameraRealBound = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
 
@@ -232,7 +241,7 @@ public class MainCameraController : MonoBehaviour {
 
         // If left bound exeded
         if (destination.y < bounds.bottom + _offset.y + (cameraRealBound * 9 / 16))
-            excededY = destination.y = bounds.bottom + _offset.y  + (cameraRealBound * 9 / 16);
+            excededY = destination.y = bounds.bottom + _offset.y + (cameraRealBound * 9 / 16);
 
         // If right bound exeded
         else if (destination.y > bounds.top - (cameraRealBound * 9 / 16)) {
@@ -243,10 +252,10 @@ public class MainCameraController : MonoBehaviour {
                 excededY = destination.y = bounds.bottom + _offset.y + (cameraRealBound * 9 / 16);
         }
 
-		// Calculate next position
-		Vector3 newPosition;
-        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * smooth);
-        newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * zSmooth);
+        // Calculate next position
+        Vector3 newPosition;
+        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * velocity);
+        newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * zVelocity);
 
         // Set the position to the camera
         transform.position = newPosition;
@@ -254,8 +263,8 @@ public class MainCameraController : MonoBehaviour {
 
         float squaredDistance = (transform.position - destination).magnitude;
         if (squaredDistance < 0.01f) {
-            smooth = lookAtSmooth = _savedSmooth;
-            zSmooth = _savedZSmooth;
+            velocity = lookAtVelocity = _savedVelocity;
+            zVelocity = _savedZVelocity;
         }
     }
 
@@ -263,7 +272,7 @@ public class MainCameraController : MonoBehaviour {
     /// Makes the camera look to the player's position gradually
     /// </summary>
     private void LookAt() {
-		// Calculate objective of the camera
+        // Calculate objective of the camera
         Vector3 destination = target.transform.position;
         destination.y += raisingPosition * _dropSize;
 
@@ -279,19 +288,19 @@ public class MainCameraController : MonoBehaviour {
 
 
         // If there isn't liberty looking at, block it
-        if (lookAtFixedOnBounds && excededX != 0) 
+        if (lookAtFixedOnBounds && excededX != 0)
             destination.x = excededX;
-        if (lookAtFixedOnBounds && excededY != 0) 
-            destination.y = excededY - (_offset.y );
+        if (lookAtFixedOnBounds && excededY != 0)
+            destination.y = excededY - (_offset.y);
 
 
         // Calculate the look at position of the camera
-        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAtSmooth);
+        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAtVelocity);
 
-		// Set the look at attribute
+        // Set the look at attribute
         transform.LookAt(destination);
 
-		// Save the last position for future calculations
+        // Save the last position for future calculations
         _lastObjective = destination;
     }
 
@@ -301,12 +310,12 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     /// <param name="objective">GameObject who is the target of the camera</param>
     public void SetObjective(GameObject objective) {
-        if (_savedSmooth < smooth) {
-            _savedSmooth = smooth;
-            _savedZSmooth = zSmooth;
+        if (_savedVelocity < velocity) {
+            _savedVelocity = velocity;
+            _savedZVelocity = zVelocity;
         }
-        smooth = lookAtSmooth = 12;
-        zSmooth = 8;
+        velocity = lookAtVelocity = 12;
+        zVelocity = 8;
         target = objective;
     }
 
@@ -317,7 +326,7 @@ public class MainCameraController : MonoBehaviour {
     public void LookArround(float OffsetX, float OffsetY) {
 
         // Setting look arround values depending of the input
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY * (9f / 16f), 0F) * lookArroundSmooth * _dropSize;
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY * (9f / 16f), 0F) * lookArroundDistance * _dropSize;
     }
 
 
