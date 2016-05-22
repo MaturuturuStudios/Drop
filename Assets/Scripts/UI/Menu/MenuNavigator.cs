@@ -309,7 +309,8 @@ public class MenuNavigator : MonoBehaviour {
         confirmQuit.gameObject.SetActive(false);
 
         //recover focus
-        EventSystem.current.SetSelectedGameObject(_previousSelectionExit);
+        if(EventSystem.current.currentSelectedGameObject!=_previousSelectionExit)
+            EventSystem.current.SetSelectedGameObject(_previousSelectionExit);
     }
 
     /// <summary>
@@ -437,7 +438,8 @@ public class MenuNavigator : MonoBehaviour {
 
 
         //set selected option by default NO
-        EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
+        if (EventSystem.current.currentSelectedGameObject != confirmQuitDefault)
+            EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
     }
 
 
