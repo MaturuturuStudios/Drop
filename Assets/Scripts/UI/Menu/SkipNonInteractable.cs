@@ -55,6 +55,35 @@ public class SkipNonInteractable : MonoBehaviour, ISelectHandler {
 			}
 		}
 
+        //nothing? try again but with no interaction with input
+        if (select == null) {
+                select = _selectable.FindSelectableOnLeft();
+                if (select == null || !select.gameObject.activeInHierarchy)
+                    select = _selectable.FindSelectableOnRight();
+
+
+
+            if (select == null) { 
+                select = _selectable.FindSelectableOnRight();
+                if (select == null || !select.gameObject.activeInHierarchy)
+                    select = _selectable.FindSelectableOnLeft();
+            }
+
+            //if nothing selected with horizontal, check vertical
+            if (select == null) {
+                    select = _selectable.FindSelectableOnDown();
+                    if (select == null || !select.gameObject.activeInHierarchy) {
+                        select = _selectable.FindSelectableOnUp();
+                    }
+
+                if(select==null) {
+                    select = _selectable.FindSelectableOnUp();
+                    if (select == null || !select.gameObject.activeInHierarchy)
+                        select = _selectable.FindSelectableOnDown();
+                }
+            }
+        }
+
 		if(select!=null) StartCoroutine(DelaySelect (select));
 	
 	}
