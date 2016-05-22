@@ -12,6 +12,8 @@ public class SceneLevel : MonoBehaviour {
         // Get the navigator
         MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
                                  .GetComponent<MenuNavigator>();
+        //unpause
+        _menuNavigator.PauseGame(false);
         // Wait before starting the change
         _menuNavigator.ChangeScene(level.name, waitBeforeStartLevel);
     }

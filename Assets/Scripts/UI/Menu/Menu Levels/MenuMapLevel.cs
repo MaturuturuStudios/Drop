@@ -179,7 +179,7 @@ public class MenuMapLevel : MonoBehaviour {
 
         //move the camera to the target
         Vector2 actualPosition = map.localPosition;
-        float percentageTime = (Time.time - _startTime) / durationTravel;
+        float percentageTime = (Time.unscaledTime - _startTime) / durationTravel;
         float positionX = Mathf.SmoothStep(actualPosition.x, _targetPoint.x, percentageTime);
         float positionY = Mathf.SmoothStep(actualPosition.y, _targetPoint.y, percentageTime);
 
@@ -475,7 +475,7 @@ public class MenuMapLevel : MonoBehaviour {
         }
 
         //fading...
-        canvasFadeIn.alpha = Mathf.Lerp(canvasFadeIn.alpha, 1, Time.deltaTime*speedFading);
+        canvasFadeIn.alpha = Mathf.Lerp(canvasFadeIn.alpha, 1, Time.unscaledDeltaTime*speedFading);
 
         //finished
         if (canvasFadeIn.alpha >= 1) canvasFadeIn = null;
@@ -499,7 +499,7 @@ public class MenuMapLevel : MonoBehaviour {
         }
 
         //fading...
-        canvasFadeOut.alpha = Mathf.Lerp(canvasFadeOut.alpha, hiddenAlphaWorld, Time.deltaTime*speedFading);
+        canvasFadeOut.alpha = Mathf.Lerp(canvasFadeOut.alpha, hiddenAlphaWorld, Time.unscaledDeltaTime*speedFading);
 
         //finished
         if (canvasFadeOut.alpha <= hiddenAlphaWorld) canvasFadeOut = null;

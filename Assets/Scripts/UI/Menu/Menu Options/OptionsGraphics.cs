@@ -83,7 +83,8 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     public void LoseFocus() {
         if (title != null) {
             title.color = Color.white;
-            EventSystem.current.SetSelectedGameObject(null);
+            if (EventSystem.current.currentSelectedGameObject != null)
+                EventSystem.current.SetSelectedGameObject(null);
         }
     }
 
