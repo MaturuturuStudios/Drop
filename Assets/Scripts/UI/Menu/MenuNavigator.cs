@@ -101,6 +101,12 @@ public class MenuNavigator : MonoBehaviour {
     /// Credits Menu
     /// </summary>
     public MenuInstance creditsMenu = new MenuInstance(Menu.CREDITS_MENU);
+
+
+    /// <summary>
+    /// Label for the message displayed when the level is complete
+    /// </summary>
+    public GameObject levelComplete;
     #endregion
 
     #region Private Attributes
@@ -143,6 +149,9 @@ public class MenuNavigator : MonoBehaviour {
         _fading = GetComponent<SceneFadeInOut>();
         //get input controller
         _gameControllerInput = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
+
+        // Disable level complete text
+        levelComplete.SetActive(false);
     }
 
     public void Update() {
@@ -309,6 +318,10 @@ public class MenuNavigator : MonoBehaviour {
     /// </summary>
     public void DoConfirmQuitYes() {
         Application.Quit();
+    }
+
+    public void ShowEndMessage() {
+        levelComplete.SetActive(true);
     }
 
     //Region of methods with special/specific actions when pushed or poped from stack

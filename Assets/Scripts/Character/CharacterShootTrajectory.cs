@@ -500,7 +500,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             if(animshot) faction_of_path_traveled += speedAnimation * Time.deltaTime; //animate along the path
             else faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime;
            
-        if (animshot)
+        if (animshot && canshooot())
         {
             ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
@@ -535,7 +535,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             if (!animshot)
             {
                 trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-                
+                ball.SetActive(true);
             }
 
             fwd = trajectoryPoints[i + 1].transform.position - trajectoryPoints[i].transform.position;
@@ -544,7 +544,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             if ((Physics.SphereCast(trajectoryPoints[i].transform.position,radio, fwd, out hitpoint, dis, mask)))
             {
-                ball.SetActive(true);
+                
 
                 Vector3 hitting = hitpoint.point;
                 float displacement = ball.transform.lossyScale.x * (radio);

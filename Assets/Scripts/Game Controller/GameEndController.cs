@@ -13,12 +13,6 @@ public class GameEndController : MonoBehaviour {
     /// Wait time showing message untill scene is changed
     /// </summary>
     public float waitTime = 3F;
-
-
-    /// <summary>
-    /// UI text object reference
-    /// </summary>
-    public GameObject levelComplete;
     
 
     /// <summary>
@@ -43,7 +37,12 @@ public class GameEndController : MonoBehaviour {
     /// <summary>
     /// On trigger enter control
     /// </summary>
-    private bool end = false;
+    private bool _end = false;
+
+    /// <summary>
+    /// UI Reference
+    /// </summary>
+    private MenuNavigator _menuNavigator;
 
     #endregion
 
@@ -57,6 +56,9 @@ public class GameEndController : MonoBehaviour {
     public void Awake() {
         // Retrieves the components of the entity.
         _collider = gameObject.GetComponent<BoxCollider>();
+
+        // Retrieves the UI Reference
+        _menuNavigator = GameObject.FindGameObjectWithTag("Menus").GetComponent<MenuNavigator>();
     }
 
 
@@ -64,9 +66,6 @@ public class GameEndController : MonoBehaviour {
     /// Unity's method called on start script only one time
     /// </summary>
     void Start(){
-        // Set the phrase to the text label and disable it
-        levelComplete.SetActive(false);
-
         // In case that the scene is empty, by default we use StartScene
         // TODO improve this part, try to avoid hardcoded strings
         if (nextScene.name == "Not" || nextScene.name == "") {
@@ -85,13 +84,11 @@ public class GameEndController : MonoBehaviour {
 	void Update () {
 
 		// If the scene is ended
-	    if (end){
+	    if (_end) {
 
-            // Get the navigator
-            MenuNavigator _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus)
-                                     .GetComponent<MenuNavigator>();
             // Wait before starting the change
             _menuNavigator.ChangeScene(nextScene.name, waitTime);
+
         }
     }
 
@@ -106,7 +103,7 @@ public class GameEndController : MonoBehaviour {
         if (other.CompareTag(Tags.Player)){
 
             // Activate counter
-            end = true;
+            _end = true;
 
             GameObject currentCharacter = FindObjectOfType<GameControllerIndependentControl>().currentCharacter;
             CharacterControllerCustomPlayer cccp = currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
@@ -118,7 +115,7 @@ public class GameEndController : MonoBehaviour {
             _gci.StopInput();
 
             // Show message
-            levelComplete.SetActive(true);
+            _menuNavigator.ShowEndMessage();
         }
     }
 
