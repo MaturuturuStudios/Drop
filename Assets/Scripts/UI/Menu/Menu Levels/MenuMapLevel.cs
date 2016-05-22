@@ -23,14 +23,6 @@ public class MenuMapLevel : MonoBehaviour {
     /// </summary>
     public int lastUnlockedLevel = 2;
     /// <summary>
-    /// First world to be selected
-    /// </summary>
-    public int firstSelectedWorld = 1;
-    /// <summary>
-    /// First level to be selected
-    /// </summary>
-    public int firstSelectedLevel = 1;
-    /// <summary>
     /// The image of the map, to calculate the bounds
     /// </summary>
     public RectTransform sizeImageWorld;
@@ -46,9 +38,6 @@ public class MenuMapLevel : MonoBehaviour {
     /// How long should  last the fading between worlds
     /// </summary>
     public float speedFading = 2f;
-    //public float zoomIn=1.3f;
-    //public float zoomOut=1f;
-
     /// <summary>
     /// The border of a normal level
     /// </summary>
@@ -100,8 +89,6 @@ public class MenuMapLevel : MonoBehaviour {
     /// The canvas that is fading out
     /// </summary>
     private CanvasGroup canvasFadeOut = null;
-    //Debug/development only
-    private float scale=1.3f;
     /// <summary>
 	/// A reference to the menu's navigator.
 	/// </summary>
@@ -147,9 +134,6 @@ public class MenuMapLevel : MonoBehaviour {
         }
     }
     #endregion
-
-    //fade in and out the worlds
-    //golden ring on last level
 
     #region Public Methods
     public void OnEnable() {
@@ -201,20 +185,18 @@ public class MenuMapLevel : MonoBehaviour {
 
         Vector3 newPosition = new Vector3(positionX, positionY, 0);
 
+        //en principio esto funciona
+        //la posición está calculada en función de la escala del mapa (scale)
+        //con una regla de tres se saca la posición que tendría con la escala
+        //actual del mapa y restando ambas, se obtiene el offset necesario
+        //para que el punto permanezca centrado (siguiendo la trayectoria lineal
+        //hecha por el SmoothStep anterior)
+        Vector2 offset = Vector2.zero;
+        float z = (newPosition.x * map.localScale.x) / scale;
+        offset.x = newPosition.x - z;
 
-
-
-        //float differenceScale = Mathf.Abs(scale - map.localScale.x);
-        //if (differenceScale != 0) {
-        //    //differenceScale = (differenceScale>0)? 0.3f:-0.3f;
-        //_offsetZoom.x = newPosition.x / 1.3f;
-        //_offsetZoom.y = newPosition.y / 1.3f;
-        //_offsetZoom *= 0.3f;
-        //    Debug.Log(_offsetZoom);
-
-        //    //_offsetZoom -= sizeImageScale;
-        //    _offsetZoom /= 2;
-        //}
+        z = (newPosition.y * map.localScale.y) / scale;
+        offset.y = newPosition.y - z;
 
         newPosition.x -= _offsetZoom.x;
         newPosition.y -= _offsetZoom.y;
@@ -535,44 +517,45 @@ public class MenuMapLevel : MonoBehaviour {
     #endregion
 
 
-
-    public float durationZoom = 0.5f;
+    //Debug/development only
+    private float scale = 1.3f;
+    public float durationZoom = 1f;
     private float _startTimeZoom;
-    private float _targetZoom;
-    private bool _secondPartZoom = false;
+    private float _targetZoom=1;
     private Vector2 _offsetZoom;
-    private bool zooming;
+    private bool zooming=false;
 
+    /// <summary>
+    /// llamado desde show level con startZoom true
+    /// y continuado en update (startzoom false)
+    /// </summary>
+    /// <param name="startZoom"></param>
     private void Zoom(bool startZoom = false) {
-        _offsetZoom = Vector2.zero;
-        //if(!startZoom && !zooming) return;
+        //_offsetZoom = Vector2.zero;
+        //if (!startZoom && !zooming) return;
 
         ////start zooming
         //if (startZoom) {
         //    _startTimeZoom = Time.time;
         //    _targetZoom = 1;
         //    zooming = true;
-        //    _secondPartZoom = false;
         //}
 
+        ////scale the map
+        //float actualScale = map.localScale.x;
+        //float newScale = 0;
         ////update value
         //float percentageTime = (Time.time - _startTimeZoom) / durationZoom;
         ////check if zoom in or out
-        //if (percentageTime >= 1) {
-        //    if (!_secondPartZoom) {
-        //        _startTimeZoom = Time.time;
-        //        _secondPartZoom = true;
-        //        _targetZoom = scale;
-        //        percentageTime = (Time.time - _startTimeZoom) / durationZoom;
-
-        //    } else if (_secondPartZoom) {
-        //        _secondPartZoom = false;
-        //        zooming = false;
-        //    }
+        //if (percentageTime <0.5) {
+        //    newScale = Mathf.SmoothStep(actualScale, _targetZoom, percentageTime*2);
+        //} else if (percentageTime>1f) {
+        //    zooming = false;
+        //} else {
+        //    newScale = Mathf.SmoothStep(actualScale, scale, percentageTime/2);
         //}
-        ////scale the map
-        //float actualScale = map.localScale.x;
-        //float newScale = Mathf.SmoothStep(actualScale, _targetZoom, percentageTime);
+
+
         //map.localScale = new Vector3(newScale, newScale, newScale);
     }
 
