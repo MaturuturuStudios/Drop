@@ -5,17 +5,39 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MenuMapLevel : MonoBehaviour {
+    /// <summary>
+    /// Game object containing the map image and the worlds
+    /// </summary>
     public RectTransform map;
+    /// <summary>
+    /// List of worlds
+    /// </summary>
 	public GameObject[] worlds;
+    /// <summary>
+    /// alpha for hidden worlds
+    /// </summary>
     public float hiddenAlpha = 0.25f;
+    /// <summary>
+    /// The last unlocked world
+    /// </summary>
+    public int lastUnlockedWorld = 1;
+    /// <summary>
+    /// the last unlocked level of the last unlocked world
+    /// </summary>
+    public int lastUnlockedLevel = 2;
 
-
-    private List<Vector2[]> levelPositions;
+    public int firstSelectedWorld = 1;
+    public int firstSelectedLevel = 1;
 
     /// <summary>
-	/// The first option to be selected
-	/// </summary>
-	public GameObject firstSelected;
+    /// List of positions for all the levels
+    /// </summary>
+    private List<Vector2[]> levelPositions;
+    /// <summary>
+    /// List of all levels
+    /// </summary>
+    private List<GameObject[]> levels;
+    
     /// <summary>
     /// The image of the map, to calculate the bounds
     /// </summary>
@@ -37,13 +59,22 @@ public class MenuMapLevel : MonoBehaviour {
 	/// </summary>
 	private bool _selectOption;
 
-    //public float zoomIn=1.8f;
+    //public float zoomIn=1.3f;
     //public float zoomOut=1f;
-
+    /// <summary>
+    /// Point camera should focus
+    /// </summary>
     private Vector2 _targetPoint;
+    /// <summary>
+    /// Time to reach the target point
+    /// </summary>
     public float durationTravel=1.0f;
+    /// <summary>
+    /// Time in which the travel between points started
+    /// </summary>
     private float _startTime;
 
+    //Debug/development only
     private float scale=1.3f;
 
 	/// <summary>
@@ -63,6 +94,7 @@ public class MenuMapLevel : MonoBehaviour {
     
     //fade in and out the worlds
 
+
     public void OnEnable() {
         //we have to select the option in update
         _selectOption = true;
@@ -71,8 +103,9 @@ public class MenuMapLevel : MonoBehaviour {
     public void Awake() {
 		levelsCanvas = new CanvasGroup[worlds.Length];
 		levelPositions = new List<Vector2[]>();
+        levels= new List<GameObject[]>();
 
-		ResizeLimits ();
+        ResizeLimits();
         ConfigureWorlds();
         map.localScale = new Vector3(scale, scale, scale);
 
@@ -108,20 +141,43 @@ public class MenuMapLevel : MonoBehaviour {
     private void ConfigureLevels(int world) {
 		GameObject allLevelWorld = worlds[world];
 
-        int i = 0;
-		levelPositions.Add(new Vector2[allLevelWorld.transform.childCount]);
+        int i = -1;
+		levelPositions.Add(new Vector2[allLevelWorld.transform.childCount-1]);
+        levels.Add(new GameObject[allLevelWorld.transform.childCount-1]);
 
-		//for each world...
-		foreach (Transform childTransform in allLevelWorld.transform) {
+        //for each level...
+        foreach (Transform childTransform in allLevelWorld.transform) {
+            //not the first one (title)
+            if (i == -1) {
+                i++;
+                continue;
+            }
+
             GameObject child = childTransform.gameObject;
+
+            levels[world][i] = child;
+
+            Vector2 screenpoint = RectTransformUtility.WorldToScreenPoint(null, childTransform.localPosition);
+            levelPositions[world][i] = screenpoint;
 
             //add a script to watch selection over the level
             child.AddComponent(typeof(OnSelectLevel));
             OnSelectLevel script = child.GetComponent<OnSelectLevel>();
+
             script.world = world; //which world belongs
             script.level = i; //number of level
-            Vector2 screenpoint = RectTransformUtility.WorldToScreenPoint(null, childTransform.localPosition);
-            levelPositions[world][i]= screenpoint;
+
+            if(world > lastUnlockedWorld-1) {
+                child.GetComponent<Button>().interactable = false;
+            } else if (world == lastUnlockedWorld-1) {
+                //check level
+                if (i > lastUnlockedLevel - 1) {
+                    child.GetComponent<Button>().interactable = false;
+                } else if (i == lastUnlockedLevel - 1) { //last level
+
+                }
+            }
+            
             script.delegateAction = this; //script to delegate
             i++;
         }
@@ -133,7 +189,7 @@ public class MenuMapLevel : MonoBehaviour {
             //only once!
             _selectOption = false;
             //select the option
-            EventSystem.current.SetSelectedGameObject(firstSelected);
+            FocusLevel(firstSelectedWorld-1, firstSelectedLevel-1);
         }
 
 
@@ -151,8 +207,8 @@ public class MenuMapLevel : MonoBehaviour {
         
 
 
-        float differenceScale = Mathf.Abs(scale - map.localScale.x);
-        if (differenceScale != 0) {
+        //float differenceScale = Mathf.Abs(scale - map.localScale.x);
+        //if (differenceScale != 0) {
         //    //differenceScale = (differenceScale>0)? 0.3f:-0.3f;
             //_offsetZoom.x = newPosition.x / 1.3f;
             //_offsetZoom.y = newPosition.y / 1.3f;
@@ -161,7 +217,7 @@ public class MenuMapLevel : MonoBehaviour {
 
         //    //_offsetZoom -= sizeImageScale;
         //    _offsetZoom /= 2;
-        }
+        //}
 
         newPosition.x -= _offsetZoom.x;
         newPosition.y -= _offsetZoom.y;
@@ -217,6 +273,65 @@ public class MenuMapLevel : MonoBehaviour {
 		return actualWorldActive;
 	}
 
+    /// <summary>
+    /// Get the number of worlds
+    /// </summary>
+    /// <returns></returns>
+    public int GetNumberWorlds() {
+        return worlds.Length;
+    }
+
+    /// <summary>
+    /// Get the number of levels of that world
+    /// </summary>
+    /// <param name="world">index of world from 1 to mux number</param>
+    /// <returns></returns>
+    public int GetNumberLevels(int world) {
+        if (world > worlds.Length) return 0;
+        return levels[world].Length;
+    }
+
+    /// <summary>
+    /// Unlock/Lock the whole world
+    /// If out of index, do nothing
+    /// </summary>
+    /// <param name="world">index from 1 to number of worlds</param>
+    /// <param name="unlock">true if unlock the level, false otherwise</param>
+    public void UnlockWorld(int world, bool unlock=true) {
+        world--;
+        if (world < 0 || world > worlds.Length-1) return;
+
+        //activate all levels
+        foreach(GameObject level in levels[world]) {
+            level.GetComponent<Button>().interactable = unlock;
+        }
+
+        //store the last level and world
+        if (world + 1 > lastUnlockedWorld) {
+            lastUnlockedWorld = world + 1;
+            lastUnlockedLevel = levels[world].Length;
+        }
+    }
+
+    /// <summary>
+    /// Lock or unlock a concrete level from a world
+    /// If out of index, do nothing
+    /// </summary>
+    /// <param name="world">index from 0 to number of worlds</param>
+    /// <param name="level">index from 0 to number of levels of that world</param>
+    /// <param name="unlock">true if unlock the level, false otherwise</param>
+    public void UnlockLevel(int world, int level, bool unlock = true) {
+        world--;
+        level--;
+        if (world < 0 || world > worlds.Length-1) return;
+        levels[world][level].GetComponent<Button>().interactable = unlock;
+
+        if(world+1>lastUnlockedWorld && level + 1 > lastUnlockedLevel) {
+            lastUnlockedWorld = world + 1;
+            lastUnlockedLevel = level + 1;
+        }
+    }
+
 	/// <summary>
 	/// Selects the level in the actual world
 	/// </summary>
@@ -233,6 +348,7 @@ public class MenuMapLevel : MonoBehaviour {
 	/// <param name="level">Level.</param>
 	public void SelectLevel(int world, int level=0){
 		CenterWorld(world, levelPositions[world][level]);
+        FocusLevel(world, level);
 	}
 
 	/// <summary>
@@ -299,6 +415,11 @@ public class MenuMapLevel : MonoBehaviour {
 
         //if change of world, make a zoom effect
         Zoom(true);
+    }
+
+    private void FocusLevel(int world, int level) {
+        if (EventSystem.current.currentSelectedGameObject != levels[world][level])
+            EventSystem.current.SetSelectedGameObject(levels[world][level]);
     }
 
 }
