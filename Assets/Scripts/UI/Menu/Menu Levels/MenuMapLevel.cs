@@ -37,7 +37,7 @@ public class MenuMapLevel : MonoBehaviour {
     /// <summary>
     /// alpha for hidden worlds
     /// </summary>
-    public float hiddenAlphaWorld = 0.25f;
+    public float hiddenAlphaWorld = 0.20f;
     /// <summary>
     /// Time to reach the target point
     /// </summary>
@@ -45,11 +45,17 @@ public class MenuMapLevel : MonoBehaviour {
     /// <summary>
     /// How long should  last the fading between worlds
     /// </summary>
-    public float durationFading = 0.5f;
+    public float speedFading = 2f;
     //public float zoomIn=1.3f;
     //public float zoomOut=1f;
 
+    /// <summary>
+    /// The border of a normal level
+    /// </summary>
     public Sprite ringBaseLevel;
+    /// <summary>
+    /// The border of the las level
+    /// </summary>
     public Sprite ringSelectedLevel;
     #endregion
 
@@ -86,6 +92,14 @@ public class MenuMapLevel : MonoBehaviour {
     /// Time in which the travel between points started
     /// </summary>
     private float _startTime;
+    /// <summary>
+    /// The canvas that is fading in
+    /// </summary>
+    private CanvasGroup canvasFadeIn = null;
+    /// <summary>
+    /// The canvas that is fading out
+    /// </summary>
+    private CanvasGroup canvasFadeOut = null;
     //Debug/development only
     private float scale=1.3f;
     /// <summary>
@@ -171,6 +185,9 @@ public class MenuMapLevel : MonoBehaviour {
             || Input.GetButtonDown(Axis.Start)) {
             _menuNavigator.ComeBack();
         }
+
+        FadeIn();
+        FadeOut();
 
 
         //make the zoom
@@ -450,35 +467,60 @@ public class MenuMapLevel : MonoBehaviour {
 			return;
 
         if (actualWorldActive >= 0)
-            StartCoroutine(FadeOut(levelsCanvas[actualWorldActive]));
-			//levelsCanvas[actualWorldActive].alpha=hiddenAlpha;
-
-		//levelsCanvas[world].alpha=1;
-        StartCoroutine(FadeIn(levelsCanvas[actualWorldActive]));
+            FadeOut(levelsCanvas[actualWorldActive]);
+        
+        FadeIn(levelsCanvas[world]);
         actualWorldActive = world;
 
         //if change of world, make a zoom effect
         Zoom(true);
     }
+    
+    /// <summary>
+    /// Fade int a canvas group
+    /// </summary>
+    /// <param name="canvas"></param>
+    public void FadeIn(CanvasGroup canvas=null) {
+        if (canvas == null && canvasFadeIn == null) return;
 
-    public IEnumerator FadeIn(CanvasGroup canvas) {
-        float start = Time.deltaTime;
-        while(canvas.alpha < 1) {
-            canvas.alpha = Mathf.Lerp(canvas.alpha, 1, (Time.deltaTime - start) / durationFading);
-            //Debug.Log(canvas.alpha);
-            yield return new WaitForEndOfFrame();
+        if(canvas!=null && canvasFadeIn != null) {
+            canvasFadeIn.alpha = 1;
         }
-        //Debug.Log("End");
+
+        //if first time, start counter
+        if (canvas != null) {
+            canvasFadeIn = canvas;
+        }
+
+        //fading...
+        canvasFadeIn.alpha = Mathf.Lerp(canvasFadeIn.alpha, 1, Time.deltaTime*speedFading);
+
+        //finished
+        if (canvasFadeIn.alpha >= 1) canvasFadeIn = null;
+        
     }
+    
+    /// <summary>
+    /// Fade out a canvas group
+    /// </summary>
+    /// <param name="canvas"></param>
+    public void FadeOut(CanvasGroup canvas=null) {
+        if (canvas == null && canvasFadeOut == null) return;
 
-    public IEnumerator FadeOut(CanvasGroup canvas) {
-        float start = Time.deltaTime;
-        while (canvas.alpha < 1) {
-            canvas.alpha = Mathf.Lerp(canvas.alpha, hiddenAlphaWorld, (Time.deltaTime - start) / durationFading);
-            //Debug.Log(canvas.alpha);
-            yield return new WaitForEndOfFrame();
+        if (canvas != null && canvasFadeOut != null) {
+            canvasFadeOut.alpha = hiddenAlphaWorld;
         }
-        //Debug.Log("End");
+
+        //if first time, start counter
+        if (canvas != null) {
+            canvasFadeOut = canvas;
+        }
+
+        //fading...
+        canvasFadeOut.alpha = Mathf.Lerp(canvasFadeOut.alpha, hiddenAlphaWorld, Time.deltaTime*speedFading);
+
+        //finished
+        if (canvasFadeOut.alpha <= hiddenAlphaWorld) canvasFadeOut = null;
     }
 
     /// <summary>
