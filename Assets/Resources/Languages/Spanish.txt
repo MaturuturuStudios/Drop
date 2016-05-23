@@ -49,6 +49,9 @@ MenuInputJumpShoot=Saltar/Disparar en modo disparo
 MenuInputAction=Acción
 MenuInputLookAround=Mirar alrededor
 
+MenuInputGamepad=Mostrar mando
+MenuInputKeyboard=Mostrar teclado
+
 #Help option
 HelpText=Pobre pequeña gota... ¿Dónde están tus amigos? ¿Dónde están tus compañeros, tu familia? Te ves perdida y lejos de todos ellos.\n\nTe voy a contar un secreto. Eres una gota. Y todas las gotas tienen un destino. El mar.\n\nVe al mar, pequeña gota, ve al mar y encuentra a tus seres queridos. Usa todas tus habilidades para pasar todos los obstáculos y dificultades del viaje. Salta en las paredes, únete a otras gotas, divídete y entra en sitios pequeños, dispárate a lo alto, riega plantas...\n\nSé inteligente, sé el agua amigo mío.
 

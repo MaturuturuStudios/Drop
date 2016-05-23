@@ -50,6 +50,9 @@ MenuInputJumpShoot=Jump/Shoot in shoot mode
 MenuInputAction=Action
 MenuInputLookAround=Look around
 
+MenuInputGamepad=Show gamepad
+MenuInputKeyboard=Show keyboard
+
 #Help option
 HelpText=Little and poor drop... Where are your friends? Where are your mates, your family? You look lost and away from all of them.\n\nI'm going to tell you a secret. You are a drop. And all drops have one destiny. The sea.\n\nGo to the sea, little drop, go to the sea and find your beloved people. Use all your abilities to pass all the obstacles and difficulties of the journey. Jump in the walls, join other drops, split yourself and fit small sites, shoot yourself at high, irrigate plants...\n\nBe smart, be water my friend.
 
