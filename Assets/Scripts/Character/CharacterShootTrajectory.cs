@@ -222,8 +222,8 @@ public class CharacterShootTrajectory : MonoBehaviour
         endscript = false;
         
         sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
-        sphere.GetComponent<Collider>().enabled = false;
-        sphere.GetComponent<Renderer>().enabled = false;
+
+       
 
         ball = (GameObject)Instantiate(TrajectorySizeIndicator);
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
@@ -285,7 +285,6 @@ public class CharacterShootTrajectory : MonoBehaviour
                     if (angle < 90)
                     {
                         angle += v;
-                        Debug.Log(" angulo " + angle + " v" + v);
                     }
 
                     if (angle > 90) angle -= v;
@@ -371,7 +370,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         }
         else
         {
-            sphere.GetComponent<Renderer>().enabled = true;
+            sphere.SetActive(true);
            
 
             return true;
@@ -444,7 +443,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         if (ball.transform.position.magnitude <= sphere.transform.position.magnitude)
         {
-            sphere.GetComponent<Renderer>().enabled = false;
+            sphere.SetActive(false);
         }
 
     }
@@ -527,7 +526,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     {
         float dis = 0;
         int j=0;
-        sphere.GetComponent<Renderer>().enabled = false;
+        sphere.SetActive(false) ;
 
         for (int i = 0; i < numOfTrajectoryPoints-1  && !colisiondetected; i++)
         {
