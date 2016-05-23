@@ -16,9 +16,7 @@ public class GrowupPlant : Irrigate
     private float onguizmos_max_height;
 
     private Vector3 origin;
-    private BoxCollider collider ;
 
-    private bool not_change_guizmo = false;
 
     private bool lerping = false;
 

@@ -105,7 +105,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     #region Public Attributes
 
-    public LineRenderer renderer;
+    public new LineRenderer renderer;
     /// <summary>
     /// Prefab of the trajectory points
     /// </summary>
@@ -223,7 +223,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         
         sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
 
-       
+        sphere.SetActive(false);
 
         ball = (GameObject)Instantiate(TrajectorySizeIndicator);
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
@@ -245,6 +245,9 @@ public class CharacterShootTrajectory : MonoBehaviour
     {
         if (ball != null)
             ball.SetActive(false);
+
+        if (sphere != null)
+            sphere.SetActive(false);
 
         Destroy(sphere);
         Destroy(ball);
@@ -403,7 +406,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         }
         linerenderer.SetVertexCount(0);
-        sphere.GetComponent<Renderer>().enabled = false;
+        sphere.SetActive( false);
         ball.SetActive(false);
     }
 

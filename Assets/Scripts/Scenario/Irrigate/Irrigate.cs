@@ -10,10 +10,6 @@ abstract public class Irrigate : ActionPerformer
     #region Private Attributes
 
 
-    private CharacterControllerCustom ccc;
-
-
-
     #endregion
 
     #region Public Attributes
