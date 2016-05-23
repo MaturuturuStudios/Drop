@@ -49,6 +49,10 @@ MenuInputJumpShoot=Saltar/Disparar en modo disparo
 MenuInputAction=Acción
 MenuInputLookAround=Mirar alrededor
 
+MenuInputPreviousNextDrop=Anterior/siguiente gota
+MenuInputTurnLeftRight=Girar izquierda/derecha
+MenuInputChangeDrop=Cambiar gota
+
 MenuInputGamepad=Mostrar mando
 MenuInputKeyboard=Mostrar teclado
 

@@ -50,6 +50,10 @@ MenuInputJumpShoot=Jump/Shoot in shoot mode
 MenuInputAction=Action
 MenuInputLookAround=Look around
 
+MenuInputPreviousNextDrop=Previous/Next Drop
+MenuInputTurnLeftRight=Turn left/right
+MenuInputChangeDrop=Change drop
+
 MenuInputGamepad=Show gamepad
 MenuInputKeyboard=Show keyboard
 
