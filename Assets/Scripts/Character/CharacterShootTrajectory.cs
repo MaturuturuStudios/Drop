@@ -362,7 +362,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (Physics.SphereCast(spheredis,radio, fwd,out hitpoint, dis, mask))
         {
             ball.SetActive(false);
-            sphere.GetComponent<Renderer>().enabled = false;
+            sphere.SetActive( false);
             for (int j = 0; j < numOfTrajectoryPoints - 1; j++)
             {
                 trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
