@@ -434,7 +434,7 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		// If the angle is bigger than 180º, it's using the wrong sign
 		if (angle > 180)
 			angle -= 360;
-        return angle / rotationAngle;
+        return -angle / rotationAngle;
 	}
 
 	#endregion
