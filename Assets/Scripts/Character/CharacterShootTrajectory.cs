@@ -234,8 +234,13 @@ public class CharacterShootTrajectory : MonoBehaviour
     
         animshot = true;
         sizeanimation = false;
-        
 
+        float anglelook=this.GetComponentInChildren<CharacterModelController>().GetLookingDirection();
+
+        if (anglelook == 0) angle = 90;
+        if(anglelook>0) angle=45;
+        if (anglelook < 0) angle = 135;
+       
     }
 
     /// <summary>
