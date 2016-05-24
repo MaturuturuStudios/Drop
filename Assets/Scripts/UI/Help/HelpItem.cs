@@ -11,6 +11,9 @@ public class HelpItem : MonoBehaviour {
     /// </summary>
 	protected Animator _animator;
 
+	/// <summary>
+	/// Flag indicating if the special has been already triggered.
+	/// </summary>
     protected bool _specialTriggered;
 
     /// <summary>
@@ -47,6 +50,10 @@ public class HelpItem : MonoBehaviour {
 		OnHide();
 	}
 
+	/// <summary>
+	/// Modifies the special trigger flag of the help item.
+	/// </summary>
+	/// <param name="specialTriggered">If the special trigger is active or not</param>
     public void SetSpecial(bool specialTriggered) {
         if (specialTriggered != _specialTriggered) {
             _specialTriggered = specialTriggered;
