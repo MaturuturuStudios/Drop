@@ -66,13 +66,25 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// The angle this entity will face when walking
 	/// sideways.
 	/// </summary>
-	public float rotationAngle = 60.0f;
+	public float rotationAngle = 37.5f;
 
 	/// <summary>
 	/// The angular velocity the character will use
 	/// to turn.
 	/// </summary>
 	public float rotationAngularSpeed = 720.0f;
+
+	/// <summary>
+	/// The maximum angle the eyes will look up while
+	/// aiming upwards.
+	/// </summary>
+	public float eyeLookMaxAngle = 37.5f;
+
+	/// <summary>
+	/// The speed to rotate the character's body and eyes
+	/// while aiming.
+	/// </summary>
+	public float aimSpeed = 180.0f;
 
 	#endregion
 
@@ -218,6 +230,18 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	private CharacterSize _characterSize;
 
 	/// <summary>
+	/// A reference to the CharacterShoot component on this
+	/// entity's parent.
+	/// </summary>
+	private CharacterShoot _characterShoot;
+
+	/// <summary>
+	/// A reference to the CharacterShootTrajectory component on this
+	/// entity's parent.
+	/// </summary>
+	private CharacterShootTrajectory _characterShootTrajectory;
+
+	/// <summary>
 	/// A reference to the EyesAttacher component on
 	/// this entity.
 	/// </summary>
@@ -253,6 +277,12 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	/// </summary>
 	private Vector3 _originalModelOffset;
 
+	/// <summary>
+	/// The eye rotation casued by aiming to the trajectory on
+	/// the last frame.
+	/// </summary>
+	private Quaternion _currentEyeAimingRotation;
+
 	#endregion
 
 	#region Methods
@@ -264,6 +294,8 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 		// Retrieves the desired components
 		_ccc = GetComponentInParent<CharacterControllerCustom>();
 		_characterSize = GetComponentInParent<CharacterSize>();
+		_characterShoot = GetComponentInParent<CharacterShoot>();
+		_characterShootTrajectory = GetComponentInParent<CharacterShootTrajectory>();
 		_eyesAttacher = GetComponent<EyesAttacher>();
 		_transform = transform;
 		_parent = _transform.parent;
@@ -311,24 +343,37 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	}
 
 	/// <summary>
-	/// Unity's method called each frame.
-	/// </summary>
-	void Update() {
-		// Makes the object face the right direction
-		float speed = _ccc.Velocity.x;
-		float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
-		Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
-		float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
-		_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
-
-		// Scales the eyes
-		ScaleEyes(_parent.lossyScale.x);
-	}
-
-	/// <summary>
 	/// Unity's method called at the end of each frame.
 	/// </summary>
 	void LateUpdate() {
+		// Checks if the character is shooting
+		if (_characterShoot.isShooting()) {
+			// Makes the model face the right direction
+			float desiredAngle = Vector3.Angle(_characterShootTrajectory.GetpVelocity(), Vector3.right);
+			Quaternion desiredRotation = Quaternion.Euler(0, -rotationAngle * Mathf.Cos(desiredAngle * Mathf.Deg2Rad), 0);
+			_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, aimSpeed * Time.deltaTime);
+
+			// Makes the eyes face the right direction
+			_currentEyeAimingRotation = Quaternion.Lerp(_currentEyeAimingRotation, Quaternion.Euler(0, eyeLookMaxAngle * Mathf.Sin(desiredAngle * Mathf.Deg2Rad), 0), 0.1f * aimSpeed * Time.deltaTime);
+		}
+		else {
+			// Makes the model face the right direction
+			float speed = _ccc.Velocity.x;
+			float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
+			Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
+			float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
+			_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
+
+			// Resets the eye aiming rotation
+			_currentEyeAimingRotation = Quaternion.Lerp(_currentEyeAimingRotation, Quaternion.identity, 0.1f * aimSpeed * Time.deltaTime);
+		}
+
+		// Adjusts the eye rotation
+		_eyesAttacher.center.localRotation *= _currentEyeAimingRotation;
+
+		// Scales the eyes
+		ScaleEyes(_parent.lossyScale.x);
+
 		// Scales the hat
 		ScaleHat(_parent.lossyScale.x);
 	}
