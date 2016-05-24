@@ -18,11 +18,7 @@ public class GrowupPlant : Irrigate
     private Vector3 origin;
 
 
-    private bool lerping = false;
-
-    private bool firstime = false;
-
-    private CharacterControllerCustom ccc;
+    private bool lerping = true;
 
     private float mfY;
 
@@ -31,8 +27,6 @@ public class GrowupPlant : Irrigate
     #region Public Attributes
 
     public float max_height=10;
-
-    public float num_drop_needed=1;
 
     #endregion
 
@@ -50,20 +44,21 @@ public class GrowupPlant : Irrigate
         mfY = transform.position.y - transform.localScale.y / 2.0f;
     }
 
+
+    public void Update()
+    {
+
+        if(enter() && lerping)
+             OnIrrigate();
+    }
+
     /// <summary>
     /// Unity's method called each frame.
     /// </summary>
     /// 
 
-    public void Update()
+    protected override void OnIrrigate()
     {
-
-        if (lerping )
-        {
-
-
-         // oldsize = Mathf.MoveTowards(oldsize, size, Time.deltaTime); 
-          ccc.GetComponent<CharacterSize>().SetSize((int)size);
 
             Vector3 aux;
             aux.x = transform.position.x;
@@ -80,31 +75,13 @@ public class GrowupPlant : Irrigate
             if (height == max_height)
                 {
                     lerping = false;
-                    firstime = true;
 
                 }
-                      
-
-        }
+                              
     }
 
 
-    protected override void OnAction(GameObject character)
-    {
-        ccc = character.GetComponent<CharacterControllerCustom>();
-
-        if (ccc != null)
-        {
-            if (ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed > 0 && !firstime)
-            {
-                size = ccc.GetComponent<CharacterSize>().GetSize() - num_drop_needed;
-                oldsize = ccc.GetComponent<CharacterSize>().GetSize();
-
-                lerping = true;
-            }
-        }                
-
-    }
+   
 
 
 
