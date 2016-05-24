@@ -11,14 +11,20 @@ public class CharacterHelpItem : HelpItem {
     /// </summary>
 	private TextMesh _textRenderer;
 
-    /// <summary>
-    /// Reference to the parents's CharacterSize component.
-    /// </summary>
-    private CharacterSize _characterSize;
+	/// <summary>
+	/// Reference to the TextMesh Transform's component.
+	/// </summary>
+	private Transform _textRendererTransform;
+
+	/// <summary>
+	/// Reference to the parents's CharacterSize component.
+	/// </summary>
+	private CharacterSize _characterSize;
 
 	protected override void OnAwake() {
 		// Retrieves the desired components
 		_textRenderer = GetComponent<TextMesh>();
+		_textRendererTransform = _textRenderer.transform;
 		_characterSize = GetComponentInParent<CharacterSize>();
     }
 
@@ -26,5 +32,6 @@ public class CharacterHelpItem : HelpItem {
 		// Changes the size in the text
 		int size = _characterSize.GetSize();
 		_textRenderer.text = size.ToString();
-    }
+		_textRendererTransform.rotation = Camera.main.transform.rotation;
+	}
 }
