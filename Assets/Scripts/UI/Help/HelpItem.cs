@@ -46,7 +46,8 @@ public class HelpItem : MonoBehaviour {
     /// Hides the information item.
     /// </summary>
     public void Hide() {
-		_animator.SetBool("shown", false);
+		if (gameObject.activeInHierarchy)
+			_animator.SetBool("shown", false);
 		OnHide();
 	}
 
