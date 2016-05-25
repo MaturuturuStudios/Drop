@@ -15,12 +15,6 @@ abstract public class Irrigate : ActionPerformer
     /// 
     private CharacterControllerCustom ccc;
 
-    /// <summary>
-    /// Define the bool to know that On action was pressed.
-    /// </summary> 
-    /// 
-    private bool firstime = false;
-
     #endregion
 
     #region Public Attributes
@@ -43,22 +37,16 @@ abstract public class Irrigate : ActionPerformer
         
         if (ccc != null)
         {
-            if (ccc.GetComponent<CharacterSize>().GetSize() - _numDrops > 0 && !firstime)
+            if (ccc.GetComponent<CharacterSize>().GetSize() - _numDrops > 0)
             {
                 float size = ccc.GetComponent<CharacterSize>().GetSize() - _numDrops;
                 ccc.GetComponent<CharacterSize>().SetSize((int)size);
-                firstime = true;
+                OnIrrigate();
                 
             }
         }
 
     }
-
-    public bool enter()
-    {
-        return firstime;
-    }
-
 
     #endregion
 }

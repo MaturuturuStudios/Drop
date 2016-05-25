@@ -18,7 +18,7 @@ public class GrowupPlant : Irrigate
     private Vector3 origin;
 
 
-    private bool lerping = true;
+    private bool lerping = false;
 
     private float mfY;
 
@@ -48,8 +48,28 @@ public class GrowupPlant : Irrigate
     public void Update()
     {
 
-        if(enter() && lerping)
-             OnIrrigate();
+        if (lerping)
+        {
+            Vector3 aux;
+            aux.x = transform.position.x;
+            aux.y = transform.position.y;
+            aux.z = transform.position.z;
+
+            height = Mathf.MoveTowards(height, max_height, 5 * Time.deltaTime);
+
+
+            this.transform.localScale = new Vector3(1, height, 1);
+
+            transform.position = new Vector3(transform.position.x, mfY + transform.localScale.y / 2.0f, 0);
+
+            if (height == max_height)
+            {
+                lerping = false;
+
+            }
+
+
+        }
     }
 
     /// <summary>
@@ -60,24 +80,7 @@ public class GrowupPlant : Irrigate
     protected override void OnIrrigate()
     {
 
-            Vector3 aux;
-            aux.x = transform.position.x;
-            aux.y = transform.position.y ;
-            aux.z = transform.position.z;
-
-            height = Mathf.MoveTowards(height, max_height, 5*Time.deltaTime);
-
-    
-           this.transform.localScale = new Vector3(1,height,1);
-
-            transform.position = new Vector3(transform.position.x, mfY + transform.localScale.y / 2.0f, 0);
-
-            if (height == max_height)
-                {
-                    lerping = false;
-
-                }
-                              
+        lerping = true;
     }
 
 

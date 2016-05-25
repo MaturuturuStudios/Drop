@@ -22,6 +22,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private bool sizeanimation;
     private GameObject listtrajectory;
     private float oldrenderwidth,renderwidth;
+    private float anglelook;
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
     /// </summary>
@@ -235,11 +236,20 @@ public class CharacterShootTrajectory : MonoBehaviour
         animshot = true;
         sizeanimation = false;
 
-        float anglelook=this.GetComponentInChildren<CharacterModelController>().GetLookingDirection();
+        anglelook=this.GetComponentInChildren<CharacterModelController>().GetLookingDirection();
 
-        if (anglelook == 0) angle = 90;
-        if(anglelook>0) angle=45;
-        if (anglelook < 0) angle = 135;
+
+        if (anglelook > 0 && angle >90) {
+            angle = angle-90;
+            angle = 90 - angle;
+
+        }
+        if (anglelook < 0 && angle<90)
+        {
+            angle = 180 - ( angle);
+
+        }
+
        
     }
 
@@ -449,7 +459,11 @@ public class CharacterShootTrajectory : MonoBehaviour
         ball.transform.position = (fullPath * faction_of_traveled) + trajectoryPoints[finallastWaypoint].transform.position;
         trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;
 
-        if (ball.transform.position.magnitude <= sphere.transform.position.magnitude)
+        if (ball.transform.position.magnitude <= sphere.transform.position.magnitude && anglelook > 0)
+        {
+            sphere.SetActive(false);
+        }
+        else if (ball.transform.position.magnitude >= sphere.transform.position.magnitude && anglelook < 0)
         {
             sphere.SetActive(false);
         }
