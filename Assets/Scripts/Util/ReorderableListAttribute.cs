@@ -24,6 +24,8 @@ public class ReorderableList<T> : ReorderableListAttribute {
 	/// </summary>
 	public List<T> list;
 
+	public int Length { get { return list.Count; } }
+
 	/// <summary>
 	/// Returns this object as a list.
 	/// </summary>
@@ -38,5 +40,14 @@ public class ReorderableList<T> : ReorderableListAttribute {
 	/// <param name="item">The item to convert</param>
 	public static implicit operator List<T>(ReorderableList<T> item) {
 		return item.list;
+	}
+
+	/// <summary>
+	/// Implicit operator brackets to directly access the list.
+	/// </summary>
+	/// <param name="i">The index to access</param>
+	public T this[int i] {
+		get { return list[i]; }
+		set { list[i] = value; }
 	}
 }

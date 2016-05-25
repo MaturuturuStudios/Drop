@@ -82,6 +82,18 @@ public class WindTube : MonoBehaviour {
 		_particleSystem = GetComponentInChildren<ParticleSystem>();
 		if (_particleSystem == null)
 			Debug.LogError("Couldn't find children's Particle System!");
+
+		OnDisable();
+	}
+
+	public void OnEnable() {
+		ParticleSystem.EmissionModule emission = _particleSystem.emission;
+		emission.enabled = true;
+	}
+
+	public void OnDisable() {
+		ParticleSystem.EmissionModule emission = _particleSystem.emission;
+		emission.enabled = false;
 	}
 
 	/// <summary>
@@ -121,6 +133,9 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">The collider entering the volume</param>
 	public void OnTriggerEnter(Collider other) {
+		if (!enabled)
+			return;
+
 		// Checks if the entity has a player component
 		CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
 		if (cccp != null)
@@ -133,6 +148,9 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">The collider exiting the volume</param>
 	public void OnTriggerExit(Collider other) {
+		if (!enabled)
+			return;
+
 		// Checks if the entity has a player component
 		CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
 		if (cccp != null)
@@ -146,6 +164,13 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">The collider staying on the volume</param>
 	public void OnTriggerStay(Collider other) {
+		if (!enabled) {
+			CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
+			if (cccp != null)
+				cccp.CurrentWindTube = null;
+			return;
+		}
+
 		// Determines the force to add
 		Vector3 force = _transform.up * windForce;
 		ForceMode mode = ignoreMass ? ForceMode.Acceleration : ForceMode.Force;
@@ -157,7 +182,7 @@ public class WindTube : MonoBehaviour {
 
 			// If the gravity is ignored, substracts it
 			if (ignoreGravity)
-				rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
+				rb.AddForceAtPosition(-Physics.gravity, _transform.position, ForceMode.Acceleration);
 
 			return;
 		}
@@ -194,6 +219,14 @@ public class WindTube : MonoBehaviour {
 		// Draws the cube
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Gizmos.DrawCube(Vector3.up * _collider.size.y / 2, _collider.size);
+	}
+
+	/// <summary>
+	/// Enables or disables the script.
+	/// </summary>
+	/// <param name="enabled">If the script should be enabled</param>
+	public void SetEnabled(bool enabled) {
+		this.enabled = enabled;
 	}
 
 	#endregion
