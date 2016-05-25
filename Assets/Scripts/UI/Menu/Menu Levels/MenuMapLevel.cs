@@ -6,10 +6,27 @@ using System.Collections.Generic;
 
 public class MenuMapLevel : MonoBehaviour {
     #region Public Attributes
+    
+    /// <summary>
+    /// The camera of the canvas
+    /// </summary>
+    public Camera cameraCanvas;
     /// <summary>
     /// Game object containing the map image and the worlds
     /// </summary>
-    public RectTransform map;
+    public SpriteRenderer imageMap;
+    /// <summary>
+    /// The map with image and levels to be resized
+    /// </summary>
+    public GameObject mapResizing;
+    /// <summary>
+    /// The border of a normal level
+    /// </summary>
+    public Sprite ringBaseLevel;
+    /// <summary>
+    /// The border of the las level
+    /// </summary>
+    public Sprite ringSelectedLevel;
     /// <summary>
     /// List of worlds
     /// </summary>
@@ -23,10 +40,6 @@ public class MenuMapLevel : MonoBehaviour {
     /// </summary>
     public int lastUnlockedLevel = 2;
     /// <summary>
-    /// The image of the map, to calculate the bounds
-    /// </summary>
-    public RectTransform sizeImageWorld;
-    /// <summary>
     /// alpha for hidden worlds
     /// </summary>
     public float hiddenAlphaWorld = 0.20f;
@@ -39,32 +52,61 @@ public class MenuMapLevel : MonoBehaviour {
     /// </summary>
     public float speedFading = 2f;
     /// <summary>
-    /// The border of a normal level
+    /// Duration of zoom
     /// </summary>
-    public Sprite ringBaseLevel;
+    public float durationZoom = 0.8f;
     /// <summary>
-    /// The border of the las level
+    /// The desired zoom between levels
     /// </summary>
-    public Sprite ringSelectedLevel;
+    public float _targetZoom = 0.8f;
     #endregion
+
 
     #region Private Attributes
     /// <summary>
+    /// Keep track of offset when zooming
+    /// </summary>
+    private Vector3 offsetApplied;
+    /// <summary>
+    /// Is zooming?
+    /// </summary>
+    private bool zooming = false;
+    /// <summary>
+    /// When zoom started
+    /// </summary>
+    private float _startTimeZoom;
+    /// <summary>
+    /// Original scale
+    /// </summary>
+    private float scale;
+    /// <summary>
+    /// Corner of map at original size
+    /// </summary>
+    private Vector2 bottomLeftInitial;
+    /// <summary>
+    /// All the cameras in the scene
+    /// </summary>
+    private Camera[] cameras;
+    /// <summary>
+    /// The previous state of all cameras
+    /// </summary>
+    private bool[] camerasPreviousState;
+    /// <summary>
     /// List of positions for all the levels
     /// </summary>
-    private List<Vector2[]> levelPositions;
+    //private List<Vector2[]> levelPositions;
     /// <summary>
     /// List of all levels
     /// </summary>
     private List<GameObject[]> levels;
     /// <summary>
-    /// The calculated limit of the image map
-    /// </summary>
-    private Vector2 limitImage;
-    /// <summary>
     /// The previous world actived.
     /// </summary>
     private int actualWorldActive = 0;
+    /// <summary>
+    /// 
+    /// </summary>
+    private int actualLevel=0;
 	/// <summary>
 	/// The levels' panels (canvas).
 	/// </summary>
@@ -139,18 +181,55 @@ public class MenuMapLevel : MonoBehaviour {
     public void OnEnable() {
         //we have to select the option in update
         _selectOption = true;
+
+        //get control of the camera
+        //get all cameras and store its status
+        Camera.GetAllCameras(cameras);
+        camerasPreviousState = new bool[cameras.Length];
+        for(int i=0; i<cameras.Length; i++) {
+            camerasPreviousState[i] = cameras[i].enabled;
+            //want all of them disabled
+            cameras[i].enabled = false;
+        }
+        
+        //get the camera of menu map actived
+        cameraCanvas.enabled = true;
+    }
+
+    public void OnDisable() {
+        //if offset, recover it and reset, just in case
+        if (offsetApplied != Vector3.zero) {
+            //recover the applied offset and reset it
+            Vector3 actualPosition = cameraCanvas.transform.position;
+            actualPosition -= offsetApplied;
+            cameraCanvas.transform.position = actualPosition;
+            offsetApplied = Vector3.zero;
+        }
+
+        //restore status cameras
+        for (int i = 0; i < cameras.Length; i++) {
+            cameras[i].enabled=camerasPreviousState[i];
+        }
+
+        //disable camera
+        cameraCanvas.enabled = false;
     }
 
     public void Awake() {
+        
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
 
         levelsCanvas = new CanvasGroup[worlds.Length];
-		levelPositions = new List<Vector2[]>();
+		//levelPositions = new List<Vector2[]>();
         levels= new List<GameObject[]>();
-
-        ResizeLimits();
+        
         ConfigureWorlds();
-        map.localScale = new Vector3(scale, scale, scale);
+
+        scale = mapResizing.transform.localScale.x;
+
+        //initial corner
+        Vector3 position = imageMap.transform.position;
+        bottomLeftInitial = position + imageMap.bounds.min;
     }
 
     public void Update() {
@@ -161,7 +240,7 @@ public class MenuMapLevel : MonoBehaviour {
             //select the option
             //pass the last unlocked converted in index from 0
             SelectLevel(lastUnlockedWorld - 1, lastUnlockedLevel - 1);
-            ChangeRingLevel(0, 0, lastUnlockedWorld-1, lastUnlockedLevel-1);
+            ChangeRingLevel(0, 0, lastUnlockedWorld - 1, lastUnlockedLevel - 1);
         }
 
         //B, return, start
@@ -170,39 +249,42 @@ public class MenuMapLevel : MonoBehaviour {
             _menuNavigator.ComeBack();
         }
 
+        //fade if needed the levels
         FadeIn();
         FadeOut();
-
 
         //make the zoom
         Zoom();
 
         //move the camera to the target
-        Vector2 actualPosition = map.localPosition;
+        Vector3 actualPosition = cameraCanvas.transform.position;
+        actualPosition -= offsetApplied; //quit the offset applied
+        //calculate position...
         float percentageTime = (Time.unscaledTime - _startTime) / durationTravel;
         float positionX = Mathf.SmoothStep(actualPosition.x, _targetPoint.x, percentageTime);
         float positionY = Mathf.SmoothStep(actualPosition.y, _targetPoint.y, percentageTime);
 
-        Vector3 newPosition = new Vector3(positionX, positionY, 0);
+        Vector3 newPosition = new Vector3(positionX, positionY, actualPosition.z);
 
-        //en principio esto funciona
-        //la posición está calculada en función de la escala del mapa (scale)
-        //con una regla de tres se saca la posición que tendría con la escala
-        //actual del mapa y restando ambas, se obtiene el offset necesario
-        //para que el punto permanezca centrado (siguiendo la trayectoria lineal
-        //hecha por el SmoothStep anterior)
-        Vector2 offset = Vector2.zero;
-        float z = (newPosition.x * map.localScale.x) / scale;
-        offset.x = newPosition.x - z;
+        //get the offset for the zoom
+        Vector3 position = imageMap.transform.position;
+        Vector2 sizeMap = position + imageMap.bounds.min;
 
-        z = (newPosition.y * map.localScale.y) / scale;
-        offset.y = newPosition.y - z;
+        Vector3 offset = bottomLeftInitial-sizeMap;
+        offset.x = Mathf.Abs(offset.x);
+        offset.y = Mathf.Abs(offset.y);
+        offset /= 2.0f;
+        offset.z = 0;
 
-        newPosition.x -= _offsetZoom.x;
-        newPosition.y -= _offsetZoom.y;
-        map.localPosition = newPosition;
+        offsetApplied = offset;
+        newPosition += offset;
+        Vector3 target;
+        WithinBounds(newPosition, out target);
+        target.z = actualPosition.z;
+        cameraCanvas.transform.position = target;
 
     }
+    
 
     /// <summary>
     /// Gets the actual world selected.
@@ -210,6 +292,14 @@ public class MenuMapLevel : MonoBehaviour {
     /// <returns>The actual world.</returns>
     public int GetActualWorld() {
         return actualWorldActive;
+    }
+
+    /// <summary>
+    /// Get the actual level
+    /// </summary>
+    /// <returns></returns>
+    public int GetActualLevel() {
+        return actualLevel;
     }
 
     /// <summary>
@@ -292,27 +382,18 @@ public class MenuMapLevel : MonoBehaviour {
     public void SelectLevel(int world, int level = 0) {
         if (world < 0 || level < 0 || world >= worlds.Length
             || level >= levels[world].Length) return;
-        CenterWorld(world, levelPositions[world][level]);
-        FocusLevel(world, level);
-    }
-
-    /// <summary>
-    /// With the actual world selected, center the view in the given point.
-    /// </summary>
-    /// <param name="center">Center.</param>
-    public void CenterPoint(Vector3 center) {
-        CenterWorld(GetActualWorld(), center);
-    }
-
-    /// <summary>
-    /// Selects the level.
-    /// The levels of the world appears and center to the given point
-    /// </summary>
-    /// <param name="world">World.</param>
-    /// <param name="center">Center.</param>
-    public void CenterWorld(int world, Vector3 center) {
+        
+        actualLevel = level;
         ShowLevels(world);
-        MoveView(center);
+        actualWorldActive = world;
+        _startTime = Time.unscaledTime;
+        FocusLevel(world, level);
+        
+        //get the target point (needed at normal scale, so calculate it
+        Vector3 originalSize= mapResizing.transform.localScale = new Vector3(scale, scale, scale);
+        _targetPoint = GetTargetPoint(world, level);
+        mapResizing.transform.localScale = originalSize;
+
     }
     #endregion
 
@@ -330,23 +411,13 @@ public class MenuMapLevel : MonoBehaviour {
         if (previousLevel < 0 || previousWorld < 0 || world < 0 || level < 0) return;
         if (previousWorld >= worlds.Length || world >= worlds.Length 
             ||level >=levels[world].Length || previousLevel >= levels[previousWorld].Length) return;
-
+        
         //quit the ring to previous level
-        levels[previousWorld][previousLevel].GetComponentsInChildren<Image>()[1].sprite = ringBaseLevel;
+        levels[previousWorld][previousLevel].GetComponentInChildren<SpriteRenderer>().sprite = ringBaseLevel;
 
         //put the ring to the new level
-        levels[world][level].GetComponentsInChildren<Image>()[1].sprite = ringSelectedLevel;
+        levels[world][level].GetComponentInChildren<SpriteRenderer>().sprite = ringSelectedLevel;
     }
-
-    /// <summary>
-    /// Get the limits of the map with the actual scale
-    /// </summary>
-    private void ResizeLimits(){
-        limitImage = RectTransformUtility.WorldToScreenPoint(null, sizeImageWorld.sizeDelta);
-		limitImage *= map.localScale.x;
-		Vector2 sizeDeltaScaled = RectTransformUtility.WorldToScreenPoint(null, map.sizeDelta);
-		limitImage -= new Vector2(sizeDeltaScaled.x, sizeDeltaScaled.y);
-	}
 
     /// <summary>
     /// Configure the worlds
@@ -371,7 +442,7 @@ public class MenuMapLevel : MonoBehaviour {
 		GameObject allLevelWorld = worlds[world];
 
         int i = -1;
-		levelPositions.Add(new Vector2[allLevelWorld.transform.childCount-1]);
+		//levelPositions.Add(new Vector2[allLevelWorld.transform.childCount-1]);
         levels.Add(new GameObject[allLevelWorld.transform.childCount-1]);
 
         //for each level...
@@ -384,9 +455,7 @@ public class MenuMapLevel : MonoBehaviour {
 
             GameObject child = childTransform.gameObject;
             levels[world][i] = child;
-
-            Vector2 screenpoint = RectTransformUtility.WorldToScreenPoint(null, childTransform.localPosition);
-            levelPositions[world][i] = screenpoint;
+            //levelPositions[world][i] = childTransform.position;
 
             //add a script to watch selection over the level
             child.AddComponent(typeof(OnSelectLevel));
@@ -410,34 +479,44 @@ public class MenuMapLevel : MonoBehaviour {
             i++;
         }
 	}
-    
-	/// <summary>
-	/// Moves the view.
-	/// </summary>
-	/// <param name="center">Center.</param>
-	private void MoveView(Vector3 center) {
-        _startTime = Time.time;
-        //put the point at bottom left of screen
-        Vector2 position = center * scale;
-        //move the point to the x center of screen
-        float halfWidth = map.sizeDelta.x / 2.0f;
-        position.x -= halfWidth;
 
-        //move the point to the y center of screen
-        float halfHeight = map.sizeDelta.y / 2.0f;
-        position.y -= halfHeight;
+    /// <summary>
+    /// calculate the point to reach always between bounds
+    /// </summary>
+    /// <param name="world"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    private Vector3 GetTargetPoint(int world, int level) {
+        //the point we should center
+        Vector2 position = levels[world][level].transform.position;
+        Vector3 target;
+        WithinBounds(position, out target);
+        return target;
+    }
 
-        //none of them should be zero (less than the left/bottom side of image)
-        if (position.x < 0) position.x = 0;
-        if (position.y < 0) position.y = 0;
+    /// <summary>
+    /// Return the position corrected to be inside the map
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="target"></param>
+    private void WithinBounds(Vector3 position, out Vector3 target) {
+        target = Vector3.zero;
+        // Calculate if it is out of bounds
+        Vector2 halfSizeCamera = Vector2.zero;
+        halfSizeCamera.y = cameraCanvas.orthographicSize;
+        halfSizeCamera.x = (cameraCanvas.orthographicSize * 16) / 9;
 
-        //none of them should be more than the right/up side of the image
-        ResizeLimits();
-        if (position.x > limitImage.x) position.x = limitImage.x;
-        if (position.y > limitImage.y) position.y = limitImage.y;
+        //limits of the image map
+        Vector2 positionImage = imageMap.transform.position;
+        Vector2 sizeMap = imageMap.bounds.extents;
+        float top = positionImage.y + sizeMap.y - halfSizeCamera.y;
+        float left = positionImage.x - sizeMap.x + halfSizeCamera.x;
+        float bottom = positionImage.y - sizeMap.y + halfSizeCamera.y;
+        float right = positionImage.x + sizeMap.x - halfSizeCamera.x;
 
-        _targetPoint = new Vector2(-position.x, -position.y);
-
+        //don't get out of the map
+        target.x = Mathf.Clamp(position.x, left, right);
+        target.y = Mathf.Clamp(position.y, bottom, top);
     }
 
 	/// <summary>
@@ -452,7 +531,6 @@ public class MenuMapLevel : MonoBehaviour {
             FadeOut(levelsCanvas[actualWorldActive]);
         
         FadeIn(levelsCanvas[world]);
-        actualWorldActive = world;
 
         //if change of world, make a zoom effect
         Zoom(true);
@@ -514,16 +592,6 @@ public class MenuMapLevel : MonoBehaviour {
         if (EventSystem.current.currentSelectedGameObject != levels[world][level])
             EventSystem.current.SetSelectedGameObject(levels[world][level]);
     }
-    #endregion
-
-
-    //Debug/development only
-    private float scale = 1.3f;
-    public float durationZoom = 1f;
-    private float _startTimeZoom;
-    private float _targetZoom=1;
-    private Vector2 _offsetZoom;
-    private bool zooming=false;
 
     /// <summary>
     /// llamado desde show level con startZoom true
@@ -531,32 +599,36 @@ public class MenuMapLevel : MonoBehaviour {
     /// </summary>
     /// <param name="startZoom"></param>
     private void Zoom(bool startZoom = false) {
-        //_offsetZoom = Vector2.zero;
-        //if (!startZoom && !zooming) return;
+        if (!startZoom && !zooming) return;
 
-        ////start zooming
-        //if (startZoom) {
-        //    _startTimeZoom = Time.time;
-        //    _targetZoom = 1;
-        //    zooming = true;
-        //}
+        //start zooming
+        if (startZoom) {
+            _startTimeZoom = Time.unscaledTime;
+            zooming = true;
+        }
 
-        ////scale the map
-        //float actualScale = map.localScale.x;
-        //float newScale = 0;
-        ////update value
-        //float percentageTime = (Time.time - _startTimeZoom) / durationZoom;
-        ////check if zoom in or out
-        //if (percentageTime <0.5) {
-        //    newScale = Mathf.SmoothStep(actualScale, _targetZoom, percentageTime*2);
-        //} else if (percentageTime>1f) {
-        //    zooming = false;
-        //} else {
-        //    newScale = Mathf.SmoothStep(actualScale, scale, percentageTime/2);
-        //}
+        //scale the map
+        float actualScale = mapResizing.transform.localScale.x;
+        float newScale = 0;
+        //update value
+        float percentageTime = (Time.unscaledTime - _startTimeZoom) / durationZoom;
 
+        //check if zoom in or out
+        if (percentageTime < 0.5) {
+            newScale = Mathf.SmoothStep(scale, _targetZoom, percentageTime * 2.0f);
+        } else if (percentageTime > 1f) {
+            zooming = false;
+            newScale = scale;
+        } else {
+            newScale = Mathf.SmoothStep(_targetZoom, scale, (percentageTime - 0.5f) * 2.0f);
+        }
 
-        //map.localScale = new Vector3(newScale, newScale, newScale);
+        mapResizing.transform.localScale = new Vector3(newScale, newScale, newScale);
     }
+    #endregion
+
+
+
+
 
 }
