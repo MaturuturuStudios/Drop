@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
@@ -110,6 +111,7 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Private Attributes
+    private Image backgroundImageMainMenu;
     /// <summary>
     /// The stack of menus
     /// </summary>
@@ -152,6 +154,8 @@ public class MenuNavigator : MonoBehaviour {
 
         // Disable level complete text
         levelComplete.SetActive(false);
+
+        backgroundImageMainMenu = backgroundMainMenu.GetComponent<Image>();
     }
 
     public void Update() {
@@ -216,17 +220,17 @@ public class MenuNavigator : MonoBehaviour {
         //retrieve the last menu
         if (_menuPanel.Count > 0) {
             last = _menuPanel.Peek();
-        } else {
-            //if is firts, active the background
-            background.SetActive(true);
         }
-        
+        //active the background
+        background.SetActive(true);
+
+
         //Check if first menu or is not the same as last menu opened
-        if (last==null || menu != last.IdMenu) {
+        if (last == null || menu != last.IdMenu) {
             switch (menu) {
                 case Menu.MAIN_MENU:
-					//activate the background
-					if(backgroundMainMenu!=null) backgroundMainMenu.SetActive(true);
+                    //activate the background
+                    if (backgroundMainMenu != null) backgroundMainMenu.SetActive(true);
                     _menuPanel.Push(mainMenu);
                     break;
                 case Menu.PAUSE_MENU:
@@ -236,6 +240,13 @@ public class MenuNavigator : MonoBehaviour {
                     _menuPanel.Push(optionMenu);
                     break;
                 case Menu.MAP_LEVEL_MENU:
+                    //no dark background
+                    background.SetActive(false);
+                    //disable background main menu
+                    if (backgroundMainMenu != null && backgroundMainMenu.activeSelf) {
+                        backgroundImageMainMenu.enabled = false;
+                    }
+
                     _menuPanel.Push(mapLevelMenu);
                     break;
                 case Menu.CREDITS_MENU:
@@ -265,8 +276,11 @@ public class MenuNavigator : MonoBehaviour {
         }
         //disable background
         background.SetActive(false);
-		//disable main menu background just in case
-		if(backgroundMainMenu!=null) backgroundMainMenu.SetActive(false);
+        //disable main menu background just in case
+        if (backgroundMainMenu != null) {
+            backgroundMainMenu.SetActive(false);
+            backgroundImageMainMenu.enabled = true;
+        }
 
         //make sure to quit the confirmation
         DoConfirmQuitNo();
@@ -464,9 +478,19 @@ public class MenuNavigator : MonoBehaviour {
     private IEnumerator ComeBackWait() {
         yield return WaitForRealSeconds(secondsReaction);
         MenuInstance panel = _menuPanel.Pop();
-		//if main menu, disable background
-		if(panel.IdMenu == Menu.MAIN_MENU && backgroundMainMenu!=null) backgroundMainMenu.SetActive(false);
+        background.SetActive(true);
+        //if main menu, disable background
+        if (panel.IdMenu == Menu.MAIN_MENU && backgroundMainMenu != null) {
+            backgroundMainMenu.SetActive(false);
+            backgroundImageMainMenu.enabled = true;
+        }
         panel.disable();
+
+        //if background main menu active, always recover the image just in case map level disabled it
+        //all panels not requiring it, will disable it at open
+        if (backgroundMainMenu != null && backgroundMainMenu.activeSelf) {
+            backgroundImageMainMenu.enabled = true;
+        }
 
         //if no more menus, close it
         if (_menuPanel.Count == 0) {
