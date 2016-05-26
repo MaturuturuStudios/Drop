@@ -184,11 +184,14 @@ public class MenuMapLevel : MonoBehaviour {
 
         //get control of the camera
         //get all cameras and store its status
+        cameras = new Camera[Camera.allCamerasCount];
         Camera.GetAllCameras(cameras);
         camerasPreviousState = new bool[cameras.Length];
         for(int i=0; i<cameras.Length; i++) {
-            camerasPreviousState[i] = cameras[i].enabled;
-            //want all of them disabled
+            camerasPreviousState[i] = cameras[i].gameObject.activeSelf;
+            //want all of them disabled except our camera
+            if (cameraCanvas == cameras[i]) continue;
+            cameras[i].gameObject.SetActive(false);
             cameras[i].enabled = false;
         }
         
@@ -208,7 +211,8 @@ public class MenuMapLevel : MonoBehaviour {
 
         //restore status cameras
         for (int i = 0; i < cameras.Length; i++) {
-            cameras[i].enabled=camerasPreviousState[i];
+            cameras[i].gameObject.SetActive(camerasPreviousState[i]);
+            cameras[i].enabled = true;
         }
 
         //disable camera
