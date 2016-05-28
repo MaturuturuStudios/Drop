@@ -100,7 +100,6 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     }
 
     private void MasterChange(Slider target) {
-        Debug.Log("Changed master");
         float difference = target.value - _previousMaster;
         _previousMaster = target.value;
 
@@ -110,15 +109,12 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     }
 
     private void MusicChange(Slider target) {
-        Debug.Log("Changed music");
     }
 
     private void AmbientChange(Slider target) {
-        Debug.Log("Changed ambient");
     }
 
     private void EffectsChange(Slider target) {
-        Debug.Log("Changed effects");
     }
 
 
