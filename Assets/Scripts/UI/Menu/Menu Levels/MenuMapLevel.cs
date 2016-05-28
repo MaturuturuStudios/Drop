@@ -612,7 +612,7 @@ public class MenuMapLevel : MonoBehaviour {
         }
 
         //scale the map
-        float actualScale = mapResizing.transform.localScale.x;
+        //float actualScale = mapResizing.transform.localScale.x;
         float newScale = 0;
         //update value
         float percentageTime = (Time.unscaledTime - _startTimeZoom) / durationZoom;
@@ -630,9 +630,5 @@ public class MenuMapLevel : MonoBehaviour {
         mapResizing.transform.localScale = new Vector3(newScale, newScale, newScale);
     }
     #endregion
-
-
-
-
-
+    
 }
