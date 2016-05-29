@@ -102,7 +102,7 @@ public class CharacterShoot : MonoBehaviour {
     public void Aim(){
         if (ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize() < 10) && _gcic.allCurrentCharacters.Count<4)
         {
-            if (shootmode == false)
+            if (shootmode == false )
             {
                 shootmode = true;
                 st.enabled = true;
@@ -111,14 +111,17 @@ public class CharacterShoot : MonoBehaviour {
             }
             else if ((shootmode == true) && !st.animation())
             {
-                shootmode = false;
-                st.endingd();
                 
-                ccc.Parameters = null;
+                st.endingd();                               
             }
         }
 
 
+    }
+
+    public void endshootmode()
+    {
+        shootmode = false;
     }
 
     /// <summary>

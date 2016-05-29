@@ -9,6 +9,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 {
     #region Private Attributes
 
+    private bool finish = false;
     private bool animshot = true;
     private bool endscript = false;
     private float radio;
@@ -218,6 +219,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
+        finish = false;
 
         shootsize = 1;
         endscript = false;
@@ -258,6 +260,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// </summary>
     public void OnDisable()
     {
+        animshot = false;
+
         if (ball != null)
             ball.SetActive(false);
 
@@ -278,8 +282,9 @@ public class CharacterShootTrajectory : MonoBehaviour
         {         
             QuitTrajectory();
             drawlinerenderer();
+            
         }
-        else{
+        else {
 
             if (animshot == false)
             {
@@ -407,6 +412,12 @@ public class CharacterShootTrajectory : MonoBehaviour
         endscript = true;
     }
 
+
+    public bool isending()
+    {
+        return finish;
+    }
+
     public bool animation()
     {
         return animshot;
@@ -439,6 +450,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             renderwidth = 1;
             linerenderer.SetWidth(1, 1);
+            this.GetComponent<CharacterShoot>().endshootmode();
+            ccc.Parameters = null;
             this.enabled = false;
         }
 
@@ -462,12 +475,19 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (ball.transform.position.magnitude <= sphere.transform.position.magnitude && anglelook > 0)
         {
             sphere.SetActive(false);
+           
+            
         }
         else if (ball.transform.position.magnitude >= sphere.transform.position.magnitude && anglelook < 0)
         {
             sphere.SetActive(false);
+           
+
         }
 
+        
+        
+       
     }
 
     ///  <summary>
@@ -623,6 +643,8 @@ public class CharacterShootTrajectory : MonoBehaviour
         {
             linerenderer.SetPosition(j, aux[j]);
         }
+
+       
     }
 
     #endregion
