@@ -21,7 +21,8 @@ public class WaterRepulsion : MonoBehaviour {
     /// </summary>
     public float delay = 0.8f;
 
-    public ParticleSystem particleEffect;
+    public ParticleSystem[] particleEffectEnter;
+	public ParticleSystem[] particleEffectExit;
     #endregion
 
     #region Private attributes
@@ -117,9 +118,13 @@ public class WaterRepulsion : MonoBehaviour {
             _enteredDrop.Add(drop);
 
             //set particle effect (and inmediately destroy it)
-            GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
-            particleSystem.GetComponent<Transform>().position = drop.transform.position;
-            Destroy(particleSystem, particleEffect.startLifetime);
+			int scale=(int)(drop.transform.localScale.x);
+			GameObject particleSystem = Instantiate(particleEffectEnter[scale].gameObject) as GameObject;
+			//position
+			Vector3 position=drop.transform.position;
+			position.y = _ownCollider.max.y+0.2f;
+            particleSystem.GetComponent<Transform>().position = position;
+			Destroy(particleSystem, particleEffectEnter[scale].startLifetime);
         }
     }
 
@@ -144,10 +149,14 @@ public class WaterRepulsion : MonoBehaviour {
         //put drop on point expulsion
         drop.transform.position = pointExpulsion.position;
 
-        //set particle effect (and inmediately destroy it)
-        GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
-        particleSystem.GetComponent<Transform>().position = drop.transform.position;
-        Destroy(particleSystem, particleEffect.startLifetime);
+		//set particle effect (and inmediately destroy it)
+		int scale=(int)(drop.transform.localScale.x);
+		GameObject particleSystem = Instantiate(particleEffectExit[scale].gameObject) as GameObject;
+		//position
+		Vector3 position=drop.transform.position;
+		position.y = _ownCollider.max.y+0.2f;
+		particleSystem.GetComponent<Transform>().position = position;
+		Destroy(particleSystem, particleEffectExit[scale].startLifetime);
 
         //send it flying (stop previous flying)
         controller.StopFlying();
