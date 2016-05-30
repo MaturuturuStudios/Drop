@@ -4,7 +4,7 @@ using System.Linq;
 /// <summary>
 /// Manages the orientation of the character's model.
 /// </summary>
-public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSizeListener {
+public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 
 	#region Custom Enumerations
 
@@ -483,4 +483,9 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	}
 
 	#endregion
+
+
+    public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
+        // Do nothing
+    }
 }
