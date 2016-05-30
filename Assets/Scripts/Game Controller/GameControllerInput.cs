@@ -117,7 +117,7 @@ public class GameControllerInput : MonoBehaviour {
 
 			//Irrigate action
 			if (Input.GetButtonDown(Axis.Irrigate))
-				Debug.Log(Axis.Irrigate);
+				actionComponent.Irrigate();
 
 			//Select button
 			bool help = Input.GetButtonDown(Axis.Back);

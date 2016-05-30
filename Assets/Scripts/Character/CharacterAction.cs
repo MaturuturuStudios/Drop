@@ -3,7 +3,7 @@
 /// <summary>
 /// Character's component controlling the use of the 
 /// action button. Checks for interactive objects
-/// and notifies them.
+/// and notifies them. It also works for irrigation.
 /// </summary>
 public class CharacterAction : MonoBehaviour {
 
@@ -46,6 +46,24 @@ public class CharacterAction : MonoBehaviour {
 		// Checks if the colliders area interactive and notifies them
 		foreach (Collider collider in overlapingColliders) {
 			ActionPerformer[] actionPerformers = collider.GetComponents<ActionPerformer>();
+			foreach (ActionPerformer actionPerformer in actionPerformers)
+				actionPerformer.DoAction(gameObject);
+		}
+	}
+	
+	/// <summary>
+	/// Checks for irrigatable objects and notifies them to
+	/// perform their actions.
+	/// </summary>
+	public void Irrigate() {
+		// Checks for colliders overlaping it's volume
+		Vector3 center = _transform.TransformPoint(_controller.center);
+		float radius = _transform.lossyScale.x * _controller.radius;
+		Collider[] overlapingColliders = Physics.OverlapSphere(center, radius);
+
+		// Checks if the colliders area irrigatable and notifies them
+		foreach (Collider collider in overlapingColliders) {
+			ActionPerformer[] actionPerformers = collider.GetComponents<Irrigate>();
 			foreach (ActionPerformer actionPerformer in actionPerformers)
 				actionPerformer.DoAction(gameObject);
 		}
