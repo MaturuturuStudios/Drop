@@ -165,6 +165,15 @@ public class TriggerAction : ActionPerformer {
 				break;
 		}
 	}
+
+    /// <summary>
+    /// Let's a script activate or deactivate the trigger
+    /// </summary>
+    /// <param name="activate"></param>
+    public void SetActivate(bool activate) {
+        if (activate) Activate();
+        else Deactivate();
+    }
 	
 	/// <summary>
 	/// Activates the trigger, calling the proper methods.

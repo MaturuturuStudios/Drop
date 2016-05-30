@@ -46,9 +46,10 @@ public class FollowPath : MonoBehaviour {
         Random
 	}
 
-	#endregion
+    #endregion
 
-	#region Public Attributes
+    #region Public Attributes
+    public bool stopped=false;
 
 	/// <summary>
 	/// Defines how will the entity move to the next point in the path.
@@ -143,6 +144,8 @@ public class FollowPath : MonoBehaviour {
 		if (_pathEnumerator == null || _pathEnumerator.Current == null)
 			return;
 
+        if (stopped) return;
+
 		// Saves the original position
 		Vector3 originalPosition = _transform.position;
 
@@ -172,6 +175,10 @@ public class FollowPath : MonoBehaviour {
 		if (squaredDistance < maxDistanceToGoal * maxDistanceToGoal)
 			_pathEnumerator.MoveNext();
 	}
+
+    public void SetStopped(bool stopped) {
+        this.stopped = stopped;
+    }
 
     /// <summary>
 	/// Unity's method called by the editor in order to draw the gizmos.
