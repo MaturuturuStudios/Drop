@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System.Collections.Generic;
 
 /// <summary>
 /// This class active, desactive shoot-mode and shoot a drop 
@@ -16,6 +16,12 @@ public class CharacterShoot : MonoBehaviour {
 	/// Defines the size of the drop shooted.
 	/// </summary> 
     private float sizeshot = 1;
+
+    /// <summary>
+    /// List of observers subscribed to the character shoot's
+    /// events.
+    /// </summary>
+    private List<CharacterShootListener> _listeners;
 
     #endregion
 
@@ -52,7 +58,33 @@ public class CharacterShoot : MonoBehaviour {
         _gcic = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
 
-       
+
+    }
+
+    /// <summary>
+    /// Subscribes a listener to the shoot's events.
+    /// Returns false if the listener was already subscribed.
+    /// </summary>
+    /// <param name="listener">The listener to subscribe</param>
+    /// <returns>If the listener was successfully subscribed</returns>
+    public bool AddListener(CharacterShootListener listener) {
+        if (_listeners.Contains(listener))
+            return false;
+        _listeners.Add(listener);
+        return true;
+    }
+
+    /// <summary>
+    /// Unsubscribes a listener to the shoot's events.
+    /// Returns false if the listener wasn't subscribed yet.
+    /// </summary>
+    /// <param name="listener">The listener to unsubscribe</param>
+    /// <returns>If the listener was successfully unsubscribed</returns>
+    public bool RemoveListener(CharacterShootListener listener) {
+        if (!_listeners.Contains(listener))
+            return false;
+        _listeners.Remove(listener);
+        return true;
     }
 
     /// <summary>
@@ -109,6 +141,10 @@ public class CharacterShoot : MonoBehaviour {
                 st.enabled = true;
                 sizeshot = 1;
                 ccc.Parameters = CharacterControllerParameters.ShootingParameters;
+
+                // Notifies the listeners
+                foreach (CharacterShootListener listener in _listeners)
+                    listener.OnEnterShootMode(this);
             }
             else if ((shootmode == true) && !st.animation())
             {
@@ -124,6 +160,10 @@ public class CharacterShoot : MonoBehaviour {
     public void endshootmode()
     {
         shootmode = false;
+
+        // Notifies the listeners
+        foreach (CharacterShootListener listener in _listeners)
+            listener.OnExitShootMode(this);
     }
 
     /// <summary>
@@ -138,6 +178,10 @@ public class CharacterShoot : MonoBehaviour {
             st.finishing();
             st.enabled = false;
             GetComponent<CharacterSize>().SetSize((int)(GetComponent<CharacterSize>().GetSize()-sizeshot));
+
+            // Notifies the listeners
+            foreach (CharacterShootListener listener in _listeners)
+                listener.OnExitShootMode(this);
 
             throwBall();          
         }
@@ -154,7 +198,11 @@ public class CharacterShoot : MonoBehaviour {
             shootmode = false;
             st.finishing();
             st.enabled = false;
-            ccc.Parameters = null;                      
+            ccc.Parameters = null;
+
+            // Notifies the listeners
+            foreach (CharacterShootListener listener in _listeners)
+                listener.OnExitShootMode(this);
         }
      }
 
@@ -179,6 +227,10 @@ public class CharacterShoot : MonoBehaviour {
         ball.SetActive(true);
 
 		ball.GetComponent<CharacterControllerCustom>().SendFlying(st.GetpVelocity());
+
+        // Notifies the listeners
+        foreach (CharacterShootListener listener in _listeners)
+            listener.OnShoot(this, ball, st.GetpVelocity());
 	}
 
     
