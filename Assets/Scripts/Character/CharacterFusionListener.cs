@@ -11,20 +11,14 @@ public interface CharacterFusionListener {
 	/// </summary>
 	/// <param name="originalCharacter">The character beginning the fusion</param>
 	/// <param name="fusingCharacter">The character disappearing after the fusion</param>
-	void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter);
+	/// <param name="hit">Information about the hit</param>
+	void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit);
 
 	/// <summary>
 	/// Event called when two characters end fusing together.
 	/// </summary>
 	/// <param name="finalCharacter">The fused character</param>
-	void OnBeginFusion(CharacterFusion finalCharacter);
-
-	/// <summary>
-	/// Event called when a character is spitted after a failed fusion.
-	/// </summary>
-	/// <param name="finalCharacter">The fused character</param>
-	/// <param name="spittedCharacter">The spitted character</param>
-	void OnSpitDrop(CharacterFusion finalCharacter, GameObject spittedCharacter);
+	void OnEndFusion(CharacterFusion finalCharacter);
 }
 
 /// <summary>
@@ -33,15 +27,11 @@ public interface CharacterFusionListener {
 /// </summary>
 public class CharacterFusionAdapter : CharacterFusionListener {
 
-	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter) {
+	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {
 		// Do nothing
 	}
 
-	public void OnBeginFusion(CharacterFusion finalCharacter) {
-		// Do nothing
-	}
-
-	public void OnSpitDrop(CharacterFusion finalCharacter, GameObject spittedCharacter) {
+	public void OnEndFusion(CharacterFusion finalCharacter) {
 		// Do nothing
 	}
 }

@@ -77,6 +77,10 @@ public class CharacterFusion : MonoBehaviour {
             return;
         }
 
+		// Notifies the listeners
+		foreach (CharacterFusionListener listener in _listeners)
+			listener.OnBeginFusion(this, anotherDrop, hit);
+
         //Get the size of the other drop
         CharacterSize otherDropSize = anotherDrop.GetComponent<CharacterSize>();
         int otherSize = otherDropSize.GetSize();
@@ -101,7 +105,11 @@ public class CharacterFusion : MonoBehaviour {
         //increment size of the actual drop
         _characterSize.SetSize(totalSize, directionSpitDrop);
 
-    }
+		// Notifies the listeners
+		foreach (CharacterFusionListener listener in _listeners)
+			listener.OnEndFusion(this);
+
+	}
     #endregion
 
     #region Override Methods

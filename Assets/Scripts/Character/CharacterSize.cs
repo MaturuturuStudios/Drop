@@ -42,30 +42,6 @@ public class CharacterSize : MonoBehaviour {
 	};
 	#endregion
 
-	#region Custom Classes
-	/// <summary>
-	/// Interface for the listeners to size changes.
-	/// </summary>
-	public interface CharacterSizeListener {
-		/// <summary>
-		/// Callback called when the character starts changing it's size.
-		/// Called each frame prior to the scale change.
-		/// </summary>
-		/// <param name="character">The character changing size.</param>
-		/// <param name="previousScale">The scale prior to the scale change.</param>
-		/// <param name="nextScale">The scale after the scale change.</param>
-		void OnChangeSizeStart(GameObject character, Vector3 previousScale, Vector3 nextScale);
-		/// <summary>
-		/// Callback called when the character stops changing it's size.
-		/// Called each frame after the scale change.
-		/// </summary>
-		/// <param name="character">The character changing size.</param>
-		/// <param name="previousScale">The scale prior to the scale change.</param>
-		/// <param name="nextScale">The scale after the scale change.</param>
-		void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale);
-	}
-	#endregion
-
 	#region Variables
 	/// <summary>
 	/// Growing or decreasing
@@ -433,6 +409,10 @@ public class CharacterSize : MonoBehaviour {
 
 		//set the final size
 		SetSize(finalSize);
+
+		// Notifies the listeners
+		foreach (CharacterSizeListener listener in _listeners)
+			listener.OnSpitDrop(gameObject, newDrop);
 	}
 
 
