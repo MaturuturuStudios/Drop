@@ -110,20 +110,20 @@ public class GameControllerInput : MonoBehaviour {
 			if (Input.GetButtonDown(Axis.Action) && !isShooting)
 				actionComponent.DoAction();
 
-			///NOT SETTED CONTROLS
-			//Shoot mode pointer inputs
-			if (Input.GetAxis(Axis.LookAtDir) != 0)
-				Debug.Log(Axis.LookAtDir);
-
 			//Irrigate action
 			if (Input.GetButtonDown(Axis.Irrigate))
-				Debug.Log(Axis.Irrigate);
+				actionComponent.Irrigate();
 
 			//Select button
 			bool help = Input.GetButtonDown(Axis.Back);
 			if (help)
 				_helpController.ToggleHelp();
 			_helpController.UpdateAutoShow(hInput, vInput);
+
+			///NOT SETTED CONTROLS
+			//Shoot mode pointer inputs
+			if (Input.GetAxis(Axis.LookAtDir) != 0)
+				Debug.Log(Axis.LookAtDir);
 		}
 		else if(_ui!=null){
 			//Select button

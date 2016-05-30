@@ -9,6 +9,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 {
     #region Private Attributes
 
+    private bool explosion = false;
+    private float speedAnimation;
     private bool finish = false;
     private bool animshot = true;
     private bool endscript = false;
@@ -107,6 +109,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     #region Public Attributes
 
+    public ParticleSystem particleEffect;
+
     public new LineRenderer renderer;
     /// <summary>
     /// Prefab of the trajectory points
@@ -138,7 +142,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public LayerMask mask;
 
-    public float speedAnimation = 30;
+    public float speedrainbow = 10;
     /// <summary>
     /// Variable to calculate the max distance of the trajectory path
     /// </summary>
@@ -219,6 +223,10 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
+        explosion = false;
+        
+        speedAnimation = speedrainbow*this.GetComponent<CharacterSize>().GetSize();
+
         finish = false;
 
         shootsize = 1;
@@ -452,6 +460,12 @@ public class CharacterShootTrajectory : MonoBehaviour
             linerenderer.SetWidth(1, 1);
             this.GetComponent<CharacterShoot>().endshootmode();
             ccc.Parameters = null;
+
+            //set particle effect (and inmediately destroy it)
+            GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
+            particleSystem.GetComponent<Transform>().position = transform.position;
+            Destroy(particleSystem, particleEffect.startLifetime);
+
             this.enabled = false;
         }
 
@@ -472,13 +486,13 @@ public class CharacterShootTrajectory : MonoBehaviour
         ball.transform.position = (fullPath * faction_of_traveled) + trajectoryPoints[finallastWaypoint].transform.position;
         trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;
 
-        if (ball.transform.position.magnitude <= sphere.transform.position.magnitude && anglelook > 0)
+        if (ball.transform.position.x <= sphere.transform.position.x && angle <90)
         {
             sphere.SetActive(false);
            
             
         }
-        else if (ball.transform.position.magnitude >= sphere.transform.position.magnitude && anglelook < 0)
+        else if (ball.transform.position.x >= sphere.transform.position.x && angle>90)
         {
             sphere.SetActive(false);
            
@@ -543,6 +557,14 @@ public class CharacterShootTrajectory : MonoBehaviour
            
         if (animshot && canshooot())
         {
+            if (!explosion)
+            {
+                explosion = true;
+                //set particle effect (and inmediately destroy it)
+                GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
+                particleSystem.GetComponent<Transform>().position = transform.position;
+                Destroy(particleSystem, particleEffect.startLifetime);
+            }
             ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
             ball.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;

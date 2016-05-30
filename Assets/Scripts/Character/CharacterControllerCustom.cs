@@ -786,8 +786,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 					State.IsSliding = true;
 
 					// If the character wasn't sliding, stops it
-					if (!_wasSliding)
-						Stop();
+					//if (!_wasSliding)		=> Temporary disabled
+					//	Stop();
 				}
 				else {
 					State.IsSliding = false;
