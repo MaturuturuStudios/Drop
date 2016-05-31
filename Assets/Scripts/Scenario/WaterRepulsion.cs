@@ -1,21 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
-public class WaterRepulsion : MonoBehaviour {
+[ExecuteInEditMode]
+public class WaterRepulsion : ShootVelocity {
     #region Public attributes
-    /// <summary>
-    /// Point in which the drop will be expulsed
-    /// </summary>
     public Transform pointExpulsion;
-    /// <summary>
-    /// Point in which the drop will end
-    /// </summary>
-    public Transform pointTarget;
-	/// <summary>
-	/// Angle of the trajectory
-	/// </summary>
-	public float angle=45;
     /// <summary>
     /// Delay
     /// </summary>
@@ -23,6 +14,8 @@ public class WaterRepulsion : MonoBehaviour {
 
     public ParticleSystem particleEffectEnter;
 	public ParticleSystem particleEffectExit;
+
+    
     #endregion
 
     #region Private attributes
@@ -52,9 +45,7 @@ public class WaterRepulsion : MonoBehaviour {
     public void Update() {
         //no drop? get out
         if (_enteredDrop.Count == 0) return;
-		Vector3 directionShoot = pointTarget.position - pointExpulsion.position;
-        if (directionShoot.x < 0 && angle < 90) angle += (90 - angle) * 2;
-        else if (directionShoot.x > 0 && angle > 90) angle += (90 - angle) * 2;
+        if (!Application.isPlaying) return;
 
         //for every drop in water...
         for (int i = _enteredDrop.Count; i > 0; i--) {
@@ -89,21 +80,7 @@ public class WaterRepulsion : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// Get the necessary velocity to send the drop to the destiny point
-    /// </summary>
-    /// <returns></returns>
-	public Vector3 GetNeededVelocityVector(){
-		Vector3 velocityVector=Vector3.zero;
-       
-        float angleRadian = angle * Mathf.Deg2Rad;
-		float velocity = GetNeededVelocity(angleRadian);
-
-		velocityVector.x = Mathf.Cos (angleRadian) * velocity;
-		velocityVector.y = Mathf.Sin (angleRadian) * velocity;
-
-		return velocityVector;
-	}
+    
 
     /// <summary>
     /// Check the drop inside the water
@@ -145,7 +122,7 @@ public class WaterRepulsion : MonoBehaviour {
         drop.SetActive(true);
         CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
         //put drop on point expulsion
-        drop.transform.position = pointExpulsion.position;
+        drop.transform.position = pointShoot.position;
 
 		//set particle effect
 		int scale=(int)(drop.transform.localScale.x);
@@ -159,64 +136,9 @@ public class WaterRepulsion : MonoBehaviour {
         controller.SendFlying(GetNeededVelocityVector());
     }
 
-	/// <summary>
-	/// Gets the needed velocity depending on angle
-	/// </summary>
-	/// <returns>The needed velocity.</returns>
-	/// <param name="angleRadian">Angle in radian.</param>
-	private float GetNeededVelocity(float angleRadian){
-		float cosAngle = Mathf.Cos(angleRadian);
-		float cosAnglePow = cosAngle * cosAngle;
-		Vector3 direction = pointTarget.position - pointExpulsion.position;
-		float tangent = (direction.y) - Mathf.Tan (angleRadian) * (direction.x);
+	
 
-		float squaredVelocity = (-25* direction.x * direction.x) 
-			/ (2 * cosAnglePow	* tangent);
-		float velocity= Mathf.Sqrt(squaredVelocity);
-
-		return velocity;
-	}
-
-	/// <summary>
-	/// Raises the draw gizmos event.
-	/// </summary>
-	public void OnDrawGizmos() {
-		if (!Application.isPlaying) {
-			RaycastHit hitpoint;
-			Vector3[] points=new Vector3[100];
-
-			float localAngle = angle;
-			Vector3 directionShoot = pointTarget.position - pointExpulsion.position;
-			if (directionShoot.x < 0 && angle < 90)	localAngle += (90-angle) * 2;
-			else if(directionShoot.x > 0 && angle > 90) localAngle += (90-angle) * 2;
-
-			float angleRadian = localAngle * Mathf.Deg2Rad;
-			float velocity = GetNeededVelocity(angleRadian);
-
-			float fTime = 0.1f;
-			for (int i = 0; i < points.Length; i++)	{
-				float dx = velocity * fTime * Mathf.Cos(angleRadian);
-				float dy = velocity * fTime * Mathf.Sin(angleRadian) - ((25) * fTime * fTime / 2.0f);
-
-				Vector3 position = new Vector3(pointExpulsion.position.x + dx, pointExpulsion.position.y + dy, 0);
-				points[i] = position;
-				fTime += 0.1f;
-
-				Gizmos.color = Color.green;
-				if (i > 0){
-					Vector3 f = points[i-1] - points[i];
-					if ((Physics.Raycast(points[i], f, out hitpoint, f.magnitude))) break;
-					else Gizmos.DrawRay(points[i], f);
-					
-				}else if(i==0){
-					Vector3 f = pointExpulsion.position-points[i];
-					Gizmos.DrawRay(points[i], f);
-				}
-
-			}
-		}
-
-	}
+	
 
 
 
@@ -262,6 +184,51 @@ public class WaterRepulsion : MonoBehaviour {
 
     private void ParticleExit(Vector3 position, float scale) {
         ParticleEnter(position, scale);
+    }
+
+    protected override void OnAction(GameObject character) {
+        //do nothing
+    }
+
+    public new void OnDrawGizmos() {
+        if (!Application.isPlaying) {
+            pointShoot = pointExpulsion;
+
+            RaycastHit hitpoint;
+            Vector3[] points = new Vector3[100];
+
+            float finalAngle = angle;
+            if (finalAngle < 0) {
+                finalAngle = 180 + finalAngle;
+            }
+            float localAngle = finalAngle;
+            
+
+            float angleRadian = localAngle * Mathf.Deg2Rad;
+            float velocity = base.GetNeededVelocity(angleRadian);
+
+            float fTime = 0.1f;
+            for (int i = 0; i < points.Length; i++) {
+                float dx = velocity * fTime * Mathf.Cos(angleRadian);
+                float dy = velocity * fTime * Mathf.Sin(angleRadian) - ((25) * fTime * fTime / 2.0f);
+
+                Vector3 position = new Vector3(pointShoot.position.x + dx, pointShoot.position.y + dy, 0);
+                points[i] = position;
+                fTime += 0.1f;
+
+                Gizmos.color = Color.green;
+                if (i > 0) {
+                    Vector3 f = points[i - 1] - points[i];
+                    if ((Physics.Raycast(points[i], f, out hitpoint, f.magnitude, layerMask))) break;
+                    else Gizmos.DrawRay(points[i], f);
+
+                } else if (i == 0) {
+                    Vector3 f = pointShoot.position - points[i];
+                    Gizmos.DrawRay(points[i], f);
+                }
+
+            }
+        }
     }
     #endregion
 }
