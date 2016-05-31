@@ -21,7 +21,7 @@ public class CharacterShoot : MonoBehaviour {
     /// List of observers subscribed to the character shoot's
     /// events.
     /// </summary>
-    private List<CharacterShootListener> _listeners;
+    private List<CharacterShootListener> _listeners = new List<CharacterShootListener>();
 
     #endregion
 

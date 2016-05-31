@@ -91,6 +91,11 @@ public class EyesAttacher : MonoBehaviour {
 	/// </summary>
 	private Vector3 _rightEyeOriginalScale;
 
+	/// <summary>
+	/// Number of blend shapes used in the eyes.
+	/// </summary>
+	private const int BLEND_SHAPE_COUNT = 4;
+
 	#endregion
 
 	#region Methods
@@ -124,6 +129,19 @@ public class EyesAttacher : MonoBehaviour {
 		_rightEyeOriginalRotation = Quaternion.FromToRotation(hit.normal, rightEye.forward);
 		_rightEyeOriginalRotation.x *= -1;
 		_rightEyeOriginalScale = rightEye.localScale;
+	}
+
+	/// <summary>
+	/// Unity's method called when the component becomes enabled.
+	/// </summary>
+	void OnDisable() {
+		// Resets the eye's blend shapes
+		SkinnedMeshRenderer eyeRenderer = leftEye.GetComponentInChildren<SkinnedMeshRenderer>();
+		for (int i = 0; i < BLEND_SHAPE_COUNT; i++)
+			eyeRenderer.SetBlendShapeWeight(i, 0);
+		eyeRenderer = rightEye.GetComponentInChildren<SkinnedMeshRenderer>();
+		for (int i = 0; i < BLEND_SHAPE_COUNT; i++)
+			eyeRenderer.SetBlendShapeWeight(i, 0);
 	}
 
 	/// <summary>
