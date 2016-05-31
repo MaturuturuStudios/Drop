@@ -9,8 +9,16 @@ public class CharacterShootTrajectory : MonoBehaviour
 {
     #region Private Attributes
 
+    /// <summary>
+    /// Variable to draw the particle shoot mode 
+    /// </summary>
     private bool explosion = false;
+
+    /// <summary>
+    /// Variable to control the rainbow animation 
+    /// </summary>
     private float speedAnimation;
+
     private bool finish = false;
     private bool animshot = true;
     private bool endscript = false;
@@ -458,12 +466,12 @@ public class CharacterShootTrajectory : MonoBehaviour
 
             renderwidth = 1;
             linerenderer.SetWidth(1, 1);
-            this.GetComponent<CharacterShoot>().endshootmode();
+            this.GetComponent<CharacterShoot>().Endshootmode();
             ccc.Parameters = null;
 
             //set particle effect (and inmediately destroy it)
             GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
-            particleSystem.GetComponent<Transform>().position = transform.position;
+            particleSystem.GetComponent<Transform>().position = this.transform.position;
             Destroy(particleSystem, particleEffect.startLifetime);
 
             this.enabled = false;
@@ -557,14 +565,7 @@ public class CharacterShootTrajectory : MonoBehaviour
            
         if (animshot && canshooot())
         {
-            if (!explosion)
-            {
-                explosion = true;
-                //set particle effect (and inmediately destroy it)
-                GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
-                particleSystem.GetComponent<Transform>().position = transform.position;
-                Destroy(particleSystem, particleEffect.startLifetime);
-            }
+            
             ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
             ball.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
@@ -572,6 +573,17 @@ public class CharacterShootTrajectory : MonoBehaviour
             trajectoryPoints[lastWaypoint].GetComponent<Renderer>().enabled = true;
             finalnextWaypoint = lastWaypoint;
             finallastWaypoint = nextWaypoint;
+
+            if (!explosion)
+            {
+                explosion = true;
+                //set particle effect (and inmediately destroy it)
+                GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
+                particleSystem.GetComponent<Transform>().position = transform.position + GetpVelocity().normalized * (this.GetComponent<CharacterController>().radius * this.transform.lossyScale.x);
+
+                //particleSystem.GetComponent<Transform>().localScale = new Vector3(ball.transform.localScale.x, ball.transform.localScale.x, ball.transform.localScale.x);
+                Destroy(particleSystem, particleEffect.startLifetime);
+            }
 
         }
         else sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;

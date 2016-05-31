@@ -13,7 +13,7 @@ public class GrowupPlant : Irrigate
 
     private float oldsize,size;
 
-    private float onguizmos_max_height;
+    //private float onguizmos_max_height;
 
     private Vector3 origin;
 
@@ -38,7 +38,7 @@ public class GrowupPlant : Irrigate
 	/// </summary>
     void Start()
     {
-        onguizmos_max_height = max_height;
+        //onguizmos_max_height = max_height;
         height = transform.localScale.y;
 
         mfY = transform.position.y - transform.localScale.y / 2.0f;
