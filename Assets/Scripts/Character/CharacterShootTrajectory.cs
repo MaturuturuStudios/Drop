@@ -232,7 +232,9 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void OnEnable()
     {
         explosion = false;
-        
+
+        renderwidth = 1;
+
         speedAnimation = speedrainbow*this.GetComponent<CharacterSize>().GetSize();
 
         finish = false;
@@ -277,6 +279,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void OnDisable()
     {
         animshot = false;
+        renderwidth = 1;
 
         if (ball != null)
             ball.SetActive(false);
@@ -448,6 +451,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         }
         linerenderer.SetVertexCount(0);
+         linerenderer.SetWidth( 1,1);
         sphere.SetActive( false);
         ball.SetActive(false);
     }
