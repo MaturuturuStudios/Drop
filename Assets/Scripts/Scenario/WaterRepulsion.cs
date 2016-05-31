@@ -21,8 +21,8 @@ public class WaterRepulsion : MonoBehaviour {
     /// </summary>
     public float delay = 0.8f;
 
-    public ParticleSystem[] particleEffectEnter;
-	public ParticleSystem[] particleEffectExit;
+    public ParticleSystem particleEffectEnter;
+	public ParticleSystem particleEffectExit;
     #endregion
 
     #region Private attributes
@@ -119,12 +119,10 @@ public class WaterRepulsion : MonoBehaviour {
 
             //set particle effect (and inmediately destroy it)
 			int scale=(int)(drop.transform.localScale.x);
-			GameObject particleSystem = Instantiate(particleEffectEnter[scale].gameObject) as GameObject;
 			//position
 			Vector3 position=drop.transform.position;
-			position.y = _ownCollider.max.y+0.2f;
-            particleSystem.GetComponent<Transform>().position = position;
-			Destroy(particleSystem, particleEffectEnter[scale].startLifetime);
+            ParticleEnter(position, scale);
+			
         }
     }
 
@@ -149,14 +147,12 @@ public class WaterRepulsion : MonoBehaviour {
         //put drop on point expulsion
         drop.transform.position = pointExpulsion.position;
 
-		//set particle effect (and inmediately destroy it)
+		//set particle effect
 		int scale=(int)(drop.transform.localScale.x);
-		GameObject particleSystem = Instantiate(particleEffectExit[scale].gameObject) as GameObject;
 		//position
 		Vector3 position=drop.transform.position;
-		position.y = _ownCollider.max.y+0.2f;
-		particleSystem.GetComponent<Transform>().position = position;
-		Destroy(particleSystem, particleEffectExit[scale].startLifetime);
+        ParticleExit(position, scale);
+		
 
         //send it flying (stop previous flying)
         controller.StopFlying();
@@ -221,5 +217,51 @@ public class WaterRepulsion : MonoBehaviour {
 		}
 
 	}
+
+
+
+    /// <summary>
+    /// Modifier of the rate scale
+    /// </summary>
+    public float particleEmissionRateMultiplierScale = 0.5f;
+    public float particleSizeMultiplierScale = 1f;
+    public float particleSizeShapeMultiplierScale=1.0f;
+
+    private void ParticleEnter(Vector3 position, float scale) {
+        GameObject particleSystem = Instantiate(particleEffectEnter.gameObject) as GameObject;
+        position.y = _ownCollider.max.y + 0.2f;
+        particleSystem.GetComponent<Transform>().position = position;
+        ParticleSystem[] system = particleSystem.GetComponentsInChildren<ParticleSystem>();
+
+        ParticleSystem particle = system[0];
+
+            //scale the emission burst
+            ParticleSystem.EmissionModule emission = particle.emission;
+            ParticleSystem.Burst[] burst=new ParticleSystem.Burst[emission.burstCount];
+            emission.GetBursts(burst);
+            burst[0].minCount *= (short)(particleEmissionRateMultiplierScale * scale);
+            burst[0].maxCount *= (short)(particleEmissionRateMultiplierScale * scale);
+            emission.SetBursts(burst);
+
+            //scale the shape emission
+            ParticleSystem.ShapeModule shape = particle.shape;
+            shape.radius *= particleSizeShapeMultiplierScale* scale;
+
+
+        particle = system[1];
+        particle.startSize *= (0.5f * scale);
+        ParticleSystem.VelocityOverLifetimeModule velocity = particle.velocityOverLifetime;
+        ParticleSystem.MinMaxCurve x = velocity.y;
+        x.constantMax *= scale;
+
+
+        //destroy system
+        Destroy(particleSystem, particleEffectEnter.startLifetime);
+        
+    }
+
+    private void ParticleExit(Vector3 position, float scale) {
+        ParticleEnter(position, scale);
+    }
     #endregion
 }
