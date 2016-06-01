@@ -260,7 +260,11 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
-        
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {           
+                lluvia[i].startSize = 1f;
+     
+        }
 
         explosion = false;
 
@@ -393,6 +397,16 @@ public class CharacterShootTrajectory : MonoBehaviour
                 oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime);               
 
                 linerenderer.SetWidth(oldrenderwidth, oldrenderwidth);
+
+                for (int i = 0; i < numOfTrajectoryPoints; i++)
+                {
+                    if (trajectoryPoints[i].GetComponent<Renderer>().enabled)
+                    {
+                        lluvia[i].startSize = shootsize;
+                        
+                    }
+                }
+
                 if (oldspeed == speed)
                 {
                     moving = false;
@@ -510,6 +524,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         if (finalnextWaypoint ==0)
         {
+           
             trajectoryPoints[finalnextWaypoint].GetComponent<Renderer>().enabled = false;
             animshot = false;
             renderwidth = 1;
