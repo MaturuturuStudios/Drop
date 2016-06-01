@@ -4,7 +4,7 @@ using System.Collections;
 using System;
 
 [ExecuteInEditMode]
-public class WaterRepulsion : ShootVelocity {
+public class WaterRepulsion : LaunchCharacter {
     #region Public attributes
     public Transform pointExpulsion;
     /// <summary>
@@ -122,7 +122,7 @@ public class WaterRepulsion : ShootVelocity {
         drop.SetActive(true);
         CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
         //put drop on point expulsion
-        drop.transform.position = pointShoot.position;
+        drop.transform.position = pointOrigin.position;
 
 		//set particle effect
 		int scale=(int)(drop.transform.localScale.x);
@@ -193,7 +193,7 @@ public class WaterRepulsion : ShootVelocity {
 
     public new void OnDrawGizmos() {
         if (!Application.isPlaying) {
-            pointShoot = pointExpulsion;
+            pointOrigin = pointExpulsion;
 
             RaycastHit hitpoint;
             Vector3[] points = new Vector3[100];
@@ -213,7 +213,7 @@ public class WaterRepulsion : ShootVelocity {
                 float dx = velocity * fTime * Mathf.Cos(angleRadian);
                 float dy = velocity * fTime * Mathf.Sin(angleRadian) - ((25) * fTime * fTime / 2.0f);
 
-                Vector3 position = new Vector3(pointShoot.position.x + dx, pointShoot.position.y + dy, 0);
+                Vector3 position = new Vector3(pointOrigin.position.x + dx, pointOrigin.position.y + dy, 0);
                 points[i] = position;
                 fTime += 0.1f;
 
@@ -224,7 +224,7 @@ public class WaterRepulsion : ShootVelocity {
                     else Gizmos.DrawRay(points[i], f);
 
                 } else if (i == 0) {
-                    Vector3 f = pointShoot.position - points[i];
+                    Vector3 f = pointOrigin.position - points[i];
                     Gizmos.DrawRay(points[i], f);
                 }
 

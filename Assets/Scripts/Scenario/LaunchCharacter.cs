@@ -2,12 +2,12 @@
 using System.Collections;
 using System;
 
-public abstract class ShootVelocity : ActionPerformer {
+public abstract class LaunchCharacter : ActionPerformer {
 
     /// <summary>
     /// Point in which the character will be shooted
     /// </summary>
-    public Transform pointShoot;
+    public Transform pointOrigin;
     /// <summary>
     /// Point in which the drop will end
     /// </summary>
@@ -22,11 +22,10 @@ public abstract class ShootVelocity : ActionPerformer {
 	/// </summary>
 	public LayerMask layerMask;
 
-    // Use this for initialization
-    void Start () {
-
-	}
-
+    /// <summary>
+    /// Get the angle in a range [0,180]
+    /// </summary>
+    /// <returns></returns>
     public float GetAngle() {
         float finalAngle = angle;
         if (finalAngle < 0) {
@@ -53,7 +52,7 @@ public abstract class ShootVelocity : ActionPerformer {
             finalAngle = 180 + finalAngle;
         }
         Debug.Log(finalAngle);
-        if (pointShoot == null) pointShoot = transform;
+        if (pointOrigin == null) pointOrigin = transform;
     }
 
     /// <summary>
@@ -84,7 +83,7 @@ public abstract class ShootVelocity : ActionPerformer {
 	protected float GetNeededVelocity(float angleRadian) {
         float cosAngle = Mathf.Cos(angleRadian);
         float cosAnglePow = cosAngle * cosAngle;
-        Vector3 direction = pointTarget.position - pointShoot.position;
+        Vector3 direction = pointTarget.position - pointOrigin.position;
         float tangent = (direction.y) - Mathf.Tan(angleRadian) * (direction.x);
 
         float squaredVelocity = (-25 * direction.x * direction.x)
@@ -99,7 +98,7 @@ public abstract class ShootVelocity : ActionPerformer {
 	/// </summary>
 	public void OnDrawGizmos() {
         if (!Application.isPlaying) {
-            if (pointShoot == null) return;
+            if (pointOrigin == null) return;
 
             RaycastHit hitpoint;
             Vector3[] points = new Vector3[100];
@@ -118,7 +117,7 @@ public abstract class ShootVelocity : ActionPerformer {
                 float dx = velocity * fTime * Mathf.Cos(angleRadian);
                 float dy = velocity * fTime * Mathf.Sin(angleRadian) - ((25) * fTime * fTime / 2.0f);
 
-                Vector3 position = new Vector3(pointShoot.position.x + dx, pointShoot.position.y + dy, 0);
+                Vector3 position = new Vector3(pointOrigin.position.x + dx, pointOrigin.position.y + dy, 0);
                 points[i] = position;
                 fTime += 0.1f;
 
@@ -129,7 +128,7 @@ public abstract class ShootVelocity : ActionPerformer {
                     else Gizmos.DrawRay(points[i], f);
 
                 } else if (i == 0) {
-                    Vector3 f = pointShoot.position - points[i];
+                    Vector3 f = pointOrigin.position - points[i];
                     Gizmos.DrawRay(points[i], f);
                 }
 

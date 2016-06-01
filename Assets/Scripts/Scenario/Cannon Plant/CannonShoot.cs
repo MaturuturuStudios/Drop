@@ -4,7 +4,7 @@
 /// This class is for the canon plant shoot
 /// </summary>
 [ExecuteInEditMode]
-public class CannonShoot : ShootVelocity {
+public class CannonShoot : LaunchCharacter {
 
 	/// <summary>
 	/// Unity's method called each frame.
