@@ -298,7 +298,8 @@ public class CharacterShootTrajectory : MonoBehaviour
     void Update()
     {
         if (endscript)
-        {         
+        {
+            animshot = true;
             QuitTrajectory();
             drawlinerenderer();
             
@@ -377,7 +378,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             canshooot();
             
             drawlinerenderer();
-
+            
         }
         ParticleTrip();
     }
@@ -467,7 +468,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (finalnextWaypoint ==0)
         {
             trajectoryPoints[finalnextWaypoint].GetComponent<Renderer>().enabled = false;
-
+            animshot = false;
             renderwidth = 1;
             linerenderer.SetWidth(1, 1);
             this.GetComponent<CharacterShoot>().Endshootmode();
@@ -564,10 +565,10 @@ public class CharacterShootTrajectory : MonoBehaviour
             }
 
             Vector3 fullPath = trajectoryPoints[nextWaypoint].transform.position - trajectoryPoints[lastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-            if(animshot) faction_of_path_traveled += speedAnimation * Time.deltaTime; //animate along the path
+            if(animshot && !endscript) faction_of_path_traveled += speedAnimation * Time.deltaTime; //animate along the path
             else faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime;
            
-        if (animshot && canshooot())
+        if (animshot && !endscript && canshooot())
         {
             
             ball.SetActive(true);
@@ -584,7 +585,7 @@ public class CharacterShootTrajectory : MonoBehaviour
                 //set particle effect (and inmediately destroy it)
                 GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
                 particleSystem.GetComponent<Transform>().position = transform.position + GetpVelocity().normalized * (this.GetComponent<CharacterController>().radius * this.transform.lossyScale.x);
-
+                particleSystem.GetComponent<Transform>().TransformDirection( GetpVelocity());
                 //particleSystem.GetComponent<Transform>().localScale = new Vector3(ball.transform.localScale.x, ball.transform.localScale.x, ball.transform.localScale.x);
                 Destroy(particleSystem, particleEffect.startLifetime);
             }
