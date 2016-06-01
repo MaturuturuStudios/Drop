@@ -186,8 +186,9 @@ public class WaterRepulsion : ShootVelocity {
         ParticleEnter(position, scale);
     }
 
-    protected override void OnAction(GameObject character) {
-        //do nothing
+    protected override bool OnAction(GameObject character) {
+		//do nothing
+		return false;
     }
 
     public new void OnDrawGizmos() {
