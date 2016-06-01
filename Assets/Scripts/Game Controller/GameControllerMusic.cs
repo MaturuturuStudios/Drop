@@ -132,7 +132,7 @@ public class GameControllerMusic : MonoBehaviour {
 				break;
 
 		// Modifies the volume of each audio source
-		for (int i = 0; i < musicClips.Length; i++) {
+		for (int i = 0; i < _audioSources.Length; i++) {
 			// Determines the volume of the clip
 			float targetVolume = 0.0f;
             if (i == index)
@@ -177,6 +177,15 @@ public class GameControllerMusic : MonoBehaviour {
 		AS.loop = _originalAudioSource.loop;
 
 		return AS;
+	}
+
+	/// <summary>
+	/// Modifies the music's volume.
+	/// </summary>
+	/// <param name="volume">Thew new volume</param>
+	public void SetVolume(float volume) {
+		musicVolume = volume;
+		ComputeMusicVolumes(true);
 	}
 
 	#endregion
