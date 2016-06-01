@@ -13,13 +13,14 @@ public class CannonShoot : ShootVelocity {
 		transform.eulerAngles = new Vector3(0, 0, GetAngle()); //this is to face in the direction you are aming
 	}
 
-	protected override void OnAction(GameObject character)	{
+	protected override bool OnAction(GameObject character)	{
         CharacterControllerCustom ccc = character.GetComponent<CharacterControllerCustom>();
 
         ccc.transform.position = this.transform.position;
         ccc.Stop();
-        ccc.SendFlying(GetNeededVelocityVector());                  
+        ccc.SendFlying(GetNeededVelocityVector());
 
+		return true;
     }
 
     public void ChangeAngleCannon(float newAngle) {
