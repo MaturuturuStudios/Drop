@@ -17,7 +17,7 @@ public class AmbientPolen : MonoBehaviour {
         //center the effect
         Transform camera = Camera.main.transform;
         Rect area = new Rect(camera.position.x, camera.position.y, camera.localScale.x, camera.localScale.y);
-        Vector3 position = new Vector3(area.x, area.y, 0);
+        Vector3 position = new Vector3(area.x, area.y, system.transform.position.z);
         system.transform.position = position;
         
         //scale the effect
