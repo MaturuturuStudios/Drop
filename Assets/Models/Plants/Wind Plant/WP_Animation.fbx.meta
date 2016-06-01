@@ -1,0 +1,303 @@
+fileFormatVersion: 2
+guid: 28d88ee85c7c84ef786ec8d41ee1e2c0
+timeCreated: 1464789566
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Leaf2
+    100002: Leaf3
+    100004: LeafA
+    100006: LeafA1
+    100008: LeafA2
+    100010: LeafA3
+    100012: LeafA4
+    100014: LeafB
+    100016: LeafB1
+    100018: LeafB2
+    100020: LeafB3
+    100022: LeafB4
+    100024: LeafC
+    100026: LeafC1
+    100028: LeafC2
+    100030: LeafC3
+    100032: LeafC4
+    100034: LeafD
+    100036: LeafD1
+    100038: LeafD2
+    100040: LeafD3
+    100042: LeafD4
+    100044: LeafE
+    100046: LeafE1
+    100048: LeafE2
+    100050: LeafE3
+    100052: LeafE4
+    100054: LeafF
+    100056: LeafF1
+    100058: LeafF4
+    100060: Mesh
+    100062: Mid
+    100064: Mid1
+    100066: Mid2
+    100068: Mid3
+    100070: Mid4
+    100072: Sup
+    100074: wind_flower
+    100076: wind_plant
+    100078: //RootNode
+    100080: WP_Petalos:wind_petal1
+    100082: WP_Petalos:wind_petal2
+    100084: WP_Petalos:wind_petal3
+    100086: WP_Petalos:wind_petal4
+    100088: WP_Petalos:wind_petal5
+    100090: WP_Petalos:wind_petal6
+    100092: WP_Rig
+    400000: Leaf2
+    400002: Leaf3
+    400004: LeafA
+    400006: LeafA1
+    400008: LeafA2
+    400010: LeafA3
+    400012: LeafA4
+    400014: LeafB
+    400016: LeafB1
+    400018: LeafB2
+    400020: LeafB3
+    400022: LeafB4
+    400024: LeafC
+    400026: LeafC1
+    400028: LeafC2
+    400030: LeafC3
+    400032: LeafC4
+    400034: LeafD
+    400036: LeafD1
+    400038: LeafD2
+    400040: LeafD3
+    400042: LeafD4
+    400044: LeafE
+    400046: LeafE1
+    400048: LeafE2
+    400050: LeafE3
+    400052: LeafE4
+    400054: LeafF
+    400056: LeafF1
+    400058: LeafF4
+    400060: Mesh
+    400062: Mid
+    400064: Mid1
+    400066: Mid2
+    400068: Mid3
+    400070: Mid4
+    400072: Sup
+    400074: wind_flower
+    400076: wind_plant
+    400078: //RootNode
+    400080: WP_Petalos:wind_petal1
+    400082: WP_Petalos:wind_petal2
+    400084: WP_Petalos:wind_petal3
+    400086: WP_Petalos:wind_petal4
+    400088: WP_Petalos:wind_petal5
+    400090: WP_Petalos:wind_petal6
+    400092: WP_Rig
+    4300000: wind_flower
+    4300002: WP_Petalos:wind_petal4
+    4300004: WP_Petalos:wind_petal1
+    4300006: WP_Petalos:wind_petal3
+    4300008: WP_Petalos:wind_petal2
+    4300010: WP_Petalos:wind_petal5
+    4300012: WP_Petalos:wind_petal6
+    7400000: Wind_Plant_Rig_Ani_B
+    9500000: //RootNode
+    13700000: wind_flower
+    13700002: WP_Petalos:wind_petal1
+    13700004: WP_Petalos:wind_petal2
+    13700006: WP_Petalos:wind_petal3
+    13700008: WP_Petalos:wind_petal4
+    13700010: WP_Petalos:wind_petal5
+    13700012: WP_Petalos:wind_petal6
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Wind_Plant_Rig_Ani_B
+      takeName: Wind_Plant_Rig_Ani_B
+      firstFrame: 1
+      lastFrame: 80
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Mesh
+        weight: 1
+      - path: Mesh/wind_plant
+        weight: 1
+      - path: Mesh/wind_plant/wind_flower
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal1
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal2
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal3
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal4
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal5
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal6
+        weight: 1
+      - path: WP_Rig
+        weight: 1
+      - path: WP_Rig/LeafA
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3/LeafA4
+        weight: 1
+      - path: WP_Rig/LeafB
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3/LeafB4
+        weight: 1
+      - path: WP_Rig/LeafC
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3/LeafC4
+        weight: 1
+      - path: WP_Rig/LeafD
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3/LeafD4
+        weight: 1
+      - path: WP_Rig/LeafE
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3/LeafE4
+        weight: 1
+      - path: WP_Rig/LeafF
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3/LeafF4
+        weight: 1
+      - path: WP_Rig/Mid
+        weight: 1
+      - path: WP_Rig/Mid/Mid1
+        weight: 1
+      - path: WP_Rig/Mid/Mid2
+        weight: 1
+      - path: WP_Rig/Mid/Mid3
+        weight: 1
+      - path: WP_Rig/Mid/Mid4
+        weight: 1
+      - path: WP_Rig/Mid/Sup
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

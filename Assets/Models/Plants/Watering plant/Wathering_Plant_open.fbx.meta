@@ -1,0 +1,417 @@
+fileFormatVersion: 2
+guid: bb10803b4313849878fabdfc71e7c89f
+timeCreated: 1464799536
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: HojaA1
+    100002: HojaA2
+    100004: HojaA3
+    100006: HojaA4
+    100008: HojaA5
+    100010: HojaA6
+    100012: HojaA7
+    100014: HojaA8
+    100016: HojaB1
+    100018: HojaB2
+    100020: HojaB3
+    100022: HojaB4
+    100024: HojaB5
+    100026: HojaB6
+    100028: HojaB7
+    100030: HojaB8
+    100032: HojaC1
+    100034: HojaC2
+    100036: HojaC3
+    100038: HojaC4
+    100040: HojaC5
+    100042: HojaC6
+    100044: HojaC7
+    100046: HojaC8
+    100048: HojaD1
+    100050: HojaD2
+    100052: HojaD3
+    100054: HojaD4
+    100056: HojaD5
+    100058: HojaD6
+    100060: HojaD7
+    100062: HojaD8
+    100064: HojaE1
+    100066: HojaE2
+    100068: HojaE3
+    100070: HojaE4
+    100072: HojaE5
+    100074: HojaE6
+    100076: HojaE7
+    100078: HojaE8
+    100080: HojaF1
+    100082: HojaF2
+    100084: HojaF3
+    100086: HojaF4
+    100088: HojaF5
+    100090: HojaF6
+    100092: HojaF7
+    100094: HojaF8
+    100096: HojaG1
+    100098: HojaG2
+    100100: HojaG3
+    100102: HojaG4
+    100104: HojaG5
+    100106: HojaG6
+    100108: HojaG7
+    100110: HojaG8
+    100112: HojaH1
+    100114: HojaH2
+    100116: HojaH3
+    100118: HojaH4
+    100120: HojaH5
+    100122: HojaH6
+    100124: HojaH7
+    100126: HojaH8
+    100128: planta_regar_petalo
+    100130: planta_regar_petalo001
+    100132: planta_regar_petalo002
+    100134: planta_regar_petalo003
+    100136: planta_regar_petalo004
+    100138: planta_regar_petalo005
+    100140: planta_regar_petalo006
+    100142: planta_regar_petalo007
+    100144: watering_plant
+    100146: //RootNode
+    100148: WP_Rig
+    400000: HojaA1
+    400002: HojaA2
+    400004: HojaA3
+    400006: HojaA4
+    400008: HojaA5
+    400010: HojaA6
+    400012: HojaA7
+    400014: HojaA8
+    400016: HojaB1
+    400018: HojaB2
+    400020: HojaB3
+    400022: HojaB4
+    400024: HojaB5
+    400026: HojaB6
+    400028: HojaB7
+    400030: HojaB8
+    400032: HojaC1
+    400034: HojaC2
+    400036: HojaC3
+    400038: HojaC4
+    400040: HojaC5
+    400042: HojaC6
+    400044: HojaC7
+    400046: HojaC8
+    400048: HojaD1
+    400050: HojaD2
+    400052: HojaD3
+    400054: HojaD4
+    400056: HojaD5
+    400058: HojaD6
+    400060: HojaD7
+    400062: HojaD8
+    400064: HojaE1
+    400066: HojaE2
+    400068: HojaE3
+    400070: HojaE4
+    400072: HojaE5
+    400074: HojaE6
+    400076: HojaE7
+    400078: HojaE8
+    400080: HojaF1
+    400082: HojaF2
+    400084: HojaF3
+    400086: HojaF4
+    400088: HojaF5
+    400090: HojaF6
+    400092: HojaF7
+    400094: HojaF8
+    400096: HojaG1
+    400098: HojaG2
+    400100: HojaG3
+    400102: HojaG4
+    400104: HojaG5
+    400106: HojaG6
+    400108: HojaG7
+    400110: HojaG8
+    400112: HojaH1
+    400114: HojaH2
+    400116: HojaH3
+    400118: HojaH4
+    400120: HojaH5
+    400122: HojaH6
+    400124: HojaH7
+    400126: HojaH8
+    400128: planta_regar_petalo
+    400130: planta_regar_petalo001
+    400132: planta_regar_petalo002
+    400134: planta_regar_petalo003
+    400136: planta_regar_petalo004
+    400138: planta_regar_petalo005
+    400140: planta_regar_petalo006
+    400142: planta_regar_petalo007
+    400144: watering_plant
+    400146: //RootNode
+    400148: WP_Rig
+    4300000: planta_regar_petalo
+    4300002: planta_regar_petalo001
+    4300004: planta_regar_petalo002
+    4300006: planta_regar_petalo003
+    4300008: planta_regar_petalo004
+    4300010: planta_regar_petalo005
+    4300012: planta_regar_petalo006
+    4300014: planta_regar_petalo007
+    7400000: WP_Rig_Open
+    9500000: //RootNode
+    13700000: planta_regar_petalo
+    13700002: planta_regar_petalo001
+    13700004: planta_regar_petalo002
+    13700006: planta_regar_petalo003
+    13700008: planta_regar_petalo004
+    13700010: planta_regar_petalo005
+    13700012: planta_regar_petalo006
+    13700014: planta_regar_petalo007
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: WP_Rig_Open
+      takeName: WP_Rig_Open
+      firstFrame: 1
+      lastFrame: 55
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: watering_plant
+        weight: 1
+      - path: watering_plant/planta_regar_petalo
+        weight: 1
+      - path: watering_plant/planta_regar_petalo001
+        weight: 1
+      - path: watering_plant/planta_regar_petalo002
+        weight: 1
+      - path: watering_plant/planta_regar_petalo003
+        weight: 1
+      - path: watering_plant/planta_regar_petalo004
+        weight: 1
+      - path: watering_plant/planta_regar_petalo005
+        weight: 1
+      - path: watering_plant/planta_regar_petalo006
+        weight: 1
+      - path: watering_plant/planta_regar_petalo007
+        weight: 1
+      - path: WP_Rig
+        weight: 1
+      - path: WP_Rig/HojaA1
+        weight: 1
+      - path: WP_Rig/HojaA1/HojaA2
+        weight: 1
+      - path: WP_Rig/HojaA1/HojaA2/HojaA3
+        weight: 1
+      - path: WP_Rig/HojaA1/HojaA2/HojaA3/HojaA4
+        weight: 1
+      - path: WP_Rig/HojaA1/HojaA2/HojaA3/HojaA4/HojaA5
+        weight: 1
+      - path: WP_Rig/HojaA1/HojaA2/HojaA3/HojaA4/HojaA5/HojaA6
+        weight: 1
+      - path: WP_Rig/HojaA1/HojaA2/HojaA3/HojaA4/HojaA5/HojaA6/HojaA7
+        weight: 1
+      - path: WP_Rig/HojaA1/HojaA2/HojaA3/HojaA4/HojaA5/HojaA6/HojaA7/HojaA8
+        weight: 1
+      - path: WP_Rig/HojaB1
+        weight: 1
+      - path: WP_Rig/HojaB1/HojaB2
+        weight: 1
+      - path: WP_Rig/HojaB1/HojaB2/HojaB3
+        weight: 1
+      - path: WP_Rig/HojaB1/HojaB2/HojaB3/HojaB4
+        weight: 1
+      - path: WP_Rig/HojaB1/HojaB2/HojaB3/HojaB4/HojaB5
+        weight: 1
+      - path: WP_Rig/HojaB1/HojaB2/HojaB3/HojaB4/HojaB5/HojaB6
+        weight: 1
+      - path: WP_Rig/HojaB1/HojaB2/HojaB3/HojaB4/HojaB5/HojaB6/HojaB7
+        weight: 1
+      - path: WP_Rig/HojaB1/HojaB2/HojaB3/HojaB4/HojaB5/HojaB6/HojaB7/HojaB8
+        weight: 1
+      - path: WP_Rig/HojaC1
+        weight: 1
+      - path: WP_Rig/HojaC1/HojaC2
+        weight: 1
+      - path: WP_Rig/HojaC1/HojaC2/HojaC3
+        weight: 1
+      - path: WP_Rig/HojaC1/HojaC2/HojaC3/HojaC4
+        weight: 1
+      - path: WP_Rig/HojaC1/HojaC2/HojaC3/HojaC4/HojaC5
+        weight: 1
+      - path: WP_Rig/HojaC1/HojaC2/HojaC3/HojaC4/HojaC5/HojaC6
+        weight: 1
+      - path: WP_Rig/HojaC1/HojaC2/HojaC3/HojaC4/HojaC5/HojaC6/HojaC7
+        weight: 1
+      - path: WP_Rig/HojaC1/HojaC2/HojaC3/HojaC4/HojaC5/HojaC6/HojaC7/HojaC8
+        weight: 1
+      - path: WP_Rig/HojaD1
+        weight: 1
+      - path: WP_Rig/HojaD1/HojaD2
+        weight: 1
+      - path: WP_Rig/HojaD1/HojaD2/HojaD3
+        weight: 1
+      - path: WP_Rig/HojaD1/HojaD2/HojaD3/HojaD4
+        weight: 1
+      - path: WP_Rig/HojaD1/HojaD2/HojaD3/HojaD4/HojaD5
+        weight: 1
+      - path: WP_Rig/HojaD1/HojaD2/HojaD3/HojaD4/HojaD5/HojaD6
+        weight: 1
+      - path: WP_Rig/HojaD1/HojaD2/HojaD3/HojaD4/HojaD5/HojaD6/HojaD7
+        weight: 1
+      - path: WP_Rig/HojaD1/HojaD2/HojaD3/HojaD4/HojaD5/HojaD6/HojaD7/HojaD8
+        weight: 1
+      - path: WP_Rig/HojaE1
+        weight: 1
+      - path: WP_Rig/HojaE1/HojaE2
+        weight: 1
+      - path: WP_Rig/HojaE1/HojaE2/HojaE3
+        weight: 1
+      - path: WP_Rig/HojaE1/HojaE2/HojaE3/HojaE4
+        weight: 1
+      - path: WP_Rig/HojaE1/HojaE2/HojaE3/HojaE4/HojaE5
+        weight: 1
+      - path: WP_Rig/HojaE1/HojaE2/HojaE3/HojaE4/HojaE5/HojaE6
+        weight: 1
+      - path: WP_Rig/HojaE1/HojaE2/HojaE3/HojaE4/HojaE5/HojaE6/HojaE7
+        weight: 1
+      - path: WP_Rig/HojaE1/HojaE2/HojaE3/HojaE4/HojaE5/HojaE6/HojaE7/HojaE8
+        weight: 1
+      - path: WP_Rig/HojaF1
+        weight: 1
+      - path: WP_Rig/HojaF1/HojaF2
+        weight: 1
+      - path: WP_Rig/HojaF1/HojaF2/HojaF3
+        weight: 1
+      - path: WP_Rig/HojaF1/HojaF2/HojaF3/HojaF4
+        weight: 1
+      - path: WP_Rig/HojaF1/HojaF2/HojaF3/HojaF4/HojaF5
+        weight: 1
+      - path: WP_Rig/HojaF1/HojaF2/HojaF3/HojaF4/HojaF5/HojaF6
+        weight: 1
+      - path: WP_Rig/HojaF1/HojaF2/HojaF3/HojaF4/HojaF5/HojaF6/HojaF7
+        weight: 1
+      - path: WP_Rig/HojaF1/HojaF2/HojaF3/HojaF4/HojaF5/HojaF6/HojaF7/HojaF8
+        weight: 1
+      - path: WP_Rig/HojaG1
+        weight: 1
+      - path: WP_Rig/HojaG1/HojaG2
+        weight: 1
+      - path: WP_Rig/HojaG1/HojaG2/HojaG3
+        weight: 1
+      - path: WP_Rig/HojaG1/HojaG2/HojaG3/HojaG4
+        weight: 1
+      - path: WP_Rig/HojaG1/HojaG2/HojaG3/HojaG4/HojaG5
+        weight: 1
+      - path: WP_Rig/HojaG1/HojaG2/HojaG3/HojaG4/HojaG5/HojaG6
+        weight: 1
+      - path: WP_Rig/HojaG1/HojaG2/HojaG3/HojaG4/HojaG5/HojaG6/HojaG7
+        weight: 1
+      - path: WP_Rig/HojaG1/HojaG2/HojaG3/HojaG4/HojaG5/HojaG6/HojaG7/HojaG8
+        weight: 1
+      - path: WP_Rig/HojaH1
+        weight: 1
+      - path: WP_Rig/HojaH1/HojaH2
+        weight: 1
+      - path: WP_Rig/HojaH1/HojaH2/HojaH3
+        weight: 1
+      - path: WP_Rig/HojaH1/HojaH2/HojaH3/HojaH4
+        weight: 1
+      - path: WP_Rig/HojaH1/HojaH2/HojaH3/HojaH4/HojaH5
+        weight: 1
+      - path: WP_Rig/HojaH1/HojaH2/HojaH3/HojaH4/HojaH5/HojaH6
+        weight: 1
+      - path: WP_Rig/HojaH1/HojaH2/HojaH3/HojaH4/HojaH5/HojaH6/HojaH7
+        weight: 1
+      - path: WP_Rig/HojaH1/HojaH2/HojaH3/HojaH4/HojaH5/HojaH6/HojaH7/HojaH8
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 8
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
