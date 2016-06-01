@@ -262,7 +262,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     {
         for (int i = 0; i < numOfTrajectoryPoints; i++)
         {           
-                lluvia[i].startSize = 1f;
+                lluvia[i].startSize = 0.1f;
      
         }
 
@@ -402,7 +402,7 @@ public class CharacterShootTrajectory : MonoBehaviour
                 {
                     if (trajectoryPoints[i].GetComponent<Renderer>().enabled)
                     {
-                        lluvia[i].startSize = shootsize;
+                        //lluvia[i].startSize = shootsize;
                         
                     }
                 }
