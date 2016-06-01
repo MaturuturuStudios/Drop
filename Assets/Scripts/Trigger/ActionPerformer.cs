@@ -60,10 +60,10 @@ public abstract class ActionPerformer : MonoBehaviour {
 		_alreadyCalledThisFrame = true;
 
 		// Performs the action
-		OnAction(character);
+		bool success = OnAction(character);
 
 		// If the auto disable flag is set, disables itself
-		if (autoDisable)
+		if (autoDisable && success)
 			enabled = false;
 	}
 
@@ -76,7 +76,8 @@ public abstract class ActionPerformer : MonoBehaviour {
 	/// action button while staying on this object's volume.
 	/// </summary>
 	/// <param name="character">The character staying on the volume</param>
-	protected abstract void OnAction(GameObject character);
+	/// <returns>If the action was performed succesfully</returns>
+	protected abstract bool OnAction(GameObject character);
 
 	#endregion
 }

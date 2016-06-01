@@ -8,6 +8,61 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider))]
 public class WindTube : MonoBehaviour {
 
+	#region Custom Structs
+
+	/// <summary>
+	/// Saved information from a particle system's state.
+	/// </summary>
+	struct ParticleSystemState {
+
+		/// <summary>
+		/// Emission rate.
+		/// </summary>
+		public ParticleSystem.MinMaxCurve rate;
+
+		/// <summary>
+		/// Initial color.
+		/// </summary>
+		public Color color;
+
+		/// <summary>
+		/// Initial speed.
+		/// </summary>
+		public float startSpeed;
+
+		/// <summary>
+		/// Velocity X.
+		/// </summary>
+		public ParticleSystem.MinMaxCurve velocityX;
+
+		/// <summary>
+		/// Velocity Y.
+		/// </summary>
+		public ParticleSystem.MinMaxCurve velocityY;
+
+		/// <summary>
+		/// Velocity Z.
+		/// </summary>
+		public ParticleSystem.MinMaxCurve velocityZ;
+
+		/// <summary>
+		/// Force X.
+		/// </summary>
+		public ParticleSystem.MinMaxCurve forceX;
+
+		/// <summary>
+		/// Force Y.
+		/// </summary>
+		public ParticleSystem.MinMaxCurve forceY;
+
+		/// <summary>
+		/// Force Z.
+		/// </summary>
+		public ParticleSystem.MinMaxCurve forceZ;
+	}
+
+	#endregion
+
 	#region Public Attributes
 
 	/// <summary>
@@ -37,15 +92,25 @@ public class WindTube : MonoBehaviour {
 	public bool ignoreMass = false;
 
 	/// <summary>
-	/// Defines the particle emission rate when the width of the tube
-	/// is 1.
+	/// The effect that will be used for the wind's shape.
 	/// </summary>
-	public float baseParticleEmissionRate = 25.0f;
+	[Header("Effect")]
+	public GameObject windEffect;
 
 	/// <summary>
-	/// Defines the particle initial speed when the wind force is 1.
+	/// Multiplies particle systems' base emission rate.
 	/// </summary>
-	public float baseParticleInitialSpeed = 0.4f;
+	public float particleEmissionRateMultiplier = 1.0f;
+
+	/// <summary>
+	/// Multiplies particle systems' base speed.
+	/// </summary>
+	public float particleSpeedMultiplier = 1.0f;
+
+	/// <summary>
+	/// Multiplies particle system0s base color.
+	/// </summary>
+	public Color particleColorMultiplier = Color.white;
 
 	#endregion
 
@@ -57,14 +122,29 @@ public class WindTube : MonoBehaviour {
 	private Transform _transform;
 
 	/// <summary>
-	/// Reference to the particle system attached to the component.
-	/// </summary>
-	private ParticleSystem _particleSystem;
-
-	/// <summary>
 	/// Reference to the collider where the wind force will be applied.
 	/// </summary>
 	private BoxCollider _collider;
+
+	/// <summary>
+	/// Reference to the instantiated wind effect.
+	/// </summary>
+	public GameObject _windEffect;
+
+	/// <summary>
+	/// Reference to the particle systems attached to the component.
+	/// </summary>
+	private ParticleSystem[] _particleSystems;
+
+	/// <summary>
+	/// Saved information from the initial particle systems' states.
+	/// </summary>
+	private ParticleSystemState[] _initialParticleSystemStates;
+
+	/// <summary>
+	/// Base wind force the particle effect was calculated with.
+	/// </summary>
+	private const float _baseWindForce = 25.0f;
 
 	#endregion
 
@@ -79,9 +159,54 @@ public class WindTube : MonoBehaviour {
 		_transform = transform;
 		_collider = gameObject.GetComponent<BoxCollider>();
 
-		_particleSystem = GetComponentInChildren<ParticleSystem>();
-		if (_particleSystem == null)
-			Debug.LogError("Couldn't find children's Particle System!");
+		// Creates the wind effect
+		_windEffect = (GameObject) Instantiate(windEffect, _transform.position, _transform.rotation);
+		_windEffect.transform.parent = _transform;
+
+		// Retrieves all the particle systems
+		_particleSystems = _windEffect.GetComponentsInChildren<ParticleSystem>();
+		if (_particleSystems.Length == 0)
+			Debug.LogError("Couldn't find children's Particle Systems!");
+
+		// Saves the initial information from all the particle systems
+		_initialParticleSystemStates = new ParticleSystemState[_particleSystems.Length];
+		for (int i = 0; i < _particleSystems.Length; i++) {
+			ParticleSystemState state = new ParticleSystemState();
+			state.rate = _particleSystems[i].emission.rate;
+			state.color = _particleSystems[i].startColor;
+			state.velocityX = _particleSystems[i].velocityOverLifetime.x;
+			state.velocityY = _particleSystems[i].velocityOverLifetime.y;
+			state.velocityZ = _particleSystems[i].velocityOverLifetime.z;
+			state.forceX = _particleSystems[i].forceOverLifetime.x;
+			state.forceY = _particleSystems[i].forceOverLifetime.y;
+			state.forceZ = _particleSystems[i].forceOverLifetime.z;
+			_initialParticleSystemStates[i] = state;
+		}
+
+		// Disables the particle system's emission as they will be renabled if needed
+		OnDisable();
+	}
+
+	/// <summary>
+	/// Unity's method called when the script is enabled.
+	/// </summary>
+	public void OnEnable() {
+		// Enables all particle systems' emissions
+		foreach (ParticleSystem particleSystem in _particleSystems) {
+			ParticleSystem.EmissionModule emission = particleSystem.emission;
+			emission.enabled = true;
+		}
+	}
+
+	/// <summary>
+	/// Unity's method called when the script is disabled.
+	/// </summary>
+	public void OnDisable() {
+		// Disables all particle systems' emissions
+		foreach (ParticleSystem particleSystem in _particleSystems) {
+			ParticleSystem.EmissionModule emission = particleSystem.emission;
+			emission.enabled = false;
+		}
 	}
 
 	/// <summary>
@@ -95,24 +220,81 @@ public class WindTube : MonoBehaviour {
 		// Sets the center of the collider
 		_collider.center = new Vector3(0, length / 2, 0);
 
-		// Modifies the particle system to fit the collider. Modifies the shape
-		ParticleSystem.ShapeModule shape = _particleSystem.shape;
-		shape.box = new Vector3(width * _transform.lossyScale.x, 0, 0);
+		// Modifies each particle system to fit the collider
+        for (int i = 0; i < _particleSystems.Length; i++) {
+			// Modifies the emissor's shape
+			ParticleSystem.ShapeModule shape = _particleSystems[i].shape;
+			shape.box = new Vector3(width * _transform.lossyScale.x, 0, 1);
 
-		// Modifies the particle velocity
-		_particleSystem.startSpeed = baseParticleInitialSpeed * windForce * _transform.lossyScale.y;
+			// Modifies the particle color
+			_particleSystems[i].startColor = _initialParticleSystemStates[i].color * particleColorMultiplier;
 
-		// Modifies the particle lifetime according to the velocity and  length
-		_particleSystem.startLifetime = length * _transform.lossyScale.y / _particleSystem.startSpeed;
+			// Modifies the particle speed
+			float speedFactor = particleSpeedMultiplier * _transform.lossyScale.y * windForce / _baseWindForce;
+            _particleSystems[i].startSpeed = _initialParticleSystemStates[i].startSpeed * speedFactor;
 
-		// Modifies the emission rate according to the lifetime and width
-		ParticleSystem.EmissionModule emission = _particleSystem.emission;
-		ParticleSystem.MinMaxCurve rate = new ParticleSystem.MinMaxCurve();
-		rate.mode = ParticleSystemCurveMode.Constant;
-		float emissionRate = width * baseParticleEmissionRate / _particleSystem.startLifetime;
-		rate.constantMax = emissionRate;
-		rate.constantMin = emissionRate;
-		emission.rate = rate;
+			// Modifies the particle velocity
+			if (_particleSystems[i].velocityOverLifetime.enabled) {
+				ParticleSystem.MinMaxCurve x = _initialParticleSystemStates[i].velocityX;
+				x.constantMax *= speedFactor;
+				x.constantMin *= speedFactor;
+				x.curveScalar *= speedFactor;
+				ParticleSystem.MinMaxCurve y = _initialParticleSystemStates[i].velocityY;
+				y.constantMax *= speedFactor;
+				y.constantMin *= speedFactor;
+				y.curveScalar *= speedFactor;
+				ParticleSystem.MinMaxCurve z = _initialParticleSystemStates[i].velocityZ;
+				z.constantMax *= speedFactor;
+				z.constantMin *= speedFactor;
+				z.curveScalar *= speedFactor;
+				ParticleSystem.VelocityOverLifetimeModule velocity = _particleSystems[i].velocityOverLifetime;
+				velocity.x = x;
+				velocity.y = y;
+				velocity.z = z;
+            }
+
+			// Modifies the particle force
+			if (_particleSystems[i].forceOverLifetime.enabled) {
+				ParticleSystem.MinMaxCurve x = _initialParticleSystemStates[i].forceX;
+				x.constantMax *= speedFactor;
+				x.constantMin *= speedFactor;
+				x.curveScalar *= speedFactor;
+				ParticleSystem.MinMaxCurve y = _initialParticleSystemStates[i].forceY;
+				y.constantMax *= speedFactor;
+				y.constantMin *= speedFactor;
+				y.curveScalar *= speedFactor;
+				ParticleSystem.MinMaxCurve z = _initialParticleSystemStates[i].forceZ;
+				z.constantMax *= speedFactor;
+				z.constantMin *= speedFactor;
+				z.curveScalar *= speedFactor;
+				ParticleSystem.ForceOverLifetimeModule force = _particleSystems[i].forceOverLifetime;
+				force.x = x;
+				force.y = y;
+				force.z = z;
+			}
+
+			// Modifies the emission rate according to the lifetime and width
+			if (_particleSystems[i].emission.enabled) {
+				float emissionRateFactor = width * particleEmissionRateMultiplier;
+				ParticleSystem.MinMaxCurve rate = _initialParticleSystemStates[i].rate;
+				rate.constantMax *= emissionRateFactor;
+				rate.constantMin *= emissionRateFactor;
+				rate.curveScalar *= emissionRateFactor;
+				ParticleSystem.EmissionModule emission = _particleSystems[i].emission;
+				emission.rate = rate;
+			}
+
+			// Modifies the particle lifetime according to their velocity and the volume's length
+			float particleSpeed = _particleSystems[i].startSpeed;
+			if (_particleSystems[i].velocityOverLifetime.enabled) {
+				ParticleSystem.MinMaxCurve curve = _particleSystems[i].velocityOverLifetime.y;
+				if (curve.mode == ParticleSystemCurveMode.Constant || curve.mode == ParticleSystemCurveMode.TwoConstants)
+					particleSpeed = Mathf.Max(curve.constantMax, curve.constantMin);
+				else
+					particleSpeed = curve.curveScalar * curve.curveMax.Evaluate(0);
+			}
+            _particleSystems[i].startLifetime = length * _transform.lossyScale.y / particleSpeed;
+		}
 	}
 
 	/// <summary>
@@ -121,6 +303,9 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">The collider entering the volume</param>
 	public void OnTriggerEnter(Collider other) {
+		if (!enabled)
+			return;
+
 		// Checks if the entity has a player component
 		CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
 		if (cccp != null)
@@ -133,6 +318,9 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">The collider exiting the volume</param>
 	public void OnTriggerExit(Collider other) {
+		if (!enabled)
+			return;
+
 		// Checks if the entity has a player component
 		CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
 		if (cccp != null)
@@ -146,6 +334,13 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	/// <param name="other">The collider staying on the volume</param>
 	public void OnTriggerStay(Collider other) {
+		if (!enabled) {
+			CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
+			if (cccp != null)
+				cccp.CurrentWindTube = null;
+			return;
+		}
+
 		// Determines the force to add
 		Vector3 force = _transform.up * windForce;
 		ForceMode mode = ignoreMass ? ForceMode.Acceleration : ForceMode.Force;
@@ -157,7 +352,7 @@ public class WindTube : MonoBehaviour {
 
 			// If the gravity is ignored, substracts it
 			if (ignoreGravity)
-				rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
+				rb.AddForceAtPosition(-Physics.gravity, _transform.position, ForceMode.Acceleration);
 
 			return;
 		}
@@ -180,20 +375,30 @@ public class WindTube : MonoBehaviour {
 	/// Draws the volume on the editor.
 	/// </summary>
 	public void OnDrawGizmos() {
-		// Calls the configuration functions
-		if (!Application.isPlaying) {
-			Awake();
-			Update();
-		}
+		if (Application.isPlaying)
+			return;
+
+		// Sets the size and center of the collider
+		BoxCollider collider = GetComponent<BoxCollider>();
+		collider.size = new Vector3(width, length, 0.5f);
+		collider.center = new Vector3(0, length / 2, 0);
 
 		// Defines the color of the gizmo
 		Color color = Color.cyan;
 		color.a = 0.25f;
 		Gizmos.color = color;
 
-		// Draws the cube
+		// Draws the collider
 		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawCube(Vector3.up * _collider.size.y / 2, _collider.size);
+		Gizmos.DrawCube(Vector3.up * collider.size.y / 2, collider.size);
+	}
+
+	/// <summary>
+	/// Enables or disables the script.
+	/// </summary>
+	/// <param name="enabled">If the script should be enabled</param>
+	public void SetEnabled(bool enabled) {
+		this.enabled = enabled;
 	}
 
 	#endregion

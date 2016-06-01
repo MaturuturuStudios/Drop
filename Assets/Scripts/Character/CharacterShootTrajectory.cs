@@ -9,6 +9,22 @@ public class CharacterShootTrajectory : MonoBehaviour
 {
     #region Private Attributes
 
+    /// <summary>
+    /// Variable to draw the particle shoot mode 
+    /// </summary>
+    private bool explosion = false;
+
+    /// <summary>
+    /// Variable to control the rainbow animation 
+    /// </summary>
+    private float speedAnimation;
+
+    private ParticleSystem.Particle[] points;
+    private ParticleSystem rain;
+
+    private List<ParticleSystem> lluvia;
+    private GameObject rainparticle;
+    private bool finish = false;
     private bool animshot = true;
     private bool endscript = false;
     private float radio;
@@ -22,6 +38,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private bool sizeanimation;
     private GameObject listtrajectory;
     private float oldrenderwidth,renderwidth;
+    private float anglelook;
     /// <summary>
     /// This is to draw the animation of the particle that move throught the trajectory 
     /// </summary>
@@ -105,6 +122,10 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     #region Public Attributes
 
+    
+
+    public ParticleSystem particleRainbow;
+
     public new LineRenderer renderer;
     /// <summary>
     /// Prefab of the trajectory points
@@ -136,7 +157,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public LayerMask mask;
 
-    public float speedAnimation = 30;
+    public float speedrainbow = 10;
     /// <summary>
     /// Variable to calculate the max distance of the trajectory path
     /// </summary>
@@ -163,6 +184,28 @@ public class CharacterShootTrajectory : MonoBehaviour
         angle = 45;
 
         ccc = GetComponent<CharacterControllerCustom>();
+
+        ParticleSystem.EmissionModule emision = particleRainbow.emission;
+        emision.enabled = false;
+
+        points = new ParticleSystem.Particle[numOfTrajectoryPoints];
+        lluvia = new List<ParticleSystem>();
+
+        rainparticle = new GameObject();
+        rainparticle.name = "rain particle";
+        rainparticle.transform.parent = ccc.transform;
+
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            ParticleSystem agua = Instantiate(particleRainbow);
+
+            ParticleSystem.EmissionModule emission = agua.emission;
+            emission.enabled = false;
+            agua.GetComponent<Transform>().parent = rainparticle.transform;
+            lluvia.Insert(i, agua);
+
+
+        }
 
         linerenderer = (LineRenderer) Instantiate(renderer);
 
@@ -217,15 +260,25 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
+        
+
+        explosion = false;
+
+        renderwidth = 1;
+
+        speedAnimation = speedrainbow*this.GetComponent<CharacterSize>().GetSize();
+
+        finish = false;
 
         shootsize = 1;
         endscript = false;
         
         sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
-
+        //sphere.GetComponent<Transform>().parent = this.transform;
         sphere.SetActive(false);
 
         ball = (GameObject)Instantiate(TrajectorySizeIndicator);
+        //ball.GetComponent<Transform>().parent = this.transform;
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
         ball.SetActive(false);
     
@@ -235,11 +288,20 @@ public class CharacterShootTrajectory : MonoBehaviour
         animshot = true;
         sizeanimation = false;
 
-        float anglelook=this.GetComponentInChildren<CharacterModelController>().GetLookingDirection();
+        anglelook=this.GetComponentInChildren<CharacterModelController>().GetLookingDirection();
 
-        if (anglelook == 0) angle = 90;
-        if(anglelook>0) angle=45;
-        if (anglelook < 0) angle = 135;
+
+        if (anglelook > 0 && angle >90) {
+            angle = angle-90;
+            angle = 90 - angle;
+
+        }
+        if (anglelook < 0 && angle<90)
+        {
+            angle = 180 - ( angle);
+
+        }
+
        
     }
 
@@ -248,6 +310,9 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// </summary>
     public void OnDisable()
     {
+        animshot = false;
+        renderwidth = 1;
+
         if (ball != null)
             ball.SetActive(false);
 
@@ -256,6 +321,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         Destroy(sphere);
         Destroy(ball);
+        
 
     }
 
@@ -265,11 +331,13 @@ public class CharacterShootTrajectory : MonoBehaviour
     void Update()
     {
         if (endscript)
-        {         
+        {
+            animshot = true;
             QuitTrajectory();
             drawlinerenderer();
+            
         }
-        else{
+        else {
 
             if (animshot == false)
             {
@@ -343,9 +411,10 @@ public class CharacterShootTrajectory : MonoBehaviour
             canshooot();
             
             drawlinerenderer();
-
+            
         }
         ParticleTrip();
+        ParticleRainbow();
     }
 
 
@@ -397,9 +466,21 @@ public class CharacterShootTrajectory : MonoBehaviour
         endscript = true;
     }
 
+
+    public bool isending()
+    {
+        return finish;
+    }
+
     public bool animation()
     {
         return animshot;
+    }
+
+    public float Angle()
+    {
+        return angle;
+
     }
 
     public void finishing()
@@ -409,8 +490,12 @@ public class CharacterShootTrajectory : MonoBehaviour
         {
              trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
 
+            ParticleSystem.EmissionModule emission = lluvia[i].emission;
+            emission.enabled = false;
+
         }
         linerenderer.SetVertexCount(0);
+         linerenderer.SetWidth( 1,1);
         sphere.SetActive( false);
         ball.SetActive(false);
     }
@@ -426,9 +511,13 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (finalnextWaypoint ==0)
         {
             trajectoryPoints[finalnextWaypoint].GetComponent<Renderer>().enabled = false;
-
+            animshot = false;
             renderwidth = 1;
             linerenderer.SetWidth(1, 1);
+            this.GetComponent<CharacterShoot>().Endshootmode();
+            ccc.Parameters = null;
+
+
             this.enabled = false;
         }
 
@@ -449,11 +538,22 @@ public class CharacterShootTrajectory : MonoBehaviour
         ball.transform.position = (fullPath * faction_of_traveled) + trajectoryPoints[finallastWaypoint].transform.position;
         trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;
 
-        if (ball.transform.position.magnitude <= sphere.transform.position.magnitude)
+        if (ball.transform.position.x <= sphere.transform.position.x && angle <90)
         {
             sphere.SetActive(false);
+           
+            
+        }
+        else if (ball.transform.position.x >= sphere.transform.position.x && angle>90)
+        {
+            sphere.SetActive(false);
+           
+
         }
 
+        
+        
+       
     }
 
     ///  <summary>
@@ -504,11 +604,12 @@ public class CharacterShootTrajectory : MonoBehaviour
             }
 
             Vector3 fullPath = trajectoryPoints[nextWaypoint].transform.position - trajectoryPoints[lastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-            if(animshot) faction_of_path_traveled += speedAnimation * Time.deltaTime; //animate along the path
+            if(animshot && !endscript) faction_of_path_traveled += speedAnimation * Time.deltaTime; //animate along the path
             else faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime;
            
-        if (animshot && canshooot())
+        if (animshot && !endscript && canshooot())
         {
+            
             ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
             ball.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
@@ -516,6 +617,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             trajectoryPoints[lastWaypoint].GetComponent<Renderer>().enabled = true;
             finalnextWaypoint = lastWaypoint;
             finallastWaypoint = nextWaypoint;
+
 
         }
         else sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
@@ -609,7 +711,36 @@ public class CharacterShootTrajectory : MonoBehaviour
         {
             linerenderer.SetPosition(j, aux[j]);
         }
+
+       
     }
 
+    public void ParticleRainbow()
+    {
+        float increment = 1f / (numOfTrajectoryPoints - 1);
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            float x = i * increment;
+            points[i].position = new Vector3(0f, 0f, x);
+
+            points[i].position = particleRainbow.transform.InverseTransformPoint(trajectoryPoints[i].GetComponent<Transform>().position);
+
+            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
+            {
+                ParticleSystem.EmissionModule emission = lluvia[i].emission;
+                emission.enabled = true;
+                lluvia[i].GetComponent<Transform>().position = trajectoryPoints[i].GetComponent<Transform>().position;
+            }
+            else if (trajectoryPoints[i].GetComponent<Renderer>().enabled == false)
+            {
+                ParticleSystem.EmissionModule emission = lluvia[i].emission;
+                emission.enabled = false;
+            }
+
+                points[i].startColor = new Color(x, 0f, 0f);
+            points[i].startSize = 0.1f;
+        }
+
+    }
     #endregion
 }

@@ -4,7 +4,7 @@ using System.Linq;
 /// <summary>
 /// Manages the orientation of the character's model.
 /// </summary>
-public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSizeListener {
+public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 
 	#region Custom Enumerations
 
@@ -302,27 +302,17 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 
 		// Saves the model offset
 		_originalModelOffset = _transform.localPosition;
+
+		// Gets the joint information
+		_joints = GetComponentsInChildren<Joint>();
+		_jointsConnectedBodies = _joints.Select(e => e.connectedBody).ToArray();
+		_originalJointsPosition = _joints.Select(e => e.transform.localPosition).ToArray();
 	}
 
 	/// <summary>
 	/// Unity's method called on the first frame this object is active.
 	/// </summary>
 	void Start() {
-		// Gets the joint information
-		_joints = GetComponentsInChildren<Joint>();
-		_jointsConnectedBodies = _joints.Select(e => e.connectedBody).ToArray();
-		_originalJointsPosition = _joints.Select(e => e.transform.localPosition).ToArray();
-
-		// Resets the joints to fit the character's current scale
-		float hatScale = Mathf.Lerp(minHatScale, maxHatScale, GetInterpolatedScale(_transform.lossyScale.x));
-		for (int i = 0; i < _joints.Length; i++) {
-			Rigidbody temp = _joints[i].connectedBody;
-			_joints[i].connectedBody = null;
-			_joints[i].transform.localPosition = _originalJointsPosition[i] * hatScale;
-			_joints[i].transform.localRotation = Quaternion.identity;
-			_joints[i].connectedBody = temp;
-		}
-
 		// Sets the right orientation to the object
 		switch (initialRotation) {
 			case InitialRotation.Right:
@@ -340,6 +330,21 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 
 		// Subscribes itself to the size's changes
 		_characterSize.AddListener(this);
+	}
+
+	/// <summary>
+	/// Unity's method called when the component becomes enabled.
+	/// </summary>
+	void OnEnable() {
+		// Resets the joints to fit the character's current scale
+		float hatScale = Mathf.Lerp(minHatScale, maxHatScale, GetInterpolatedScale(_transform.lossyScale.x));
+		for (int i = 0; i < _joints.Length; i++) {
+			Rigidbody temp = _joints[i].connectedBody;
+			_joints[i].connectedBody = null;
+			_joints[i].transform.localPosition = _originalJointsPosition[i] * hatScale;
+			_joints[i].transform.localRotation = Quaternion.identity;
+			_joints[i].connectedBody = temp;
+		}
 	}
 
 	/// <summary>
@@ -483,4 +488,9 @@ public class CharacterModelController : MonoBehaviour, CharacterSize.CharacterSi
 	}
 
 	#endregion
+
+
+    public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
+        // Do nothing
+    }
 }

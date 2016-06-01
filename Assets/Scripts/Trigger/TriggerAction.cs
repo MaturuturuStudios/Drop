@@ -137,10 +137,11 @@ public class TriggerAction : ActionPerformer {
 	/// Handles the character interaction with this object by an Action Button press.
 	/// </summary>
 	/// <param name="character">The character who interacts with the object</param>
-	protected override void OnAction(GameObject character) {
+	/// <returns>If the action was performed successfully</returns>
+	protected override bool OnAction(GameObject character) {
 		// Checks if the switch can be used
 		if (_remainingTimeBetweenUses > 0)
-			return;
+			return false;
 		_remainingTimeBetweenUses = delayBetweenUses;
 
 		switch (triggerMode) {
@@ -164,7 +165,17 @@ public class TriggerAction : ActionPerformer {
 				Debug.LogError("Error: Unrecognized trigger mode: " + triggerMode);
 				break;
 		}
+		return true;
 	}
+
+    /// <summary>
+    /// Let's a script activate or deactivate the trigger
+    /// </summary>
+    /// <param name="activate"></param>
+    public void SetActivate(bool activate) {
+        if (activate) Activate();
+        else Deactivate();
+    }
 	
 	/// <summary>
 	/// Activates the trigger, calling the proper methods.

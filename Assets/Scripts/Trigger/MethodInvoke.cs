@@ -139,7 +139,7 @@ public class MethodInvoke {
 		else if (parameters.Length == 1)
 			target.SendMessage(selectedMethod.Name, GetParameterOfType(parameters[0].ParameterType), SendMessageOptions.RequireReceiver);
 		else
-			Debug.LogError("Error: The invoked method has more than one paramter: " + selectedMethod.Name);
+			Debug.LogError("Error: The invoked method has more than one parameter: " + selectedMethod.Name);
 	}
 
 	/// <summary>

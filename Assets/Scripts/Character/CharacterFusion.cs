@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class CharacterFusion : MonoBehaviour {
 
@@ -8,10 +8,16 @@ public class CharacterFusion : MonoBehaviour {
     /// Size of the character
     /// </summary>
     private CharacterSize _characterSize;
+
     /// <summary>
     /// Independent control to create or remove drops
     /// </summary>
     private GameControllerIndependentControl _independentControl;
+
+	/// <summary>
+	/// List of fusion listeners registered to this character's fusion events.
+	/// </summary>
+	private List<CharacterFusionListener> _listeners = new List<CharacterFusionListener>();
     #endregion
 
     #region Methods
@@ -23,23 +29,57 @@ public class CharacterFusion : MonoBehaviour {
         _characterSize = GetComponent<CharacterSize>();
     }
 
+	/// <summary>
+	/// Returns the size of the character.
+	/// </summary>
+	/// <returns>The size of the character</returns>
     public int GetSize() {
         return _characterSize.GetSize();
-    }
-    #endregion
+	}
 
-    #region Private Methods
-    /// <summary>
-    /// Fusion between two drops
-    /// </summary>
-    /// <param name="anotherDrop">The drop to be absorved</param>
-    private void DropFusion(GameObject anotherDrop, ControllerColliderHit hit) {
+	/// <summary>
+	/// Subscribes a listener to the fusion's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(CharacterFusionListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the fusion's events.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(CharacterFusionListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
+	}
+	#endregion
+
+	#region Private Methods
+	/// <summary>
+	/// Fusion between two drops
+	/// </summary>
+	/// <param name="anotherDrop">The drop to be absorved</param>
+	private void DropFusion(GameObject anotherDrop, ControllerColliderHit hit) {
         //always check the other drop because of a posible race condition
         //checking with the active flag, destroy method does not destroy until the end of frame
         //but this method can be called again with the same object on the same frame, just in case checking...
         if(anotherDrop == null || !anotherDrop.activeInHierarchy) {
             return;
         }
+
+		// Notifies the listeners
+		foreach (CharacterFusionListener listener in _listeners)
+			listener.OnBeginFusion(this, anotherDrop, hit);
 
         //Get the size of the other drop
         CharacterSize otherDropSize = anotherDrop.GetComponent<CharacterSize>();
@@ -65,7 +105,11 @@ public class CharacterFusion : MonoBehaviour {
         //increment size of the actual drop
         _characterSize.SetSize(totalSize, directionSpitDrop);
 
-    }
+		// Notifies the listeners
+		foreach (CharacterFusionListener listener in _listeners)
+			listener.OnEndFusion(this);
+
+	}
     #endregion
 
     #region Override Methods

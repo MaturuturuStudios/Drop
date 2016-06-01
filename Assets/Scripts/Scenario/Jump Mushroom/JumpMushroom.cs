@@ -116,10 +116,6 @@
 			float minheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * minHeight);
 			float maxheightvelocity = Mathf.Sqrt(2 * ccc.Parameters.Gravity.magnitude * maxHeight);
 
-
-            Debug.Log(" drop velocity " + speed);
-            Debug.Log(" mushroom max velocity " + maxheightvelocity);
-
 			// Clamps the speed
 			if (speed < minheightvelocity)
 				speed = minheightvelocity;

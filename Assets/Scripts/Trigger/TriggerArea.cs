@@ -134,6 +134,11 @@ public class TriggerArea : MonoBehaviour {
 	/// </summary>
 	private float _remainingTimeToDeactivateSwitch;
 
+	/// <summary>
+	/// Flag to check if the currently controlled character is in the area.
+	/// </summary>
+	private bool _currentCharacterInArea = false;
+
 	#endregion
 
 	#region Methods
@@ -184,6 +189,22 @@ public class TriggerArea : MonoBehaviour {
 
 		// Removes any destroyed collider
 		_stayingColliders = _stayingColliders.Where(e => e != null).ToList();
+
+		// Checks if the currently controlled character is on the area
+		if (_stayingColliders.Where(e => _gameControllerIndependentControl.currentCharacter == e.gameObject).Count() != 0) {
+			if (!_currentCharacterInArea) {
+				_currentCharacterInArea = true;
+				if (triggerMode == TriggerMode.Sensor && colliderFilter == ColliderFilter.OnlyControlledCharacter)
+					DoEnter();
+			}
+		}
+		else {
+			if (_currentCharacterInArea) {
+				_currentCharacterInArea = false;
+				if (triggerMode == TriggerMode.Sensor && colliderFilter == ColliderFilter.OnlyControlledCharacter)
+					DoExit();
+			}
+		}
 	}
 
 	/// <summary>
@@ -196,6 +217,10 @@ public class TriggerArea : MonoBehaviour {
 	void OnTriggerEnter(Collider other) {
 		if (!enabled)
 			return;
+
+		// If the collider is the currently controlled character, sets the flag
+		if (other.gameObject == _gameControllerIndependentControl.currentCharacter)
+			_currentCharacterInArea = true;
 
 		// Checks if it's a valid collider
 		if (!IsValidCollider(other))
@@ -246,6 +271,10 @@ public class TriggerArea : MonoBehaviour {
 	void OnTriggerExit(Collider other) {
 		if (!enabled)
 			return;
+
+		// If the collider is the currently controlled character, sets the flag
+		if (other.gameObject == _gameControllerIndependentControl.currentCharacter)
+			_currentCharacterInArea = false;
 
 		// Checks if it's a valid collider
 		if (!IsValidCollider(other))

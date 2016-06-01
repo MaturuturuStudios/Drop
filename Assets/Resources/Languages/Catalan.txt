@@ -60,6 +60,12 @@ MenuInputKeyboard=Show keyboard
 #Help option
 HelpText=Pobre petita gota ... On són els teus amics? On són els teus companys i la teva família? Et veus perduda i lluny de tots ells.\n\nT’explicaré un secret. Ets una gota. I totes les gotes tenen un destí. El mar. \n\nVes al mar, petita gota, ves al mar i trova las tus éssers estimats. Utilitza totes les teves habilitas per superar els obstacles i les dificultats del viatge. Salta a las parets, uneix-te a altres gotes, divideix-te i entra a petits llocs, dispara’t ven amunt, rega plantes...\n\nSigues intel·ligent, sigues aigua amic meu.
 
+HelpWallJump=Wall Jump\nMientras estás en el aire contra una pared en la que se pueda hacer salto, pulsa de nuevo saltar para realizar un salto en pared. El proceso se puede repetir varias veces con la misma pared u otras
+HelpShoot=Shoot\nCuando eres de un tamaño suficiente, puedes entrar en modo disparo y seleccionar tanto el ángulo de disparo como el número de gotas a disparar. Durante el modo disparo no puedes moverte y puedes anular el disparo pulsando de nuevo el modo disparo
+HelpFusion=Fusion\nDos gotas pueden fusionarse si se juntan y si el espacio lo permite, sino, expulsará las que le sobran
+HelpLookAround=Look around\nPuedes ver más allá si miras a tu alrededor. Consulta la entrada para cómo mirar
+HelpSelect=Select\nConsulta en cualquier momento cuán grande eres tú o tus enemigos
+
 #Quality options name
 Fastest=El més ràpid
 Fast=Ràpid

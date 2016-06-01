@@ -1,64 +1,41 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 /// <summary>
-/// This class is for the canon plant shoot
+/// Allows an object to be irrigated, consuming drops and
+/// performing a task in consequence.
+/// This is an abstract class. Classes which extend this class
+/// will define their own behaviour when irrigated.
 /// </summary>
-abstract public class Irrigate : ActionPerformer
-{
-    #region Private Attributes
-
-    /// <summary>
-    /// Define the character component variable.
-    /// </summary> 
-    /// 
-    private CharacterControllerCustom ccc;
-
-    /// <summary>
-    /// Define the bool to know that On action was pressed.
-    /// </summary> 
-    /// 
-    private bool firstime = false;
-
-    #endregion
+abstract public class Irrigate : ActionPerformer {
 
     #region Public Attributes
 
     /// <summary>
-    /// Defines the number of drops needed to make a plant grow up.
+    /// Defines the number of drops needed to activate the event.
     /// </summary> 
-    /// 
-    public float _numDrops;
+    public int dropsNeeded;
 
     #endregion
 
     #region Methods
 
-    protected abstract void OnIrrigate();
-
-    protected override void OnAction(GameObject character)
-    {
-        ccc = character.GetComponent<CharacterControllerCustom>();
-        
-        if (ccc != null)
-        {
-            if (ccc.GetComponent<CharacterSize>().GetSize() - _numDrops > 0 && !firstime)
-            {
-                float size = ccc.GetComponent<CharacterSize>().GetSize() - _numDrops;
-                ccc.GetComponent<CharacterSize>().SetSize((int)size);
-                firstime = true;
-                
+    protected override bool OnAction(GameObject character) {
+        CharacterControllerCustom ccc = character.GetComponent<CharacterControllerCustom>();
+		CharacterSize cs = character.GetComponent<CharacterSize>();
+        if (ccc != null && cs != null)
+            if (cs.GetSize() > dropsNeeded) {
+                cs.SetSize(cs.GetSize() - dropsNeeded);
+                OnIrrigate();
+				return true;
             }
-        }
+		return false;
+	}
 
-    }
+	/// <summary>
+	/// Delegate method. Defines how will the object behave when
+	/// it is irrigated. This method will only be called once.
+	/// </summary>
+	protected abstract void OnIrrigate();
 
-    public bool enter()
-    {
-        return firstime;
-    }
-
-
-    #endregion
+	#endregion
 }

@@ -14,8 +14,10 @@ public class Teleporter : ActionPerformer {
 	/// Moves the character when the Action button is pressed.
 	/// </summary>
 	/// <param name="character">The currently controlled character</param>
-	protected override void OnAction(GameObject character) {
+	/// <returns>If the action was performed successfully</returns>
+	protected override bool OnAction(GameObject character) {
 		character.transform.position = target.position;
+		return true;
 	}
 
 	/// <summary>

@@ -357,6 +357,15 @@ public class CharacterControllerCustom : MonoBehaviour {
 		return GetVelocityOnDirection(-Parameters.Gravity);
 	}
 
+	/// <summary>
+	/// Returns the current horizontal speed of the character as a value between -1
+	/// and 1 (max speed to the left to max speed to the right, with 0 being still).
+	/// </summary>
+	/// <returns>Normalized speed of the character</returns>
+	public float GetNormalizedSpeed() {
+		return _velocity.x / (Parameters.maxSpeed * Mathf.Sqrt(GetSize()));
+	}
+
 	#endregion
 
 	#region Input Methods
@@ -786,8 +795,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 					State.IsSliding = true;
 
 					// If the character wasn't sliding, stops it
-					if (!_wasSliding)
-						Stop();
+					//if (!_wasSliding)		=> Temporary disabled
+					//	Stop();
 				}
 				else {
 					State.IsSliding = false;

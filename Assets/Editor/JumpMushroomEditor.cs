@@ -30,7 +30,7 @@ public class JumpMushroomEditor : Editor {
 			myScript.temporary = EditorGUILayout.Toggle("Lost Control Temporary", myScript.temporary);
 
 		// If Temporary is enabled, shows the Time field
-		if (myScript.temporary)
+		if (myScript.lostControl && myScript.temporary)
 			myScript.time = EditorGUILayout.FloatField("Time", myScript.time);
 		else
 			myScript.time = 0.0f;
