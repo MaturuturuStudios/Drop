@@ -191,21 +191,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         points = new ParticleSystem.Particle[numOfTrajectoryPoints];
         lluvia = new List<ParticleSystem>();
 
-        rainparticle = new GameObject();
-        rainparticle.name = "rain particle";
-        rainparticle.transform.parent = ccc.transform;
-
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
-            ParticleSystem agua = Instantiate(particleRainbow);
-
-            ParticleSystem.EmissionModule emission = agua.emission;
-            emission.enabled = false;
-            agua.GetComponent<Transform>().parent = rainparticle.transform;
-            lluvia.Insert(i, agua);
-
-
-        }
+        
 
         linerenderer = (LineRenderer) Instantiate(renderer);
 
@@ -260,12 +246,24 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {           
-                lluvia[i].startSize = 0.1f;
-     
-        }
+        rainparticle = new GameObject();
+        rainparticle.name = "rain particle";
+        //rainparticle.transform.parent = ccc.transform;
+        lluvia.Clear();
 
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            ParticleSystem agua = Instantiate(particleRainbow);
+
+            ParticleSystem.EmissionModule emission = agua.emission;
+            emission.enabled = false;
+            agua.GetComponent<Transform>().parent = rainparticle.transform;
+            
+            lluvia.Insert(i, agua);
+            lluvia[i].startSize = 0.1f;
+
+        }
+                 
         explosion = false;
 
         renderwidth = 1;
@@ -323,9 +321,10 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (sphere != null)
             sphere.SetActive(false);
 
+        
         Destroy(sphere);
         Destroy(ball);
-        
+        Destroy(rainparticle);
 
     }
 
@@ -512,6 +511,8 @@ public class CharacterShootTrajectory : MonoBehaviour
          linerenderer.SetWidth( 1,1);
         sphere.SetActive( false);
         ball.SetActive(false);
+
+        
     }
 
     /// <summary>
