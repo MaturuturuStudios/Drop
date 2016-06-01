@@ -19,6 +19,11 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     private float speedAnimation;
 
+    private ParticleSystem.Particle[] points;
+    private ParticleSystem rain;
+
+    private List<ParticleSystem> lluvia;
+    private GameObject rainparticle;
     private bool finish = false;
     private bool animshot = true;
     private bool endscript = false;
@@ -117,7 +122,9 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     #region Public Attributes
 
-    public ParticleSystem particleEffect;
+    
+
+    public ParticleSystem particleRainbow;
 
     public new LineRenderer renderer;
     /// <summary>
@@ -178,6 +185,28 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         ccc = GetComponent<CharacterControllerCustom>();
 
+        ParticleSystem.EmissionModule emision = particleRainbow.emission;
+        emision.enabled = false;
+
+        points = new ParticleSystem.Particle[numOfTrajectoryPoints];
+        lluvia = new List<ParticleSystem>();
+
+        rainparticle = new GameObject();
+        rainparticle.name = "rain particle";
+        rainparticle.transform.parent = ccc.transform;
+
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            ParticleSystem agua = Instantiate(particleRainbow);
+
+            ParticleSystem.EmissionModule emission = agua.emission;
+            emission.enabled = false;
+            agua.GetComponent<Transform>().parent = rainparticle.transform;
+            lluvia.Insert(i, agua);
+
+
+        }
+
         linerenderer = (LineRenderer) Instantiate(renderer);
 
         linerenderer.transform.parent = ccc.transform;
@@ -231,6 +260,8 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
+        
+
         explosion = false;
 
         renderwidth = 1;
@@ -243,10 +274,11 @@ public class CharacterShootTrajectory : MonoBehaviour
         endscript = false;
         
         sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
-
+        //sphere.GetComponent<Transform>().parent = this.transform;
         sphere.SetActive(false);
 
         ball = (GameObject)Instantiate(TrajectorySizeIndicator);
+        //ball.GetComponent<Transform>().parent = this.transform;
         ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
         ball.SetActive(false);
     
@@ -289,6 +321,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         Destroy(sphere);
         Destroy(ball);
+        
 
     }
 
@@ -381,6 +414,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             
         }
         ParticleTrip();
+        ParticleRainbow();
     }
 
 
@@ -443,12 +477,21 @@ public class CharacterShootTrajectory : MonoBehaviour
         return animshot;
     }
 
+    public float Angle()
+    {
+        return angle;
+
+    }
+
     public void finishing()
     {      
 
         for (int i = 0; i < numOfTrajectoryPoints; i++)
         {
              trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
+
+            ParticleSystem.EmissionModule emission = lluvia[i].emission;
+            emission.enabled = false;
 
         }
         linerenderer.SetVertexCount(0);
@@ -474,10 +517,6 @@ public class CharacterShootTrajectory : MonoBehaviour
             this.GetComponent<CharacterShoot>().Endshootmode();
             ccc.Parameters = null;
 
-            //set particle effect (and inmediately destroy it)
-            GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
-            particleSystem.GetComponent<Transform>().position = this.transform.position;
-            Destroy(particleSystem, particleEffect.startLifetime);
 
             this.enabled = false;
         }
@@ -579,16 +618,6 @@ public class CharacterShootTrajectory : MonoBehaviour
             finalnextWaypoint = lastWaypoint;
             finallastWaypoint = nextWaypoint;
 
-            if (!explosion)
-            {
-                explosion = true;
-                //set particle effect (and inmediately destroy it)
-                GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
-                particleSystem.GetComponent<Transform>().position = transform.position + GetpVelocity().normalized * (this.GetComponent<CharacterController>().radius * this.transform.lossyScale.x);
-                particleSystem.GetComponent<Transform>().TransformDirection( GetpVelocity());
-                //particleSystem.GetComponent<Transform>().localScale = new Vector3(ball.transform.localScale.x, ball.transform.localScale.x, ball.transform.localScale.x);
-                Destroy(particleSystem, particleEffect.startLifetime);
-            }
 
         }
         else sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
@@ -686,5 +715,32 @@ public class CharacterShootTrajectory : MonoBehaviour
        
     }
 
+    public void ParticleRainbow()
+    {
+        float increment = 1f / (numOfTrajectoryPoints - 1);
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            float x = i * increment;
+            points[i].position = new Vector3(0f, 0f, x);
+
+            points[i].position = particleRainbow.transform.InverseTransformPoint(trajectoryPoints[i].GetComponent<Transform>().position);
+
+            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
+            {
+                ParticleSystem.EmissionModule emission = lluvia[i].emission;
+                emission.enabled = true;
+                lluvia[i].GetComponent<Transform>().position = trajectoryPoints[i].GetComponent<Transform>().position;
+            }
+            else if (trajectoryPoints[i].GetComponent<Renderer>().enabled == false)
+            {
+                ParticleSystem.EmissionModule emission = lluvia[i].emission;
+                emission.enabled = false;
+            }
+
+                points[i].startColor = new Color(x, 0f, 0f);
+            points[i].startSize = 0.1f;
+        }
+
+    }
     #endregion
 }
