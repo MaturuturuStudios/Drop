@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Fires events when a certain object is irrigated.
@@ -19,14 +20,38 @@ public class TriggerIrrigate : Irrigate {
 	/// </summary>
 	public ReorderableList_MethodInvoke onIrrigate = new ReorderableList_MethodInvoke();
 
-	#endregion
+    #endregion
 
-	#region Methods
+    #region Methods
 
-	/// <summary>
-	/// Fires the events when the object is irrigated.
-	/// </summary>
-	protected override void OnIrrigate() {
+
+    /// <summary>
+    /// TODO: variable temporal a borrar luego de presentacion
+    /// </summary>
+    public ParticleSystem particleGrow;
+    public GameObject temporalObject;
+    /// <summary>
+    /// TODO: método temporal a borrar
+    /// </summary>
+    public void EnableObject() {
+        //set the particles
+        GameObject particleSystem = Instantiate(particleGrow.gameObject) as GameObject;
+        Vector3 position = transform.position;
+        particleSystem.GetComponent<Transform>().position = position;
+        //destroy system
+        Destroy(particleSystem, particleGrow.startLifetime*2);
+        //grow the plant
+        StartCoroutine(EnableTheObject());
+    }
+    private IEnumerator EnableTheObject() {
+        yield return new WaitForSeconds(3);
+        temporalObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Fires the events when the object is irrigated.
+    /// </summary>
+    protected override void OnIrrigate() {
 		// Performs the method invocations
 		foreach (MethodInvoke methodInvoke in onIrrigate.AsList())
 			methodInvoke.Invoke();
