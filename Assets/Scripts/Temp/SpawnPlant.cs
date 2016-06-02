@@ -1,27 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SpawnPlant : MonoBehaviour {
+public class SpawnPlant : Irrigate {
 
-	public ParticleSystem particleGrow;
+	public GameObject particleGrow;
 
 	public GameObject temporalObject;
 
-	public void EnableObject() {
+    private GameObject _system;
+
+	protected override void OnIrrigate() {
 		//set the particles
-		GameObject particleSystem = Instantiate(particleGrow.gameObject) as GameObject;
-		Vector3 position = transform.position;
-		particleSystem.GetComponent<Transform>().position = position;
+		_system = Instantiate(particleGrow) as GameObject;
+        _system.transform.position = transform.position;
 		//play animation
 		GetComponent<Animator>().SetTrigger("irrigate");
-		//destroy system
-		Destroy(particleSystem, particleGrow.startLifetime * 2);
+        Destroy(_system, _system.GetComponent<ParticleSystem>().startLifetime);
 		//grow the plant
 		StartCoroutine(EnableTheObject());
 	}
 
 	private IEnumerator EnableTheObject() {
 		yield return new WaitForSeconds(3);
-		temporalObject.SetActive(true);
+        temporalObject.SetActive(true);
 	}
 }
