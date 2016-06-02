@@ -171,7 +171,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
-    void Awake()
+    void Start()
     {      
         this.enabled = false;
 
