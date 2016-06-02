@@ -12,7 +12,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Variable to draw the particle shoot mode 
     /// </summary>
-    private bool explosion = false;
+
 
     /// <summary>
     /// Variable to control the rainbow animation 
@@ -21,7 +21,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     private float particlerainbowradious = 0.5f;
     private ParticleSystem.Particle[] points;
     private ParticleSystem rain;
-    private float rainbowsize = 0.3f;
+
     private List<ParticleSystem> lluvia;
     private GameObject rainparticle;
     private bool finish = false;
@@ -276,7 +276,6 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void OnEnable()
     {
         
-        explosion = false;
 
         renderwidth = 1;
 
