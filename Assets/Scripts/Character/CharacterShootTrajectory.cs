@@ -18,7 +18,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// Variable to control the rainbow animation 
     /// </summary>
     private float speedAnimation;
-
+    private float particlerainbowradious = 0.5f;
     private ParticleSystem.Particle[] points;
     private ParticleSystem rain;
     private float rainbowsize = 0.3f;
@@ -255,6 +255,19 @@ public class CharacterShootTrajectory : MonoBehaviour
             renderwidth+=1;
         }
 
+        if (oldsize > shootsize) particlerainbowradious -= 0.5f;
+        else if (shootsize > oldsize) particlerainbowradious += 0.5f;
+
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
+            {
+                ParticleSystem.ShapeModule shape = lluvia[i].shape;
+                shape.radius = particlerainbowradious;
+
+
+            }
+        }
     }
 
     /// <summary>
@@ -262,7 +275,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
-      
+        
         explosion = false;
 
         renderwidth = 1;
@@ -311,6 +324,8 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// </summary>
     public void OnDisable()
     {
+
+
         animshot = false;
         renderwidth = 1;
 
@@ -395,6 +410,7 @@ public class CharacterShootTrajectory : MonoBehaviour
                 oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime);               
 
                 linerenderer.SetWidth(oldrenderwidth, oldrenderwidth);
+             
 
                 if (oldspeed == speed)
                 {
