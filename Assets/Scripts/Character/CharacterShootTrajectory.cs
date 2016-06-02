@@ -507,10 +507,10 @@ public class CharacterShootTrajectory : MonoBehaviour
         for (int i = 0; i < numOfTrajectoryPoints; i++)
         {
              trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
-
+            lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
             ParticleSystem.EmissionModule emission = lluvia[i].emission;
             emission.enabled = false;
-
+            
         }
         linerenderer.SetVertexCount(0);
          linerenderer.SetWidth( 1,1);
