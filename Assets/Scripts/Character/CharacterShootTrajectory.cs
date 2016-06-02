@@ -21,7 +21,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     private ParticleSystem.Particle[] points;
     private ParticleSystem rain;
-
+    private float rainbowsize = 0.3f;
     private List<ParticleSystem> lluvia;
     private GameObject rainparticle;
     private bool finish = false;
@@ -171,7 +171,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
-    void Awake()
+    void Start()
     {      
         this.enabled = false;
 
@@ -191,7 +191,23 @@ public class CharacterShootTrajectory : MonoBehaviour
         points = new ParticleSystem.Particle[numOfTrajectoryPoints];
         lluvia = new List<ParticleSystem>();
 
-        
+        rainparticle = new GameObject();
+        rainparticle.name = "rain particle";
+        //rainparticle.transform.parent = ccc.transform;
+        lluvia.Clear();
+
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            ParticleSystem agua = Instantiate(particleRainbow);
+
+            ParticleSystem.EmissionModule emission = agua.emission;
+            emission.enabled = false;
+            agua.GetComponent<Transform>().parent = ccc.transform;
+
+            lluvia.Insert(i, agua);
+            //lluvia[i].startSize = rainbowsize;
+
+        }
 
         linerenderer = (LineRenderer) Instantiate(renderer);
 
@@ -246,24 +262,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable()
     {
-        rainparticle = new GameObject();
-        rainparticle.name = "rain particle";
-        //rainparticle.transform.parent = ccc.transform;
-        lluvia.Clear();
-
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
-            ParticleSystem agua = Instantiate(particleRainbow);
-
-            ParticleSystem.EmissionModule emission = agua.emission;
-            emission.enabled = false;
-            agua.GetComponent<Transform>().parent = rainparticle.transform;
-            
-            lluvia.Insert(i, agua);
-            lluvia[i].startSize = 0.1f;
-
-        }
-                 
+      
         explosion = false;
 
         renderwidth = 1;
@@ -397,15 +396,6 @@ public class CharacterShootTrajectory : MonoBehaviour
 
                 linerenderer.SetWidth(oldrenderwidth, oldrenderwidth);
 
-                for (int i = 0; i < numOfTrajectoryPoints; i++)
-                {
-                    if (trajectoryPoints[i].GetComponent<Renderer>().enabled)
-                    {
-                        //lluvia[i].startSize = shootsize;
-                        
-                    }
-                }
-
                 if (oldspeed == speed)
                 {
                     moving = false;
@@ -511,7 +501,7 @@ public class CharacterShootTrajectory : MonoBehaviour
          linerenderer.SetWidth( 1,1);
         sphere.SetActive( false);
         ball.SetActive(false);
-        Destroy(rainparticle);
+        //Destroy(rainparticle);
 
     }
 
