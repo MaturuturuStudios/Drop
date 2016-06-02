@@ -324,7 +324,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         
         Destroy(sphere);
         Destroy(ball);
-        Destroy(rainparticle);
+        //Destroy(rainparticle);
 
     }
 
@@ -511,8 +511,8 @@ public class CharacterShootTrajectory : MonoBehaviour
          linerenderer.SetWidth( 1,1);
         sphere.SetActive( false);
         ball.SetActive(false);
+        Destroy(rainparticle);
 
-        
     }
 
     /// <summary>
