@@ -527,11 +527,18 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void QuitTrajectory()
     {
 
-        
+        for (int i = 0; i < numOfTrajectoryPoints; i++)
+        {
+            if (trajectoryPoints[i].GetComponent<Renderer>().enabled)
+            {
+                lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
+
+            }
+        }
 
         if (finalnextWaypoint ==0)
         {
-           
+            
             trajectoryPoints[finalnextWaypoint].GetComponent<Renderer>().enabled = false;
             animshot = false;
             renderwidth = 1;
@@ -540,7 +547,8 @@ public class CharacterShootTrajectory : MonoBehaviour
             ccc.Parameters = null;
 
 
-            this.enabled = false;
+           
+                this.enabled = false;
         }
 
         Vector3 fullPath = trajectoryPoints[finalnextWaypoint].transform.position - trajectoryPoints[finallastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
@@ -667,6 +675,9 @@ public class CharacterShootTrajectory : MonoBehaviour
             {
                 trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
                 ball.SetActive(true);
+
+                lluvia[i].simulationSpace = ParticleSystemSimulationSpace.Local;
+               
             }
 
             fwd = trajectoryPoints[i + 1].transform.position - trajectoryPoints[i].transform.position;
