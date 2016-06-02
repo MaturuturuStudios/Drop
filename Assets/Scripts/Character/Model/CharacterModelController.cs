@@ -480,7 +480,7 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	/// </summary>
 	/// <returns>Fraction of the rotation indicating the character's looking direction</returns>
 	public float GetLookingDirection() {
-		float angle = _transform.eulerAngles.y;
+		float angle = transform.eulerAngles.y;
 		// If the angle is bigger than 180º, it's using the wrong sign
 		if (angle > 180)
 			angle -= 360;
