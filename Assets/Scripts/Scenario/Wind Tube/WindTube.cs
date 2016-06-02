@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Creates an area where the gravity fill be changed, simulating
@@ -129,7 +128,7 @@ public class WindTube : MonoBehaviour {
 	/// <summary>
 	/// Reference to the instantiated wind effect.
 	/// </summary>
-	public GameObject _windEffect;
+	private GameObject _windEffect;
 
 	/// <summary>
 	/// Reference to the particle systems attached to the component.
