@@ -26,11 +26,17 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public float zVelocity = 5f;
 
+    /// <summary>
+    /// Camera movement velocity on XY
+    /// </summary>
+    public float velocityChangeDrop = 12f;
+
 
     /// <summary>
-    /// Look at movement velocity
+    /// Camera movement velocity on XY
     /// </summary>
-    public float lookAtVelocity = 20f;
+    public float zVelocityChangeDrop = 8f;
+
 
 
     /// <summary>
@@ -40,9 +46,9 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Enable/Disable Look at player liberty when bound reached
+    /// Camera movement velocity on XY
     /// </summary>
-    public bool lookAtFixedOnBounds = true;
+    public float lookArroundVelocity = 2f;
 
 
     /// <summary>
@@ -52,10 +58,10 @@ public class MainCameraController : MonoBehaviour {
     //  Bounds Class
     [System.Serializable]
     public class Boundary {
-        public float top = 100.0f;
-        public float bottom = -100.0f;
-        public float left = -100.0f;
-        public float right = 100.0f;
+        public float top = 10000.0f;
+        public float bottom = -10000.0f;
+        public float left = -10000.0f;
+        public float right = 10000.0f;
     }
 
 
@@ -78,6 +84,12 @@ public class MainCameraController : MonoBehaviour {
     /// Target of the camera, it use to be the player
     /// </summary>
     private GameObject target;
+
+
+    /// <summary>
+    /// Controlls if we are switching character
+    /// </summary>
+    private GameObject _lastTarget;
 
 
     /// <summary>
@@ -116,6 +128,12 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
+    /// For check if drop has changed size
+    /// </summary>
+    private float _lastDropSize;
+
+
+    /// <summary>
     /// Check for camera in locked area
     /// </summary>
     private bool _cameraLocked = false;
@@ -132,6 +150,17 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private Vector3 _lockPosition;
 
+    /// <summary>
+    /// Camera movement velocity on XY
+    /// </summary>
+    public float _velocity;
+
+
+    /// <summary>
+    /// Camera movement velocity on XY
+    /// </summary>
+    public float _zVelocity;
+
 
     /// <summary>
     /// Saved camera movement velocity on XY When it changes
@@ -143,6 +172,18 @@ public class MainCameraController : MonoBehaviour {
     /// Saved camera movement velocity on Z When it changes
     /// </summary>
     private float _savedZVelocity = 8;
+
+
+    /// <summary>
+    /// Raising position deèndign on the size
+    /// </summary>
+    private Vector3 _raisingPositionSized;
+
+
+    /// <summary>
+    /// Control if we are switching between characters
+    /// </summary>
+    private bool changingDrop = false;
     #endregion
 
     #region Methods
@@ -165,11 +206,15 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     void Start() {
 
-        //Calculate offset
+        // Calculate offset
         _offset = new Vector3(offset.x, offset.y, offset.z);
 
-        //Set references
+        // Set references
         _lastObjective = target.transform.position;
+
+        // Set initial values
+        _lastDropSize = _dropSize;
+        _lastTarget = target;
     }
 
 
@@ -181,10 +226,24 @@ public class MainCameraController : MonoBehaviour {
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
+        _raisingPositionSized = new Vector3(0, raisingPosition * _dropSize, 0);
+
         // Update ofset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
             _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
         }
+
+        _velocity = velocity;
+        _zVelocity = zVelocity;
+
+        if (_lastTarget != target) {
+            _velocity = velocityChangeDrop;
+            _zVelocity = zVelocityChangeDrop;
+        }
+
+        if (_lookArroundOffset != Vector3.zero)
+            _velocity = lookArroundVelocity;
+
     }
 
 
@@ -195,9 +254,6 @@ public class MainCameraController : MonoBehaviour {
 
         // Camera Movement
         MoveCamera();
-
-        // LookAt player
-        LookAt();
 
         // Reset state
         if (_resetLockState)
@@ -211,111 +267,41 @@ public class MainCameraController : MonoBehaviour {
     private void MoveCamera() {
         // Calculate destination
         Vector3 destination = target.transform.position + _offset;
-        destination.y += raisingPosition * _dropSize;
+        destination.y += _raisingPositionSized.y;
 
         if (_cameraLocked)
             // Lock camera
             destination = _lockPosition;
-        else
+        else {
             // Add Loook around offset
             destination += _lookArroundOffset;
-
-        // Reset bounds exceded to recalculate
-        excededX = excededY = 0;
-
-        // Calculate if it is out of bounds
-        float cameraRealBound = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
-
-        // If bottom bound exceded
-        if (destination.x < bounds.left + cameraRealBound)
-            excededX = destination.x = bounds.left + cameraRealBound;
-
-        // If top bound exceded
-        else if (destination.x > bounds.right - cameraRealBound) {
-            excededX = destination.x = bounds.right - cameraRealBound;
-
-            // If bottom bound exceded
-            if (excededX < bounds.left + cameraRealBound)
-                excededX = destination.x = bounds.left + cameraRealBound;
+            if (_lookArroundOffset.y != 0)
+                destination -=  _raisingPositionSized;
         }
 
-        // If left bound exeded
-        if (destination.y < bounds.bottom + _offset.y + (cameraRealBound * 9 / 16))
-            excededY = destination.y = bounds.bottom + _offset.y + (cameraRealBound * 9 / 16);
-
-        // If right bound exeded
-        else if (destination.y > bounds.top - (cameraRealBound * 9 / 16)) {
-            excededY = destination.y = bounds.top - (cameraRealBound * 9 / 16);
-
-            // If left bound exeded
-            if (excededY < bounds.bottom + _offset.y + (cameraRealBound * 9 / 16))
-                excededY = destination.y = bounds.bottom + _offset.y + (cameraRealBound * 9 / 16);
-        }
+        // Calculate if it is out of bounds and stop it at bound exceded
+        destination = CheckBounds(destination);
 
         // Calculate next position
         Vector3 newPosition;
-        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * velocity);
-        newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * zVelocity);
+        newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * _velocity);
+        newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * _zVelocity);
 
         // Set the position to the camera
         transform.position = newPosition;
 
-
+        // Check if it is too near to set as target reached
         float squaredDistance = (transform.position - destination).magnitude;
         if (squaredDistance < 0.01f) {
-            velocity = lookAtVelocity = _savedVelocity;
-            zVelocity = _savedZVelocity;
+            _lastTarget = target;
         }
     }
-
-    /// <summary>
-    /// Makes the camera look to the player's position gradually
-    /// </summary>
-    private void LookAt() {
-        // Calculate objective of the camera
-        Vector3 destination = target.transform.position;
-        destination.y += raisingPosition * _dropSize;
-
-        // Add Loook around offset
-        destination += _lookArroundOffset;
-
-        // Lock area control
-        if (_cameraLocked) {
-            Vector3 destinationOnZ = _lockPosition;
-            destinationOnZ.z = 0;
-            destination = destinationOnZ;
-        }
-
-
-        // If there isn't liberty looking at, block it
-        if (lookAtFixedOnBounds && excededX != 0)
-            destination.x = excededX;
-        if (lookAtFixedOnBounds && excededY != 0)
-            destination.y = excededY - (_offset.y);
-
-
-        // Calculate the look at position of the camera
-        destination = Vector3.Lerp(_lastObjective, destination, Time.deltaTime * lookAtVelocity);
-
-        // Set the look at attribute
-        transform.LookAt(destination);
-
-        // Save the last position for future calculations
-        _lastObjective = destination;
-    }
-
 
     /// <summary>
     /// Set the objective of the camera
     /// </summary>
     /// <param name="objective">GameObject who is the target of the camera</param>
     public void SetObjective(GameObject objective) {
-        if (_savedVelocity < velocity) {
-            _savedVelocity = velocity;
-            _savedZVelocity = zVelocity;
-        }
-        velocity = lookAtVelocity = 12;
-        zVelocity = 8;
         target = objective;
     }
 
@@ -391,5 +377,45 @@ public class MainCameraController : MonoBehaviour {
         Gizmos.DrawFrustum(Vector3.zero, camera.fieldOfView, camera.farClipPlane, camera.nearClipPlane, camera.aspect);
     }
 
+
+    /// <summary>
+    /// Checks if the camera vision area is out of the bound and stops it at bound exceded
+    /// </summary>
+    private Vector3 CheckBounds(Vector3 destination) {
+
+        // Reset bounds exceded to recalculate
+        excededX = excededY = 0;
+
+        // Calculate if it is out of bounds
+        float cameraShownArea = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
+
+        // If right bound exeded
+        if (destination.x < bounds.left + cameraShownArea)
+            excededX = destination.x = bounds.left + cameraShownArea;
+
+        // If top bound exceded
+        else if (destination.x > bounds.right - cameraShownArea) {
+            excededX = destination.x = bounds.right - cameraShownArea;
+
+            // If left bound exeded
+            if (excededX < bounds.left + cameraShownArea)
+                excededX = destination.x = bounds.left + cameraShownArea;
+        }
+
+        // If bottom bound exceded
+        if (destination.y < bounds.bottom + _offset.y + (cameraShownArea * 9 / 16))
+            excededY = destination.y = bounds.bottom + _offset.y + (cameraShownArea * 9 / 16);
+
+        // If top bound exceded
+        else if (destination.y > bounds.top - (cameraShownArea * 9 / 16)) {
+            excededY = destination.y = bounds.top - (cameraShownArea * 9 / 16);
+
+            // If bottom bound exceded
+            if (excededY < bounds.bottom + _offset.y + (cameraShownArea * 9 / 16))
+                excededY = destination.y = bounds.bottom + _offset.y + (cameraShownArea * 9 / 16);
+        }
+
+        return destination;
+    }
     #endregion
 }
