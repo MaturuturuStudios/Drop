@@ -52,13 +52,13 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Camera movement velocity on XY
     /// </summary>
-    public float velocitylookArround = 2f;
+    public float velocityLockArea = 2f;
 
 
     /// <summary>
     /// Camera movement velocity on XY
     /// </summary>
-    public float velocityLockArea = 2f;
+    public float velocityLookArround = 2f;
 
 
     /// <summary>
@@ -259,7 +259,7 @@ public class MainCameraController : MonoBehaviour {
         }
 
         if (_lookArroundOffset != Vector3.zero)
-            _velocity = velocitylookArround;
+            _velocity = velocityLookArround;
 
         if (_cameraLocked == true)
             _velocity = velocityLockArea;
