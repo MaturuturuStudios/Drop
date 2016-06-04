@@ -9,6 +9,11 @@ public class LockAreaController : MonoBehaviour {
     #region Attributes
 
     /// <summary>
+    /// Size of the shown area
+    /// </summary>
+    public float area = 1;
+
+    /// <summary>
     /// Main camera reference
     /// </summary>
     private MainCameraController _cameraController;
@@ -58,27 +63,27 @@ public class LockAreaController : MonoBehaviour {
         _independentControl = FindObjectOfType<GameControllerIndependentControl>();
     }
 
+
+    /// Move this method to AWAKE
     /// <summary>
     /// Control the state of the input data
     /// </summary>
 	void Update() {
 
         // Force 16/9 dimensions to camara vision field
-        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.x * 9 / 16, transform.localScale.x * 9 / 16);
-        _collider.size = new Vector3(Mathf.Clamp(_collider.size.x, 0.01f, 1f) , Mathf.Clamp(_collider.size.y, 0.01f, 1f), _collider.size.y);
-
+        _collider.size = new Vector3(Mathf.Clamp(_collider.size.x, 0.01f, area) , Mathf.Clamp(_collider.size.y, 0.01f, area * 9 / 16), _collider.size.y);
+        
         // Force position
-        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
         _collider.center = new Vector3(
-                Mathf.Clamp(_collider.center.x, -0.5f + (_collider.size.x/2),  0.5f - (_collider.size.x / 2)), 
-                Mathf.Clamp(_collider.center.y, -0.5f + (_collider.size.y / 2), 0.5f - (_collider.size.y / 2)), 
+                Mathf.Clamp(_collider.center.x, -(area / 2 ) + (_collider.size.x/2), (area / 2 ) - (_collider.size.x / 2)), 
+                Mathf.Clamp(_collider.center.y, -(area / 2 * 9 / 16) + (_collider.size.y / 2), (area / 2 * 9 / 16) - (_collider.size.y / 2)), 
                 0);
-
+        
         // Force rotation
         transform.rotation = new Quaternion(0, 0, transform.rotation.z, 0);
 
         // Calculate parameters to send
-        _area = new Rect(transform.position.x, transform.position.y, transform.localScale.x, transform.localScale.y);
+        _area = new Rect(transform.position.x, transform.position.y, area, area * 9 / 16);
 
 
     }
@@ -110,22 +115,19 @@ public class LockAreaController : MonoBehaviour {
             Awake();
             Update();
         }
-
-        // Defines the color of the gizmo
+        
+        // Draws camera displayed zone in a plane
         Color color = Color.yellow;
         color.a = 0.15f;
         Gizmos.color = color;
-
-        // Draws camera displayed zone in a plane
-        Vector3 size = transform.localScale;
-        size.z = 0.01f;
-        Gizmos.DrawCube(transform.position, size);
+        Gizmos.DrawCube(transform.position,new Vector3(area, area * 9 / 16, .1f));
 
         // Draw trigger action zone
-        Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
-        Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0), new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
-        Gizmos.DrawLine(new Vector3(_collider.center.x - _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0));
-        Gizmos.DrawLine(new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y - _collider.size.y / 2, 0), new Vector3(_collider.center.x + _collider.size.x / 2, _collider.center.y + _collider.size.y / 2, 0));
+        color = Color.green;
+        color.a = 0.15f;
+        Gizmos.color = color;
+        Gizmos.matrix = transform.localToWorldMatrix;
+        Gizmos.DrawCube(_collider.center, new Vector3(_collider.size.x, _collider.size.y, .1f) );
     }
     #endregion
 }

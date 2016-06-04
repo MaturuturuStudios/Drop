@@ -37,6 +37,28 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public float zVelocityChangeDrop = 8f;
 
+    /// <summary>
+    /// Camera movement velocity on XY
+    /// </summary>
+    public float velocityChangeSize = 12f;
+
+
+    /// <summary>
+    /// Camera movement velocity on XY
+    /// </summary>
+    public float zVelocityChangeSize = 8f;
+
+
+    /// <summary>
+    /// Camera movement velocity on XY
+    /// </summary>
+    public float velocitylookArround = 2f;
+
+
+    /// <summary>
+    /// Camera movement velocity on XY
+    /// </summary>
+    public float velocityLockArea = 2f;
 
 
     /// <summary>
@@ -45,10 +67,12 @@ public class MainCameraController : MonoBehaviour {
     public float lookArroundDistance = 6F;
 
 
+
     /// <summary>
-    /// Camera movement velocity on XY
+    /// Per cent of camera increase exceded when drop growing
     /// </summary>
-    public float lookArroundVelocity = 2f;
+    [Range (0,.5f)]
+    public float extraSizeToReach = .2f;
 
 
     /// <summary>
@@ -110,12 +134,6 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Movement position control
-    /// </summary>
-    private Vector3 _lastObjective;
-
-
-    /// <summary>
     /// Look Arround Offset
     /// </summary>
     private Vector3 _lookArroundOffset;
@@ -163,27 +181,16 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Saved camera movement velocity on XY When it changes
-    /// </summary>
-    private float _savedVelocity = 12;
-
-
-    /// <summary>
-    /// Saved camera movement velocity on Z When it changes
-    /// </summary>
-    private float _savedZVelocity = 8;
-
-
-    /// <summary>
     /// Raising position deèndign on the size
     /// </summary>
     private Vector3 _raisingPositionSized;
 
 
     /// <summary>
-    /// Control if we are switching between characters
+    /// Extra size increased when growing
     /// </summary>
-    private bool changingDrop = false;
+    private float _extraSizeDistance = 0;
+    
     #endregion
 
     #region Methods
@@ -209,8 +216,9 @@ public class MainCameraController : MonoBehaviour {
         // Calculate offset
         _offset = new Vector3(offset.x, offset.y, offset.z);
 
-        // Set references
-        _lastObjective = target.transform.position;
+
+        // Get drop size
+        _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
         // Set initial values
         _lastDropSize = _dropSize;
@@ -222,7 +230,6 @@ public class MainCameraController : MonoBehaviour {
     /// Update the state of the camera
     /// </summary>
     void Update() {
-
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
@@ -233,6 +240,7 @@ public class MainCameraController : MonoBehaviour {
             _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
         }
 
+        // Sets velocity depending of the current event
         _velocity = velocity;
         _zVelocity = zVelocity;
 
@@ -240,9 +248,21 @@ public class MainCameraController : MonoBehaviour {
             _velocity = velocityChangeDrop;
             _zVelocity = zVelocityChangeDrop;
         }
+        else
+        if (_lastDropSize != _dropSize ) {
+            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * offset.z;
+            _extraSizeDistance -= _offset.z;
+
+            _velocity = velocityChangeSize;
+            _zVelocity = zVelocityChangeSize;
+            Debug.Log(" _extraSizeDistance: " + _extraSizeDistance);
+        }
 
         if (_lookArroundOffset != Vector3.zero)
-            _velocity = lookArroundVelocity;
+            _velocity = velocitylookArround;
+
+        if (_cameraLocked == true)
+            _velocity = velocityLockArea;
 
     }
 
@@ -277,6 +297,22 @@ public class MainCameraController : MonoBehaviour {
             destination += _lookArroundOffset;
             if (_lookArroundOffset.y != 0)
                 destination -=  _raisingPositionSized;
+        }
+
+        // Check if we are changing drop
+        if (_extraSizeDistance != 0 ) {
+            if (_lastDropSize > _dropSize) {
+                destination.z -= _extraSizeDistance;
+            } else {
+                destination.z += _extraSizeDistance;
+            }
+
+
+
+            if (Mathf.Abs(destination.z - transform.position.z) < 1f) {
+                _extraSizeDistance = 0;
+                _lastDropSize = _dropSize;
+            }
         }
 
         // Calculate if it is out of bounds and stop it at bound exceded
