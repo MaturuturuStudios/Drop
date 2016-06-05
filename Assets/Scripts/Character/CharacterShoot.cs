@@ -125,7 +125,7 @@ public class CharacterShoot : MonoBehaviour {
     /// <summary>
 	/// Method to look to the other side
 	/// </summary>
-    public void Lookatleft()
+    public void LookatLeft()
     {
         st.LookatLeft();
     }
