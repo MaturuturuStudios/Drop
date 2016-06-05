@@ -243,8 +243,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
-    void Start()
-    {      
+    void Start() {      
         this.enabled = false;
 
         _speed = 0;
@@ -399,7 +398,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (_endscript) {
             _animshot = true;
             QuitTrajectory();
-            drawlinerenderer();         
+            Drawlinerenderer();         
         }
         else {
             if (!_animshot) {
@@ -456,10 +455,10 @@ public class CharacterShootTrajectory : MonoBehaviour
                 _retrajectoring = false;
             }
             
-            setvisibility();
-            canshooot();
+            Setvisibility();
+            Canshooot();
             
-            drawlinerenderer();
+            Drawlinerenderer();
             
         }
         ParticleTrip();
@@ -470,7 +469,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// This fuctions calculate if there is a colision with the raycast of the first shoot trajectory  before it
     /// </summary>
-    public bool canshooot() {
+    public bool Canshooot() {
         float dis = 0;
         Vector3 spheredis = transform.position;//+ GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x);
         _fwd =_trajectoryPoints[0].transform.position - spheredis;
@@ -514,7 +513,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// To know if we are doing the size animation to not to be avaible to shoot in the shootmode
     /// </summary>
-    public bool sizeAnimation(){
+    public bool SizeAnimation(){
         return _sizeanimation;
 
     }
@@ -522,21 +521,21 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// To end the shootmode
     /// </summary>
-    public void endingd() {       
+    public void Endingd() {       
         _endscript = true;
     }
 
     /// <summary>
     /// To know if the shootmode is ending and to not to be avaible to shoot in the shootmode
     /// </summary>
-    public bool isending() {
+    public bool Isending() {
         return _finish;
     }
 
     /// <summary>
     /// To know if the shootmode is in his animation and to not to be avaible to shoot in the shootmode
     /// </summary>
-    public bool animation() {
+    public bool Animation() {
         return _animshot;
     }
 
@@ -551,7 +550,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Cleaning all the visual information of the shootmode
     /// </summary>
-    public void finishing(){      
+    public void Finishing(){      
 
         for (int i = 0; i < numOfTrajectoryPoints; i++){
             _trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
@@ -657,7 +656,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         if(_animshot && !_endscript) _faction_of_path_traveled += _speedAnimation * Time.deltaTime; //animate along the path
         else _faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime;
            
-        if (_animshot && !_endscript && canshooot()){           
+        if (_animshot && !_endscript && Canshooot()){           
             _ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
             _ball.transform.position = (fullPath * _faction_of_path_traveled) + _trajectoryPoints[_lastWaypoint].transform.position;
@@ -677,7 +676,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     ///  <summary>
     /// This fuction draw the trajectory prefab depending on the colisions with their raycast
     /// </summary>
-    public void setvisibility(){
+    public void Setvisibility(){
         float dis = 0;
         int j=0;
         _sphere.SetActive(false) ;
@@ -715,7 +714,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Functions to draw the rainbow renderer
     /// </summary>
-    public void drawlinerenderer() {
+    public void Drawlinerenderer() {
         //Limpio vector auxiliar
         _aux.Clear();
         //limpio el line renderer 

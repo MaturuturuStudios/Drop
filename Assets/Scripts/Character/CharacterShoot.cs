@@ -103,7 +103,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to increase the size of the drop shooted
 	/// </summary>
     public void IncreaseSize() {
-        if (shootmode && !st.animation()) {
+        if (shootmode && !st.Animation()) {
             float oldsize;
 
             oldsize = _sizeshot;
@@ -119,7 +119,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
     public void DecreaseSize()
     {
-        if (shootmode  && !st.animation()) {
+        if (shootmode  && !st.Animation()) {
             float oldsize;
       
             oldsize = _sizeshot;
@@ -147,8 +147,8 @@ public class CharacterShoot : MonoBehaviour {
                 foreach (CharacterShootListener listener in _listeners)
                     listener.OnEnterShootMode(this);
             }
-            else if (shootmode && !st.animation()) {               
-                st.endingd();
+            else if (shootmode && !st.Animation()) {               
+                st.Endingd();
             }
         }
     }
@@ -165,10 +165,10 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to shoot the drop
 	/// </summary>
     public void Shoot(){
-        if (shootmode && !st.animation() && !st.sizeAnimation() ) {
+        if (shootmode && !st.Animation() && !st.SizeAnimation() ) {
             ccc.Parameters = null;
             shootmode = false;
-            st.finishing();
+            st.Finishing();
             st.enabled = false;
             GetComponent<CharacterSize>().SetSize((int)(GetComponent<CharacterSize>().GetSize()-_sizeshot));
 
@@ -188,7 +188,7 @@ public class CharacterShoot : MonoBehaviour {
         //check if we shouldn't be in shootmode
         if (shootmode && (ccc.State.IsGrounded == false || size.GetSize()==1 )){
             shootmode = false;
-            st.finishing();
+            st.Finishing();
             st.enabled = false;
             ccc.Parameters = null;
 
