@@ -457,6 +457,8 @@ public class CharacterShootTrajectory : MonoBehaviour
             }else if (_lookingat) {
                 _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, 5 * Time.deltaTime);
 
+                setTrajectoryPoints(pos, _oldLookingat, _speed);
+
                 if (_oldLookingat == _angle){
                     _lookingat = false;
                 }
