@@ -140,7 +140,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Vector which contain the information that we need to shoot a drop in the sendflying method
     /// </summary>
-    private Vector3 _pVelocity;
+    private Vector3 _shootVelocity;
 
     /// <summary>
     /// Size of the drop that will be shooted
@@ -613,7 +613,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// This fuctions return the shoot vector for the shoot script
     /// </summary>
     public Vector3 GetpVelocity(){
-        return _pVelocity; 
+        return _shootVelocity; 
     }
 
     ///  <summary>
@@ -621,9 +621,9 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed){
         //calculate the end vector of the trajectory
-        _pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
+        _shootVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
         //magnitud of the pVelocity to calculate de distance que es igual al valor de speed
-        _velocity = Mathf.Sqrt((_pVelocity.x * _pVelocity.x) + (_pVelocity.y * _pVelocity.y));
+        _velocity = Mathf.Sqrt((_shootVelocity.x * _shootVelocity.x) + (_shootVelocity.y * _shootVelocity.y));
 
        float fTime = 0;
        fTime += 0.1f;
@@ -636,7 +636,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
              _trajectoryPoints[i].transform.position = Vector3.MoveTowards(_trajectoryPoints[i].transform.position, pos, 100);
            // trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
-            _trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(_pVelocity.y - (_ccc.Parameters.Gravity.magnitude) * fTime, _pVelocity.x) * Mathf.Rad2Deg);
+            _trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(_shootVelocity.y - (_ccc.Parameters.Gravity.magnitude) * fTime, _shootVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
         }
 
