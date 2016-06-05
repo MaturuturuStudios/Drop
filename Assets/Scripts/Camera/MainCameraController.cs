@@ -262,21 +262,6 @@ public class MainCameraController : MonoBehaviour {
         // Update the current status
         int statusModifierControl = 0;
 
-        // Changeing size
-        if (_lastDropSize != _dropSize) {
-            // Set the extra distance to reach
-            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * offset.z;
-            _extraSizeDistance -= _offset.z;
-
-            // Look if drop is incresing or decreasing
-            if (_lastDropSize > _dropSize)
-                _extraSizeDistance *= -1;
-
-            cameraState = CameraState.ChangeSizeFast;
-        }
-        _lastDropSize = _dropSize;
-
-
         if (_extraSizeDistance != 0 && (cameraState == CameraState.ChangeSizeFast || cameraState == CameraState.ChangeSizeSlow)) {
 
             // distance to reach when fast step
@@ -296,6 +281,20 @@ public class MainCameraController : MonoBehaviour {
             cameraState = CameraState.Moving;
             ++statusModifierControl;
         }
+
+        // Changeing size
+        if (_lastDropSize != _dropSize) {
+            // Set the extra distance to reach
+            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * offset.z;
+            _extraSizeDistance -= _offset.z;
+
+            // Look if drop is incresing or decreasing
+            if (_lastDropSize > _dropSize)
+                _extraSizeDistance *= -1;
+
+            cameraState = CameraState.ChangeSizeFast;
+        }
+        _lastDropSize = _dropSize;
 
         // Changeing target
         if (_lastTarget != target) {
@@ -420,8 +419,9 @@ public class MainCameraController : MonoBehaviour {
     /// Set the objective of the camera
     /// </summary>
     /// <param name="objective">GameObject who is the target of the camera</param>
-    public void SetObjective(GameObject objective) {
+    public void SetObjective(GameObject objective, bool isFusion = false) {
         target = objective;
+        if (isFusion) _lastTarget = target;
     }
 
 

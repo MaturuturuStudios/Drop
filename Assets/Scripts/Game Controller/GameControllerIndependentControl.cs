@@ -131,7 +131,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Sets the control to an specific drop
     /// </summary>
     /// <param name="index">Index of drop in the allCurentCharacters list</param>
-    public void SetControl(int index) {
+    public void SetControl(int index, bool isFusion = false) {
 
         // Can't change controll if it is in shoot mode
         bool notShoothing = (currentCharacter == null || !currentCharacter.GetComponent<CharacterShoot>().isShooting());
@@ -145,7 +145,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
             currentCharacter = allCurrentCharacters[index];
 
             //Update camera objective
-            _cameraController.SetObjective(currentCharacter);
+            _cameraController.SetObjective(currentCharacter, isFusion);
         }
     }
 
@@ -153,15 +153,15 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// Set the control to the given drop if is on the list of drops under player's control
     /// </summary>
     /// <param name="drop">drop to control</param>
-    public void SetControl(GameObject drop) {
+    public void SetControl(GameObject drop, bool isFusion = false) {
         int index = allCurrentCharacters.IndexOf(drop);
 
         if (index > -1)
-            SetControl(index);
+            SetControl(index, isFusion);
         else {
             index = allCurrentCharacters.Count;
             allCurrentCharacters.Add(drop);
-            SetControl(index);
+            SetControl(index, isFusion);
         }
     }
 

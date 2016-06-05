@@ -89,7 +89,7 @@ public class CharacterFusion : MonoBehaviour {
 
         //Change control of drop if necessary
         if(anotherDrop == _independentControl.currentCharacter || gameObject == _independentControl.currentCharacter) {
-            _independentControl.SetControl(gameObject);
+            _independentControl.SetControl(gameObject, true);
         }
         
         //store the direction of hit to spit out the drop in the correct direction
