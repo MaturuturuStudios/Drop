@@ -24,7 +24,7 @@ public class ShootIndicatorHelpItem : HelpItem {
 
 	protected override void OnUpdate() {
 		// Changes the size in the text
-		float shootSize = _independentControl.currentCharacter.GetComponent<CharacterShootTrajectory>().shootsize;
+		float shootSize = _independentControl.currentCharacter.GetComponent<CharacterShootTrajectory>()._shootsize;
 		_textRenderer.text = shootSize.ToString();
     }
 }
