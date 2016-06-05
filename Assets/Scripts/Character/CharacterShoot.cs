@@ -115,8 +115,24 @@ public class CharacterShoot : MonoBehaviour {
     }
 
     /// <summary>
-	/// Method to decrease the size of the drop shooted
+	/// Method to look to the other side
 	/// </summary>
+    public void LookatRight()
+    {
+        st.LookatRight();
+    }
+
+    /// <summary>
+	/// Method to look to the other side
+	/// </summary>
+    public void Lookatleft()
+    {
+        st.LookatLeft();
+    }
+
+    /// <summary>
+    /// Method to decrease the size of the drop shooted
+    /// </summary>
     public void DecreaseSize()
     {
         if (shootmode  && !st.Animation()) {
