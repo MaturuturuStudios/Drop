@@ -8,6 +8,17 @@ public class MainCameraController : MonoBehaviour {
 
     #region Public Attributes
 
+    /// <summary>
+    /// Defines the states of the camera for set the correct velocity
+    /// </summary>
+    public enum CameraState {
+        Moving,
+        ChangeDrop,
+        ChangeSizeFast,
+        ChangeSizeSlow,
+        LookArround,
+        LockArea
+    }
 
     /// <summary>
     /// Distance from player to camera X position will be allways the same
@@ -27,36 +38,40 @@ public class MainCameraController : MonoBehaviour {
     public float zVelocity = 5f;
 
     /// <summary>
-    /// Camera movement velocity on XY
+    /// Camera movement velocity on XY changes current player
     /// </summary>
     public float velocityChangeDrop = 12f;
 
 
     /// <summary>
-    /// Camera movement velocity on XY
+    /// Camera movement velocity on Z  when changes current player
     /// </summary>
     public float zVelocityChangeDrop = 8f;
 
     /// <summary>
-    /// Camera movement velocity on XY
+    /// Camera movement velocity on XY when changes size
     /// </summary>
-    public float velocityChangeSize = 12f;
+    public float zVelocityChangeSizeFast = 15f;
+
+    /// <summary>
+    /// Camera movement velocity on Z when changes size
+    /// </summary>
+    public float zVelocityChangeSizeSlow = 3f;
 
 
     /// <summary>
-    /// Camera movement velocity on XY
-    /// </summary>
-    public float zVelocityChangeSize = 8f;
-
-
-    /// <summary>
-    /// Camera movement velocity on XY
+    /// Camera movement velocity on XY when LockArea state
     /// </summary>
     public float velocityLockArea = 2f;
 
+    /// <summary>
+    /// Camera movement velocity on z when LockArea state
+    /// </summary>
+    public float zVelocityLockArea = 8f;
+
 
     /// <summary>
-    /// Camera movement velocity on XY
+    /// Camera movement velocity on XY when LookArround state
     /// </summary>
     public float velocityLookArround = 2f;
 
@@ -69,7 +84,7 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Per cent of camera increase exceded when drop growing
+    /// Per cent of camera position exceded when drop size increse or decrease
     /// </summary>
     [Range (0,.5f)]
     public float extraSizeToReach = .2f;
@@ -92,7 +107,7 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// camera raising position respect to the objective
     /// </summary>
-    public float raisingPosition = 2.5F;
+    public float raisingPosition = 2F;
     #endregion
 
     #region Private Attributes
@@ -169,13 +184,13 @@ public class MainCameraController : MonoBehaviour {
     private Vector3 _lockPosition;
 
     /// <summary>
-    /// Camera movement velocity on XY
+    /// Camera final movement velocity on XY
     /// </summary>
     public float _velocity;
 
 
     /// <summary>
-    /// Camera movement velocity on XY
+    /// Camera final movement velocity on XY
     /// </summary>
     public float _zVelocity;
 
@@ -190,7 +205,11 @@ public class MainCameraController : MonoBehaviour {
     /// Extra size increased when growing
     /// </summary>
     private float _extraSizeDistance = 0;
-    
+
+    /// <summary>
+    /// Camera State
+    /// </summary>
+    public CameraState cameraState = CameraState.Moving;
     #endregion
 
     #region Methods
@@ -216,7 +235,6 @@ public class MainCameraController : MonoBehaviour {
         // Calculate offset
         _offset = new Vector3(offset.x, offset.y, offset.z);
 
-
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
@@ -240,29 +258,108 @@ public class MainCameraController : MonoBehaviour {
             _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
         }
 
-        // Sets velocity depending of the current event
-        _velocity = velocity;
-        _zVelocity = zVelocity;
 
-        if (_lastTarget != target) {
-            _velocity = velocityChangeDrop;
-            _zVelocity = zVelocityChangeDrop;
-        }
-        else
-        if (_lastDropSize != _dropSize ) {
+        // Update the current status
+        int statusModifierControl = 0;
+
+        // Changeing size
+        if (_lastDropSize != _dropSize) {
+            // Set the extra distance to reach
             _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * offset.z;
             _extraSizeDistance -= _offset.z;
 
-            _velocity = velocityChangeSize;
-            _zVelocity = zVelocityChangeSize;
-            Debug.Log(" _extraSizeDistance: " + _extraSizeDistance);
+            // Look if drop is incresing or decreasing
+            if (_lastDropSize > _dropSize)
+                _extraSizeDistance *= -1;
+
+            cameraState = CameraState.ChangeSizeFast;
+        }
+        _lastDropSize = _dropSize;
+
+
+        if (_extraSizeDistance != 0 && (cameraState == CameraState.ChangeSizeFast || cameraState == CameraState.ChangeSizeSlow)) {
+
+            // distance to reach when fast step
+            if (cameraState == CameraState.ChangeSizeFast && Mathf.Abs((_extraSizeDistance + _offset.z) - transform.position.z) < 1f) {
+                _extraSizeDistance = 0.1f;
+                cameraState = CameraState.ChangeSizeSlow;
+            }
+
+            // distance to reach when slow step
+            if (cameraState == CameraState.ChangeSizeSlow && _extraSizeDistance == 0.1f && Mathf.Abs((_offset.z) - transform.position.z) < 0.5f) {
+                cameraState = CameraState.Moving;
+            }
+
+            ++statusModifierControl;
+        } else {
+            // return to defaul state
+            cameraState = CameraState.Moving;
+            ++statusModifierControl;
         }
 
-        if (_lookArroundOffset != Vector3.zero)
-            _velocity = velocityLookArround;
+        // Changeing target
+        if (_lastTarget != target) {
+            cameraState = CameraState.ChangeDrop;
 
-        if (_cameraLocked == true)
-            _velocity = velocityLockArea;
+            // When the camera is close to the objective position
+            if ((target.transform.position - transform.position - _offset).magnitude < 0.5f) {
+                cameraState = CameraState.Moving;
+                _lastTarget = target;
+            }
+            ++statusModifierControl;
+        }
+
+        // Looking arround
+        if (_lookArroundOffset != Vector3.zero) {
+            cameraState = CameraState.LookArround;
+            ++statusModifierControl;
+        }
+
+        // Lock area
+        if (_cameraLocked) {
+            cameraState = CameraState.LockArea;
+            ++statusModifierControl;
+        }
+
+        // default state
+        if (statusModifierControl == 0) {
+            cameraState = CameraState.Moving;
+        }
+
+
+        // Sets velocity depending of the current event
+        switch (cameraState) {
+            case CameraState.ChangeDrop:
+                _velocity = velocityChangeDrop;
+                _zVelocity = zVelocityChangeDrop;
+                break;
+
+            case CameraState.ChangeSizeFast:
+                _velocity = velocity;
+                _zVelocity = zVelocityChangeSizeFast;
+                break;
+
+            case CameraState.ChangeSizeSlow:
+                _velocity = velocity;
+                _zVelocity = zVelocityChangeSizeSlow;
+                break;
+
+            case CameraState.LookArround:
+                _velocity = velocityLookArround;
+                _zVelocity = zVelocity;
+                break;
+
+            case CameraState.LockArea:
+                _velocity = velocityLockArea;
+                _zVelocity = zVelocityLockArea;
+                break;
+
+            default:
+                cameraState = CameraState.Moving;
+                _velocity = velocity;
+                _zVelocity = zVelocity;
+                break;
+        }
 
     }
 
@@ -287,33 +384,19 @@ public class MainCameraController : MonoBehaviour {
     private void MoveCamera() {
         // Calculate destination
         Vector3 destination = target.transform.position + _offset;
-        destination.y += _raisingPositionSized.y;
 
-        if (_cameraLocked)
-            // Lock camera
-            destination = _lockPosition;
-        else {
-            // Add Loook around offset
+        // Set destination depending of the camera status
+        if (cameraState == CameraState.LookArround)
             destination += _lookArroundOffset;
-            if (_lookArroundOffset.y != 0)
-                destination -=  _raisingPositionSized;
-        }
+        else
+            destination += _raisingPositionSized;
 
-        // Check if we are changing drop
-        if (_extraSizeDistance != 0 ) {
-            if (_lastDropSize > _dropSize) {
-                destination.z -= _extraSizeDistance;
-            } else {
-                destination.z += _extraSizeDistance;
-            }
+        if (cameraState == CameraState.LockArea)
+            destination = _lockPosition;
 
+        if (cameraState == CameraState.ChangeSizeFast)
+            destination.z += _extraSizeDistance;
 
-
-            if (Mathf.Abs(destination.z - transform.position.z) < 1f) {
-                _extraSizeDistance = 0;
-                _lastDropSize = _dropSize;
-            }
-        }
 
         // Calculate if it is out of bounds and stop it at bound exceded
         destination = CheckBounds(destination);
