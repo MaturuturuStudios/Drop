@@ -117,24 +117,25 @@ public class CharacterShoot : MonoBehaviour {
     /// <summary>
 	/// Method to look to the other side
 	/// </summary>
-    public void LookatRight()
-    {
-        st.LookatRight();
+    public void LookatRight() {
+        if (shootmode && !st.Lookingat()){           
+            st.LookatRight();
+        }
     }
 
     /// <summary>
 	/// Method to look to the other side
 	/// </summary>
-    public void LookatLeft()
-    {
-        st.LookatLeft();
+    public void LookatLeft(){
+        if (shootmode && !st.Lookingat()){            
+            st.LookatLeft();
+        }
     }
 
     /// <summary>
     /// Method to decrease the size of the drop shooted
     /// </summary>
-    public void DecreaseSize()
-    {
+    public void DecreaseSize(){
         if (shootmode  && !st.Animation()) {
             float oldsize;
       
@@ -151,7 +152,8 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to start the shootmode
 	/// </summary>
     public void Aim(){
-        if (ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize() < 10) && _gcic.allCurrentCharacters.Count<4){           
+        if (ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize() < 10) && _gcic.allCurrentCharacters.Count<4 && !st.Lookingat())
+        {           
 
             if (!shootmode ) {
                 shootmode = true;
@@ -181,7 +183,7 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to shoot the drop
 	/// </summary>
     public void Shoot(){
-        if (shootmode && !st.Animation() && !st.SizeAnimation() ) {
+        if (shootmode && !st.Animation() && !st.SizeAnimation() && !st.Lookingat()) {
             ccc.Parameters = null;
             shootmode = false;
             st.Finishing();

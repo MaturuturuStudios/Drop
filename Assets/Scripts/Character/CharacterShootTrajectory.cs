@@ -454,20 +454,20 @@ public class CharacterShootTrajectory : MonoBehaviour
                     _moving = false;
                     _sizeanimation = false;
                 }
-            }else if (_lookingat) {
-                _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, 5 * Time.deltaTime);
+            }else{
+                //animshot = false;
+                setTrajectoryPoints(pos, _angle, _speed);
+                _retrajectoring = false;
+            }
+            if (_lookingat) {
+                _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, _speedAnimation * Time.deltaTime);
 
                 setTrajectoryPoints(pos, _oldLookingat, _speed);
 
                 if (_oldLookingat == _angle){
                     _lookingat = false;
-                    _animshot = false;
                 }
-            } else{
-                //animshot = false;
-                setTrajectoryPoints(pos, _angle, _speed);
-                _retrajectoring = false;
-            }
+            } 
             
             Setvisibility();
             Canshooot();
@@ -512,7 +512,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// Fuctions used when we use the horizontal inputo of the gamepad
     /// </summary>
     public void LookatRight() {
-        if (_angle > 90) {
+        if (_angle < 90) {
             _animshot = true;
             _lookingat = true;
             _oldLookingat = _angle;
@@ -524,7 +524,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// Fuctions used when we use the horizontal inputo of the gamepad
     /// </summary>
     public void LookatLeft(){
-        if (_angle < 90) {
+        if (_angle > 90) {
             _animshot = true;
             _lookingat = true;
             _oldLookingat = _angle;
@@ -533,11 +533,17 @@ public class CharacterShootTrajectory : MonoBehaviour
     }
 
     /// <summary>
+    /// Return if drop is turning to look to another direction
+    /// </summary>
+    public bool Lookingat(){
+        return _lookingat;
+    }
+
+    /// <summary>
     /// To know if we are doing the size animation to not to be avaible to shoot in the shootmode
     /// </summary>
     public bool SizeAnimation(){
         return _sizeanimation;
-
     }
 
     /// <summary>
