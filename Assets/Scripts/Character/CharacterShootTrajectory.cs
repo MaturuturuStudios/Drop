@@ -11,6 +11,12 @@ public class CharacterShootTrajectory : MonoBehaviour
 
 
     /// <summary>
+    /// Variable to knonw if we pressed the horizontal cross 
+    /// </summary>
+    private bool  _lookingat=false;
+    private float _oldLookingat;
+
+    /// <summary>
     /// Variable to control the rainbow animation 
     /// </summary>
     private float _speedAnimation;
@@ -448,8 +454,13 @@ public class CharacterShootTrajectory : MonoBehaviour
                     _moving = false;
                     _sizeanimation = false;
                 }
-            }
-            else {
+            }else if (_lookingat) {
+                _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, 5 * Time.deltaTime);
+
+                if (_oldLookingat == _angle){
+                    _lookingat = false;
+                }
+            } else{
                 //animshot = false;
                 setTrajectoryPoints(pos, _angle, _speed);
                 _retrajectoring = false;
@@ -497,17 +508,23 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Fuctions used when we use the horizontal inputo of the gamepad
     /// </summary>
-    public void LookatRight() { 
-        if(_angle>90)     
-            _angle = 180 - _angle;      
+    public void LookatRight() {
+        if (_angle > 90) {
+            _lookingat = true;
+            _oldLookingat = _angle;
+            _angle = 180 - _angle;
+        }   
     }
 
     /// <summary>
     /// Fuctions used when we use the horizontal inputo of the gamepad
     /// </summary>
     public void LookatLeft(){
-        if (_angle<90)
+        if (_angle < 90) {
+            _lookingat = true;
+            _oldLookingat = _angle;
             _angle = 180 - _angle;
+        }
     }
 
     /// <summary>
