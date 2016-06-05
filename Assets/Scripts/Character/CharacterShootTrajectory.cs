@@ -9,120 +9,192 @@ public class CharacterShootTrajectory : MonoBehaviour
 {
     #region Private Attributes
 
-    /// <summary>
-    /// Variable to draw the particle shoot mode 
-    /// </summary>
-
 
     /// <summary>
     /// Variable to control the rainbow animation 
     /// </summary>
-    private float speedAnimation;
-    private float particlerainbowradious = 0.5f;
-    private ParticleSystem.Particle[] points;
-    private ParticleSystem rain;
+    private float _speedAnimation;
 
-    private List<ParticleSystem> lluvia;
-    private GameObject rainparticle;
-    private bool finish = false;
-    private bool animshot = true;
-    private bool endscript = false;
-    private float radio;
-    private float oldspeed;
-    private bool moving = false;
-    private Vector3 oldpVelocity;
-    private bool retrajectoring = false;
-    private float oldsize;
-    private LineRenderer linerenderer;
-    private List<Vector3> aux ;
-    private bool sizeanimation;
-    private GameObject listtrajectory;
-    private float oldrenderwidth,renderwidth;
-    private float anglelook;
     /// <summary>
-    /// This is to draw the animation of the particle that move throught the trajectory 
+    /// Radious of the rainbow particle
     /// </summary>
-    private float journeyLength;
-    private float faction_of_path_traveled;
-    private float faction_of_traveled;
-    private int lastWaypoint, nextWaypoint, finalWaypoint;
+    private float _particlerainbowradious = 0.5f;
 
-    private int finallastWaypoint, finalnextWaypoint;
+    /// <summary>
+    /// Array of particles system
+    /// </summary>
+    private ParticleSystem.Particle[] _points;
+
+    /// <summary>
+    /// Auxiliar variable particlesystem
+    /// </summary>
+    private ParticleSystem _rain;
+
+    /// <summary>
+    /// List of particlesystem in the rainbow
+    /// </summary>
+    private List<ParticleSystem> _lluvia;
+
+    /// <summary>
+    /// Instance of the public variable rainbow particle
+    /// </summary>
+    private GameObject _rainparticle;
+
+    /// <summary>
+    /// Variable used when we shooted
+    /// </summary>
+    private bool _finish = false;
+
+    /// <summary>
+    /// Variable to control the star and end shootmode animation
+    /// </summary>
+    private bool _animshot = true;
+
+    /// <summary>
+    /// Variable used when we shooted
+    /// </summary>
+    private bool _endscript = false;
+
+    /// <summary>
+    /// Variable to keep the particle radio when we change the size of the drop we will shooot
+    /// </summary>
+    private float _radio;
+
+    /// <summary>
+    /// Variable to keep the old speed when we change the size of the drop we will shoot
+    /// </summary>
+    private float _oldspeed;
+
+
+    private bool _moving = false;
+
+    /// <summary>
+    /// Variable to keep the old vector oof the drop the will be shooted when we change the size of the drop we will shoot
+    /// </summary>
+    private Vector3 _oldpVelocity;
+
+    /// <summary>
+    /// Variable to draw the rainbow when we change the size of the drop in the shootmode
+    /// </summary>
+    private bool _retrajectoring = false;
+
+    /// <summary>
+    /// Variable to keep the old size when we change the size of the drop we will shoot
+    /// </summary>
+    private float _oldsize;
+
+    /// <summary>
+    /// Variable to keep the instance of the line renderer
+    /// </summary>
+    private LineRenderer _linerenderer;
+
+    /// <summary>
+    /// Auxiliar list to keep the information of thee line renderer when we are calculating the rainbow trajectory
+    /// </summary>
+    private List<Vector3> _aux ;
+
+    /// <summary>
+    /// Variable to knonw if we changed the size of the drop in the shoootmode to start the retrajectoring animagion
+    /// </summary>
+    private bool _sizeanimation;
+
+    /// <summary>
+    /// Variable to keep the instance of the trajectory
+    /// </summary>
+    private GameObject _listtrajectory;
+
+    /// <summary>
+    /// Variable used to change the width of the rainbow renderer when we change the size of the dropp shooted
+    /// </summary>
+    private float _oldrenderwidth,_renderwidth;
+
+    /// <summary>
+    /// Variable to know the angle where the eyes are looking
+    /// </summary>
+    private float _anglelook;
+
+    /// <summary>
+    /// This is to draw the animation of the particle that move throught the trajectory to do an effect similar to MoveTowrds or Lerp.
+    /// </summary>
+    private float _journeyLength;
+    private float _faction_of_path_traveled;
+    private float _faction_of_traveled;
+    private int _lastWaypoint, _nextWaypoint, _finalWaypoint;
+    private int _finallastWaypoint, _finalnextWaypoint;
+
     /// <summary>
     /// This is the arrays of the trajectory points
     /// </summary>
-    private List<GameObject> trajectoryPoints;
+    private List<GameObject> _trajectoryPoints;
 
     /// <summary>
     /// These are the scripts objects
     /// </summary>
-    private CharacterControllerCustom ccc;
+    private CharacterControllerCustom _ccc;
 
     /// <summary>
     /// Ray cast to know where the trajectory points are hitting
     /// </summary>
-    private RaycastHit hit;
+    private RaycastHit _hit;
 
     /// <summary>
     /// Vector which contain the information that we need to shoot a drop in the sendflying method
     /// </summary>
-    private Vector3 pVelocity;
+    private Vector3 _pVelocity;
 
     /// <summary>
     /// Size of the drop that will be shooted
     /// </summary>
-    public float shootsize = 1;	// Changed by Nacho: Other objects may need to read this
+    public float _shootsize = 1;	// Changed by Nacho: Other objects may need to read this
 
     /// <summary>
     /// Vector auxiliar to keep data
     /// </summary>
-    private Vector3 fwd;
+    private Vector3 _fwd;
 
     /// <summary>
     /// Boolean to know if the raycast hitted something
     /// </summary>
-    private bool colisiondetected = false;
+    private bool _colisiondetected = false;
 
     /// <summary>
     /// Objects that represent the sphere that travel around the trajectory and the ball that indicate the size of the drop shooted
     /// </summary>
-    private GameObject sphere, ball;
+    private GameObject _sphere, _ball;
 
     /// <summary>
     /// Float that catch the Axis Inputs
     /// </summary>
-    private float h, v;
+    private float _h, _v;
 
     /// <summary>
     /// Float to indiccate if we changed the size of the drop shooted
     /// </summary>
-    private bool selecting = false;
+    private bool _selecting = false;
 
     /// <summary>
     /// Variable to keep data
     /// </summary>
-    private float velocity = 1;
+    private float _velocity = 1;
 
     /// <summary>
     /// Ray cast to know where the last trajectory point hit something
     /// </summary>
-    private RaycastHit hitpoint;
+    private RaycastHit _hitpoint;
 
     /// <summary>
     /// Angle of the trajectory that we will changing with the input axis
     /// </summary>
-    private float angle;
+    private float _angle;
 
     /// <summary>
     /// Speed that help to calculate the power that the drop will be shooted
     /// </summary>
-    private float speed = 1.0F;
+    private float _speed = 1.0F;
 
     #endregion
 
     #region Public Attributes
-
-    
 
     public ParticleSystem particleRainbow;
 
@@ -175,97 +247,84 @@ public class CharacterShootTrajectory : MonoBehaviour
     {      
         this.enabled = false;
 
-        speed = 0;
-        oldspeed = 0;
-        radio = this.GetComponent<CharacterController>().radius;
+        _speed = 0;
+        _oldspeed = 0;
+        _radio = this.GetComponent<CharacterController>().radius;
       
-        aux = new List<Vector3>();
+        _aux = new List<Vector3>();
 
-        angle = 45;
+        _angle = 45;
 
-        ccc = GetComponent<CharacterControllerCustom>();
+        _ccc = GetComponent<CharacterControllerCustom>();
 
         ParticleSystem.EmissionModule emision = particleRainbow.emission;
         emision.enabled = false;
 
-        points = new ParticleSystem.Particle[numOfTrajectoryPoints];
-        lluvia = new List<ParticleSystem>();
-
-        rainparticle = new GameObject();
-        rainparticle.name = "rain particle";
+        _points = new ParticleSystem.Particle[numOfTrajectoryPoints];
+        _lluvia = new List<ParticleSystem>();
+        
         //rainparticle.transform.parent = ccc.transform;
-        lluvia.Clear();
+        _lluvia.Clear();
 
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
+        for (int i = 0; i < numOfTrajectoryPoints; i++){
             ParticleSystem agua = Instantiate(particleRainbow);
 
             ParticleSystem.EmissionModule emission = agua.emission;
             emission.enabled = false;
-            agua.GetComponent<Transform>().parent = ccc.transform;
+            agua.GetComponent<Transform>().parent = _ccc.transform;
 
-            lluvia.Insert(i, agua);
+            _lluvia.Insert(i, agua);
             //lluvia[i].startSize = rainbowsize;
 
         }
 
-        linerenderer = (LineRenderer) Instantiate(renderer);
+        _linerenderer = (LineRenderer) Instantiate(renderer);
+        _linerenderer.transform.parent = _ccc.transform;
+        _listtrajectory = new GameObject();
+        _listtrajectory.name = " List Trajectory ";
+        _listtrajectory.transform.parent = _ccc.transform;
 
-        linerenderer.transform.parent = ccc.transform;
-        listtrajectory = new GameObject();
-        listtrajectory.name = " List Trajectory ";
-        listtrajectory.transform.parent = ccc.transform;
-
-        renderwidth = 1;
+        _renderwidth = 1;
         
+        _trajectoryPoints = new List<GameObject>();
 
-        trajectoryPoints = new List<GameObject>();
-
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
+        for (int i = 0; i < numOfTrajectoryPoints; i++)  {
             GameObject dot = (GameObject)Instantiate(TrajectoryPointPrefeb);
             dot.GetComponent<Renderer>().enabled = false;
             //dot.tag = ("Trajectory"+i);
-            dot.transform.parent = listtrajectory.transform;
-            trajectoryPoints.Insert(i, dot);
+            dot.transform.parent = _listtrajectory.transform;
+            _trajectoryPoints.Insert(i, dot);
         }
 
-        lastWaypoint = 0;
-        nextWaypoint = 1;
-        finalWaypoint = trajectoryPoints.Capacity;
+       _lastWaypoint = 0;
+        _nextWaypoint = 1;
+        _finalWaypoint = _trajectoryPoints.Capacity;
     }
 
     /// <summary>
 	/// Method to know if we changed the size of the drop shooted
 	/// </summary>
-    public void selectingsize(float size)
-    {
-        oldspeed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
-        oldsize = shootsize;
-        shootsize = size;
-        selecting = true;
+    public void selectingsize(float size) {
+        _oldspeed = Mathf.Sqrt((limitshoot * (_ccc.GetComponent<CharacterSize>().GetSize() - _shootsize)) * _ccc.Parameters.Gravity.magnitude);
+        _oldsize = _shootsize;
+        _shootsize = size;
+        _selecting = true;
 
-        oldrenderwidth = renderwidth;
+        _oldrenderwidth = _renderwidth;
 
-        if (oldsize > size)
-        {
-            renderwidth-=1;
-        }else if( size > oldsize)
-        {
-            renderwidth+=1;
+        if (_oldsize > size) {
+            _renderwidth-=1;
+        }else if( size >_oldsize) {
+            _renderwidth+=1;
         }
 
-        if (oldsize > shootsize) particlerainbowradious -= 0.5f;
-        else if (shootsize > oldsize) particlerainbowradious += 0.5f;
+        if (_oldsize > _shootsize) _particlerainbowradious -= 0.5f;
+        else if (_shootsize > _oldsize)_particlerainbowradious += 0.5f;
 
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
-            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
-            {
-                ParticleSystem.ShapeModule shape = lluvia[i].shape;
-                shape.radius = particlerainbowradious;
-
-
+        for (int i = 0; i < numOfTrajectoryPoints; i++) {
+            if (_trajectoryPoints[i].GetComponent<Renderer>().enabled ) {
+                ParticleSystem.ShapeModule shape = _lluvia[i].shape;
+                shape.radius = _particlerainbowradious;
             }
         }
     }
@@ -273,70 +332,62 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Method to creat the sphere that travel in the trajectory path and the ball the indicate the size of the shooted drop.
     /// </summary>
-    public void OnEnable()
-    {
-        
-
-        renderwidth = 1;
-
-        speedAnimation = speedrainbow*this.GetComponent<CharacterSize>().GetSize();
-
-        finish = false;
-
-        shootsize = 1;
-        endscript = false;
-        
-        sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
-        //sphere.GetComponent<Transform>().parent = this.transform;
-        sphere.SetActive(false);
-
-        ball = (GameObject)Instantiate(TrajectorySizeIndicator);
-        //ball.GetComponent<Transform>().parent = this.transform;
-        ball.transform.localScale = new Vector3(shootsize, shootsize, shootsize);
-        ball.SetActive(false);
-    
-        nextWaypoint = 1;
-        lastWaypoint = 0;
-    
-        animshot = true;
-        sizeanimation = false;
-
-        anglelook=this.GetComponentInChildren<CharacterModelController>().GetLookingDirection();
-
-
-        if (anglelook > 0 && angle >90) {
-            angle = angle-90;
-            angle = 90 - angle;
-
-        }
-        if (anglelook < 0 && angle<90)
-        {
-            angle = 180 - ( angle);
-
-        }
-
+    public void OnEnable() {
        
+        _renderwidth = 1;
+
+        _particlerainbowradious = 0.5f;
+
+        _speedAnimation = speedrainbow*this.GetComponent<CharacterSize>().GetSize();
+
+        _finish = false;
+
+        _shootsize = 1;
+        _endscript = false;
+        
+        _sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
+        //sphere.GetComponent<Transform>().parent = this.transform;
+        _sphere.SetActive(false);
+
+        _ball = (GameObject)Instantiate(TrajectorySizeIndicator);
+        //ball.GetComponent<Transform>().parent = this.transform;
+        _ball.transform.localScale = new Vector3(_shootsize, _shootsize, _shootsize);
+        _ball.SetActive(false);
+    
+        _nextWaypoint = 1;
+        _lastWaypoint = 0;
+    
+        _animshot = true;
+        _sizeanimation = false;
+
+        _anglelook=this.GetComponentInChildren<CharacterModelController>().GetLookingDirection();
+
+        if (_anglelook > 0 && _angle >90) {
+            _angle = _angle-90;
+            _angle = 90 - _angle;
+
+        }
+        if (_anglelook < 0 && _angle<90) {
+            _angle = 180 - ( _angle);
+        }      
     }
 
     /// <summary>
 	/// Method to destroy the sphere that travel in the trajectory path and the ball the indicate the size of the shooted drop.
 	/// </summary>
-    public void OnDisable()
-    {
+    public void OnDisable() {
 
+        _animshot = false;
+        _renderwidth = 1;
 
-        animshot = false;
-        renderwidth = 1;
+        if (_ball != null)
+            _ball.SetActive(false);
 
-        if (ball != null)
-            ball.SetActive(false);
-
-        if (sphere != null)
-            sphere.SetActive(false);
-
-        
-        Destroy(sphere);
-        Destroy(ball);
+        if (_sphere != null)
+            _sphere.SetActive(false);
+      
+        Destroy(_sphere);
+        Destroy(_ball);
         //Destroy(rainparticle);
 
     }
@@ -344,85 +395,65 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// Unity's method called each frame.
     /// </summary>
-    void Update()
-    {
-        if (endscript)
-        {
-            animshot = true;
+    void Update(){
+        if (_endscript) {
+            _animshot = true;
             QuitTrajectory();
-            drawlinerenderer();
-            
+            drawlinerenderer();         
         }
         else {
-
-            if (animshot == false)
-            {
-                if (!retrajectoring)
-                {
-                    if (selecting)
-                    {                      
-                        selecting = false;
-                        moving = true;
+            if (!_animshot) {
+                if (!_retrajectoring) {
+                    if (_selecting)  {                      
+                        _selecting = false;
+                        _moving = true;
                     }
 
-                    h = Input.GetAxis(Axis.Horizontal);
-                    v = Input.GetAxis(Axis.Vertical);
+                    _h = Input.GetAxis(Axis.Horizontal);
+                    _v = Input.GetAxis(Axis.Vertical);
 
-
-                    angle -= h;
+                    _angle -= _h;
                     
-
-                    //Debug.Log(" axis horizontal " + h);
-
-                    if (angle < 90)
-                    {
-                        angle += v;
+                    if (_angle < 90) {
+                        _angle += _v;
                     }
 
-                    if (angle > 90) angle -= v;
-
-                    if (angle < 0) angle = 0;
-                    if (angle > 180) angle = 180;
-
-                   
+                    if (_angle > 90) _angle -= _v;
+                    if (_angle < 0) _angle = 0;
+                    if (_angle > 180) _angle = 180;                
                 }
             }         
 
             //Calculate the vector from the drop  where  be shooted 
             Vector3 pos = this.transform.position;// + GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<SphereCollider>().radius* ball.transform.lossyScale.x);
                                                   //The power of the shoot
-            speed = Mathf.Sqrt((limitshoot * (ccc.GetComponent<CharacterSize>().GetSize() - shootsize)) * ccc.Parameters.Gravity.magnitude);
+            _speed = Mathf.Sqrt((limitshoot * (_ccc.GetComponent<CharacterSize>().GetSize() - _shootsize)) * _ccc.Parameters.Gravity.magnitude);
 
-            if (moving)
-            {
-                sizeanimation = true;
+            if (_moving) {
+                _sizeanimation = true;
 
-                retrajectoring = true;
-                oldspeed = Mathf.MoveTowards(oldspeed, speed, 5 * Time.deltaTime); 
-                oldsize= Mathf.MoveTowards(oldsize, shootsize, Time.deltaTime);
+                _retrajectoring = true;
+                _oldspeed = Mathf.MoveTowards(_oldspeed, _speed, 5 * Time.deltaTime); 
+                _oldsize= Mathf.MoveTowards(_oldsize, _shootsize, Time.deltaTime);
 
-                ball.transform.localScale = new Vector3(oldsize, oldsize, oldsize);
-                sphere.transform.localScale=new Vector3(oldsize, oldsize, oldsize);
+                _ball.transform.localScale = new Vector3(_oldsize, _oldsize, _oldsize);
+                _sphere.transform.localScale=new Vector3(_oldsize, _oldsize, _oldsize);
 
-                setTrajectoryPoints(pos, angle, oldspeed);
+                setTrajectoryPoints(pos, _angle, _oldspeed);
 
-                oldrenderwidth = Mathf.MoveTowards(oldrenderwidth, renderwidth, Time.deltaTime);               
+                _oldrenderwidth = Mathf.MoveTowards(_oldrenderwidth, _renderwidth, Time.deltaTime);               
 
-                linerenderer.SetWidth(oldrenderwidth, oldrenderwidth);
+                _linerenderer.SetWidth(_oldrenderwidth, _oldrenderwidth);
              
-
-                if (oldspeed == speed)
-                {
-                    moving = false;
-                    sizeanimation = false;
-
+                if (_oldspeed == _speed){
+                    _moving = false;
+                    _sizeanimation = false;
                 }
             }
-            else
-            {
+            else {
                 //animshot = false;
-                setTrajectoryPoints(pos, angle, speed);
-                retrajectoring = false;
+                setTrajectoryPoints(pos, _angle, _speed);
+                _retrajectoring = false;
             }
             
             setvisibility();
@@ -439,83 +470,99 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// This fuctions calculate if there is a colision with the raycast of the first shoot trajectory  before it
     /// </summary>
-    public bool canshooot()
-    {
+    public bool canshooot() {
         float dis = 0;
         Vector3 spheredis = transform.position;//+ GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x);
-        fwd = trajectoryPoints[0].transform.position - spheredis;
+        _fwd =_trajectoryPoints[0].transform.position - spheredis;
 
-        dis = fwd.magnitude;
+        dis = _fwd.magnitude;
 
-        Debug.DrawRay(spheredis, fwd, Color.green);
-
-       
-
-        if (Physics.SphereCast(spheredis,radio, fwd,out hitpoint, dis, mask))
-        {
-            ball.SetActive(false);
-            sphere.SetActive( false);
-            for (int j = 0; j < numOfTrajectoryPoints - 1; j++)
-            {
-                trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
-
+        Debug.DrawRay(spheredis, _fwd, Color.green);
+     
+        if (Physics.SphereCast(spheredis,_radio, _fwd,out _hitpoint, dis, mask)) {
+            _ball.SetActive(false);
+            _sphere.SetActive( false);
+            for (int j = 0; j < numOfTrajectoryPoints - 1; j++) {
+                _trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
             }
             return false;
 
         }
-        else
-        {
-            sphere.SetActive(true);
+        else {
+            _sphere.SetActive(true);
            
-
             return true;
         }
     }
 
-    public bool sizeAnimation()
-    {
-        return sizeanimation;
+    /// <summary>
+    /// Fuctions used when we use the horizontal inputo of the gamepad
+    /// </summary>
+    public void LookatRight() { 
+        if(_angle>90)     
+            _angle = 180 - _angle;      
+    }
+
+    /// <summary>
+    /// Fuctions used when we use the horizontal inputo of the gamepad
+    /// </summary>
+    public void LookatLeft(){
+        if (_angle<90)
+            _angle = 180 - _angle;
+    }
+
+    /// <summary>
+    /// To know if we are doing the size animation to not to be avaible to shoot in the shootmode
+    /// </summary>
+    public bool sizeAnimation(){
+        return _sizeanimation;
 
     }
 
-   public void endingd()
-    {
-        
-        endscript = true;
+    /// <summary>
+    /// To end the shootmode
+    /// </summary>
+    public void endingd() {       
+        _endscript = true;
     }
 
-
-    public bool isending()
-    {
-        return finish;
+    /// <summary>
+    /// To know if the shootmode is ending and to not to be avaible to shoot in the shootmode
+    /// </summary>
+    public bool isending() {
+        return _finish;
     }
 
-    public bool animation()
-    {
-        return animshot;
+    /// <summary>
+    /// To know if the shootmode is in his animation and to not to be avaible to shoot in the shootmode
+    /// </summary>
+    public bool animation() {
+        return _animshot;
     }
 
-    public float Angle()
-    {
-        return angle;
+    /// <summary>
+    /// To know the actual angle of the shootmode
+    /// </summary>
+    public float Angle(){
+        return _angle;
 
     }
 
-    public void finishing()
-    {      
+    /// <summary>
+    /// Cleaning all the visual information of the shootmode
+    /// </summary>
+    public void finishing(){      
 
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
-             trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
-            lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
-            ParticleSystem.EmissionModule emission = lluvia[i].emission;
-            emission.enabled = false;
-            
+        for (int i = 0; i < numOfTrajectoryPoints; i++){
+            _trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
+            _lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
+            ParticleSystem.EmissionModule emission = _lluvia[i].emission;
+            emission.enabled = false;           
         }
-        linerenderer.SetVertexCount(0);
-         linerenderer.SetWidth( 1,1);
-        sphere.SetActive( false);
-        ball.SetActive(false);
+        _linerenderer.SetVertexCount(0);
+        _linerenderer.SetWidth( 1,1);
+        _sphere.SetActive( false);
+        _ball.SetActive(false);
         //Destroy(rainparticle);
 
     }
@@ -523,97 +570,74 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// This fuctions delete the trajectory
     /// </summary>
-    public void QuitTrajectory()
-    {
+    public void QuitTrajectory() {
 
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
-            if (trajectoryPoints[i].GetComponent<Renderer>().enabled)
-            {
-                lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
-
+        for (int i = 0; i < numOfTrajectoryPoints; i++) {
+            if (_trajectoryPoints[i].GetComponent<Renderer>().enabled){
+                _lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
+                ParticleSystem.ShapeModule shape = _lluvia[i].shape;
+                shape.radius = 0.5f;
             }
         }
 
-        if (finalnextWaypoint ==0)
-        {
-            
-            trajectoryPoints[finalnextWaypoint].GetComponent<Renderer>().enabled = false;
-            animshot = false;
-            renderwidth = 1;
-            linerenderer.SetWidth(1, 1);
+        if (_finalnextWaypoint ==0) {           
+            _trajectoryPoints[_finalnextWaypoint].GetComponent<Renderer>().enabled = false;
+            _animshot = false;
+            _renderwidth = 1;
+            _linerenderer.SetWidth(1, 1);
             this.GetComponent<CharacterShoot>().Endshootmode();
-            ccc.Parameters = null;
-
-
-           
-                this.enabled = false;
+            _ccc.Parameters = null;
+            this.enabled = false;
         }
 
-        Vector3 fullPath = trajectoryPoints[finalnextWaypoint].transform.position - trajectoryPoints[finallastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-        faction_of_traveled += speedAnimation * Time.deltaTime; //animate along the path
+        Vector3 fullPath = _trajectoryPoints[_finalnextWaypoint].transform.position - _trajectoryPoints[_finallastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
+        _faction_of_traveled += _speedAnimation * Time.deltaTime; //animate along the path
         
-
-        if (faction_of_traveled > 1) //move to next waypoint
-        {
-            finallastWaypoint--;
-            finalnextWaypoint--;
-
-            faction_of_traveled = 0;
-
-            
+        if (_faction_of_traveled > 1){ //move to next waypoint
+            _finallastWaypoint--;
+            _finalnextWaypoint--;
+            _faction_of_traveled = 0;         
         }
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
-        ball.transform.position = (fullPath * faction_of_traveled) + trajectoryPoints[finallastWaypoint].transform.position;
-        trajectoryPoints[finallastWaypoint].GetComponent<Renderer>().enabled = false;
+        _ball.transform.position = (fullPath * _faction_of_traveled) + _trajectoryPoints[_finallastWaypoint].transform.position;
+        _trajectoryPoints[_finallastWaypoint].GetComponent<Renderer>().enabled = false;
 
-        if (ball.transform.position.x <= sphere.transform.position.x && angle <90)
-        {
-            sphere.SetActive(false);
-           
-            
+        if (_ball.transform.position.x <= _sphere.transform.position.x && _angle <90){
+            _sphere.SetActive(false);                  
         }
-        else if (ball.transform.position.x >= sphere.transform.position.x && angle>90)
-        {
-            sphere.SetActive(false);
-           
-
-        }
-
-        
-        
-       
+        else if (_ball.transform.position.x >= _sphere.transform.position.x && _angle>90){
+            _sphere.SetActive(false);         
+        }     
     }
 
     ///  <summary>
     /// This fuctions return the shoot vector for the shoot script
     /// </summary>
-    public Vector3 GetpVelocity()
-    {
-        return pVelocity; 
+    public Vector3 GetpVelocity(){
+        return _pVelocity; 
     }
 
     ///  <summary>
     /// This fuctions calculate the points of the trajectory and the shoot vector which is pVelocity
     /// </summary>
-    void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed)
-    {
+    void setTrajectoryPoints(Vector3 pStartPosition, float angle, float speed){
         //calculate the end vector of the trajectory
-        pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
+        _pVelocity = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
         //magnitud of the pVelocity to calculate de distance que es igual al valor de speed
-        velocity = Mathf.Sqrt((pVelocity.x * pVelocity.x) + (pVelocity.y * pVelocity.y));
+        _velocity = Mathf.Sqrt((_pVelocity.x * _pVelocity.x) + (_pVelocity.y * _pVelocity.y));
 
        float fTime = 0;
+       fTime += 0.1f;
 
-        fTime += 0.1f;
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
-            float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
-            float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
+        _trajectoryPoints[0].transform.position = this.transform.position;
+
+        for (int i = 1; i < numOfTrajectoryPoints; i++){
+            float dx = _velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
+            float dy = _velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (_ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
-             trajectoryPoints[i].transform.position = Vector3.MoveTowards(trajectoryPoints[i].transform.position, pos, 100);
+             _trajectoryPoints[i].transform.position = Vector3.MoveTowards(_trajectoryPoints[i].transform.position, pos, 100);
            // trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
-            trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(pVelocity.y - (ccc.Parameters.Gravity.magnitude) * fTime, pVelocity.x) * Mathf.Rad2Deg);
+            _trajectoryPoints[i].transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(_pVelocity.y - (_ccc.Parameters.Gravity.magnitude) * fTime, _pVelocity.x) * Mathf.Rad2Deg);
             fTime += 0.1f;
         }
 
@@ -622,157 +646,124 @@ public class CharacterShootTrajectory : MonoBehaviour
     ///  <summary>
     /// This fuctions draw the particle trip along the trajectory
     /// </summary>
-    public void ParticleTrip()
-    {
-        
-        if (nextWaypoint > finalWaypoint)
-            {
-                nextWaypoint = 1;
-                lastWaypoint = 0;
-                animshot = false;
+    public void ParticleTrip() {       
+        if (_nextWaypoint > _finalWaypoint){
+                _nextWaypoint = 1;
+                _lastWaypoint = 0;
+                _animshot = false;
             }
 
-            Vector3 fullPath = trajectoryPoints[nextWaypoint].transform.position - trajectoryPoints[lastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
-            if(animshot && !endscript) faction_of_path_traveled += speedAnimation * Time.deltaTime; //animate along the path
-            else faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime;
+        Vector3 fullPath = _trajectoryPoints[_nextWaypoint].transform.position - _trajectoryPoints[_lastWaypoint].transform.position; //defines the path between lastWaypoint and nextWaypoint as a Vector3
+        if(_animshot && !_endscript) _faction_of_path_traveled += _speedAnimation * Time.deltaTime; //animate along the path
+        else _faction_of_path_traveled += particletrajectoryspeed * Time.deltaTime;
            
-        if (animshot && !endscript && canshooot())
-        {
-            
-            ball.SetActive(true);
+        if (_animshot && !_endscript && canshooot()){           
+            _ball.SetActive(true);
             //ball.transform.position = (fullPath * 2) + trajectoryPoints[lastWaypoint].transform.position;
-            ball.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
-            sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
-            trajectoryPoints[lastWaypoint].GetComponent<Renderer>().enabled = true;
-            finalnextWaypoint = lastWaypoint;
-            finallastWaypoint = nextWaypoint;
-
-
+            _ball.transform.position = (fullPath * _faction_of_path_traveled) + _trajectoryPoints[_lastWaypoint].transform.position;
+            _sphere.transform.position = (fullPath * _faction_of_path_traveled) + _trajectoryPoints[_lastWaypoint].transform.position;
+            _trajectoryPoints[_lastWaypoint].GetComponent<Renderer>().enabled = true;
+            _finalnextWaypoint = _lastWaypoint;
+            _finallastWaypoint = _nextWaypoint;
         }
-        else sphere.transform.position = (fullPath * faction_of_path_traveled) + trajectoryPoints[lastWaypoint].transform.position;
+        else _sphere.transform.position = (fullPath * _faction_of_path_traveled) + _trajectoryPoints[_lastWaypoint].transform.position;
 
-        if (faction_of_path_traveled > 1) //move to next waypoint
-        {
-            lastWaypoint++; nextWaypoint++;
-            faction_of_path_traveled = 0;
+        if (_faction_of_path_traveled > 1){ //move to next waypoint      
+            _lastWaypoint++; _nextWaypoint++;
+            _faction_of_path_traveled = 0;
         }
     }
 
     ///  <summary>
     /// This fuction draw the trajectory prefab depending on the colisions with their raycast
     /// </summary>
-    public void setvisibility()
-    {
+    public void setvisibility(){
         float dis = 0;
         int j=0;
-        sphere.SetActive(false) ;
+        _sphere.SetActive(false) ;
 
-        for (int i = 0; i < numOfTrajectoryPoints-1  && !colisiondetected; i++)
-        {
-
-            if (!animshot)
-            {
-                trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
-                ball.SetActive(true);
-
-                lluvia[i].simulationSpace = ParticleSystemSimulationSpace.Local;
-               
+        for (int i = 0; i < numOfTrajectoryPoints-1  && !_colisiondetected; i++){
+            if (!_animshot) {
+                _trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
+                _ball.SetActive(true);
+                _lluvia[i].simulationSpace = ParticleSystemSimulationSpace.Local;            
             }
 
-            fwd = trajectoryPoints[i + 1].transform.position - trajectoryPoints[i].transform.position;
+            _fwd = _trajectoryPoints[i + 1].transform.position - _trajectoryPoints[i].transform.position;
+            dis = _fwd.magnitude;
 
-            dis = fwd.magnitude;
+            if ((Physics.SphereCast(_trajectoryPoints[i].transform.position,_radio, _fwd, out _hitpoint, dis, mask))){               
+                Vector3 hitting = _hitpoint.point;
+                float displacement = _ball.transform.lossyScale.x * (_radio);
+                _ball.transform.position = hitting + _hitpoint.normal * displacement;
+                _colisiondetected = true;
 
-            if ((Physics.SphereCast(trajectoryPoints[i].transform.position,radio, fwd, out hitpoint, dis, mask)))
-            {
-                
+                _finalWaypoint = i;
+                _finalnextWaypoint = _finalWaypoint;
+                _finallastWaypoint = _finalWaypoint+1;
 
-                Vector3 hitting = hitpoint.point;
-                float displacement = ball.transform.lossyScale.x * (radio);
-                ball.transform.position = hitting + hitpoint.normal * displacement;
-                colisiondetected = true;
-
-                finalWaypoint = i;
-                finalnextWaypoint = finalWaypoint;
-                finallastWaypoint = finalWaypoint+1;
-
-                
-                    
-
-                for (j = i+1 ; j < numOfTrajectoryPoints - 1; j++)
-                {
-                    trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
-
+                for (j = i+1 ; j < numOfTrajectoryPoints - 1; j++) {
+                    _trajectoryPoints[j].GetComponent<Renderer>().enabled = false;
                 }
-                trajectoryPoints[numOfTrajectoryPoints - 1].GetComponent<Renderer>().enabled = false;
-                
+               _trajectoryPoints[numOfTrajectoryPoints - 1].GetComponent<Renderer>().enabled = false;              
             }
-
-            Debug.DrawRay(trajectoryPoints[i].transform.position, fwd, Color.green);
-
+            Debug.DrawRay(_trajectoryPoints[i].transform.position, _fwd, Color.green);
         }
-        colisiondetected = false;
-
+        _colisiondetected = false;
     }
 
-    public void drawlinerenderer()
-    {
+    /// <summary>
+    /// Functions to draw the rainbow renderer
+    /// </summary>
+    public void drawlinerenderer() {
         //Limpio vector auxiliar
-        aux.Clear();
+        _aux.Clear();
         //limpio el line renderer 
-        linerenderer.SetVertexCount(0);
+        _linerenderer.SetVertexCount(0);
 
         //recorro todos los puntos y guardo las posiciones de los que estan anctivos porque implica que su raycast no ha colisionado
         for (int i = 0; i < numOfTrajectoryPoints; ++i) {
-            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
-            {
-                aux.Insert(i, trajectoryPoints[i].transform.position);
+            if (_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
+                _aux.Insert(i, _trajectoryPoints[i].transform.position);
             }
-            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == false)
-            {
-                aux.Insert(i, trajectoryPoints[i].transform.position);
+            if (!_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
+                _aux.Insert(i, _trajectoryPoints[i].transform.position);
                 i = numOfTrajectoryPoints;
             }
         }
         
         // pongo en el line renderer la capacidad del vector auxiliar donde hemos guardado la posicion de ls puntos de la trayectoria
-        linerenderer.SetVertexCount(aux.Count);
+        _linerenderer.SetVertexCount(_aux.Count);
 
         //pongo en el line renderer la posicion de los puntos de la trayectoria
-        for (int j = 0; j < aux.Count; ++j)
-        {
-            linerenderer.SetPosition(j, aux[j]);
-        }
-
-       
+        for (int j = 0; j < _aux.Count; ++j){
+            _linerenderer.SetPosition(j, _aux[j]);
+        }      
     }
 
-    public void ParticleRainbow()
-    {
+    /// <summary>
+    /// Functions to draw the particle systems in the list of trajectories points
+    /// </summary>
+    public void ParticleRainbow(){
         float increment = 1f / (numOfTrajectoryPoints - 1);
-        for (int i = 0; i < numOfTrajectoryPoints; i++)
-        {
+        for (int i = 0; i < numOfTrajectoryPoints; i++) {
             float x = i * increment;
-            points[i].position = new Vector3(0f, 0f, x);
+            _points[i].position = new Vector3(0f, 0f, x);
+            _points[i].position = particleRainbow.transform.InverseTransformPoint(_trajectoryPoints[i].GetComponent<Transform>().position);
 
-            points[i].position = particleRainbow.transform.InverseTransformPoint(trajectoryPoints[i].GetComponent<Transform>().position);
-
-            if (trajectoryPoints[i].GetComponent<Renderer>().enabled == true)
-            {
-                ParticleSystem.EmissionModule emission = lluvia[i].emission;
+            if (_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
+                ParticleSystem.EmissionModule emission = _lluvia[i].emission;
                 emission.enabled = true;
-                lluvia[i].GetComponent<Transform>().position = trajectoryPoints[i].GetComponent<Transform>().position;
+                _lluvia[i].GetComponent<Transform>().position = _trajectoryPoints[i].GetComponent<Transform>().position;
             }
-            else if (trajectoryPoints[i].GetComponent<Renderer>().enabled == false)
-            {
-                ParticleSystem.EmissionModule emission = lluvia[i].emission;
+            else if (!_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
+                ParticleSystem.EmissionModule emission = _lluvia[i].emission;
                 emission.enabled = false;
             }
 
-                points[i].startColor = new Color(x, 0f, 0f);
-            points[i].startSize = 0.1f;
+            _points[i].startColor = new Color(x, 0f, 0f);
+            _points[i].startSize = 0.1f;
         }
-
     }
     #endregion
 }
