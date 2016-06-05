@@ -42,9 +42,10 @@ public class GameControllerInput : MonoBehaviour {
 			CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 			CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
 			CharacterAction actionComponent = _switcher.currentCharacter.GetComponent<CharacterAction>();
+            CharacterShootTrajectory shootTrajectory = _switcher.currentCharacter.GetComponent<CharacterShootTrajectory>();
 
-			// Horizontal input
-			float hInput = Input.GetAxis(Axis.Horizontal);
+            // Horizontal input
+            float hInput = Input.GetAxis(Axis.Horizontal);
 			cccp.HorizontalInput = hInput;
 
 			// Vertical input
@@ -119,12 +120,13 @@ public class GameControllerInput : MonoBehaviour {
 			if (help)
 				_helpController.ToggleHelp();
 			_helpController.UpdateAutoShow(hInput, vInput);
-
-			///NOT SETTED CONTROLS
-			//Shoot mode pointer inputs
-			if (Input.GetAxis(Axis.LookAtDir) != 0)
-				Debug.Log(Axis.LookAtDir);
-		}
+            
+            //Shoot mode pointer inputs
+            if (Input.GetAxis(Axis.LookAtDir) < 0)
+                shootTrajectory.LookatRight();
+            if (Input.GetAxis(Axis.LookAtDir) > 0)
+                shootTrajectory.LookatLeft();
+        }
 		else if(_ui!=null){
 			//Select button
 			if (Input.GetButtonDown(Axis.Back)) {
