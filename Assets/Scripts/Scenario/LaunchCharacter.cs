@@ -23,35 +23,65 @@ public abstract class LaunchCharacter : ActionPerformer {
 	public LayerMask layerMask;
 
     /// <summary>
-    /// Get the angle in a range [0,180]
+    /// Get the angle as unity use it [0,180]
     /// </summary>
     /// <returns></returns>
     public float GetAngle() {
         float finalAngle = angle;
-        if (finalAngle < 0) {
-            finalAngle = 180 + finalAngle;
+
+        if (finalAngle == 0) {
+            finalAngle = 90;
+        } else if (finalAngle > 90) {
+            finalAngle -= 90;
+        } else {
+            finalAngle -= 90;
+            finalAngle *= -1;
         }
+
         return finalAngle;
     }
 
     /// <summary>
-    /// Clamped to -90, 90,
-    /// if not, will be ignored
+    /// Get the  given angle in a range [90,-90]
+    /// 90 at right, -90 at left, 0 at up
+    /// </summary>
+    /// <returns></returns>
+    public float GetAngleClamped(float value) {
+        float finalAngle = value;
+
+        while (finalAngle > 180 || finalAngle <180) finalAngle %= 180;
+        
+        if (finalAngle == 90) finalAngle = 0;
+        else if (finalAngle < 90) {
+            finalAngle = 90 - finalAngle;
+        } else {
+            finalAngle -= 90;
+            finalAngle *= -1;
+        }
+        
+        return finalAngle;
+    }
+
+    /// <summary>
+    /// will convert between [90,-90]
     /// </summary>
     /// <param name="angle"></param>
     public void SetAngle(float angle) {
+        angle = GetAngleClamped(angle);
+    }
+
+    /// <summary>
+    /// Value between -90 and 90
+    /// if not, will be ignored
+    /// </summary>
+    /// <param name="angle"></param>
+    public void SetAngleClamped(float angle) {
         if (angle > 90 && angle < -90) return;
-        angle = angle % 180;
         this.angle = angle;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        float finalAngle = angle;
-        if (finalAngle < 0) {
-            finalAngle = 180 + finalAngle;
-        }
-        Debug.Log(finalAngle);
         if (pointOrigin == null) pointOrigin = transform;
     }
 
@@ -62,10 +92,8 @@ public abstract class LaunchCharacter : ActionPerformer {
 	public Vector3 GetNeededVelocityVector() {
         Vector3 velocityVector = Vector3.zero;
 
-        float finalAngle = angle;
-        if (finalAngle < 0) {
-            finalAngle = 180 + finalAngle;
-        }
+        //get angle [0,180]
+        float finalAngle = GetAngle();
         float angleRadian = finalAngle * Mathf.Deg2Rad;
         float velocity = GetNeededVelocity(angleRadian);
 
@@ -76,7 +104,7 @@ public abstract class LaunchCharacter : ActionPerformer {
     }
 
     /// <summary>
-	/// Gets the needed velocity depending on angle
+	/// Gets the needed velocity depending on angle [0,180]
 	/// </summary>
 	/// <returns>The needed velocity.</returns>
 	/// <param name="angleRadian">Angle in radian.</param>
@@ -102,12 +130,9 @@ public abstract class LaunchCharacter : ActionPerformer {
 
             RaycastHit hitpoint;
             Vector3[] points = new Vector3[100];
-
-            float finalAngle = angle;
-            if (finalAngle < 0) {
-                finalAngle = 180 + finalAngle;
-            }
-            float localAngle = finalAngle;
+            
+            //get angle [0,180]
+            float localAngle = GetAngle();
 
             float angleRadian = localAngle * Mathf.Deg2Rad;
             float velocity = GetNeededVelocity(angleRadian);

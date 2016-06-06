@@ -228,11 +228,8 @@ public class WaterRepulsion : LaunchCharacter {
             RaycastHit hitpoint;
             Vector3[] points = new Vector3[100];
 
-            float finalAngle = angle;
-            if (finalAngle < 0) {
-                finalAngle = 180 + finalAngle;
-            }
-            float localAngle = finalAngle;
+            //get angle [0,180]
+            float localAngle = GetAngle();
             
 
             float angleRadian = localAngle * Mathf.Deg2Rad;
