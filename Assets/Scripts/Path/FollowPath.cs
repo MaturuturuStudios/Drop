@@ -89,11 +89,11 @@ public class FollowPath : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Unity's method called every frame.
+	/// Unity's method called every physics frame.
 	/// Moves the platform close to the next point in the path and checks
 	/// if it's close enough to it.
 	/// </summary>
-	public void Update() {
+	public void FixedUpdate() {
 		// Saves the original position
 		Vector3 originalPosition = _transform.position;
 
