@@ -138,24 +138,23 @@ public abstract class LaunchCharacter : ActionPerformer {
             float velocity = GetNeededVelocity(angleRadian);
 
             float fTime = 0.1f;
-            for (int i = 0; i < points.Length; i++) {
+			points[0] = pointOrigin.position;
+
+			Gizmos.color = Color.green;
+			for (int i = 1; i < points.Length; i++) {
                 float dx = velocity * fTime * Mathf.Cos(angleRadian);
                 float dy = velocity * fTime * Mathf.Sin(angleRadian) - ((25) * fTime * fTime / 2.0f);
 
-                Vector3 position = new Vector3(pointOrigin.position.x + dx, pointOrigin.position.y + dy, 0);
+                Vector3 position = pointOrigin.position + new Vector3(dx, dy, 0);
                 points[i] = position;
                 fTime += 0.1f;
-
-                Gizmos.color = Color.green;
-                if (i > 0) {
-                    Vector3 f = points[i - 1] - points[i];
-                    if ((Physics.Raycast(points[i], f, out hitpoint, f.magnitude, layerMask))) break;
-                    else Gizmos.DrawRay(points[i], f);
-
-                } else if (i == 0) {
-                    Vector3 f = pointOrigin.position - points[i];
-                    Gizmos.DrawRay(points[i], f);
-                }
+                Vector3 f = points[i] - points[i - 1];
+                if (Physics.Raycast(points[i - 1], f, out hitpoint, f.magnitude, layerMask)) {
+					Gizmos.DrawLine(points[i - 1], hitpoint.point);
+					break;
+				}
+                else
+					Gizmos.DrawLine(points[i - 1], points[i]);
 
             }
         }
