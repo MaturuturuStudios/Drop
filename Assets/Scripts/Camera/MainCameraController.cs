@@ -151,7 +151,7 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Look Arround Offset
     /// </summary>
-    private Vector3 _lookArroundOffset;
+    public Vector3 _lookArroundOffset;
 
 
     /// <summary>
@@ -186,13 +186,13 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Camera final movement velocity on XY
     /// </summary>
-    public float _velocity;
+    private float _velocity;
 
 
     /// <summary>
     /// Camera final movement velocity on XY
     /// </summary>
-    public float _zVelocity;
+    private float _zVelocity;
 
 
     /// <summary>
@@ -385,17 +385,24 @@ public class MainCameraController : MonoBehaviour {
         Vector3 destination = target.transform.position + _offset;
 
         // Set destination depending of the camera status
-        if (cameraState == CameraState.LookArround)
+
+        // Add rasing position
+        destination += _raisingPositionSized;
+
+        // Calculate look arround position        
+        if (cameraState == CameraState.LookArround) {
+
+            // Add Look arround offset
             destination += _lookArroundOffset;
-        else
-            destination += _raisingPositionSized;
+        }
 
-        if (cameraState == CameraState.LockArea)
-            destination = _lockPosition;
-
+        // Character changing size
         if (cameraState == CameraState.ChangeSizeFast)
             destination.z += _extraSizeDistance;
 
+        // Camera locked in position
+        if (cameraState == CameraState.LockArea)
+            destination = _lockPosition;
 
         // Calculate if it is out of bounds and stop it at bound exceded
         destination = CheckBounds(destination);
@@ -431,7 +438,16 @@ public class MainCameraController : MonoBehaviour {
     public void LookArround(float OffsetX, float OffsetY) {
 
         // Setting look arround values depending of the input
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY * (9f / 16f), 0F) * lookArroundDistance * _dropSize;
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY * (9f / 16f), 0F);
+
+
+        // Get offset
+        if (_lookArroundOffset.y > 0)
+            _lookArroundOffset.y = (_lookArroundOffset.y * ((lookArroundDistance / 2) - raisingPosition) / (lookArroundDistance / 2));
+        else if (_lookArroundOffset.y < 0)
+            _lookArroundOffset.y = (_lookArroundOffset.y * ((lookArroundDistance / 2) + raisingPosition) / (lookArroundDistance / 2));
+
+        _lookArroundOffset *= lookArroundDistance * _dropSize;
     }
 
 
