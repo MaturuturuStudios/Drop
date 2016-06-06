@@ -37,10 +37,6 @@ public class WalkingParameters {
     /// </summary>
     public float rotationVelocity = 150;
     /// <summary>
-    /// Defines how the entity looks for the next point in the path.
-    /// </summary>
-    public PathType pathType = PathType.Random;
-    /// <summary>
     /// Time to stay in detect state
     /// </summary>
     public float timeUntilIddle = 0;
@@ -69,10 +65,6 @@ public class Walking : StateMachineBehaviour {
 	/// </summary>
 	private CharacterController _controller;
     /// <summary>
-	/// Enumerator of the path.
-	/// </summary>
-	private IEnumerator<Transform> _pathEnumerator;
-    /// <summary>
     /// The next point to move toward
     /// </summary>
     private Vector3 _targetPosition;
@@ -88,24 +80,6 @@ public class Walking : StateMachineBehaviour {
         //start timer
         _deltaTime = parameters.timeUntilIddle;
         _minimumDistance = GetMinimumDistance() + parameters.maxDistanceToGoal;
-        //get path
-        if (parameters.usePath && _pathEnumerator == null) {
-            // Selects the current path type
-            switch (parameters.pathType) {
-                case PathType.BackAndForward:
-                    _pathEnumerator = parameters.path.GetBackAndForwardEnumerator();
-                    break;
-                case PathType.Loop:
-                    _pathEnumerator = parameters.path.GetLoopEumerator();
-                    break;
-                case PathType.Random:
-                    _pathEnumerator = parameters.path.GetRandomEnumerator();
-                    break;
-                default:
-                    Debug.LogError("Unrecognized path type!");
-                    return;
-            }
-        }
 
         // Start particle system
         parameters.walkingFX.SetActive(true);
@@ -144,10 +118,6 @@ public class Walking : StateMachineBehaviour {
                 return;
             }
         }
-
-        //set the moving path
-        if (parameters.usePath && (_pathEnumerator == null || _pathEnumerator.Current == null))
-            return;
 
         // Saves the original position
         Vector3 originalPosition = commonParameters.enemy.transform.position;
@@ -200,8 +170,8 @@ public class Walking : StateMachineBehaviour {
 
     private void GetNextTarget() {
         if (parameters.usePath) {
-            _pathEnumerator.MoveNext();
-            _targetPosition = _pathEnumerator.Current.position;
+			parameters.path.MoveNext();
+            _targetPosition = parameters.path.Current.position;
         } else {
             //select random point in the area
             _targetPosition = parameters.walkArea.GetRandomPoint() + commonParameters.rootEntityPosition.position;

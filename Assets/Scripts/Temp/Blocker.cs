@@ -18,13 +18,9 @@ public class Blocker : MonoBehaviour {
 
 	private float _elapsedTime = 0;
 
-	private IEnumerator<Transform> _enumerator;
-
 	private Transform _transform;
 
 	private AudioSource _audioSource;
-
-	private Transform _previous;
 
 	void Awake() {
 		_audioSource = GetComponent<AudioSource>();
@@ -33,11 +29,10 @@ public class Blocker : MonoBehaviour {
 	void Start() {
 		_transform = transform;
 
-		_enumerator = path.GetLoopEumerator();
-		_previous = _enumerator.Current;
-        _enumerator.MoveNext();
+		path.Reset();
+		path.MoveNext();
 
-		_transform.position = _enumerator.Current.position;
+		_transform.position = path.Current.position;
     }
 
 	void Update() {		
@@ -48,7 +43,7 @@ public class Blocker : MonoBehaviour {
 			}
 		}
 
-		_transform.position = Vector3.MoveTowards(_transform.position, _enumerator.Current.position, speed * Time.deltaTime);
+		_transform.position = Vector3.MoveTowards(_transform.position, path.Current.position, speed * Time.deltaTime);
 	}
 
 	public void SetActive(bool active) {
@@ -56,34 +51,23 @@ public class Blocker : MonoBehaviour {
 	}
 
 	public void Reset() {
-		_enumerator = path.GetLoopEumerator();
-		_previous = _enumerator.Current;
+		path.Reset();
 		Next();
 	}
 
 	public void Next() {
-		_previous = _enumerator.Current;
-		_enumerator.MoveNext();
+		path.Next();
 		_audioSource.Play();
 		_elapsedTime = 0;
 	}
 
 	public void Previous() {
-		_enumerator = path.GetLoopEumerator();
-		_enumerator.MoveNext();
+		path.Previous();
 		_audioSource.Play();
 		_elapsedTime = 0;
-		Transform temp = _previous;
-		while (_enumerator.Current != _previous) {
-			temp = _enumerator.Current;
-            _enumerator.MoveNext();
-		}
-		_previous = temp;
-    }
+	}
 
 	public void Set(int index) {
-		Reset();
-		for (int i = 0; i < index; i++)
-			_enumerator.MoveNext();
+		path.SetIndex(index);
 	}
 }

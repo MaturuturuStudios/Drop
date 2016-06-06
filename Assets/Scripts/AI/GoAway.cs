@@ -27,10 +27,6 @@ public class GoAwayParameters {
     /// 
     /// </summary>
     public float rotationVelocity = 150;
-    /// <summary>
-    /// Defines how the entity looks for the next point in the path.
-    /// </summary>
-    public PathType pathType = PathType.Loop;
 }
 
 public class GoAway : StateMachineBehaviour {
@@ -46,10 +42,7 @@ public class GoAway : StateMachineBehaviour {
 	/// A reference to the entity's controller.
 	/// </summary>
 	private CharacterController _controller;
-    /// <summary>
-	/// Enumerator of the path.
-	/// </summary>
-	private IEnumerator<Transform> _pathEnumerator;
+
     /// <summary>
     /// Minimum distance to goal
     /// </summary>
@@ -61,26 +54,9 @@ public class GoAway : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
         _minimumDistance = GetMinimumDistance() + parameters.maxDistanceToGoal;
-        if (_pathEnumerator == null) {
-            // Selects the current path type
-            switch (parameters.pathType) {
-                case PathType.BackAndForward:
-                    _pathEnumerator = parameters.endPoint.GetBackAndForwardEnumerator();
-                    break;
-                case PathType.Loop:
-                    _pathEnumerator = parameters.endPoint.GetLoopEumerator();
-                    break;
-                case PathType.Random:
-                    _pathEnumerator = parameters.endPoint.GetRandomEnumerator();
-                    break;
-                default:
-                    Debug.LogError("Unrecognized path type!");
-                    return;
-            }
-        }
 
-        // Moves the enumerator to the first/next position
-        _pathEnumerator.MoveNext();
+		// Moves the enumerator to the first/next position
+		parameters.endPoint.MoveNext();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -92,15 +68,11 @@ public class GoAway : StateMachineBehaviour {
         animator.SetBool("Near", false);
     }
 
-    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        //set the moving path
-        if (_pathEnumerator == null || _pathEnumerator.Current == null)
-            return;
-        
+    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {        
         // Saves the original position
         Vector3 originalPosition = commonParameters.enemy.transform.position;
         Vector3 finalPosition = originalPosition;
-        Vector3 target = _pathEnumerator.Current.position;
+        Vector3 target = parameters.endPoint.Current.position;
         
 
         // Moves the entity using the right function
@@ -141,9 +113,9 @@ public class GoAway : StateMachineBehaviour {
         float distanceGoal = _minimumDistance * _minimumDistance;
         // The squared distance is used because a multiplication is cheaper than a square root
         if (squaredDistance < distanceGoal) { 
-            Transform last = _pathEnumerator.Current;
-            _pathEnumerator.MoveNext();
-            if (last == _pathEnumerator.Current) {
+            Transform last = parameters.endPoint.Current;
+			parameters.endPoint.MoveNext();
+            if (last == parameters.endPoint.Current) {
                 animator.SetTrigger("Recolect");
             }
         }
