@@ -8,19 +8,18 @@ public class FollowPath : MonoBehaviour {
 	#region Custom Enumerations
 
 	/// <summary>
-	/// Defines how will the entity move to the next point in the path.
+	/// Defines how will the entity move from one point to the next one.
 	/// </summary>
-	public enum FollowType {
+	public enum MovementType {
+		/// <summary>
+		/// The entity will move at a certain speed to the path target.
+		/// </summary>
+		SPEED,
 
 		/// <summary>
-		/// Moves towards the points at constant speed.
+		/// The entity will take some time to reach the path target.
 		/// </summary>
-		MoveTowards,
-
-		/// <summary>
-		/// Moves towards the points at decreasing speed.
-		/// </summary>
-		Lerp,
+		DELAY
 	}
 
 	#endregion
@@ -33,14 +32,25 @@ public class FollowPath : MonoBehaviour {
 	public PathDefinition path;
 
 	/// <summary>
-	/// Defines how will the entity move to the next point in the path.
+	/// Defines how will the entity move from one point to the next one.
 	/// </summary>
-	public FollowType followType = FollowType.MoveTowards;
+	public MovementType movementType = MovementType.SPEED;
 
 	/// <summary>
-	/// Speed the entity will have while following the path.
+	/// Movement speed of the entity;
 	/// </summary>
 	public float speed = 10;
+
+	/// <summary>
+	/// Time the entity will take to move from one point to
+	/// the next.
+	/// </summary>
+	public float delay = 1;
+
+	/// <summary>
+	/// If enabled, the speed will be eased in and out.
+	/// </summary>
+	public bool smooth = false;
 
 	/// <summary>
 	/// If enabled, the entity will start moving to the next point as soon as it
@@ -61,6 +71,21 @@ public class FollowPath : MonoBehaviour {
 	/// A reference to the entity's transform.
 	/// </summary>
 	private Transform _transform;
+
+	/// <summary>
+	/// The position of the last point in the path.
+	/// </summary>
+	private Vector3 _lastPosition;
+
+	/// <summary>
+	/// The rotation of the last point in the path.
+	/// </summary>
+	private Quaternion _lastRotation;
+
+	/// <summary>
+	/// Current position of the element in the interpolation.
+	/// </summary>
+	private float _linearFactor;
 
 	#endregion
 
@@ -86,6 +111,8 @@ public class FollowPath : MonoBehaviour {
 		// Moves the enumerator to the first position and sets the position of the entity
 		path.MoveNext();
 		_transform.position = path.Current.position;
+		_lastPosition = _transform.position;
+		_linearFactor = 0;
 	}
 
 	/// <summary>
@@ -94,28 +121,24 @@ public class FollowPath : MonoBehaviour {
 	/// if it's close enough to it.
 	/// </summary>
 	public void FixedUpdate() {
-		// Saves the original position
-		Vector3 originalPosition = _transform.position;
-
-		// Moves the entity using the right function
-		switch (followType) {
-			case FollowType.MoveTowards:
-				_transform.position = Vector3.MoveTowards(_transform.position, path.Current.position, speed * Time.deltaTime);
-				break;
-			case FollowType.Lerp:
-				_transform.position = Vector3.Lerp(_transform.position, path.Current.position, speed * Time.deltaTime);
-				break;
-			default:
-				return;
+		// Increases the interpolation factor
+		if (movementType == MovementType.DELAY)
+			_linearFactor += Time.fixedDeltaTime / delay;
+		else if (movementType == MovementType.SPEED) {
+			float distance = (path.Current.position - _lastPosition).magnitude;
+			_linearFactor += Time.fixedDeltaTime * speed / distance;
 		}
+
+		// Smooths the factor
+		float factor = _linearFactor;
+		if (smooth)
+			factor = Mathf.SmoothStep(0, 1, _linearFactor);
+
+		// Moves the entity
+		_transform.position = Vector3.Lerp(_lastPosition, path.Current.position, factor);
 
 		// Rotates the entity
-		if (useOrientation) {
-			float traveledDistance = (_transform.position - originalPosition).magnitude;
-			float remainingDistance = (path.Current.position - originalPosition).magnitude;
-			if (remainingDistance > 0.01f)
-				_transform.rotation = Quaternion.Lerp(_transform.rotation, path.Current.rotation, traveledDistance / remainingDistance);
-		}
+		_transform.rotation = Quaternion.Lerp(_lastRotation, path.Current.rotation, factor);
 
 		// Automatically changes to the next point in the path
 		if (automatic) {
@@ -123,8 +146,49 @@ public class FollowPath : MonoBehaviour {
 			float squaredDistance = (_transform.position - path.Current.position).sqrMagnitude;
 			// The squared distance is used becouse a multiplication is cheaper than a square root
 			if (squaredDistance < MIN_DISTANCE_TO_CHANGE * MIN_DISTANCE_TO_CHANGE)
-				path.MoveNext();
+				Next();
 		}
+	}
+
+	/// <summary>
+	/// Changes the path to the next point.
+	/// </summary>
+	public void Next() {
+		SaveLastPosition();
+		path.MoveNext();
+	}
+
+	/// <summary>
+	/// Changes the path to the previous point.
+	/// </summary>
+	public void Previous() {
+		SaveLastPosition();
+		path.Previous();
+	}
+
+	/// <summary>
+	/// Changes the path to a random point.
+	/// </summary>
+	public void Random() {
+		SaveLastPosition();
+		path.Random();
+	}
+
+	/// <summary>
+	/// Changes the path to the specified index's point.
+	/// </summary>
+	public void Set(int index) {
+		SaveLastPosition();
+		path.SetIndex(index);
+	}
+
+	/// <summary>
+	/// Saves the needed information before changing the path target.
+	/// </summary>
+	private void SaveLastPosition() {
+		_lastPosition = _transform.position;
+		_lastRotation = _transform.rotation;
+		_linearFactor = 0;
 	}
 
 	/// <summary>
