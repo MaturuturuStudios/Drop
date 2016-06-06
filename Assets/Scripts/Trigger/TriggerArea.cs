@@ -402,7 +402,7 @@ public class TriggerArea : MonoBehaviour {
 			Color newColor = Color.yellow;
 			newColor.a = 0.25f;
 			Gizmos.color = newColor;
-			Gizmos.DrawCube(methodInvoke.RectParameter.center, methodInvoke.RectParameter.size);
+			Gizmos.DrawCube(methodInvoke.RectParameter.center - methodInvoke.RectParameter.size / 2, methodInvoke.RectParameter.size);
 			Gizmos.color = temp;
 		}
 	}
