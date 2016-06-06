@@ -44,6 +44,10 @@ public class WalkingParameters {
     /// Time to stay in detect state
     /// </summary>
     public float timeUntilIddle = 0;
+    /// <summary>
+    /// Particle system of walking effect
+    /// </summary>
+    public GameObject walkingFX;
 }
 
 public class Walking : StateMachineBehaviour {
@@ -52,6 +56,7 @@ public class Walking : StateMachineBehaviour {
     public WalkingParameters parameters;
     [HideInInspector]
     public CommonParameters commonParameters;
+
     /// <summary>
     /// Timer
     /// </summary>
@@ -102,6 +107,9 @@ public class Walking : StateMachineBehaviour {
             }
         }
 
+        // Start particle system
+        parameters.walkingFX.SetActive(true);
+
         // Moves the enumerator to the first/next position
         GetNextTarget();
     }
@@ -113,6 +121,9 @@ public class Walking : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
+
+        // Stop particle system
+        parameters.walkingFX.SetActive(false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
