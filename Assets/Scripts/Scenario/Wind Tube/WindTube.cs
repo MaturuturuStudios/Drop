@@ -143,7 +143,7 @@ public class WindTube : MonoBehaviour {
 	/// <summary>
 	/// Base wind force the particle effect was calculated with.
 	/// </summary>
-	private const float _baseWindForce = 25.0f;
+	private const float _baseWindForce = 5.0f;
 
 	#endregion
 
