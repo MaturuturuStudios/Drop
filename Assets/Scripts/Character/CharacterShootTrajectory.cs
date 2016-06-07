@@ -39,7 +39,7 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// <summary>
     /// List of particlesystem in the rainbow
     /// </summary>
-    private List<ParticleSystem> _lluvia;
+    private List<ParticleSystem[]> _lluvia;
 
     /// <summary>
     /// Instance of the public variable rainbow particle
@@ -202,7 +202,7 @@ public class CharacterShootTrajectory : MonoBehaviour
 
     #region Public Attributes
 
-    public ParticleSystem particleRainbow;
+    public GameObject particleRainbow;
 
     public new LineRenderer renderer;
     /// <summary>
@@ -262,23 +262,23 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         _ccc = GetComponent<CharacterControllerCustom>();
 
-        ParticleSystem.EmissionModule emision = particleRainbow.emission;
-        emision.enabled = false;
-
         _points = new ParticleSystem.Particle[numOfTrajectoryPoints];
-        _lluvia = new List<ParticleSystem>();
+        _lluvia = new List<ParticleSystem[]>();
         
         //rainparticle.transform.parent = ccc.transform;
         _lluvia.Clear();
 
         for (int i = 0; i < numOfTrajectoryPoints; i++){
-            ParticleSystem agua = Instantiate(particleRainbow);
+            GameObject system = Instantiate(particleRainbow);
 
-            ParticleSystem.EmissionModule emission = agua.emission;
-            emission.enabled = false;
-            agua.GetComponent<Transform>().parent = _ccc.transform;
+            ParticleSystem[] subSystems = system.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem subSystem in subSystems) {
+                ParticleSystem.EmissionModule emission = subSystem.emission;
+                emission.enabled = false;
+                subSystem.GetComponent<Transform>().parent = _ccc.transform;
+            }
 
-            _lluvia.Insert(i, agua);
+            _lluvia.Insert(i, subSystems);
             //lluvia[i].startSize = rainbowsize;
 
         }
@@ -328,8 +328,10 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         for (int i = 0; i < numOfTrajectoryPoints; i++) {
             if (_trajectoryPoints[i].GetComponent<Renderer>().enabled ) {
-                ParticleSystem.ShapeModule shape = _lluvia[i].shape;
-                shape.radius = _particlerainbowradious;
+                foreach (ParticleSystem subSystem in _lluvia[i]) {
+                    ParticleSystem.ShapeModule shape = subSystem.shape;
+                    shape.radius = _particlerainbowradious;
+                }
             }
         }
     }
@@ -582,9 +584,11 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         for (int i = 0; i < numOfTrajectoryPoints; i++){
             _trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
-            _lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
-            ParticleSystem.EmissionModule emission = _lluvia[i].emission;
-            emission.enabled = false;           
+            foreach (ParticleSystem subSystem in _lluvia[i]) {
+                subSystem.simulationSpace = ParticleSystemSimulationSpace.World;
+                ParticleSystem.EmissionModule emission = subSystem.emission;
+                emission.enabled = false;
+            }
         }
         _linerenderer.SetVertexCount(0);
         _linerenderer.SetWidth( 1,1);
@@ -600,10 +604,12 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void QuitTrajectory() {
 
         for (int i = 0; i < numOfTrajectoryPoints; i++) {
-            if (_trajectoryPoints[i].GetComponent<Renderer>().enabled){
-                _lluvia[i].simulationSpace = ParticleSystemSimulationSpace.World;
-                ParticleSystem.ShapeModule shape = _lluvia[i].shape;
-                shape.radius = 0.5f;
+            if (_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
+                foreach (ParticleSystem subSystem in _lluvia[i]) {
+                    subSystem.simulationSpace = ParticleSystemSimulationSpace.World;
+                    ParticleSystem.ShapeModule shape = subSystem.shape;
+                    shape.radius = 0.5f;
+                }
             }
         }
 
@@ -713,7 +719,9 @@ public class CharacterShootTrajectory : MonoBehaviour
             if (!_animshot) {
                 _trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
                 _ball.SetActive(true);
-                _lluvia[i].simulationSpace = ParticleSystemSimulationSpace.Local;            
+                foreach (ParticleSystem subSystem in _lluvia[i]) {
+                    subSystem.simulationSpace = ParticleSystemSimulationSpace.Local;
+                }          
             }
 
             _fwd = _trajectoryPoints[i + 1].transform.position - _trajectoryPoints[i].transform.position;
@@ -778,14 +786,16 @@ public class CharacterShootTrajectory : MonoBehaviour
             _points[i].position = new Vector3(0f, 0f, x);
             _points[i].position = particleRainbow.transform.InverseTransformPoint(_trajectoryPoints[i].GetComponent<Transform>().position);
 
-            if (_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
-                ParticleSystem.EmissionModule emission = _lluvia[i].emission;
-                emission.enabled = true;
-                _lluvia[i].GetComponent<Transform>().position = _trajectoryPoints[i].GetComponent<Transform>().position;
-            }
-            else if (!_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
-                ParticleSystem.EmissionModule emission = _lluvia[i].emission;
-                emission.enabled = false;
+            foreach (ParticleSystem subSystem in _lluvia[i]) {
+                if (_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
+                    ParticleSystem.EmissionModule emission = subSystem.emission;
+                    emission.enabled = true;
+                    subSystem.GetComponent<Transform>().position = _trajectoryPoints[i].GetComponent<Transform>().position;
+                }
+                else {
+                    ParticleSystem.EmissionModule emission = subSystem.emission;
+                    emission.enabled = false;
+                }
             }
 
             _points[i].startColor = new Color(x, 0f, 0f);
