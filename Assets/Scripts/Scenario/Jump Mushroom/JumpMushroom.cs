@@ -131,7 +131,7 @@ using System.Collections.Generic;
 
 			// Notifies the listeners
 			foreach (JumpMushroomListener listener in _listeners)
-				listener.OnBounce(this, other.gameObject, velocity);
+				listener.OnBounce(this, other.gameObject, velocity, other.contacts[0].point, other.contacts[0].normal);
 		}
 	}
 
@@ -176,7 +176,7 @@ using System.Collections.Generic;
 
 			// Notifies the listeners
 			foreach (JumpMushroomListener listener in _listeners)
-				listener.OnBounce(this, hit.controller.gameObject, velocity);
+				listener.OnBounce(this, hit.controller.gameObject, velocity, hit.point, hit.normal);
 		}
 	}
 

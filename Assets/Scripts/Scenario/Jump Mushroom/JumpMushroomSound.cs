@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Listener to the mushroom's events that plays the bouncing sound.
@@ -38,3 +37,4 @@ public class JumpMushroomSound : MonoBehaviour, JumpMushroomListener {
 		}
 		_audioSource.Play();
 	}
+}
