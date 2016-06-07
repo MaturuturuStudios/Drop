@@ -585,7 +585,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         for (int i = 0; i < numOfTrajectoryPoints; i++){
             _trajectoryPoints[i].GetComponent<Renderer>().enabled = false;
             foreach (ParticleSystem subSystem in _lluvia[i]) {
-                subSystem.simulationSpace = ParticleSystemSimulationSpace.World;
+                //subSystem.simulationSpace = ParticleSystemSimulationSpace.World;
                 ParticleSystem.EmissionModule emission = subSystem.emission;
                 emission.enabled = false;
             }
@@ -606,7 +606,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         for (int i = 0; i < numOfTrajectoryPoints; i++) {
             if (_trajectoryPoints[i].GetComponent<Renderer>().enabled) {
                 foreach (ParticleSystem subSystem in _lluvia[i]) {
-                    subSystem.simulationSpace = ParticleSystemSimulationSpace.World;
+                    //subSystem.simulationSpace = ParticleSystemSimulationSpace.World;
                     ParticleSystem.ShapeModule shape = subSystem.shape;
                     shape.radius = 0.5f;
                 }
@@ -720,7 +720,7 @@ public class CharacterShootTrajectory : MonoBehaviour
                 _trajectoryPoints[i].GetComponent<Renderer>().enabled = true;
                 _ball.SetActive(true);
                 foreach (ParticleSystem subSystem in _lluvia[i]) {
-                    subSystem.simulationSpace = ParticleSystemSimulationSpace.Local;
+                    //subSystem.simulationSpace = ParticleSystemSimulationSpace.Local;
                 }          
             }
 
