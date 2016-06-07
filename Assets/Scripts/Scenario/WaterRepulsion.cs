@@ -4,9 +4,8 @@ using System.Collections;
 using System;
 
 [ExecuteInEditMode]
-public class WaterRepulsion : LaunchCharacter {
+public class WaterRepulsion : MonoBehaviour {
     #region Public attributes
-    public Transform pointExpulsion;
     /// <summary>
     /// Delay
     /// </summary>
@@ -15,7 +14,7 @@ public class WaterRepulsion : LaunchCharacter {
     public ParticleSystem particleEffectEnter;
 	public ParticleSystem particleEffectExit;
 
-    
+    public LaunchCharacter launch = new LaunchCharacter();
     #endregion
 
     #region Private attributes
@@ -123,7 +122,7 @@ public class WaterRepulsion : LaunchCharacter {
         drop.SetActive(true);
         CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
         //put drop on point expulsion
-        drop.transform.position = pointOrigin.position;
+        drop.transform.position = launch.pointOrigin.position;
 
 		//set particle effect
 		int scale=(int)(drop.transform.localScale.x);
@@ -135,13 +134,8 @@ public class WaterRepulsion : LaunchCharacter {
 
         //send it flying (stop previous flying)
         controller.StopFlying();
-        controller.SendFlying(GetNeededVelocityVector());
+        controller.SendFlying(launch.GetNeededVelocityVector());
     }
-
-	
-
-	
-
 
 
     /// <summary>
@@ -216,47 +210,8 @@ public class WaterRepulsion : LaunchCharacter {
         Destroy(particleSystem, particleEffectExit.startLifetime);
     }
 
-    protected override bool OnAction(GameObject character) {
-		//do nothing
-		return false;
-    }
-
-    public new void OnDrawGizmos() {
-        if (!Application.isPlaying) {
-            pointOrigin = pointExpulsion;
-
-            RaycastHit hitpoint;
-            Vector3[] points = new Vector3[100];
-
-            //get angle [0,180]
-            float localAngle = GetAngle();
-            
-
-            float angleRadian = localAngle * Mathf.Deg2Rad;
-            float velocity = base.GetNeededVelocity(angleRadian);
-
-            float fTime = 0.1f;
-            for (int i = 0; i < points.Length; i++) {
-                float dx = velocity * fTime * Mathf.Cos(angleRadian);
-                float dy = velocity * fTime * Mathf.Sin(angleRadian) - ((25) * fTime * fTime / 2.0f);
-
-                Vector3 position = new Vector3(pointOrigin.position.x + dx, pointOrigin.position.y + dy, 0);
-                points[i] = position;
-                fTime += 0.1f;
-
-                Gizmos.color = Color.green;
-                if (i > 0) {
-                    Vector3 f = points[i - 1] - points[i];
-                    if ((Physics.Raycast(points[i], f, out hitpoint, f.magnitude, layerMask))) break;
-                    else Gizmos.DrawRay(points[i], f);
-
-                } else if (i == 0) {
-                    Vector3 f = pointOrigin.position - points[i];
-                    Gizmos.DrawRay(points[i], f);
-                }
-
-            }
-        }
+    public void OnDrawGizmos() {
+        launch.OnDrawGizmos();
     }
     #endregion
 }

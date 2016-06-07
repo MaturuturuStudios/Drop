@@ -4,13 +4,13 @@
 /// This class is for the canon plant shoot
 /// </summary>
 [ExecuteInEditMode]
-public class CannonShoot : LaunchCharacter {
-
+public class CannonShoot : ActionPerformer {
+    public LaunchCharacter launch;
 	/// <summary>
 	/// Unity's method called each frame.
 	/// </summary>
 	public void Update(){
-		transform.eulerAngles = new Vector3(0, 0, GetAngle()); //this is to face in the direction you are aming
+		transform.eulerAngles = new Vector3(0, 0, launch.GetAngle()); //this is to face in the direction you are aming
 	}
 
 	protected override bool OnAction(GameObject character)	{
@@ -18,12 +18,16 @@ public class CannonShoot : LaunchCharacter {
 
         ccc.transform.position = this.transform.position;
         ccc.Stop();
-        ccc.SendFlying(GetNeededVelocityVector());
+        ccc.SendFlying(launch.GetNeededVelocityVector());
 
 		return true;
     }
 
     public void ChangeAngleCannon(float newAngle) {
-        SetAngle(newAngle);
+        launch.SetAngle(newAngle);
+    }
+
+    public void OnDrawGizmos() {
+        launch.OnDrawGizmos();
     }
 }
