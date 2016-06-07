@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Listener to the mushroom's events that plays the bouncing sound.
@@ -9,7 +10,7 @@ public class JumpMushroomSound : MonoBehaviour, JumpMushroomListener {
 
 	/// <summary>
 	/// If enabled, the pitch of the sound will be modified by the
-	/// bouncing character's size;
+	/// bouncing character's size.
 	/// </summary>
 	public bool modifyPitch = true;
 
@@ -28,7 +29,7 @@ public class JumpMushroomSound : MonoBehaviour, JumpMushroomListener {
 		GetComponent<JumpMushroom>().AddListener(this);
 	}
 
-	public void OnBounce(JumpMushroom mushroom, GameObject bouncingCharacter, Vector3 bounceVelocity) {
+	public void OnBounce(JumpMushroom mushroom, GameObject bouncingCharacter, Vector3 bounceVelocity, Vector3 collisionPoint, Vector3 collisionNormal) {
 		if (modifyPitch) {
 			CharacterSize characterSize = bouncingCharacter.GetComponent<CharacterSize>();
 			_audioSource.pitch = 1.0f;
@@ -37,4 +38,3 @@ public class JumpMushroomSound : MonoBehaviour, JumpMushroomListener {
 		}
 		_audioSource.Play();
 	}
-}

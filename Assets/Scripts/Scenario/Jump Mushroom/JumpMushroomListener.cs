@@ -11,5 +11,5 @@ public interface JumpMushroomListener {
 	/// <param name="mushroom">The mushroom the object is bouncing on</param>
 	/// <param name="bouncingCharacter">The object bouncing on the mushroom</param>
 	/// <param name="bounceVelocity">The velocity of the bounce</param>
-	void OnBounce(JumpMushroom mushroom, GameObject bouncingCharacter, Vector3 bounceVelocity);
+	void OnBounce(JumpMushroom mushroom, GameObject bouncingCharacter, Vector3 bounceVelocity, Vector3 collisionPoint, Vector3 collisionNormal);
 }
