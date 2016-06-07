@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using System;
 
 /// <summary>
@@ -14,6 +15,11 @@ public class AudioInformation {
 	/// </summary>
 	[HideInInspector]
 	public AudioSource audioSource;
+
+	/// <summary>
+	/// The output mixer for the sound.
+	/// </summary>
+	public AudioMixerGroup output;
 
 	/// <summary>
 	/// Volume of the sounds played.
@@ -45,6 +51,7 @@ public class AudioInformation {
 	public void PlayAudio(AudioClip sound, float pitch = 1.0f) {
 		// Sets the sound
 		audioSource.clip = sound;
+		audioSource.outputAudioMixerGroup = output;
 
 		// Sets the audio information
 		audioSource.volume = volume;

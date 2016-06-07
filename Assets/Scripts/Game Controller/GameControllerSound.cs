@@ -1,14 +1,20 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 
 /// <summary>
-/// Manages and plays the music of the game.
+/// Manages the sounds and plays the music of the game.
 /// A copy of the object's AudioSource will be used as the
 /// AudioSource for each music clip.
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
-public class GameControllerMusic : MonoBehaviour {
+public class GameControllerSound : MonoBehaviour {
 
 	#region Public Attributes
+
+	/// <summary>
+	/// The audio mixer used in the game.
+	/// </summary>
+	public AudioMixer audioMixer;
 
 	/// <summary>
 	/// Music clips played at different character's sizes.
@@ -47,6 +53,20 @@ public class GameControllerMusic : MonoBehaviour {
 	/// Reference to the cloned AudioSources used by each music.
 	/// </summary>
 	private AudioSource[] _audioSources;
+
+	#endregion
+
+	#region Constants
+
+	/// <summary>
+	/// The minimum volume the mixer can output.
+	/// </summary>
+	private static readonly float MIN_VOLUME = -80;
+
+	/// <summary>
+	/// The maximum volume the mixer can output.
+	/// </summary>
+	private static readonly float MAX_VOLUME = 0;
 
 	#endregion
 
@@ -179,14 +199,57 @@ public class GameControllerMusic : MonoBehaviour {
 		return AS;
 	}
 
+	#region Mixer Methods
+
 	/// <summary>
 	/// Modifies the music's volume.
 	/// </summary>
 	/// <param name="volume">Thew new volume</param>
-	public void SetVolume(float volume) {
-		musicVolume = volume;
-		ComputeMusicVolumes(true);
+	public void SetMasterVolume(float volume) {
+		volume = CalculateVolume(volume);
+		audioMixer.SetFloat(AudioMixerParameters.MasterVolume, volume);
 	}
+
+	/// <summary>
+	/// Modifies the music's volume.
+	/// </summary>
+	/// <param name="volume">Thew new volume</param>
+	public void SetMusicVolume(float volume) {
+		volume = CalculateVolume(volume);
+		audioMixer.SetFloat(AudioMixerParameters.MusicVolume, volume);
+	}
+
+	/// <summary>
+	/// Modifies the sound ambient's volume.
+	/// </summary>
+	/// <param name="volume">Thew new volume</param>
+	public void SetAmbientVolume(float volume) {
+		volume = CalculateVolume(volume);
+		audioMixer.SetFloat(AudioMixerParameters.AmbientVolume, volume);
+	}
+
+	/// <summary>
+	/// Modifies the sound effects's volume.
+	/// </summary>
+	/// <param name="volume">Thew new volume</param>
+	public void SetEffectsVolume(float volume) {
+		volume = CalculateVolume(volume);
+		audioMixer.SetFloat(AudioMixerParameters.EffectsVolume, volume);
+	}
+
+	/// <summary>
+	/// Takes a value between 0 and 1 and returns the right
+	/// volume for that value.
+	/// </summary>
+	/// <param name="value">Normalized volume</param>
+	/// <returns>Real volume</returns>
+	private float CalculateVolume(float value) {
+		// Since the fall in volume is exponential, uses the logarithm of the value
+		value = Mathf.Lerp(1, 10, value);
+		return Mathf.Lerp(MIN_VOLUME, MAX_VOLUME, Mathf.Log10(value));
+	}
+
+	#endregion
 
 	#endregion
 }
