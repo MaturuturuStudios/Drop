@@ -162,6 +162,8 @@ public class AIBase : MonoBehaviour {
     /// </summary>
     public void OnDrawGizmos() {
         triggerArea.OndrawGizmos(Color.red, transform.position);
+
+        attackParameters.launchDestination.OnDrawGizmos();
     }
 
     #region Private methods

@@ -50,7 +50,7 @@ public class LaunchCharacter {
     public float GetAngleClamped(float value) {
         float finalAngle = value;
 
-        while (finalAngle > 180 || finalAngle < 180) finalAngle %= 180;
+        while (finalAngle > 180 || finalAngle < 0) finalAngle %= 180;
 
         if (finalAngle == 90) finalAngle = 0;
         else if (finalAngle < 90) {

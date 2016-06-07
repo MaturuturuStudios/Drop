@@ -7,8 +7,10 @@ public class AttackParameters {
     /// in which moment of the animation should mke effective the attack
     /// </summary>
     public float attackMoment;
-    public float impulse=40;
-    public Transform rejectedDirection;
+
+    public LaunchCharacter launchDestination = new LaunchCharacter();
+    //public float impulse=40;
+    //public Transform rejectedDirection;
 }
 
 public class Attack : StateMachineBehaviour {
@@ -36,18 +38,24 @@ public class Attack : StateMachineBehaviour {
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        faceTarget();
         float percentAnimation = stateInfo.normalizedTime;
         if (!_attackDone && percentAnimation > parameters.attackMoment) {
             CharacterControllerCustom controller = commonParameters.drop.GetComponent<CharacterControllerCustom>();
 
-            Vector3 direction = parameters.rejectedDirection.position - commonParameters.drop.transform.position;
-            direction.z = 0;
-            if (direction.y < 0) {
-                direction.y *= -1;
+            Vector3 origin = commonParameters.drop.transform.position;
+            Vector3 destiny = parameters.launchDestination.pointTarget.position;
+            float angle = Mathf.Atan2(destiny.y - origin.y, destiny.x - origin.x) * 180 / Mathf.PI;
+            if (angle < 0) angle *= -1;
+            if (angle > 90) {
+                angle -= ((angle - 90) / 2);
+            } else {
+                angle += ((90-angle)/2);
             }
-            direction = direction.normalized;
-            direction *= parameters.impulse;
-            controller.SendFlying(direction);
+            parameters.launchDestination.SetAngle(angle);
+            parameters.launchDestination.pointOrigin = commonParameters.drop.transform;
+
+            controller.SendFlying(parameters.launchDestination.GetNeededVelocityVector());
             _attackDone = true;
         }
         //OnStateUpdate is called after MonoBehaviour Updates on every frame whilst the animator is playing the state this behaviour belongs to.
@@ -87,4 +95,5 @@ public class Attack : StateMachineBehaviour {
         //rotate us over time according to speed until we are in the required rotation
         enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
     }
+
 }
