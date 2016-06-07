@@ -138,7 +138,8 @@ public class FollowPath : MonoBehaviour {
 		_transform.position = Vector3.Lerp(_lastPosition, path.Current.position, factor);
 
 		// Rotates the entity
-		_transform.rotation = Quaternion.Lerp(_lastRotation, path.Current.rotation, factor);
+		if (useOrientation)
+			_transform.rotation = Quaternion.Lerp(_lastRotation, path.Current.rotation, factor);
 
 		// Automatically changes to the next point in the path
 		if (automatic) {
