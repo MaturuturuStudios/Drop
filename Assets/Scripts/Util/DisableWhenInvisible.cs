@@ -13,6 +13,23 @@ public class DisableWhenInvisible : MonoBehaviour {
 	/// </summary>
 	public MonoBehaviour[] components;
 
+	/// <summary>
+	/// Reference to this entity's Renderer component.
+	/// </summary>
+	private Renderer _renderer;
+
+	void Awake() {
+		// Retrieves the desired components
+		_renderer = GetComponent<Renderer>();
+	}
+
+	void OnEnable() {
+		// Checks if the components should be enabled or not
+		bool visible = _renderer.isVisible;
+		foreach (MonoBehaviour component in components)
+			component.enabled = visible;
+	}
+
 	void OnBecameVisible() {
 		foreach (MonoBehaviour component in components)
 			component.enabled = true;
