@@ -66,6 +66,9 @@ public class AIBase : MonoBehaviour {
         _animator = commonParameters.enemy.GetComponent<Animator>();
         _animator.SetInteger("LimitSizeDrop", commonParameters.sizeLimitDrop);
         commonParameters.rootEntityPosition = transform;
+        commonParameters.initialPositionEnemy = commonParameters.enemy.transform.position;
+        commonParameters.initialRotationEnemy = commonParameters.enemy.transform.rotation;
+        commonParameters.AI = this;
     }
 
     public void Start() {
@@ -96,6 +99,39 @@ public class AIBase : MonoBehaviour {
     }
 
     public void Update() {
+        //check if any drop inside the area
+        CheckDropInside();
+        //check if too near
+        DropNear();
+    }
+
+    public void Scare() {
+        _animator.SetBool("GoAway", true);
+    }
+
+    public void OnDrawGizmosSelected() {
+        //draw paths
+        goAwayParameters.endPoint.OnDrawGizmos();
+        if (commonParameters.walking) {
+            if (!walkingParameters.usePath) {
+                walkingParameters.walkArea.OndrawGizmos(Color.blue, transform.position);
+            } else {
+                walkingParameters.path.OnDrawGizmos();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Draws the trigger area and paths
+    /// </summary>
+    public void OnDrawGizmos() {
+        triggerArea.OndrawGizmos(Color.red, transform.position);
+
+        attackParameters.launchDestination.OnDrawGizmos();
+    }
+
+    #region Private methods
+    private void CheckDropInside() {
         //Get the collisions/trigger area
         LayerMask layerCast = (1 << LayerMask.NameToLayer("Character"));
         Vector3 center = triggerArea.origin + transform.position;
@@ -130,6 +166,8 @@ public class AIBase : MonoBehaviour {
                     outside = false;
                 }
             }
+
+
             //it's outside!
             if (outside) {
                 _animator.SetInteger("SizeDrop", 0);
@@ -138,35 +176,8 @@ public class AIBase : MonoBehaviour {
                 _animator.SetInteger("SizeDrop", sizeDrop);
             }
         }
-        //check if too near
-        DropNear();
     }
 
-    public void Scare() {
-        _animator.SetBool("GoAway", true);
-    }
-
-    public void OnDrawGizmosSelected() {
-        //draw paths
-        goAwayParameters.endPoint.OnDrawGizmos();
-
-        if (!walkingParameters.usePath) {
-            walkingParameters.walkArea.OndrawGizmos(Color.blue, transform.position);
-        } else {
-            walkingParameters.path.OnDrawGizmos();
-        }
-    }
-
-    /// <summary>
-    /// Draws the trigger area and paths
-    /// </summary>
-    public void OnDrawGizmos() {
-        triggerArea.OndrawGizmos(Color.red, transform.position);
-
-        attackParameters.launchDestination.OnDrawGizmos();
-    }
-
-    #region Private methods
     private void DropNear() {
         LayerMask layerCast = (1 << LayerMask.NameToLayer("Character"));
         Vector3 size = Vector3.one;
@@ -186,4 +197,55 @@ public class AIBase : MonoBehaviour {
     #endregion
 
     #endregion
+
+   
+    /// <summary>
+    /// True if reached the target point
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="minimumDistance"></param>
+    /// <returns></returns>
+    public bool CheckTargetPoint(Vector3 target, float minimumDistance) {
+        // Checks if the entity is close enough to the target point
+        Vector3 position = commonParameters.enemy.transform.position;
+        //ignore axis if on floor
+        if (commonParameters.onFloor)
+            position.y = target.y;
+        float squaredDistance = (position - target).sqrMagnitude;
+        float distanceGoal = minimumDistance * minimumDistance;
+        // The squared distance is used because a multiplication is cheaper than a square root
+        //Debug.Log("check");
+        //Debug.Log(squaredDistance);
+        //Debug.Log(distanceGoal);
+        return squaredDistance < distanceGoal;
+    }
+
+    /// <summary>
+    /// True if reached the target rotation
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="minimumDegree"></param>
+    /// <returns></returns>
+    public bool CheckTargetRotation(Quaternion target, float minimumDegree) {
+        float angle = Quaternion.Angle(commonParameters.enemy.transform.rotation, target);
+        Debug.Log(angle);
+        return angle < commonParameters.toleranceDegreeToGoal;
+    }
+
+    public void CheckDrop() {
+        int size = _animator.GetInteger("SizeDrop");
+        int sizeLimit = commonParameters.sizeLimitDrop;
+        if (sizeLimit > 0 && size >= sizeLimit) {
+            _animator.SetBool("GoAway", true);
+        } else if ((sizeLimit <= 0 || size < sizeLimit) && size > 0) {
+            _animator.SetBool("Detect", true);
+        }
+    }
+
+    public float GetMinimumDistance(float speed, float rotationVelocity) {
+        float time = 360 / rotationVelocity;
+        float longitude = speed * time;
+        float radius = longitude / (2 * Mathf.PI);
+        return radius;
+    }
 }

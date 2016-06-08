@@ -4,6 +4,7 @@
 public class DetectParameters{
     /// <summary>
     /// Time to stay in detect state
+    /// before chasing player
     /// </summary>
     public float timeWarningDetect = 0;
 }

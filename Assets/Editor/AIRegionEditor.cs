@@ -9,7 +9,8 @@ public class RegionEditor : Editor {
         Region region = aiBase.triggerArea;
         Region walk = aiBase.walkingParameters.walkArea;
         Vector3 parentPosition = aiBase.transform.position;
-
+        bool showWalk = !aiBase.walkingParameters.usePath && aiBase.commonParameters.walking;
+        
 
         switch (Tools.current) {
             case Tool.Scale:
@@ -19,11 +20,16 @@ public class RegionEditor : Editor {
                                                     Quaternion.identity, scaleHandle);
 
                 scaleHandle = HandleUtility.GetHandleSize(walk.origin);
-                Vector3 scale2 = Handles.ScaleHandle(walk.size, walk.origin + parentPosition,
+
+                Vector3 scale2=Vector3.zero;
+                if (showWalk) {
+                    scale2 = Handles.ScaleHandle(walk.size, walk.origin + parentPosition,
                                                     Quaternion.identity, scaleHandle);
+                }
                 if (EditorGUI.EndChangeCheck()) {
                     region.size = scale;
-                    walk.size = scale2;
+                    if(showWalk)
+                        walk.size = scale2;
                 }
                 break;
 
@@ -31,22 +37,18 @@ public class RegionEditor : Editor {
                 EditorGUI.BeginChangeCheck();
                 Vector3 move = Handles.PositionHandle(region.origin+parentPosition,
                                                             Quaternion.identity);
-                
-                Vector3 move2 = Handles.PositionHandle(walk.origin + parentPosition,
+
+
+                Vector3 move2= Vector3.zero;
+                if(showWalk)
+                    move2= Handles.PositionHandle(walk.origin + parentPosition,
                                                             Quaternion.identity);
                 if (EditorGUI.EndChangeCheck()) {
                     region.origin = move - parentPosition;
-                    walk.origin = move2 - parentPosition;
+                    if(showWalk)
+                        walk.origin = move2 - parentPosition;
                 }
                 break;
-
-                //case Tool.Rotate:
-                //    EditorGUI.BeginChangeCheck();
-                //    Quaternion rotation = Handles.RotationHandle(region.rotation, region.getPositionWorld());
-                //    if (EditorGUI.EndChangeCheck()) {
-                //        region.rotation = rotation;
-                //    }
-                //    break;
         }
 
     }

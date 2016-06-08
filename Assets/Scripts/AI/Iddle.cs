@@ -5,6 +5,7 @@ using System.Collections;
 public class IddleParameters {
     /// <summary>
     /// Time the entity will be in iddle state
+    /// will be ignored if the enemy does not walk
     /// </summary>
     public float timeInIddle=0;
 }
@@ -18,6 +19,11 @@ public class Iddle : StateMachineBehaviour {
     public IddleParameters parameters;
     [HideInInspector]
     public CommonParameters commonParameters;
+
+    /// <summary>
+	/// A reference to the entity's controller.
+	/// </summary>
+	private CharacterController _controller;
     /// <summary>
     /// Timer
     /// </summary>
@@ -28,6 +34,10 @@ public class Iddle : StateMachineBehaviour {
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //start timer
         _deltaTime = parameters.timeInIddle;
+
+        float speed = commonParameters.AI.walkingParameters.speed;
+        float rotationWalk = commonParameters.AI.walkingParameters.rotationVelocity;
+        _controller = commonParameters.enemy.GetComponent<CharacterController>();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -41,17 +51,14 @@ public class Iddle : StateMachineBehaviour {
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //check if have condition to change state
-        int size = animator.GetInteger("SizeDrop");
-        int sizeLimit = animator.GetInteger("LimitSizeDrop");
-        if (sizeLimit > 0 && size >= sizeLimit) {
-            animator.SetBool("GoAway", true);
-        } else if ((sizeLimit <= 0 || size < sizeLimit) && size > 0) {
-            animator.SetBool("Detect", true);
-        }
+        commonParameters.AI.CheckDrop();
+        CheckTimeIddle(animator);
 
-        _deltaTime -= Time.deltaTime;
-        if (_deltaTime <= 0) {
-            animator.SetBool("Timer", true);
+        //always use the gravity
+        //set gravity and move
+        if (commonParameters.onFloor) {
+            Vector3 move = (commonParameters.enemy.transform.up * -1) * 25 * Time.deltaTime;
+            _controller.Move(move);
         }
     }
 
@@ -65,6 +72,29 @@ public class Iddle : StateMachineBehaviour {
         //It is important to note that OnStateIK will only be called if the state is on a layer that has an IK pass. 
         //By default, layers do not have an IK pass and so this function will not be called. 
         //For more information on IK see the information linked below.
+    }
+
+    private void CheckTimeIddle(Animator animator) {
+        if (commonParameters.walking) {
+            //if enemy walk, check the timer
+            _deltaTime -= Time.deltaTime;
+            if (_deltaTime <= 0) {
+                animator.SetBool("Timer", true);
+            }
+        }else {
+            //if the enemy is not walking but not in its position, go to walking
+            Vector3 target = commonParameters.initialPositionEnemy;
+            Quaternion rotationTarget = commonParameters.initialRotationEnemy;
+            
+            if (!commonParameters.AI.CheckTargetPoint(target, commonParameters.minimumWalkingDistance)) {
+                animator.SetBool("Timer", true);
+            }
+
+            if(!commonParameters.AI.CheckTargetRotation(rotationTarget, commonParameters.toleranceDegreeToGoal)) {
+                animator.SetBool("Timer", true);
+            }
+
+        }
     }
     #endregion
 }

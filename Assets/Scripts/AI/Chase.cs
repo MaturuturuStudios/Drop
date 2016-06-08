@@ -33,7 +33,7 @@ public class Chase : StateMachineBehaviour {
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
-		_minimumDistance = commonParameters.toleranteDistanceAttack; //GetMinimumDistance() +
+		_minimumDistance = commonParameters.toleranceDistanceAttack; //GetMinimumDistance() +
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
