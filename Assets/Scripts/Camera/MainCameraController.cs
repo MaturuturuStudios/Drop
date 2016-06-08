@@ -372,8 +372,10 @@ public class MainCameraController : MonoBehaviour {
         MoveCamera();
 
         // Reset state
-        if (_resetLockState)
+        if (_resetLockState) {
             _cameraLocked = false;
+            _resetLockState = false;
+        }
     }
 
 

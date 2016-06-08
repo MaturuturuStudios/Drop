@@ -3,13 +3,15 @@
 public class GameControllerInput : MonoBehaviour {
 
 	#region Attributes
-	// Internal references
+	/// Internal references
 	private GameControllerIndependentControl _switcher;
 	private MainCameraController _mainCameraController;
 	private GameControllerHelp _helpController;
-
-	//menu navigator of the scene
-	private MenuNavigator _ui;
+    
+    /// <summary>
+    /// Menu navigator of the scene
+    /// </summary>
+    private MenuNavigator _ui;
 
 	/// <summary>
 	/// Control if the trigger is pressed for only call change drop one time
@@ -20,6 +22,11 @@ public class GameControllerInput : MonoBehaviour {
 	/// Control if the shootCounter is pressed for only call it one time
 	/// </summary>
 	private bool _shootCounterPressed = false;
+
+    /// <summary>
+    /// Control if the input is listening
+    /// </summary>
+    private bool _enabled;
 	#endregion
 
 	#region Methods
@@ -30,14 +37,16 @@ public class GameControllerInput : MonoBehaviour {
 		_helpController = GetComponent<GameControllerHelp>();
 
 		_ui = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
-	}
+        _enabled = true;
+
+    }
 
 	void Update() {
 		//Start button
 		if (Input.GetButtonDown(Axis.Start))
 			_ui.PauseGame();
 
-		if (_ui==null || !_ui.IsMenuActive()) {
+		if (_enabled && (_ui == null || !_ui.IsMenuActive())) {
 			// Retrieves current character's components
 			CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 			CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
@@ -136,15 +145,22 @@ public class GameControllerInput : MonoBehaviour {
 				}
 			}
 		}
-	}
+    }
 
-	/// <summary>
-	/// Stops the player and closes the input.
-	/// </summary>
-	public void StopInput() {
-		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
-		cccp.Stop();
-		enabled = false;
-	}
+    /// <summary>
+    /// Stops the player and closes the input.
+    /// </summary>
+    public void StopInput() {
+        CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+        cccp.Stop();
+        _enabled = false;
+    }
+
+    /// <summary>
+    /// Resumes the input.
+    /// </summary>
+    public void ResumeInput() {
+        _enabled = true;
+    }
     #endregion
 }
