@@ -105,8 +105,7 @@ public class GameEndController : MonoBehaviour {
             // Activate counter
             _end = true;
 
-            // Disable input
-            GameObject currentCharacter = FindObjectOfType<GameControllerIndependentControl>().currentCharacter;
+            // Stops input
             _gci.StopInput();
 
             // Show message
