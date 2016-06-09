@@ -266,6 +266,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         _lluvia = new List<ParticleSystem[]>();
         //_rainparticle.transform.parent = ccc.transform;
         _rainparticle = new GameObject();
+        _rainparticle.transform.parent= _ccc.transform; 
         _rainparticle.name = " Rainbow Particle ";
         _lluvia.Clear();
 
@@ -277,7 +278,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             foreach (ParticleSystem subSystem in subSystems) {
                 ParticleSystem.EmissionModule emission = subSystem.emission;
                 emission.enabled = false;
-                subSystem.GetComponent<Transform>().parent = _ccc.transform;
+               // subSystem.GetComponent<Transform>().parent = _ccc.transform;
             }
 
             _lluvia.Insert(i, subSystems);
