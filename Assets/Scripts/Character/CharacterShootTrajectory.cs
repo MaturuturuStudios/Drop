@@ -264,12 +264,14 @@ public class CharacterShootTrajectory : MonoBehaviour
 
         _points = new ParticleSystem.Particle[numOfTrajectoryPoints];
         _lluvia = new List<ParticleSystem[]>();
-        
-        //rainparticle.transform.parent = ccc.transform;
+        //_rainparticle.transform.parent = ccc.transform;
+        _rainparticle = new GameObject();
+        _rainparticle.name = " Rainbow Particle ";
         _lluvia.Clear();
 
         for (int i = 0; i < numOfTrajectoryPoints; i++){
             GameObject system = Instantiate(particleRainbow);
+            system.transform.parent = _rainparticle.transform;
 
             ParticleSystem[] subSystems = system.GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem subSystem in subSystems) {
