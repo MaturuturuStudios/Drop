@@ -117,6 +117,16 @@ public class MainCameraController : MonoBehaviour {
     /// Distance that drop can move in go back state, once reached the distance, the state will return to default
     /// </summary>
     public float goBackMaxDistance = 3F;
+    
+    /// <summary>
+    /// Extra distance of z when drop is size 1
+    /// </summary>
+    public float zDistortion = 4F;
+
+    /// <summary>
+    /// Max size where zDistortion will be used
+    /// </summary>
+    public int maxDistotionSize = 5;
     #endregion
 
     #region Private Attributes
@@ -259,6 +269,11 @@ public class MainCameraController : MonoBehaviour {
     /// Controls if drop is moving
     /// </summary>
     private bool _moving = false;
+
+    /// <summary>
+    /// Extra distance of z sized
+    /// </summary>
+    private float _zDistortionSized;
     #endregion
 
     #region Methods
@@ -310,6 +325,8 @@ public class MainCameraController : MonoBehaviour {
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
+        _zDistortionSized = zDistortion * (maxDistotionSize / _dropSize);
+
         // Calculae raising position sized
         _raisingPositionSized = new Vector3(0, raisingPosition * _dropSize, 0);
 
@@ -318,7 +335,7 @@ public class MainCameraController : MonoBehaviour {
 
         // Update ofset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
-            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * offset.z);
+            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * (offset.z - zDistortion));
         }
 
 
@@ -349,7 +366,7 @@ public class MainCameraController : MonoBehaviour {
         // Changeing size
         if (_lastDropSize != _dropSize) {
             // Set the extra distance to reach
-            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * offset.z;
+            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * (offset.z - zDistortion);
             _extraSizeDistance -= _offset.z;
 
             // Look if drop is incresing or decreasing
