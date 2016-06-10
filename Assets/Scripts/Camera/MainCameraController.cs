@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 /// <summary>
 /// Controller for main camera.
@@ -75,11 +76,11 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public float velocityLookArround = 2f;
 
-
     /// <summary>
     /// Look arround max distance
     /// </summary>
-    public float lookArroundDistance = 6F;
+    [Range(0,1)]
+    public float lookArroundDistance = 1F;
 
 
 
@@ -210,6 +211,16 @@ public class MainCameraController : MonoBehaviour {
     /// Camera State
     /// </summary>
     public CameraState cameraState = CameraState.Moving;
+
+    /// <summary>
+    /// Distance from the drop position to out of the screen
+    /// </summary>
+    [Range(0, 1)]
+    private float _distanceToBorder = 1F;
+
+    //private Camera _camera;
+
+    private AspectRatioFitter _arf;
     #endregion
 
     #region Methods
@@ -224,6 +235,9 @@ public class MainCameraController : MonoBehaviour {
 
         // Sets the camera's target to the current character
         SetObjective(_independentControl.currentCharacter);
+
+        // Looks for camera controller
+        _arf = GetComponent<AspectRatioFitter>();
     }
 
 
@@ -241,6 +255,13 @@ public class MainCameraController : MonoBehaviour {
         // Set initial values
         _lastDropSize = _dropSize;
         _lastTarget = target;
+
+        // Set ratio
+        _arf.aspectRatio = (float)Screen.height /Screen.width;
+
+        // Set distance to border
+        _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
+        _distanceToBorder *= Camera.main.aspect;
     }
 
 
@@ -440,16 +461,16 @@ public class MainCameraController : MonoBehaviour {
     public void LookArround(float OffsetX, float OffsetY) {
 
         // Setting look arround values depending of the input
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY * (9f / 16f), 0F);
-
+        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F);
 
         // Get offset
         if (_lookArroundOffset.y > 0)
-            _lookArroundOffset.y = (_lookArroundOffset.y * ((lookArroundDistance / 2) - raisingPosition) / (lookArroundDistance / 2));
+            _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) - _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
         else if (_lookArroundOffset.y < 0)
-            _lookArroundOffset.y = (_lookArroundOffset.y * ((lookArroundDistance / 2) + raisingPosition) / (lookArroundDistance / 2));
+            _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) + _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
 
-        _lookArroundOffset *= lookArroundDistance * _dropSize;
+        _lookArroundOffset.y *= _arf.aspectRatio;
+        _lookArroundOffset *=  _distanceToBorder * lookArroundDistance / 2;
     }
 
 
@@ -523,33 +544,36 @@ public class MainCameraController : MonoBehaviour {
         // Reset bounds exceded to recalculate
         excededX = excededY = 0;
 
-        // Calculate if it is out of bounds
-        float cameraShownArea = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
+        // Calculate if it is out of bounds _distanceToBorder
+        _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
 
-        // If right bound exeded
-        if (destination.x < bounds.left + cameraShownArea)
-            excededX = destination.x = bounds.left + cameraShownArea;
-
-        // If top bound exceded
-        else if (destination.x > bounds.right - cameraShownArea) {
-            excededX = destination.x = bounds.right - cameraShownArea;
-
-            // If left bound exeded
-            if (excededX < bounds.left + cameraShownArea)
-                excededX = destination.x = bounds.left + cameraShownArea;
-        }
 
         // If bottom bound exceded
-        if (destination.y < bounds.bottom + _offset.y + (cameraShownArea * 9 / 16))
-            excededY = destination.y = bounds.bottom + _offset.y + (cameraShownArea * 9 / 16);
+        if (destination.y < bounds.bottom + _offset.y + (_distanceToBorder))
+            excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
 
         // If top bound exceded
-        else if (destination.y > bounds.top - (cameraShownArea * 9 / 16)) {
-            excededY = destination.y = bounds.top - (cameraShownArea * 9 / 16);
+        else if (destination.y > bounds.top - (_distanceToBorder)) {
+            excededY = destination.y = bounds.top - (_distanceToBorder);
 
             // If bottom bound exceded
-            if (excededY < bounds.bottom + _offset.y + (cameraShownArea * 9 / 16))
-                excededY = destination.y = bounds.bottom + _offset.y + (cameraShownArea * 9 / 16);
+            if (excededY < bounds.bottom + _offset.y + (_distanceToBorder))
+                excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
+        }
+
+        _distanceToBorder *= Camera.main.aspect;
+
+        // If right bound exeded
+        if (destination.x < bounds.left + _distanceToBorder)
+            excededX = destination.x = bounds.left + _distanceToBorder;
+
+        // If top bound exceded
+        else if (destination.x > bounds.right - _distanceToBorder) {
+            excededX = destination.x = bounds.right - _distanceToBorder;
+
+            // If left bound exeded
+            if (excededX < bounds.left + _distanceToBorder)
+                excededX = destination.x = bounds.left + _distanceToBorder;
         }
 
         return destination;
