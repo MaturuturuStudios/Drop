@@ -55,10 +55,10 @@ public class LockAreaController : MonoBehaviour {
         _collider = gameObject.GetComponent<BoxCollider>();
 
         // Retrieves the components of the entity.
-        _cameraController = FindObjectOfType<MainCameraController>();
+        _cameraController = Camera.main.GetComponent<MainCameraController>();
 
         // Looks for the independent controller component
-        _independentControl = FindObjectOfType<GameControllerIndependentControl>();
+        _independentControl = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerIndependentControl>();
 
         // Looks for camera controller
         _arf = FindObjectOfType<AspectRatioFitter>();

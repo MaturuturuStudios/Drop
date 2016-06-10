@@ -82,7 +82,7 @@ public class MainCameraController : MonoBehaviour {
     /// Look arround max distance
     /// </summary>
     [Range(0,1)]
-    public float lookArroundDistance = 1F;
+    public float lookArroundDistance = .8F;
 
 
 
@@ -655,6 +655,20 @@ public class MainCameraController : MonoBehaviour {
         // Calculate if it is out of bounds _distanceToBorder
         _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
 
+        // If right bound exeded
+        if (destination.x < bounds.left + _distanceToBorder)
+            excededX = destination.x = bounds.left + _distanceToBorder;
+
+        // If top bound exceded
+        else if (destination.x > bounds.right - _distanceToBorder) {
+            excededX = destination.x = bounds.right - _distanceToBorder;
+
+            // If left bound exeded
+            if (excededX < bounds.left + _distanceToBorder)
+                excededX = destination.x = bounds.left + _distanceToBorder;
+        }
+
+        _distanceToBorder *= _arf.aspectRatio;
 
         // If bottom bound exceded
         if (destination.y < bounds.bottom + _offset.y + (_distanceToBorder))
@@ -667,21 +681,6 @@ public class MainCameraController : MonoBehaviour {
             // If bottom bound exceded
             if (excededY < bounds.bottom + _offset.y + (_distanceToBorder))
                 excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
-        }
-
-        _distanceToBorder *= Camera.main.aspect;
-
-        // If right bound exeded
-        if (destination.x < bounds.left + _distanceToBorder)
-            excededX = destination.x = bounds.left + _distanceToBorder;
-
-        // If top bound exceded
-        else if (destination.x > bounds.right - _distanceToBorder) {
-            excededX = destination.x = bounds.right - _distanceToBorder;
-
-            // If left bound exeded
-            if (excededX < bounds.left + _distanceToBorder)
-                excededX = destination.x = bounds.left + _distanceToBorder;
         }
 
         return destination;
