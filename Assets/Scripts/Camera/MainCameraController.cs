@@ -654,7 +654,7 @@ public class MainCameraController : MonoBehaviour {
 
         // Calculate if it is out of bounds _distanceToBorder
         _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
-
+        _distanceToBorder -= _dropSize;
         // If right bound exeded
         if (destination.x < bounds.left + _distanceToBorder)
             excededX = destination.x = bounds.left + _distanceToBorder;
