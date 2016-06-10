@@ -55,7 +55,7 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		_animator.SetFloat(CharacterAnimatorParameters.Speed, normalizedSpeed);
 
 		// Updates the falling speed
-		float fallingSpeed = -_ccc.Velocity.y;
+		float fallingSpeed = Mathf.Abs(_ccc.Velocity.y);
 		_animator.SetFloat(CharacterAnimatorParameters.FallingSpeed, fallingSpeed);
 
 		// Updates the grounded state
