@@ -300,7 +300,7 @@ public class MainCameraController : MonoBehaviour {
     void Start() {
 
         // Calculate offset
-        _offset = new Vector3(offset.x, offset.y, offset.z);
+        _offset = new Vector3(offset.x, offset.y, offset.z - zDistortion);
 
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
@@ -325,7 +325,10 @@ public class MainCameraController : MonoBehaviour {
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
-        _zDistortionSized = zDistortion * (maxDistotionSize / _dropSize);
+        if (_dropSize < maxDistotionSize)
+            _zDistortionSized = zDistortion * ((maxDistotionSize - _dropSize - 1) / maxDistotionSize);
+        else
+            _zDistortionSized = 0;
 
         // Calculae raising position sized
         _raisingPositionSized = new Vector3(0, raisingPosition * _dropSize, 0);
@@ -333,9 +336,9 @@ public class MainCameraController : MonoBehaviour {
         // Check if drop is moving
         _moving = target.transform.position != _lastPosition;
 
-        // Update ofset and boundary depends of the size
+        // Update offset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
-            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * (offset.z - zDistortion));
+            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * (offset.z - _zDistortionSized));
         }
 
 
@@ -366,7 +369,7 @@ public class MainCameraController : MonoBehaviour {
         // Changeing size
         if (_lastDropSize != _dropSize) {
             // Set the extra distance to reach
-            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * (offset.z - zDistortion);
+            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * (offset.z - _zDistortionSized);
             _extraSizeDistance -= _offset.z;
 
             // Look if drop is incresing or decreasing
