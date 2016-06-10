@@ -13,12 +13,14 @@ public class MainCameraController : MonoBehaviour {
     /// Defines the states of the camera for set the correct velocity
     /// </summary>
     public enum CameraState {
-        Moving,
+        Default,
         ChangeDrop,
         ChangeSizeFast,
         ChangeSizeSlow,
         LookArround,
-        LockArea
+        LockArea,
+        GoBackFromArround,
+        GoBackFromArea
     }
 
     /// <summary>
@@ -106,9 +108,15 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// camera raising position respect to the objective
+    /// Camera raising position respect to the objective
     /// </summary>
     public float raisingPosition = 2F;
+
+
+    /// <summary>
+    /// Distance that drop can move in go back state, once reached the distance, the state will return to default
+    /// </summary>
+    public float goBackMaxDistance = 3F;
     #endregion
 
     #region Private Attributes
@@ -191,9 +199,22 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Camera final movement velocity on XY
+    /// Camera final movement velocity on Z
     /// </summary>
     private float _zVelocity;
+
+
+    /// <summary>
+    /// Camera final movement velocity on XY when goes back from look arroun and lock area
+    /// </summary>
+    private float _velocityGoBack;
+
+
+    /// <summary>
+    /// Camera final movement velocity on X when goes back from look arroun and lock area
+    /// </summary>
+    private float _zVelocityGoBack;
+   
 
 
     /// <summary>
@@ -210,17 +231,34 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Camera State
     /// </summary>
-    public CameraState cameraState = CameraState.Moving;
+    public CameraState _cameraState = CameraState.Default;
 
     /// <summary>
     /// Distance from the drop position to out of the screen
     /// </summary>
-    [Range(0, 1)]
     private float _distanceToBorder = 1F;
 
-    //private Camera _camera;
-
+    /// <summary>
+    /// Custom ratio value
+    /// </summary>
     private AspectRatioFitter _arf;
+
+    /// <summary>
+    /// Custom ratio value
+    /// </summary>
+    private Vector3 _goBackStartPosition;
+
+
+    /// <summary>
+    /// Last position to check if drop is moving
+    /// </summary>
+    private Vector3 _lastPosition;
+
+
+    /// <summary>
+    /// Controls if drop is moving
+    /// </summary>
+    private bool _moving = false;
     #endregion
 
     #region Methods
@@ -272,7 +310,11 @@ public class MainCameraController : MonoBehaviour {
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
+        // Calculae raising position sized
         _raisingPositionSized = new Vector3(0, raisingPosition * _dropSize, 0);
+
+        // Check if drop is moving
+        _moving = target.transform.position != _lastPosition;
 
         // Update ofset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
@@ -283,23 +325,24 @@ public class MainCameraController : MonoBehaviour {
         // Update the current status
         int statusModifierControl = 0;
 
-        if (_extraSizeDistance != 0 && (cameraState == CameraState.ChangeSizeFast || cameraState == CameraState.ChangeSizeSlow)) {
+        if (_extraSizeDistance != 0 && (_cameraState == CameraState.ChangeSizeFast || _cameraState == CameraState.ChangeSizeSlow)) {
 
             // distance to reach when fast step
-            if (cameraState == CameraState.ChangeSizeFast && Mathf.Abs((_extraSizeDistance + _offset.z) - transform.position.z) < 1f) {
+            if (_cameraState == CameraState.ChangeSizeFast && Mathf.Abs((_extraSizeDistance + _offset.z) - transform.position.z) < 1f) {
                 _extraSizeDistance = 0.1f;
-                cameraState = CameraState.ChangeSizeSlow;
+                _cameraState = CameraState.ChangeSizeSlow;
             }
 
             // distance to reach when slow step
-            if (cameraState == CameraState.ChangeSizeSlow && _extraSizeDistance == 0.1f && Mathf.Abs((_offset.z) - transform.position.z) < 0.5f) {
-                cameraState = CameraState.Moving;
+            if (_cameraState == CameraState.ChangeSizeSlow && _extraSizeDistance == 0.1f && Mathf.Abs((_offset.z) - transform.position.z) < 0.5f) {
+                _cameraState = CameraState.Default;
             }
 
             ++statusModifierControl;
         } else {
             // return to defaul state
-            cameraState = CameraState.Moving;
+            if (_cameraState != CameraState.GoBackFromArea && _cameraState != CameraState.GoBackFromArround) 
+                _cameraState = CameraState.Default;
             ++statusModifierControl;
         }
 
@@ -313,42 +356,61 @@ public class MainCameraController : MonoBehaviour {
             if (_lastDropSize > _dropSize)
                 _extraSizeDistance *= -1;
 
-            cameraState = CameraState.ChangeSizeFast;
+            _cameraState = CameraState.ChangeSizeFast;
         }
         _lastDropSize = _dropSize;
 
+
+        // Looking arround
+        if (_lookArroundOffset != Vector3.zero && !_moving) {
+            _cameraState = CameraState.LookArround;
+            ++statusModifierControl;
+        }
+
         // Changeing target
         if (_lastTarget != target) {
-            cameraState = CameraState.ChangeDrop;
+            _cameraState = CameraState.ChangeDrop;
 
             // When the camera is close to the objective position
-            if ((target.transform.position - transform.position - _offset).magnitude < 0.5f) {
-                cameraState = CameraState.Moving;
+            if ((target.transform.position - transform.position - _offset).magnitude < 0.01f) {
+                _cameraState = CameraState.Default;
                 _lastTarget = target;
             }
             ++statusModifierControl;
         }
 
-        // Looking arround
-        if (_lookArroundOffset != Vector3.zero) {
-            cameraState = CameraState.LookArround;
+        // Lock area
+        if (_cameraLocked) {
+            _cameraState = CameraState.LockArea;
             ++statusModifierControl;
         }
 
-        // Lock area
-        if (_cameraLocked) {
-            cameraState = CameraState.LockArea;
-            ++statusModifierControl;
+        if (_cameraState == CameraState.GoBackFromArea) {
+            // When drop moves to mucho from the start of go back position
+            if ((target.transform.position - _goBackStartPosition).magnitude > goBackMaxDistance) {
+                _cameraState = CameraState.Default;
+            }
+        }
+
+        if (_cameraState == CameraState.GoBackFromArround) {
+            if (_moving) {
+                _cameraState = CameraState.Default;
+            } else {
+                // When drop moves to mucho from the start of go back position
+                if ((target.transform.position - _goBackStartPosition).magnitude < 0.5f) {
+                    _cameraState = CameraState.Default;
+                }
+            }
         }
 
         // default state
-        if (statusModifierControl == 0) {
-            cameraState = CameraState.Moving;
+        if (statusModifierControl == 0 && _cameraState != CameraState.GoBackFromArea && _cameraState != CameraState.GoBackFromArround) {
+            _cameraState = CameraState.Default;
         }
 
 
         // Sets velocity depending of the current event
-        switch (cameraState) {
+        switch (_cameraState) {
             case CameraState.ChangeDrop:
                 _velocity = velocityChangeDrop;
                 _zVelocity = zVelocityChangeDrop;
@@ -374,15 +436,22 @@ public class MainCameraController : MonoBehaviour {
                 _zVelocity = zVelocityLockArea;
                 break;
 
+            case CameraState.GoBackFromArea:
+            case CameraState.GoBackFromArround:
+                _velocity = _velocityGoBack;
+                _zVelocity = _zVelocityGoBack;
+                break;
+
             default:
-                cameraState = CameraState.Moving;
+                _cameraState = CameraState.Default;
                 _velocity = velocity;
                 _zVelocity = zVelocity;
                 break;
         }
 
+        _lastPosition = target.transform.position;
     }
-
+    
 
     /// <summary>
     /// Update the camera phisics
@@ -396,6 +465,13 @@ public class MainCameraController : MonoBehaviour {
         if (_resetLockState) {
             _cameraLocked = false;
             _resetLockState = false;
+
+            _velocityGoBack = velocityLockArea;
+            _zVelocityGoBack = zVelocityLockArea;
+
+            _goBackStartPosition = target.transform.position;
+
+            _cameraState = CameraState.GoBackFromArea;
         }
     }
 
@@ -413,18 +489,18 @@ public class MainCameraController : MonoBehaviour {
         destination += _raisingPositionSized;
 
         // Calculate look arround position        
-        if (cameraState == CameraState.LookArround) {
+        if (_cameraState == CameraState.LookArround) {
 
             // Add Look arround offset
             destination += _lookArroundOffset;
         }
 
         // Character changing size
-        if (cameraState == CameraState.ChangeSizeFast)
+        if (_cameraState == CameraState.ChangeSizeFast)
             destination.z += _extraSizeDistance;
 
         // Camera locked in position
-        if (cameraState == CameraState.LockArea)
+        if (_cameraState == CameraState.LockArea)
             destination = _lockPosition;
 
         // Calculate if it is out of bounds and stop it at bound exceded
@@ -440,8 +516,13 @@ public class MainCameraController : MonoBehaviour {
 
         // Check if it is too near to set as target reached
         float squaredDistance = (transform.position - destination).magnitude;
-        if (squaredDistance < 0.01f) {
+        if (squaredDistance < 0.5f) {
+            // Actualize target 
             _lastTarget = target;
+
+            // Go to desired state
+            if (_cameraState == CameraState.ChangeDrop || _cameraState == CameraState.GoBackFromArea)
+                _cameraState = CameraState.Default;
         }
     }
 
@@ -460,19 +541,37 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public void LookArround(float OffsetX, float OffsetY) {
 
-        // Setting look arround values depending of the input
-        _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F);
+        if ((OffsetX != 0 || OffsetY != 0) ) {
+            if (!_moving) {
+                // Setting look arround values depending of the input
+                _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F);
 
-        // Get offset
-        if (_lookArroundOffset.y > 0)
-            _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) - _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
-        else if (_lookArroundOffset.y < 0)
-            _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) + _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
+                // Get offset
+                if (_lookArroundOffset.y > 0)
+                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) - _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
+                else if (_lookArroundOffset.y < 0)
+                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) + _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
 
-        _lookArroundOffset.y *= _arf.aspectRatio;
-        _lookArroundOffset *=  _distanceToBorder * lookArroundDistance / 2;
+                _lookArroundOffset.y *= _arf.aspectRatio;
+                _lookArroundOffset *= _distanceToBorder * lookArroundDistance / 2;
+            } else {
+                // If moving, ignore look arround
+                _lookArroundOffset = Vector3.zero;
+                _cameraState = CameraState.Default;
+            }
+        } else if (_cameraState == CameraState.LookArround) {
+            // Going back
+            _lookArroundOffset = Vector3.zero;
+
+            _velocityGoBack = velocityLockArea;
+            _zVelocityGoBack = zVelocityLockArea;
+            if (!_moving)
+                _cameraState = CameraState.GoBackFromArround;
+            else
+                _cameraState = CameraState.Default;
+
+        }
     }
-
 
     /// <summary>
     /// Locks the camera in a position
@@ -513,6 +612,15 @@ public class MainCameraController : MonoBehaviour {
         _cameraLocked = false;
 
         _resetLockState = false;
+
+        // Set go back velocity the same as lock Camera velocity
+        _velocityGoBack = velocityLockArea;
+        _zVelocityGoBack = zVelocityLockArea;
+
+        // Save the start position of drop when starts to go back
+        _goBackStartPosition = target.transform.position;
+
+        _cameraState = CameraState.GoBackFromArea;
     }
 
 
