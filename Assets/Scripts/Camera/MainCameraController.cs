@@ -334,7 +334,7 @@ public class MainCameraController : MonoBehaviour {
         _raisingPositionSized = new Vector3(0, raisingPosition * _dropSize, 0);
 
         // Check if drop is moving
-        _moving = target.transform.position != _lastPosition;
+        _moving = (target.transform.position - _lastPosition).magnitude > 0.5;
 
         // Update offset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
