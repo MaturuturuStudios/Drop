@@ -568,12 +568,13 @@ public class MainCameraController : MonoBehaviour {
 
                 // Get offset
                 if (_lookArroundOffset.y > 0)
-                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) - _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
+                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) - _raisingPositionSized.y) / (_distanceToBorder * lookArroundDistance );
                 else if (_lookArroundOffset.y < 0)
-                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance / 2) + _raisingPositionSized.y * Camera.main.aspect) / (_distanceToBorder * lookArroundDistance / 2);
+                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) + _raisingPositionSized.y) / (_distanceToBorder * lookArroundDistance );
 
-                _lookArroundOffset.y *= _arf.aspectRatio;
-                _lookArroundOffset *= _distanceToBorder * lookArroundDistance / 2;
+                //_lookArroundOffset.y *= _arf.aspectRatio;
+                _lookArroundOffset.x *= Camera.main.aspect;
+                _lookArroundOffset *= lookArroundDistance * _distanceToBorder;
             } else {
                 // If moving, ignore look arround
                 _lookArroundOffset = Vector3.zero;
