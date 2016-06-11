@@ -15,7 +15,7 @@ public class EnemyHelpItem : TextHelpItem {
     /// </summary>
     private GameControllerIndependentControl _independentControl;
 
-	protected new void OnAwake() {
+	protected override void OnAwake() {
 		// Retrieves the desired components
 		base.OnAwake();
 		_aiComponent = GetComponentInParent<AIBase>();

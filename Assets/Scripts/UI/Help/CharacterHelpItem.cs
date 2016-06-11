@@ -8,7 +8,7 @@ public class CharacterHelpItem : TextHelpItem {
 	/// </summary>
 	private CharacterSize _characterSize;
 
-	protected new void OnAwake() {
+	protected override void OnAwake() {
 		// Retrieves the desired components
 		base.OnAwake();
 		_characterSize = GetComponentInParent<CharacterSize>();

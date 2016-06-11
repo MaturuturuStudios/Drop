@@ -15,9 +15,23 @@ abstract public class Irrigate : ActionPerformer {
     /// </summary> 
     public int dropsNeeded;
 
+	/// <summary>
+	/// The prefab used for showing the help information on this object.
+	/// </summary>
+	public GameObject helpPrefab;
+
     #endregion
 
     #region Methods
+
+	void Start() {
+		// Creates the help item and adds parents it to the object
+		if (helpPrefab == null)
+			return;
+		GameObject helpInstance = Instantiate(helpPrefab);
+		helpInstance.transform.parent = transform;
+		helpInstance.transform.localPosition = Vector3.zero;
+    }
 
     protected override bool OnAction(GameObject character) {
         CharacterControllerCustom ccc = character.GetComponent<CharacterControllerCustom>();
