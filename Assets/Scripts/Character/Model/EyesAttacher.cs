@@ -135,6 +135,10 @@ public class EyesAttacher : MonoBehaviour {
 	/// Unity's method called when the component becomes enabled.
 	/// </summary>
 	void OnDisable() {
+		// Checks if the object has been destroyed
+		if (leftEye == null || rightEye == null)
+			return;
+
 		// Resets the eye's blend shapes
 		SkinnedMeshRenderer eyeRenderer = leftEye.GetComponentInChildren<SkinnedMeshRenderer>();
 		for (int i = 0; i < BLEND_SHAPE_COUNT; i++)

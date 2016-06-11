@@ -46,6 +46,10 @@ public class HelpItem : MonoBehaviour {
     /// Hides the information item.
     /// </summary>
     public void Hide() {
+		// Checks if the object has been destroyed
+		if (this == null)
+			return;
+
 		if (gameObject.activeInHierarchy)
 			_animator.SetBool("shown", false);
 		OnHide();
