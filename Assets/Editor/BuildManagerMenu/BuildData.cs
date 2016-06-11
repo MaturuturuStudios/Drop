@@ -84,7 +84,7 @@ public class BuildData {
         XmlSerializer serializer = new XmlSerializer(typeof(BuildData));
 
         // Save the file in "Application.streamingAssetsPath" folder
-        using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/build.conf", FileMode.Create)) {
+        using (FileStream stream = new FileStream(Application.dataPath + "/Resources/build_config.xml", FileMode.Create)) {
             serializer.Serialize(stream, bd);
             Debug.Log("Data saved");
         }
@@ -106,7 +106,7 @@ public class BuildData {
             XmlSerializer serializer = new XmlSerializer(typeof(BuildData));
 
             //read the file from "Application.streamingAssetsPath" folder
-            using (FileStream stream = new FileStream(Application.streamingAssetsPath + "/build.conf", FileMode.Open)) {
+            using (FileStream stream = new FileStream(Application.dataPath + "/Resources/build_config.xml", FileMode.Open)) {
                 bd = (BuildData)serializer.Deserialize(stream);
                 Debug.Log("Data readed");
             }

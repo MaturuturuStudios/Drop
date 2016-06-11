@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<BuildData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <buildName>drop-v</buildName>
+  <workPath>../../Builds/Drop</workPath>
+  <share>false</share>
+  <sharedFolderPath>../../Google Drive/WorkSpace/DropOfficial/Realeases</sharedFolderPath>
+  <zipPath>../../Program Files (x86)/GnuWin32/bin</zipPath>
+  <win>true</win>
+  <lin>true</lin>
+  <mac>true</mac>
+  <scenes />
+</BuildData>
