@@ -184,6 +184,35 @@ public class FollowPath : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Jumps and skips the amount of steps on the path.
+	/// The amount can be negative, which will make the path to 
+	/// move backwards. If the end is reached, it will behave 
+	/// as the path type would.
+	/// </summary>
+	/// <param name="amount">Number of steps to jump</param>
+	public void Jump(int amount) {
+		SaveLastPosition();
+		path.Jump(amount);
+	}
+
+	/// <summary>
+	/// Jumps forward in the path, skipping the points in between.
+	/// </summary>
+	/// <param name="amount">Numbers of steps to jump</param>
+	public void JumpForward(int amount) {
+		// Just another name for the jump method
+		Jump(amount);
+	}
+
+	/// <summary>
+	/// Jumps backwards in the path, skipping the points in between.
+	/// </summary>
+	/// <param name="amount">Numbers of steps to jump</param>
+	public void JumpBackward(int amount) {
+		Jump(-amount);
+	}
+
+	/// <summary>
 	/// Saves the needed information before changing the path target.
 	/// </summary>
 	private void SaveLastPosition() {

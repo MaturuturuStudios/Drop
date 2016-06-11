@@ -124,13 +124,17 @@ public class PathDefinition : IEnumerator<Transform> {
 			case PathType.BackAndForward:
 				if (backwards) {
 					_currentIndex--;
-					if (_currentIndex <= 0)
-						backwards = false;
+					if (_currentIndex < 0) {
+						_currentIndex = 1;
+                        backwards = false;
+					}
 				}
 				else {
 					_currentIndex++;
-					if (_currentIndex >= points.Length - 1)
+					if (_currentIndex >= points.Length) {
+						_currentIndex = points.Length - 2;
 						backwards = true;
+					}
 				}
 				break;
 			case PathType.Loop:
@@ -155,13 +159,17 @@ public class PathDefinition : IEnumerator<Transform> {
 			case PathType.BackAndForward:
 				if (!backwards) {
 					_currentIndex--;
-					if (_currentIndex <= 0)
+					if (_currentIndex < 0) {
+						_currentIndex = 1;
 						backwards = false;
+					}
 				}
 				else {
 					_currentIndex++;
-					if (_currentIndex >= points.Length - 1)
+					if (_currentIndex >= points.Length) {
+						_currentIndex = points.Length - 2;
 						backwards = true;
+					}
 				}
 				break;
 			case PathType.Loop:
@@ -191,6 +199,21 @@ public class PathDefinition : IEnumerator<Transform> {
 	/// <param name="index">The new index of the path</param>
 	public void SetIndex(int index) {
 		_currentIndex = index;
+	}
+
+	/// <summary>
+	/// Jumps the specified steps on the path. The amount can be
+	/// negative, which will make the path to move backwards. If
+	/// the end is reached, it will behave as the path type would.
+	/// </summary>
+	/// <param name="amount">Number of steps to jump</param>
+	public void Jump(int amount) {
+		if (amount >= 0)
+			for (int i = 0; i < amount; i++)
+				Next();
+		else
+			for (int i = 0; i < -amount; i++)
+				Previous();
 	}
 
 	/// <summary>

@@ -12,6 +12,7 @@ public class FollowPathEditor : Editor {
 	/// </summary>
 	public override void OnInspectorGUI() {
 		FollowPath followPath = target as FollowPath;
+		EditorUtility.SetDirty(target);
 
 		// Shows the path information
 		serializedObject.Update();
