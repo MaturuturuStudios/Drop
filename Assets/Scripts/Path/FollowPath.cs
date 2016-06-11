@@ -29,7 +29,7 @@ public class FollowPath : MonoBehaviour {
 	/// <summary>
 	/// A reference to the path this entity will follow.
 	/// </summary>
-	public PathDefinition path;
+	public PathDefinition path = new PathDefinition();
 
 	/// <summary>
 	/// Defines how will the entity move from one point to the next one.
