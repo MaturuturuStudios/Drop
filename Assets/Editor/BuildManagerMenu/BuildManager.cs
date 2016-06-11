@@ -20,7 +20,6 @@ public class BuildManager {
     /// Data used in the build process
     /// </summary>
     private BuildData bd = new BuildData();
-
     #endregion
 
     #region Public Methods
@@ -38,6 +37,9 @@ public class BuildManager {
         //Verify that all data is ok
         if (bm.ValidateData()) {
 
+            // Set the desired build options
+            BuildOptions bo = (development ? BuildOptions.Development | BuildOptions.AllowDebugging : BuildOptions.None);
+
             // Construct configuration confirmation string
             string succes = GetSuccesString(bm);
 
@@ -53,35 +55,40 @@ public class BuildManager {
                 // Copy a file from the project folder to the build folder, alongside the built game.
                 FileUtil.CopyFileOrDirectory("Assets/WebPlayerTemplates/Readme.txt", path + "Readme.txt");*/
 
+                bool goOn = true;
+
                 // Build Windows
-                if (bm.bd.win) {
-                    BuildWindows(bm, development);
+                if (goOn && bm.bd.win) {
+                    goOn = BuildWindows(bm, bo);
                 }
 
                 // Build Linux
-                if (bm.bd.lin) {
-                    BuildLinux(bm, development);
+                if (goOn && bm.bd.lin) {
+                    goOn = BuildLinux(bm, bo);
                 }
 
                 // Build Mac
-                if (bm.bd.mac) {
-                    BuildMac(bm, development);
+                if (goOn && bm.bd.mac) {
+                    goOn = BuildMac(bm, bo);
                 }
 
-                // Wait for all work done
-                System.Threading.Thread.Sleep(5000);
+                if (goOn)
+                    // Wait for all work done
+                    System.Threading.Thread.Sleep(5000);
 
                 // Packing all
                 Debug.Log("Packing");
 
-                // Compress to one file
-                Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
+                if (goOn)
+                    // Compress to one file
+                    Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
 
-                // Wait for all work done
-                System.Threading.Thread.Sleep(15000);
+                if (goOn)
+                    // Wait for all work done
+                    System.Threading.Thread.Sleep(15000);
 
                 // Share file
-                if (bm.bd.share)
+                if (goOn && bm.bd.share)
                     ShareFile(bm, "Package");
             }
         }
@@ -214,7 +221,7 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <param name="development">Build type</param>
-    private static void BuildWindows(BuildManager bm, bool development) {
+    private static bool BuildWindows(BuildManager bm, BuildOptions bo) {
 
         Debug.Log("Building for Windows platform");
 
@@ -222,12 +229,22 @@ public class BuildManager {
         string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_win.exe";
 
         // Build it
-        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneWindows, (development ? BuildOptions.Development : BuildOptions.None));
+        string error = BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneWindows, bo);
 
-        Debug.Log("Build for Windows done");
+        if (String.IsNullOrEmpty(error)) {
+            Debug.Log("Build for Windows done");
 
-        // Compress 
-        Compress(bm, "Windows", "-9 -r " + bm.bd.buildName + "_win.zip " + bm.bd.buildName + "_win.exe " + bm.bd.buildName + "_win_Data ");
+            // Compress 
+            Compress(bm, "Windows", "-9 -r " + bm.bd.buildName + "_win.zip " + bm.bd.buildName + "_win.exe " + bm.bd.buildName + "_win_Data ");
+
+            return true;
+
+        } else {
+            Debug.Log("Error While building to Windows: " + error);
+
+            return false;
+        }
+
     }
 
 
@@ -236,7 +253,7 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <param name="development">Build type</param>
-    private static void BuildLinux(BuildManager bm, bool development) {
+    private static bool BuildLinux(BuildManager bm, BuildOptions bo) {
 
         Debug.Log("Building for Linux platform");
 
@@ -244,12 +261,21 @@ public class BuildManager {
         string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_lin.x86";
 
         // Build it
-        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinuxUniversal, (development ? BuildOptions.Development : BuildOptions.None));
+        string error = BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinuxUniversal, bo);
 
-        Debug.Log("Build for Linux done");
+        if (String.IsNullOrEmpty(error)) {
+            Debug.Log("Build for Linux done");
 
-        // Compress 
-        Compress(bm, "Linux", "-9 -r " + bm.bd.buildName + "_lin.zip " + bm.bd.buildName + "_lin.x86 " + bm.bd.buildName + "_lin_Data ");
+            // Compress 
+            Compress(bm, "Linux", "-9 -r " + bm.bd.buildName + "_lin.zip " + bm.bd.buildName + "_lin.x86 " + bm.bd.buildName + "_lin_Data ");
+
+            return true;
+
+        } else {
+            Debug.Log("Error While building to Mac: " + error);
+
+            return false;
+        }
     }
 
 
@@ -258,7 +284,7 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <param name="development">Build type</param>
-    private static void BuildMac(BuildManager bm, bool development) {
+    private static bool BuildMac(BuildManager bm, BuildOptions bo) {
 
         Debug.Log("Building for Mac platform");
 
@@ -266,12 +292,21 @@ public class BuildManager {
         string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_mac.app";
 
         // Build it
-        BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneOSXUniversal, (development ? BuildOptions.Development : BuildOptions.None));
+        string error = BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneOSXUniversal, bo);
 
-        Debug.Log("Build for Mac done");
+        if (String.IsNullOrEmpty(error)) {
+            Debug.Log("Build for Mac done");
 
-        // Compress 
-        Compress(bm, "Mac", "-9 -r " + bm.bd.buildName + "_mac.zip " + bm.bd.buildName + "_mac.app ");
+            // Compress 
+            Compress(bm, "Mac", "-9 -r " + bm.bd.buildName + "_mac.zip " + bm.bd.buildName + "_mac.app ");
+
+            return true;
+
+        } else {
+            Debug.Log("Error While building to Linux: " + error);
+
+            return false;
+        }
     }
 
 
@@ -386,7 +421,7 @@ public class BuildManager {
     private bool ValidateData() {
 
         // Look for scenes
-        if (!ValidateScenes()) {
+        if (bd.countScenes && !ValidateScenes()) {
             EditorUtility.DisplayDialog("Configuration error",
             "There are no scenes selected or catched scenes aren't the right ones, please re-catch scenes.", "Ok");
             return false;

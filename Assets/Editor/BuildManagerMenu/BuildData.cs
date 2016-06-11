@@ -51,6 +51,11 @@ public class BuildData {
     public bool mac;
 
     /// <summary>
+    /// Value for controll if scenes will be counted
+    /// </summary>
+    public bool countScenes;
+
+    /// <summary>
     /// List of the scenes that will be included into de build
     /// </summary>
     public List<string> scenes;
@@ -100,7 +105,7 @@ public class BuildData {
         BuildData bd = null;
 
         // Look if the file config exist
-        if (File.Exists(Application.streamingAssetsPath + "/build.conf")) {
+        if (File.Exists(Application.dataPath + "/Resources/build_config.xml")) {
 
             // Create a serializer
             XmlSerializer serializer = new XmlSerializer(typeof(BuildData));
