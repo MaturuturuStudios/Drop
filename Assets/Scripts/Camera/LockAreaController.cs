@@ -36,12 +36,6 @@ public class LockAreaController : MonoBehaviour {
     /// </summary>
     private Rect _area;
 
-
-    /// <summary>
-    /// Custom ratio value
-    /// </summary>
-    private AspectRatioFitter _arf;
-
     #endregion
 
     #region Methods
@@ -59,9 +53,6 @@ public class LockAreaController : MonoBehaviour {
 
         // Looks for the independent controller component
         _independentControl = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameControllerIndependentControl>();
-
-        // Looks for camera controller
-        _arf = FindObjectOfType<AspectRatioFitter>();
     }
 
 
@@ -72,19 +63,19 @@ public class LockAreaController : MonoBehaviour {
 	void Update() {
 
         // Force _arf.aspectRatio dimensions to camara vision field
-        _collider.size = new Vector3(Mathf.Clamp(_collider.size.x, 0.01f, area) , Mathf.Clamp(_collider.size.y, 0.01f, area * _arf.aspectRatio), _collider.size.y);
+        _collider.size = new Vector3(Mathf.Clamp(_collider.size.x, 0.01f, area) , Mathf.Clamp(_collider.size.y, 0.01f, area * _cameraController._invertRatio), _collider.size.y);
         
         // Force position
         _collider.center = new Vector3(
                 Mathf.Clamp(_collider.center.x, -(area / 2 ) + (_collider.size.x/2), (area / 2 ) - (_collider.size.x / 2)), 
-                Mathf.Clamp(_collider.center.y, -(area / 2 * _arf.aspectRatio) + (_collider.size.y / 2), (area / 2 * _arf.aspectRatio) - (_collider.size.y / 2)), 
+                Mathf.Clamp(_collider.center.y, -(area / 2 * _cameraController._invertRatio) + (_collider.size.y / 2), (area / 2 * _cameraController._invertRatio) - (_collider.size.y / 2)), 
                 0);
         
         // Force rotation
         transform.rotation = new Quaternion(0, 0, transform.rotation.z, 0);
 
         // Calculate parameters to send
-        _area = new Rect(transform.position.x, transform.position.y, area, area * _arf.aspectRatio);
+        _area = new Rect(transform.position.x, transform.position.y, area, area * _cameraController._invertRatio);
 
 
     }
@@ -121,7 +112,7 @@ public class LockAreaController : MonoBehaviour {
         Color color = Color.yellow;
         color.a = 0.15f;
         Gizmos.color = color;
-        Gizmos.DrawCube(transform.position,new Vector3(area, area * _arf.aspectRatio, .1f));
+        Gizmos.DrawCube(transform.position,new Vector3(area, area * _cameraController._invertRatio, .1f));
 
         // Draw trigger action zone
         color = Color.green;

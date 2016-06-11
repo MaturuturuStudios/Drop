@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityStandardAssets.ImageEffects;
 
 /// <summary>
 /// Controller for main camera.
@@ -137,6 +138,17 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private GameControllerIndependentControl _independentControl;
 
+    /// <summary>
+    /// Reference depth of field
+    /// </summary>
+    private DepthOfField _dof;
+
+
+    /// <summary>
+    /// Reference Vignette and chromatic aberration
+    /// </summary>
+    private VignetteAndChromaticAberration _vaca;
+
 
     /// <summary>
     /// Target of the camera, it use to be the player
@@ -251,7 +263,8 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Custom ratio value
     /// </summary>
-    private AspectRatioFitter _arf;
+    [HideInInspector]
+    public float _invertRatio;
 
     /// <summary>
     /// Custom ratio value
@@ -286,11 +299,14 @@ public class MainCameraController : MonoBehaviour {
         // Looks for the independent controller component
         _independentControl = FindObjectOfType<GameControllerIndependentControl>();
 
+        // Get component depth of field
+        _dof = GetComponent<DepthOfField>();
+
+        // Fet component of vignetting
+        _vaca = GetComponent<VignetteAndChromaticAberration>();
+
         // Sets the camera's target to the current character
         SetObjective(_independentControl.currentCharacter);
-
-        // Looks for camera controller
-        _arf = GetComponent<AspectRatioFitter>();
     }
 
 
@@ -310,7 +326,7 @@ public class MainCameraController : MonoBehaviour {
         _lastTarget = target;
 
         // Set ratio
-        _arf.aspectRatio = (float)Screen.height /Screen.width;
+        _invertRatio = (float)Screen.height /Screen.width;
 
         // Set distance to border
         _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
@@ -325,10 +341,15 @@ public class MainCameraController : MonoBehaviour {
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
-        if (_dropSize < maxDistotionSize)
+        if (_dropSize < maxDistotionSize) {
             _zDistortionSized = zDistortion * ((maxDistotionSize - _dropSize - 1) / maxDistotionSize);
-        else
+            _vaca.intensity = 0.1f + (0.03f * (5 - _dropSize));
+        } else {
             _zDistortionSized = 0;
+            _vaca.intensity = 0.1f;
+        }
+
+        _dof.focalTransform = target.transform;
 
         // Calculae raising position sized
         _raisingPositionSized = new Vector3(0, raisingPosition * _dropSize, 0);
@@ -571,8 +592,7 @@ public class MainCameraController : MonoBehaviour {
                     _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) - _raisingPositionSized.y) / (_distanceToBorder * lookArroundDistance );
                 else if (_lookArroundOffset.y < 0)
                     _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) + _raisingPositionSized.y) / (_distanceToBorder * lookArroundDistance );
-
-                //_lookArroundOffset.y *= _arf.aspectRatio;
+                
                 _lookArroundOffset.x *= Camera.main.aspect;
                 _lookArroundOffset *= lookArroundDistance * _distanceToBorder;
             } else {
@@ -689,7 +709,7 @@ public class MainCameraController : MonoBehaviour {
                 excededX = destination.x = bounds.left + _distanceToBorder;
         }
 
-        _distanceToBorder *= _arf.aspectRatio;
+        _distanceToBorder *= _invertRatio;
 
         // If bottom bound exceded
         if (destination.y < bounds.bottom + _offset.y + (_distanceToBorder))
