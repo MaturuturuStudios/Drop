@@ -3,18 +3,7 @@
 /// <summary>
 /// Help item for showing enemies' information.
 /// </summary>
-[RequireComponent(typeof(TextMesh))]
-public class EnemyHelpItem : HelpItem {
-
-    /// <summary>
-    /// Reference to the object's TextMesh component.
-    /// </summary>
-	private TextMesh _textRenderer;
-
-	/// <summary>
-	/// Reference to the TextMesh Transform's component.
-	/// </summary>
-	private Transform _textRendererTransform;
+public class EnemyHelpItem : TextHelpItem {
 
 	/// <summary>
 	/// Reference to the parents's AIBase component.
@@ -26,19 +15,16 @@ public class EnemyHelpItem : HelpItem {
     /// </summary>
     private GameControllerIndependentControl _independentControl;
 
-	protected override void OnAwake() {
+	protected new void OnAwake() {
 		// Retrieves the desired components
-		_textRenderer = GetComponent<TextMesh>();
-		_textRendererTransform = _textRenderer.transform;
+		base.OnAwake();
 		_aiComponent = GetComponentInParent<AIBase>();
         _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
     }
 
-	protected override void OnUpdate() {
+	protected override string GetText() {
 		// Changes the size in the text
-		int size = _aiComponent.commonParameters.sizeLimitDrop;
-		_textRenderer.text = size.ToString();
-		_textRendererTransform.rotation = Camera.main.transform.rotation;
+		return _aiComponent.commonParameters.sizeLimitDrop.ToString();
 	}
 
     protected override bool IsSpecialTriggered() {
