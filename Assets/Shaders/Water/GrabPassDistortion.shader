@@ -1,5 +1,5 @@
-// Download latest version at http://www.console-dev.de
-Shader "Custom/GrabPass Distortion (Particle)"
+﻿// Download latest version at http://www.console-dev.de
+Shader "Custom/GrabPass Distortion"
 {
 	Properties
 	{
@@ -8,32 +8,30 @@ Shader "Custom/GrabPass Distortion (Particle)"
 		_DistanceFade ("Distance Fade (X=Near, Y=Far, ZW=Unused)", Float) = (20, 50, 0, 0)
 		[Toggle(MASK)] _MASK ("Texture Blue channel is Mask", Float) = 0
 		[Toggle(MIRROR_EDGE)] _MIRROR_EDGE ("Mirror screen borders", Float) = 0
+		[Enum(UnityEngine.Rendering.CullMode)] _CullMode ("Culling", Float) = 0
 
 		[Toggle(DEBUGUV)] _DEBUGUV ("Debug Texture Coordinates", Float) = 0
 		[Toggle(DEBUGDISTANCEFADE)] _DEBUGDISTANCEFADE ("Debug Distance Fade", Float) = 0
 	}
 
-	Category
+	SubShader
 	{
-		Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
+		Tags {"Queue" = "Transparent" "IgnoreProjector" = "True"}
 		Blend One Zero
-		Cull Off
 		Lighting Off
-		ZWrite Off
 		Fog { Mode Off }
-		AlphaTest Greater 0.001
+		ZWrite Off
 		LOD 200
-
-		SubShader
-		{
-			// See http://docs.unity3d.com/Manual/SL-GrabPass.html
-			// Will grab screen contents into a texture, but will only do that once per frame for
-			// the first object that uses the given texture name. 
-			GrabPass { "_GrabTexture" }
+		Cull [_CullMode]
+		
+		// See http://docs.unity3d.com/Manual/SL-GrabPass.html
+		// Will grab screen contents into a texture, but will only do that once per frame for
+		// the first object that uses the given texture name. 
+		GrabPass{ "_GrabTexture" }
 	
-			Pass
-			{  
-				CGPROGRAM
+		Pass
+		{  
+			CGPROGRAM
 				#pragma vertex vert
 				#pragma fragment frag
 				#pragma shader_feature MASK
@@ -42,11 +40,8 @@ Shader "Custom/GrabPass Distortion (Particle)"
 				#pragma shader_feature DEBUGDISTANCEFADE
 
 				#include "UnityCG.cginc"
-
-				#define ENABLE_CLIP 1
-				#include "GrabPassDistortion.cginc"			
-				ENDCG 
-			}
-		}	
+				#include "GrabPassDistortion.cginc"
+			ENDCG
+		}
 	}
 }

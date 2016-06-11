@@ -34,7 +34,7 @@ Shader "AirDistort" {
 		float2 offset = bump * _BumpAmt * _GrabTexture_TexelSize.xy;
 		i.uvgrab.xy = offset * i.uvgrab.z + i.uvgrab.xy;
 
-		half4 col = tex2Dproj(_GrabTexture, i.uvgrab.xyw);
+		half4 col = tex2Dproj(_GrabTexture, i.uvgrab.xyww);
 		half4 tint = tex2D(_MainTex, i.uvmain);
 		return col * tint;
 	}
