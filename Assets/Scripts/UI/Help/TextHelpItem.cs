@@ -16,10 +16,23 @@ public abstract class TextHelpItem : HelpItem {
 	/// </summary>
 	private Transform _textRendererTransform;
 
+	/// <summary>
+	/// Reference to the renderer for the text.
+	/// </summary>
+	private MeshRenderer _renderer;
+
+	/// <summary>
+	/// The sorting layer of the text. Used to separate it
+	/// from the graphic.
+	/// </summary>
+	private static readonly string SORTING_LAYER_NAME = "foreground";
+
 	protected override void OnAwake() {
 		// Retrieves the desired components
 		_textRenderer = GetComponent<TextMesh>();
+		_renderer = GetComponent<MeshRenderer>();
 		_textRendererTransform = _textRenderer.transform;
+		_renderer.sortingLayerID = SortingLayer.NameToID(SORTING_LAYER_NAME);
     }
 
 	protected override void OnUpdate() {
