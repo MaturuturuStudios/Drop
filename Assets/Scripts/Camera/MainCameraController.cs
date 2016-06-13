@@ -25,9 +25,46 @@ public class MainCameraController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Distance from player to camera X position will be allways the same
+    /// Distance from player to camera on Z, other edges will be allways the at the same distance
     /// </summary>
-    public Vector3 offset = new Vector3(0F, 0F, -7.5F);
+    [Range (0,20)]
+    public float zDistance = 7.5F;
+
+
+    /// <summary>
+    /// Camera raising position respect to the objective
+    /// </summary>
+    [Range(0, 1)]
+    public float raisingPosition = .5f;
+
+    /// <summary>
+    /// Look arround max distance
+    /// </summary>
+    [Range(0, 1)]
+    public float lookArroundDistance = .8F;
+
+
+    /// <summary>
+    /// Per cent of camera position exceded when drop size increse or decrease
+    /// </summary>
+    [Range(0, .5f)]
+    public float extraSizeWhenGrow = .2f;
+
+
+    /// <summary>
+    /// Distance that drop can move in go back state, once reached the distance, the state will return to default
+    /// </summary>
+    public float goBackMaxDistance = 3F;
+
+    /// <summary>
+    /// Extra distance of z when drop is size 1
+    /// </summary>
+    public float zDistortionDistancne = 4F;
+
+    /// <summary>
+    /// Max size where zDistortion will be used
+    /// </summary>
+    public int maxDistotionSize = 5;
 
 
     /// <summary>
@@ -79,20 +116,6 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public float velocityLookArround = 2f;
 
-    /// <summary>
-    /// Look arround max distance
-    /// </summary>
-    [Range(0,1)]
-    public float lookArroundDistance = .8F;
-
-
-
-    /// <summary>
-    /// Per cent of camera position exceded when drop size increse or decrease
-    /// </summary>
-    [Range (0,.5f)]
-    public float extraSizeToReach = .2f;
-
 
     /// <summary>
     /// Bound of camera liberty movement area
@@ -106,32 +129,15 @@ public class MainCameraController : MonoBehaviour {
         public float left = -10000.0f;
         public float right = 10000.0f;
     }
-
-
-    /// <summary>
-    /// Camera raising position respect to the objective
-    /// </summary>
-    public float raisingPosition = 2F;
-
-
-    /// <summary>
-    /// Distance that drop can move in go back state, once reached the distance, the state will return to default
-    /// </summary>
-    public float goBackMaxDistance = 3F;
-    
-    /// <summary>
-    /// Extra distance of z when drop is size 1
-    /// </summary>
-    public float zDistortion = 4F;
-
-    /// <summary>
-    /// Max size where zDistortion will be used
-    /// </summary>
-    public int maxDistotionSize = 5;
     #endregion
 
     #region Private Attributes
 
+
+    /// <summary>
+    /// Camera State
+    /// </summary>
+    private CameraState _cameraState = CameraState.Default;
 
     /// <summary>
     /// Reference to the independent control component from the scene's game controller.
@@ -163,6 +169,46 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
+    /// Reference to current caracter size
+    /// </summary>
+    private float _dropSize;
+
+
+    /// <summary>
+    /// For check if drop has changed size
+    /// </summary>
+    private float _lastDropSize;
+
+    /// <summary>
+    /// Offset Reference
+    /// </summary>
+    private Vector3 _offset;
+
+
+    /// <summary>
+    /// Raising position deèndign on the size
+    /// </summary>
+    private Vector3 _raisingPositionSized;
+
+
+    /// <summary>
+    /// Extra size increased when growing
+    /// </summary>
+    private float _extraSizeDistance = 0;
+
+
+    /// <summary>
+    /// Distance from the drop position to out of the screen
+    /// </summary>
+    private float _distanceToBorder = 1F;
+
+    /// <summary>
+    /// Extra distance of z sized
+    /// </summary>
+    private float _zDistortionSized;
+
+
+    /// <summary>
     /// Bounds exceded controll on X
     /// </summary>
     private float excededX = 0F;
@@ -173,28 +219,17 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private float excededY = 0F;
 
-    /// <summary>
-    /// Offset Reference
-    /// </summary>
-    private Vector3 _offset;
-
 
     /// <summary>
     /// Look Arround Offset
     /// </summary>
-    public Vector3 _lookArroundOffset;
+    private Vector3 _lookArroundOffset;
 
 
     /// <summary>
-    /// Reference to current caracter size
+    /// Check for camera in locked area
     /// </summary>
-    private float _dropSize;
-
-
-    /// <summary>
-    /// For check if drop has changed size
-    /// </summary>
-    private float _lastDropSize;
+    private Vector3 _lockPosition;
 
 
     /// <summary>
@@ -207,12 +242,6 @@ public class MainCameraController : MonoBehaviour {
     /// Check for camera in locked area
     /// </summary>
     private bool _resetLockState = false;
-
-
-    /// <summary>
-    /// Check for camera in locked area
-    /// </summary>
-    private Vector3 _lockPosition;
 
     /// <summary>
     /// Camera final movement velocity on XY
@@ -235,36 +264,15 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Camera final movement velocity on X when goes back from look arroun and lock area
     /// </summary>
-    private float _zVelocityGoBack;
-   
+    private float _zVelocityGoBack;  
 
-
-    /// <summary>
-    /// Raising position deèndign on the size
-    /// </summary>
-    private Vector3 _raisingPositionSized;
-
-
-    /// <summary>
-    /// Extra size increased when growing
-    /// </summary>
-    private float _extraSizeDistance = 0;
-
-    /// <summary>
-    /// Camera State
-    /// </summary>
-    public CameraState _cameraState = CameraState.Default;
-
-    /// <summary>
-    /// Distance from the drop position to out of the screen
-    /// </summary>
-    private float _distanceToBorder = 1F;
 
     /// <summary>
     /// Custom ratio value
     /// </summary>
     [HideInInspector]
     public float _invertRatio;
+
 
     /// <summary>
     /// Custom ratio value
@@ -282,11 +290,6 @@ public class MainCameraController : MonoBehaviour {
     /// Controls if drop is moving
     /// </summary>
     private bool _moving = false;
-
-    /// <summary>
-    /// Extra distance of z sized
-    /// </summary>
-    private float _zDistortionSized;
     #endregion
 
     #region Methods
@@ -316,7 +319,7 @@ public class MainCameraController : MonoBehaviour {
     void Start() {
 
         // Calculate offset
-        _offset = new Vector3(offset.x, offset.y, offset.z - zDistortion);
+        _offset = new Vector3(0, 0, -zDistance - zDistortionDistancne);
 
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
@@ -342,24 +345,25 @@ public class MainCameraController : MonoBehaviour {
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
         if (_dropSize < maxDistotionSize) {
-            _zDistortionSized = zDistortion * ((maxDistotionSize - _dropSize - 1) / maxDistotionSize);
-            _vaca.intensity = 0.1f + (0.03f * (5 - _dropSize));
+            _zDistortionSized = zDistortionDistancne * ((maxDistotionSize - _dropSize + 1) / maxDistotionSize);
+            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f + (0.03f * (5 - _dropSize + 1)), 0.01f * Time.deltaTime);
         } else {
             _zDistortionSized = 0;
+            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f + (0.03f * (5 - _dropSize)), 0.01f * Time.deltaTime);
             _vaca.intensity = 0.1f;
         }
 
         _dof.focalTransform = target.transform;
 
         // Calculae raising position sized
-        _raisingPositionSized = new Vector3(0, raisingPosition * _dropSize, 0);
+        _raisingPositionSized = new Vector3(0, raisingPosition * _distanceToBorder, 0);
 
         // Check if drop is moving
         _moving = (target.transform.position - _lastPosition).magnitude > 0.5;
 
         // Update offset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
-            _offset = new Vector3(_dropSize * offset.x, _dropSize * offset.y, _dropSize * (offset.z - _zDistortionSized));
+            _offset = new Vector3(0, 0, _dropSize * (-zDistance - _zDistortionSized));
         }
 
 
@@ -390,7 +394,7 @@ public class MainCameraController : MonoBehaviour {
         // Changeing size
         if (_lastDropSize != _dropSize) {
             // Set the extra distance to reach
-            _extraSizeDistance = _dropSize * (1 + extraSizeToReach) * (offset.z - _zDistortionSized);
+            _extraSizeDistance = (1 + extraSizeWhenGrow) * (_offset.z);
             _extraSizeDistance -= _offset.z;
 
             // Look if drop is incresing or decreasing
@@ -567,6 +571,50 @@ public class MainCameraController : MonoBehaviour {
         }
     }
 
+
+    /// <summary>
+    /// Checks if the camera vision area is out of the bound and stops it at bound exceded
+    /// </summary>
+    private Vector3 CheckBounds(Vector3 destination) {
+
+        // Reset bounds exceded to recalculate
+        excededX = excededY = 0;
+
+        // Calculate if it is out of bounds _distanceToBorder
+        _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
+        _distanceToBorder -= _dropSize;
+        // If right bound exeded
+        if (destination.x < bounds.left + _distanceToBorder)
+            excededX = destination.x = bounds.left + _distanceToBorder;
+
+        // If top bound exceded
+        else if (destination.x > bounds.right - _distanceToBorder) {
+            excededX = destination.x = bounds.right - _distanceToBorder;
+
+            // If left bound exeded
+            if (excededX < bounds.left + _distanceToBorder)
+                excededX = destination.x = bounds.left + _distanceToBorder;
+        }
+
+        _distanceToBorder *= _invertRatio;
+
+        // If bottom bound exceded
+        if (destination.y < bounds.bottom + _offset.y + (_distanceToBorder))
+            excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
+
+        // If top bound exceded
+        else if (destination.y > bounds.top - (_distanceToBorder)) {
+            excededY = destination.y = bounds.top - (_distanceToBorder);
+
+            // If bottom bound exceded
+            if (excededY < bounds.bottom + _offset.y + (_distanceToBorder))
+                excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
+        }
+
+        return destination;
+    }
+
+
     /// <summary>
     /// Set the objective of the camera
     /// </summary>
@@ -613,6 +661,7 @@ public class MainCameraController : MonoBehaviour {
 
         }
     }
+
 
     /// <summary>
     /// Locks the camera in a position
@@ -682,49 +731,6 @@ public class MainCameraController : MonoBehaviour {
         Gizmos.color = Color.yellow;
         Gizmos.matrix = camera.transform.localToWorldMatrix;
         Gizmos.DrawFrustum(Vector3.zero, camera.fieldOfView, camera.farClipPlane, camera.nearClipPlane, camera.aspect);
-    }
-
-
-    /// <summary>
-    /// Checks if the camera vision area is out of the bound and stops it at bound exceded
-    /// </summary>
-    private Vector3 CheckBounds(Vector3 destination) {
-
-        // Reset bounds exceded to recalculate
-        excededX = excededY = 0;
-
-        // Calculate if it is out of bounds _distanceToBorder
-        _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
-        _distanceToBorder -= _dropSize;
-        // If right bound exeded
-        if (destination.x < bounds.left + _distanceToBorder)
-            excededX = destination.x = bounds.left + _distanceToBorder;
-
-        // If top bound exceded
-        else if (destination.x > bounds.right - _distanceToBorder) {
-            excededX = destination.x = bounds.right - _distanceToBorder;
-
-            // If left bound exeded
-            if (excededX < bounds.left + _distanceToBorder)
-                excededX = destination.x = bounds.left + _distanceToBorder;
-        }
-
-        _distanceToBorder *= _invertRatio;
-
-        // If bottom bound exceded
-        if (destination.y < bounds.bottom + _offset.y + (_distanceToBorder))
-            excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
-
-        // If top bound exceded
-        else if (destination.y > bounds.top - (_distanceToBorder)) {
-            excededY = destination.y = bounds.top - (_distanceToBorder);
-
-            // If bottom bound exceded
-            if (excededY < bounds.bottom + _offset.y + (_distanceToBorder))
-                excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
-        }
-
-        return destination;
     }
     #endregion
 }
