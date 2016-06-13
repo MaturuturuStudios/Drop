@@ -16,13 +16,10 @@ public class GoAwayParameters {
     /// </summary>
     public float speed = 10;
     /// <summary>
-    /// Distance tolerance for the entity to look for a new point in the path.
-    /// </summary>
-    public float maxDistanceToGoal = 0.1f;
-    /// <summary>
     /// If enabled, the entity will rotate to face the end point
     /// </summary>
     public bool useOrientation = false;
+    public bool useOrientationFinalPosition = true;
     /// <summary>
     /// 
     /// </summary>
@@ -46,17 +43,22 @@ public class GoAway : StateMachineBehaviour {
     /// <summary>
     /// Minimum distance to goal
     /// </summary>
-    private float _minimumDistance;
+    //private float _minimumDistance;
+    /// <summary>
+    /// Tell if arrived to the target point (but maybe not at the desired rotation)
+    /// </summary>
+    private bool _positionTargeted;
     #endregion
 
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         animator.SetBool("GoAway", false);
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
-        _minimumDistance = GetMinimumDistance() + parameters.maxDistanceToGoal;
+        //_minimumDistance = GetMinimumDistance() + parameters.maxDistanceToGoal;
 
 		// Moves the enumerator to the first/next position
 		parameters.endPoint.MoveNext();
+        _positionTargeted = false;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -68,12 +70,78 @@ public class GoAway : StateMachineBehaviour {
         animator.SetBool("Near", false);
     }
 
-    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {        
+    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         // Saves the original position
-        Vector3 originalPosition = commonParameters.enemy.transform.position;
+        Vector3 move = Vector3.zero;
+        //only move if not reached the point
+        if (!_positionTargeted) {
+            Vector3 originalPosition = commonParameters.enemy.transform.position;
+            Vector3 finalPosition = MoveEnemy(originalPosition);
+            RotateEnemy(originalPosition, finalPosition);
+
+            //move the entity
+            move = commonParameters.enemy.transform.forward * parameters.speed * Time.deltaTime;
+        }
+
+        //set gravity and move
+        if (commonParameters.onFloor) {
+            move += (commonParameters.enemy.transform.up * -1) * 25 * Time.deltaTime;
+        }
+        _controller.Move(move);
+
+        CheckTargetPoint(animator);
+    }
+
+    /// <summary>
+    /// Check if reached the desired point
+    /// </summary>
+    /// <param name="animator"></param>
+    private void CheckTargetPoint(Animator animator) {
+        //reached point!
+        if (commonParameters.AI.CheckTargetPoint(parameters.endPoint.Current.position, commonParameters.minimumWalkingDistance)) {
+            Transform last = parameters.endPoint.Current;
+            int lastPoint=parameters.endPoint.points.Length-1;
+
+            //end of path?
+            if (last != parameters.endPoint.points[lastPoint]) {
+                //don't want to stay in the point, continue!
+                _positionTargeted = false;
+                parameters.endPoint.MoveNext();
+            }
+                //if not...
+            else {
+                //don't move, only rotate
+                _positionTargeted = true;
+
+                if (parameters.useOrientationFinalPosition) {
+                    //check if rotation is already targeted
+                    Quaternion targetRotation = parameters.endPoint.Current.rotation;
+                    if (commonParameters.AI.CheckTargetRotation(targetRotation, commonParameters.toleranceDegreeToGoal)) {
+                        //yes? change to "recolect"
+                        animator.SetTrigger("Recolect");
+                    } else {
+                        //no? rotate it
+                        RotateEnemy(targetRotation);
+                    }
+                } else {
+                    animator.SetTrigger("Recolect");
+                }
+
+            }
+
+        } else {
+            _positionTargeted = false;
+        }
+    }
+
+    /// <summary>
+    /// Move the enemy
+    /// </summary>
+    /// <param name="originalPosition"></param>
+    /// <returns></returns>
+    private Vector3 MoveEnemy(Vector3 originalPosition) {
         Vector3 finalPosition = originalPosition;
         Vector3 target = parameters.endPoint.Current.position;
-        
 
         // Moves the entity using the right function
         switch (parameters.followType) {
@@ -83,49 +151,39 @@ public class GoAway : StateMachineBehaviour {
             case FollowType.Lerp:
                 finalPosition = Vector3.Lerp(originalPosition, target, parameters.speed * Time.deltaTime);
                 break;
-            default:
-                return;
         }
 
         if (commonParameters.onFloor)
             finalPosition.y = originalPosition.y;
 
-        // Rotates the entity
-        Vector3 relativePos = finalPosition - originalPosition;
-        Quaternion rotation = Quaternion.LookRotation(relativePos);
-        Quaternion finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, parameters.rotationVelocity * Time.deltaTime);
-        commonParameters.enemy.transform.rotation = finalRotation;
-        
-        Vector3 move = commonParameters.enemy.transform.forward * parameters.speed * Time.deltaTime;
-        //move the entity, and set the gravity
-        if (commonParameters.onFloor) {
-            move += (commonParameters.enemy.transform.up * -1) * 25 * Time.deltaTime;
-        }
+        return finalPosition;
+    }
 
-        _controller.Move(move);
+    /// <summary>
+    /// Rotate the entity to target
+    /// The target is the new position of the entity after moving
+    /// </summary>
+    /// <param name="originalPosition">position the entity is</param>
+    /// <param name="finalPosition">target point</param>
+    private void RotateEnemy(Vector3 originalPosition, Vector3 finalPosition) {
+        if (parameters.useOrientation) {
+            Quaternion finalRotation = Quaternion.identity;
 
-        // Checks if the entity is close enough to the target point
-        Vector3 position = commonParameters.enemy.transform.position;
-        //ignore axis if on floor
-        if (commonParameters.onFloor)
-            position.y = target.y;
-        float squaredDistance = (position - target).sqrMagnitude;
-        float distanceGoal = _minimumDistance * _minimumDistance;
-        // The squared distance is used because a multiplication is cheaper than a square root
-        if (squaredDistance < distanceGoal) { 
-            Transform last = parameters.endPoint.Current;
-			parameters.endPoint.MoveNext();
-            if (last == parameters.endPoint.Current) {
-                animator.SetTrigger("Recolect");
-            }
+            Vector3 relativePos = finalPosition - originalPosition;
+            Quaternion rotation = Quaternion.LookRotation(relativePos);
+            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, parameters.rotationVelocity * Time.deltaTime);
+
+            commonParameters.enemy.transform.rotation = finalRotation;
         }
     }
 
-    private float GetMinimumDistance() {
-        float time = 360 / parameters.rotationVelocity;
-        float longitude = parameters.speed * time;
-        float radius = longitude / (2 * Mathf.PI);
-        return radius;
+    private void RotateEnemy(Quaternion target) {
+        if (parameters.useOrientation) {
+            //float maxDegrees = 360 / parameters.rotationVelocity;
+            Quaternion finalRotation = Quaternion.identity;
+            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, target, parameters.rotationVelocity * Time.deltaTime);
+            commonParameters.enemy.transform.rotation = finalRotation;
+        }
     }
 
     #endregion

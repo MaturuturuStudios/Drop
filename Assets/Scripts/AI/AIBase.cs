@@ -228,7 +228,6 @@ public class AIBase : MonoBehaviour {
     /// <returns></returns>
     public bool CheckTargetRotation(Quaternion target, float minimumDegree) {
         float angle = Quaternion.Angle(commonParameters.enemy.transform.rotation, target);
-        Debug.Log(angle);
         return angle < commonParameters.toleranceDegreeToGoal;
     }
 
