@@ -31,7 +31,7 @@ public interface CharacterShootListener {
 /// Adapter for the CharacterShootListener interface used to
 /// avoid forcing each class to implement all it's methods.
 /// </summary>
-public class CharacterShootAdapter : CharacterShootListener {
+public class CharacterShootAdapter : MonoBehaviour, CharacterShootListener {
 
     public void OnEnterShootMode(CharacterShoot character) {
         // Do nothing

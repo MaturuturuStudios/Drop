@@ -25,7 +25,7 @@ public interface CharacterFusionListener {
 /// Adapter for the CharacterFusionListener interface used to
 /// avoid forcing each class to implement all it's methods.
 /// </summary>
-public class CharacterFusionAdapter : CharacterFusionListener {
+public class CharacterFusionAdapter : MonoBehaviour, CharacterFusionListener {
 
 	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {
 		// Do nothing

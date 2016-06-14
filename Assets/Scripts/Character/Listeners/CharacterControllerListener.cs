@@ -44,7 +44,7 @@ public interface CharacterControllerListener {
 /// Adapter for the CharacterControllerListener interface used to
 /// avoid forcing each class to implement all it's methods.
 /// </summary>
-public class CharacterControllerAdapter : CharacterControllerListener {
+public class CharacterControllerAdapter : MonoBehaviour, CharacterControllerListener {
 
 	public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
 		// Do nothing
