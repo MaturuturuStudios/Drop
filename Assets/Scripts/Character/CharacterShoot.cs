@@ -158,7 +158,7 @@ public class CharacterShoot : MonoBehaviour {
             if (!shootmode ) {
                 shootmode = true;
                 st.enabled = true;
-                _sizeshot = 1;
+                //_sizeshot = 1;
                 ccc.Parameters = CharacterControllerParameters.ShootingParameters;
 
                 // Notifies the listeners

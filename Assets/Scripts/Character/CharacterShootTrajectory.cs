@@ -5,9 +5,15 @@ using System.Collections.Generic;
 /// <summary>
 /// This class draws the shoot trajectory 
 /// </summary>
-public class CharacterShootTrajectory : MonoBehaviour
-{
+public class CharacterShootTrajectory : MonoBehaviour {
     #region Private Attributes
+
+    /// <summary>
+    /// Variables to keep size shoot of the drop shooted and line renderer width 
+    /// </summary>
+    private float _linewidth;
+    private float _sizeindicator;
+    private float _particlesizekeeped;
 
     /// <summary>
     /// Variable to knonw if we pressed the horizontal cross 
@@ -256,6 +262,9 @@ public class CharacterShootTrajectory : MonoBehaviour
     void Start() {      
         this.enabled = false;
 
+        _linewidth = 1;
+        _sizeindicator = 1;
+
         _speed = 0;
         _oldspeed = 0;
         _radio = this.GetComponent<CharacterController>().radius;
@@ -300,8 +309,7 @@ public class CharacterShootTrajectory : MonoBehaviour
         //_listtrajectory.name = " List Trajectory ";
         //_listtrajectory.transform.parent = _ccc.transform;
 
-        _renderwidth = 1;
-        
+        _renderwidth = _linewidth;
         
 
        /* for (int i = 0; i < numOfTrajectoryPoints; i++)  {
@@ -352,19 +360,17 @@ public class CharacterShootTrajectory : MonoBehaviour
     /// </summary>
     public void OnEnable() {
        
-        _renderwidth = 1;
-
-        _particlerainbowradious = 0.5f;
+        _renderwidth = _linewidth;
 
         _speedAnimation = speedrainbow*this.GetComponent<CharacterSize>().GetSize();
 
         _finish = false;
 
-        _shootsize = 1;
+        _shootsize = _sizeindicator;
         _endscript = false;
         
         _sphere = (GameObject)Instantiate(TrajectoryParticlePrefeb);
-        //sphere.GetComponent<Transform>().parent = this.transform;
+        _sphere.transform.localScale = new Vector3(_shootsize, _shootsize, _shootsize);
         _sphere.SetActive(false);
 
         _ball = (GameObject)Instantiate(TrajectorySizeIndicator);
@@ -396,7 +402,10 @@ public class CharacterShootTrajectory : MonoBehaviour
     public void OnDisable() {
 
         _animshot = false;
-        _renderwidth = 1;
+        //_renderwidth = 1;
+
+        _linewidth= _renderwidth;
+        _sizeindicator=_shootsize;
 
         if (_ball != null)
             _ball.SetActive(false);
@@ -602,7 +611,7 @@ public class CharacterShootTrajectory : MonoBehaviour
             }
         }
         _linerenderer.SetVertexCount(0);
-        _linerenderer.SetWidth( 1,1);
+        _linerenderer.SetWidth(_linewidth, _linewidth);
         _sphere.SetActive( false);
         _ball.SetActive(false);
         //Destroy(rainparticle);
@@ -627,8 +636,8 @@ public class CharacterShootTrajectory : MonoBehaviour
         if (_finalnextWaypoint ==0) {           
             _boolrender[_finalnextWaypoint] = false;
             _animshot = false;
-            _renderwidth = 1;
-            _linerenderer.SetWidth(1, 1);
+            _linewidth=_renderwidth;
+            _linerenderer.SetWidth(_linewidth, _linewidth);
             this.GetComponent<CharacterShoot>().Endshootmode();
             _ccc.Parameters = null;
             this.enabled = false;
