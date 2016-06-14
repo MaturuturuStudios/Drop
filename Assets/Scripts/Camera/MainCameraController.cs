@@ -35,7 +35,8 @@ public class MainCameraController : MonoBehaviour {
     /// Camera raising position respect to the objective
     /// </summary>
     [Range(0, 1)]
-    public float raisingPosition = .5f;
+    public float yOffset = .5f;
+
 
     /// <summary>
     /// Look arround max distance
@@ -52,14 +53,10 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Distance that drop can move in go back state, once reached the distance, the state will return to default
-    /// </summary>
-    public float goBackMaxDistance = 3F;
-
-    /// <summary>
     /// Extra distance of z when drop is size 1
     /// </summary>
-    public float zDistortionDistancne = 4F;
+    public float zDistortionDistance = 5F;
+
 
     /// <summary>
     /// Max size where zDistortion will be used
@@ -78,6 +75,7 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public float zVelocity = 5f;
 
+
     /// <summary>
     /// Camera movement velocity on XY changes current player
     /// </summary>
@@ -89,10 +87,12 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     public float zVelocityChangeDrop = 8f;
 
+
     /// <summary>
     /// Camera movement velocity on XY when changes size
     /// </summary>
     public float zVelocityChangeSizeFast = 15f;
+
 
     /// <summary>
     /// Camera movement velocity on Z when changes size
@@ -104,6 +104,7 @@ public class MainCameraController : MonoBehaviour {
     /// Camera movement velocity on XY when LockArea state
     /// </summary>
     public float velocityLockArea = 2f;
+
 
     /// <summary>
     /// Camera movement velocity on z when LockArea state
@@ -139,10 +140,18 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private CameraState _cameraState = CameraState.Default;
 
+
     /// <summary>
     /// Reference to the independent control component from the scene's game controller.
     /// </summary>
     private GameControllerIndependentControl _independentControl;
+
+
+    /// <summary>
+    /// Reference to the input control component from the scene's game controller.
+    /// </summary>
+    private GameControllerInput _inputControl;
+
 
     /// <summary>
     /// Reference depth of field
@@ -179,16 +188,11 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private float _lastDropSize;
 
+
     /// <summary>
     /// Offset Reference
     /// </summary>
     private Vector3 _offset;
-
-
-    /// <summary>
-    /// Raising position deèndign on the size
-    /// </summary>
-    private Vector3 _raisingPositionSized;
 
 
     /// <summary>
@@ -201,6 +205,7 @@ public class MainCameraController : MonoBehaviour {
     /// Distance from the drop position to out of the screen
     /// </summary>
     private float _distanceToBorder = 1F;
+
 
     /// <summary>
     /// Extra distance of z sized
@@ -243,6 +248,7 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private bool _resetLockState = false;
 
+
     /// <summary>
     /// Camera final movement velocity on XY
     /// </summary>
@@ -275,12 +281,6 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Custom ratio value
-    /// </summary>
-    private Vector3 _goBackStartPosition;
-
-
-    /// <summary>
     /// Last position to check if drop is moving
     /// </summary>
     private Vector3 _lastPosition;
@@ -302,6 +302,9 @@ public class MainCameraController : MonoBehaviour {
         // Looks for the independent controller component
         _independentControl = FindObjectOfType<GameControllerIndependentControl>();
 
+        // Looks for the independent controller component
+        _inputControl = FindObjectOfType<GameControllerInput>();
+
         // Get component depth of field
         _dof = GetComponent<DepthOfField>();
 
@@ -319,7 +322,7 @@ public class MainCameraController : MonoBehaviour {
     void Start() {
 
         // Calculate offset
-        _offset = new Vector3(0, 0, -zDistance - zDistortionDistancne);
+        _offset = new Vector3(0, 0, -zDistance - zDistortionDistance);
 
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
@@ -344,28 +347,26 @@ public class MainCameraController : MonoBehaviour {
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
+        // Sets distortion distance and Vignette value
         if (_dropSize < maxDistotionSize) {
-            _zDistortionSized = zDistortionDistancne * ((maxDistotionSize - _dropSize + 1) / maxDistotionSize);
-            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f + (0.03f * (5 - _dropSize + 1)), 0.01f * Time.deltaTime);
+            _zDistortionSized = zDistortionDistance * ((maxDistotionSize - _dropSize + 1) / maxDistotionSize);
+            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f + (0.03f * (5 - _dropSize + 1)), 0.05f * Time.deltaTime);
         } else {
             _zDistortionSized = 0;
-            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f + (0.03f * (5 - _dropSize)), 0.01f * Time.deltaTime);
-            _vaca.intensity = 0.1f;
+            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f , 0.05f * Time.deltaTime);
         }
 
+        // Set depth of field values
         _dof.focalTransform = target.transform;
 
-        // Calculae raising position sized
-        _raisingPositionSized = new Vector3(0, raisingPosition * _distanceToBorder, 0);
-
         // Check if drop is moving
-        _moving = (target.transform.position - _lastPosition).magnitude > 0.5;
+        _moving = _inputControl.isMoving();
 
         // Update offset and boundary depends of the size
         if (!target.GetComponent<CharacterControllerCustom>().State.IsFlying) {
-            _offset = new Vector3(0, 0, _dropSize * (-zDistance - _zDistortionSized));
+            _offset = new Vector3(0, yOffset * _distanceToBorder, _dropSize * (-zDistance - _zDistortionSized));
         }
-
+        
 
         // Update the current status
         int statusModifierControl = 0;
@@ -404,8 +405,7 @@ public class MainCameraController : MonoBehaviour {
             _cameraState = CameraState.ChangeSizeFast;
         }
         _lastDropSize = _dropSize;
-
-
+        
         // Looking arround
         if (_lookArroundOffset != Vector3.zero && !_moving) {
             _cameraState = CameraState.LookArround;
@@ -423,32 +423,20 @@ public class MainCameraController : MonoBehaviour {
             }
             ++statusModifierControl;
         }
-
+        
         // Lock area
         if (_cameraLocked) {
             _cameraState = CameraState.LockArea;
             ++statusModifierControl;
         }
 
-        if (_cameraState == CameraState.GoBackFromArea) {
-            // When drop moves to mucho from the start of go back position
-            if ((target.transform.position - _goBackStartPosition).magnitude > goBackMaxDistance) {
-                _cameraState = CameraState.Default;
-            }
-        }
+        // Going Back
+        if ((_cameraState == CameraState.GoBackFromArea || _cameraState == CameraState.GoBackFromArround) && _moving) {
+            // When drop moves to much from the start of go back position
+            _cameraState = CameraState.Default;
+        }        
 
-        if (_cameraState == CameraState.GoBackFromArround) {
-            if (_moving) {
-                _cameraState = CameraState.Default;
-            } else {
-                // When drop moves to mucho from the start of go back position
-                if ((target.transform.position - _goBackStartPosition).magnitude < 0.5f) {
-                    _cameraState = CameraState.Default;
-                }
-            }
-        }
-
-        // default state
+        // Default state
         if (statusModifierControl == 0 && _cameraState != CameraState.GoBackFromArea && _cameraState != CameraState.GoBackFromArround) {
             _cameraState = CameraState.Default;
         }
@@ -514,8 +502,6 @@ public class MainCameraController : MonoBehaviour {
             _velocityGoBack = velocityLockArea;
             _zVelocityGoBack = zVelocityLockArea;
 
-            _goBackStartPosition = target.transform.position;
-
             _cameraState = CameraState.GoBackFromArea;
         }
     }
@@ -529,9 +515,6 @@ public class MainCameraController : MonoBehaviour {
         Vector3 destination = target.transform.position + _offset;
 
         // Set destination depending of the camera status
-
-        // Add rasing position
-        destination += _raisingPositionSized;
 
         // Calculate look arround position        
         if (_cameraState == CameraState.LookArround) {
@@ -637,9 +620,9 @@ public class MainCameraController : MonoBehaviour {
 
                 // Get offset
                 if (_lookArroundOffset.y > 0)
-                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) - _raisingPositionSized.y) / (_distanceToBorder * lookArroundDistance );
+                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) - _offset.y) / (_distanceToBorder * lookArroundDistance );
                 else if (_lookArroundOffset.y < 0)
-                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) + _raisingPositionSized.y) / (_distanceToBorder * lookArroundDistance );
+                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) + _offset.y) / (_distanceToBorder * lookArroundDistance );
                 
                 _lookArroundOffset.x *= Camera.main.aspect;
                 _lookArroundOffset *= lookArroundDistance * _distanceToBorder;
@@ -706,9 +689,6 @@ public class MainCameraController : MonoBehaviour {
         // Set go back velocity the same as lock Camera velocity
         _velocityGoBack = velocityLockArea;
         _zVelocityGoBack = zVelocityLockArea;
-
-        // Save the start position of drop when starts to go back
-        _goBackStartPosition = target.transform.position;
 
         _cameraState = CameraState.GoBackFromArea;
     }

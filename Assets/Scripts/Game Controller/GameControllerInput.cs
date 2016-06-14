@@ -27,10 +27,15 @@ public class GameControllerInput : MonoBehaviour {
     /// Control if the input is listening
     /// </summary>
     private bool _enabled;
-	#endregion
 
-	#region Methods
-	void Start() {
+    /// <summary>
+    /// Control if there is input moving
+    /// </summary>
+    private bool _moving;
+    #endregion
+
+    #region Methods
+    void Start() {
 		// Retrives the independent control component
 		_switcher = GetComponent<GameControllerIndependentControl>();
 		_mainCameraController = GetComponentInChildren<MainCameraController>();
@@ -46,7 +51,9 @@ public class GameControllerInput : MonoBehaviour {
 		if (Input.GetButtonDown(Axis.Start))
 			_ui.PauseGame();
 
-		if (_enabled && (_ui == null || !_ui.IsMenuActive())) {
+        _moving = false;
+
+        if (_enabled && (_ui == null || !_ui.IsMenuActive())) {
 			// Retrieves current character's components
 			CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 			CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
@@ -56,9 +63,12 @@ public class GameControllerInput : MonoBehaviour {
             float hInput = Input.GetAxis(Axis.Horizontal);
 			cccp.HorizontalInput = hInput;
 
-			// Vertical input
-			float vInput = Input.GetAxis(Axis.Vertical);
+            // Vertical input
+            float vInput = Input.GetAxis(Axis.Vertical);
 			cccp.VerticalInput = vInput;
+
+            // Controls if player wants to move
+            _moving = hInput != 0 || vInput != 0;
 
             // Jump input
             if (Input.GetButtonDown(Axis.Jump)) {
@@ -161,6 +171,13 @@ public class GameControllerInput : MonoBehaviour {
     /// </summary>
     public void ResumeInput() {
         _enabled = true;
+    }
+
+    /// <summary>
+    /// Indicates if there is moving input
+    /// </summary>
+    public bool isMoving() {
+        return _moving;
     }
     #endregion
 }
