@@ -394,8 +394,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         _animshot = false;
         //_renderwidth = 1;
-
-        _linewidth= _renderwidth;
+     
         _sizeindicator=_shootsize;
 
         if (_ball != null)
@@ -417,7 +416,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         if (_endscript) {
             _animshot = true;
             QuitTrajectory();
-            Drawlinerenderer();         
+            Drawlinerenderer();           
         }
         else {
             if (!_animshot) {
@@ -602,7 +601,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
             }
         }
         _linerenderer.SetVertexCount(0);
-        _linerenderer.SetWidth(_linewidth, _linewidth);
+        _linerenderer.SetWidth(1, 1);
+        _shootsize = 1;
+        _linewidth = 1;
         _sphere.SetActive( false);
         _ball.SetActive(false);
         //Destroy(rainparticle);
