@@ -30,11 +30,43 @@ public class WaterRepulsion : LaunchCharacter {
     /// Bounds of the water
     /// </summary>
     private Bounds _ownCollider;
-    #endregion
 
-    #region Methods
-    // Use this for initialization
-    void Start () {
+	/// <summary>
+	/// List of listeners registered to this component's events.
+	/// </summary>
+	private List<WaterRepulsionListener> _listeners = new List<WaterRepulsionListener>();
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// Subscribes a listener to the components's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(WaterRepulsionListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the components's events.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(WaterRepulsionListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
+	}
+
+	// Use this for initialization
+	void Start () {
         //get the collider
         _ownCollider = GetComponent<Collider>().bounds;
         //create list
@@ -100,8 +132,13 @@ public class WaterRepulsion : LaunchCharacter {
 			Vector3 position=drop.transform.position;
             position.z = 0;
             ParticleEnter(position, scale);
-			
-        }
+
+			// Notifies the listeners
+			foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
+				listener.OnWaterEnter(this, drop);
+			foreach (WaterRepulsionListener listener in _listeners)
+				listener.OnWaterEnter(this, drop);
+		}
     }
 
     /// <summary>
@@ -135,8 +172,15 @@ public class WaterRepulsion : LaunchCharacter {
 
         //send it flying (stop previous flying)
         controller.StopFlying();
-        controller.SendFlying(GetNeededVelocityVector());
-    }
+		Vector3 velocity = GetNeededVelocityVector();
+        controller.SendFlying(velocity);
+
+		// Notifies the listeners
+		foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
+			listener.OnWaterExit(this, drop, velocity);
+		foreach (WaterRepulsionListener listener in _listeners)
+			listener.OnWaterExit(this, drop, velocity);
+	}
 
 	
 
