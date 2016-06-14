@@ -46,23 +46,23 @@ public interface CharacterControllerListener {
 /// </summary>
 public class CharacterControllerAdapter : MonoBehaviour, CharacterControllerListener {
 
-	public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
+	public virtual void OnBeginJump(CharacterControllerCustom ccc, float delay) {
 		// Do nothing
 	}
 
-	public void OnPerformJump(CharacterControllerCustom ccc) {
+	public virtual void OnPerformJump(CharacterControllerCustom ccc) {
 		// Do nothing
 	}
 
-	public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
+	public virtual void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		// Do nothing
 	}
 
-	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
+	public virtual void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		// Do nothing
 	}
 
-	public void OnWallJump(CharacterControllerCustom ccc) {
+	public virtual void OnWallJump(CharacterControllerCustom ccc) {
 		// Do nothing
 	}
 }

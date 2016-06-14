@@ -33,15 +33,15 @@ public interface CharacterShootListener {
 /// </summary>
 public class CharacterShootAdapter : MonoBehaviour, CharacterShootListener {
 
-    public void OnEnterShootMode(CharacterShoot character) {
+    public virtual void OnEnterShootMode(CharacterShoot character) {
         // Do nothing
     }
 
-    public void OnExitShootMode(CharacterShoot character) {
+    public virtual void OnExitShootMode(CharacterShoot character) {
         // Do nothing
     }
 
-    public void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
+    public virtual void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
         // Do nothing
     }
 }

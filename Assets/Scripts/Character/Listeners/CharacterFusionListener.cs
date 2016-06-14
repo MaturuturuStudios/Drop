@@ -27,11 +27,11 @@ public interface CharacterFusionListener {
 /// </summary>
 public class CharacterFusionAdapter : MonoBehaviour, CharacterFusionListener {
 
-	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {
+	public virtual void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {
 		// Do nothing
 	}
 
-	public void OnEndFusion(CharacterFusion finalCharacter) {
+	public virtual void OnEndFusion(CharacterFusion finalCharacter) {
 		// Do nothing
 	}
 }
