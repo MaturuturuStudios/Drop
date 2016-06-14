@@ -215,6 +215,12 @@ public class CharacterShootTrajectory : MonoBehaviour {
     public GameObject particleRainbow;
 
     public new LineRenderer renderer;
+
+    /// <summary>
+    /// Variable to set the animation speed when use j,l or cross in the game pad
+    /// </summary>
+    public float looking=1;
+
     /// <summary>
     /// Prefab of the trajectory points
     /// </summary>
@@ -293,34 +299,19 @@ public class CharacterShootTrajectory : MonoBehaviour {
             ParticleSystem[] subSystems = system.GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem subSystem in subSystems) {
                 ParticleSystem.EmissionModule emission = subSystem.emission;
-                emission.enabled = false;
-               // subSystem.GetComponent<Transform>().parent = _ccc.transform;
+                emission.enabled = false;         
             }
             _trajectoryPoints.Insert(i, subSystems);
             _boolrender.Insert(i, false);
-            //_lluvia.Insert(i, subSystems);
-            //lluvia[i].startSize = rainbowsize;
 
         }
 
         _linerenderer = (LineRenderer) Instantiate(renderer);
         _linerenderer.transform.parent = _ccc.transform;
-        //_listtrajectory = new GameObject();
-        //_listtrajectory.name = " List Trajectory ";
-        //_listtrajectory.transform.parent = _ccc.transform;
 
         _renderwidth = _linewidth;
-        
 
-       /* for (int i = 0; i < numOfTrajectoryPoints; i++)  {
-            GameObject dot = (GameObject)Instantiate(TrajectoryPointPrefeb);
-            dot.GetComponent<Renderer>().enabled = false;
-            //dot.tag = ("Trajectory"+i);
-            dot.transform.parent = _listtrajectory.transform;
-            _trajectoryPoints.Insert(i, dot);
-        }*/
-
-       _lastWaypoint = 0;
+        _lastWaypoint = 0;
         _nextWaypoint = 1;
         _finalWaypoint = _trajectoryPoints.Capacity;
     }
@@ -482,7 +473,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 _retrajectoring = false;
             }
             if (_lookingat) {
-                _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, _speedAnimation * Time.deltaTime);
+                _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, _speedAnimation * looking * Time.deltaTime);
 
                 setTrajectoryPoints(pos, _oldLookingat, _speed);
 
