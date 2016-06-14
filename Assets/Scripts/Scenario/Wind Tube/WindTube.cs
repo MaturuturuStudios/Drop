@@ -67,6 +67,7 @@ public class WindTube : MonoBehaviour {
 	/// <summary>
 	/// Defines the force of the wind.
 	/// </summary>
+	[Header("Wind")]
 	public float windForce = 25.0f;
 
 	/// <summary>
@@ -88,7 +89,14 @@ public class WindTube : MonoBehaviour {
 	/// <summary>
 	/// If enabled, the force will ignore the mass of the entity
 	/// </summary>
-	public bool ignoreMass = false;
+	public bool ignoreMass = true;
+
+	/// <summary>
+	/// Amount of movement friction the character will suffer while
+	/// floating on the wind tube.
+	/// </summary>
+	[Range(0, 1)]
+	public float characterFrictionFactor = 1.0f;
 
 	/// <summary>
 	/// The effect that will be used for the wind's shape.
