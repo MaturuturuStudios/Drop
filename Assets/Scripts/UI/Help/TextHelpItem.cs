@@ -12,11 +12,6 @@ public abstract class TextHelpItem : HelpItem {
 	private TextMesh _textRenderer;
 
 	/// <summary>
-	/// Reference to the TextMesh Transform's component.
-	/// </summary>
-	private Transform _textRendererTransform;
-
-	/// <summary>
 	/// Reference to the renderer for the text.
 	/// </summary>
 	private MeshRenderer _renderer;
@@ -31,14 +26,12 @@ public abstract class TextHelpItem : HelpItem {
 		// Retrieves the desired components
 		_textRenderer = GetComponent<TextMesh>();
 		_renderer = GetComponent<MeshRenderer>();
-		_textRendererTransform = _textRenderer.transform;
 		_renderer.sortingLayerID = SortingLayer.NameToID(SORTING_LAYER_NAME);
     }
 
 	protected override void OnUpdate() {
 		// Changes the size in the text
 		_textRenderer.text = GetText();
-		_textRendererTransform.rotation = Camera.main.transform.rotation;
 	}
 
 	/// <summary>
