@@ -130,6 +130,8 @@ using System.Collections.Generic;
 			rb.velocity = velocity;
 
 			// Notifies the listeners
+			foreach (JumpMushroomListener listener in rb.GetComponents<JumpMushroomListener>())
+				listener.OnBounce(this, other.gameObject, velocity, other.contacts[0].point, other.contacts[0].normal);
 			foreach (JumpMushroomListener listener in _listeners)
 				listener.OnBounce(this, other.gameObject, velocity, other.contacts[0].point, other.contacts[0].normal);
 		}
@@ -175,9 +177,28 @@ using System.Collections.Generic;
 			}
 
 			// Notifies the listeners
+			foreach (JumpMushroomListener listener in ccc.GetComponents<JumpMushroomListener>())
+				listener.OnBounce(this, hit.controller.gameObject, velocity, hit.point, hit.normal);
 			foreach (JumpMushroomListener listener in _listeners)
 				listener.OnBounce(this, hit.controller.gameObject, velocity, hit.point, hit.normal);
 		}
+	}
+
+	/// <summary>
+	/// For the velocity, returns a value between 0 and 1 indicating
+	/// how near or far it is from the min and max height.
+	/// </summary>
+	/// <param name="velocity">The velocity</param>
+	/// <returns>Normalized value</returns>
+	public float GetVelocityFactor(Vector3 velocity) {
+		float speed = Vector3.Project(velocity, _transform.up).magnitude;
+		float minheightvelocity = Mathf.Sqrt(2 * 25 * minHeight);
+		float maxheightvelocity = Mathf.Sqrt(2 * 25 * maxHeight);
+		if (speed < minheightvelocity)
+			return 0;
+		if (speed > maxheightvelocity)
+			return 1;
+		return Mathf.InverseLerp(minheightvelocity, maxheightvelocity, speed);
 	}
 
 	/// <summary>

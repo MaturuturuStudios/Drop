@@ -12,6 +12,11 @@ public class JumpMushroomEffect : MonoBehaviour, JumpMushroomListener {
 	public GameObject effectPrefab;
 
 	/// <summary>
+	/// The effect will scale with the character's size.
+	/// </summary>
+	public bool scaleWithSize = true;
+
+	/// <summary>
 	/// Time in seconds for the effect to be destroyed.
 	/// </summary>
 	public float effectDuration;
@@ -22,7 +27,13 @@ public class JumpMushroomEffect : MonoBehaviour, JumpMushroomListener {
 	}
 
 	public void OnBounce(JumpMushroom mushroom, GameObject bouncingCharacter, Vector3 bounceVelocity, Vector3 collisionPoint, Vector3 collisionNormal) {
-		Object effect = Instantiate(effectPrefab, collisionPoint, Quaternion.LookRotation(Vector3.forward, collisionNormal));
+		GameObject effect = (GameObject) Instantiate(effectPrefab, collisionPoint, Quaternion.LookRotation(Vector3.forward, collisionNormal));
+		if (scaleWithSize) {
+			CharacterSize characterSize = bouncingCharacter.GetComponent<CharacterSize>();
+			effect.transform.localScale = Vector3.one;
+			if (characterSize != null)
+				effect.transform.localScale *= Mathf.Sqrt(characterSize.GetSize());
+        }
 		Destroy(effect, effectDuration);
 	}
 }
