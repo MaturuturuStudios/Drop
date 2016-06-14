@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
+using System.Globalization;
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 // Zip for windows
 // http://gnuwin32.sourceforge.net/packages/zip.htm
@@ -13,6 +14,15 @@ using System.IO;
 /// </summary>
 public class BuildManager {
 
+    #region
+
+    public enum BuildType {
+        Fast,
+        Development,
+        Release
+    }
+
+    #endregion
 
     #region Private Attributes
 
@@ -20,6 +30,7 @@ public class BuildManager {
     /// Data used in the build process
     /// </summary>
     private BuildData bd = new BuildData();
+
     #endregion
 
     #region Public Methods
@@ -27,8 +38,8 @@ public class BuildManager {
     /// <summary>
     /// Build main process
     /// </summary>
-    /// <param name="development">Build type</param>
-    public static void BuildGame(bool development = true) {
+    /// <param name="buildTyoe">Build type</param>
+    public static void BuildGame(BuildType buildType) {
 
         // Load data from file
         BuildManager bm = new BuildManager();
@@ -37,16 +48,40 @@ public class BuildManager {
         //Verify that all data is ok
         if (bm.ValidateData()) {
 
+            BuildOptions bo;
+            string popUpTitle;
             // Set the desired build options
-            BuildOptions bo = (development ? BuildOptions.Development | BuildOptions.AllowDebugging : BuildOptions.None);
+            if (buildType == BuildType.Release) {
+                bo = BuildOptions.None;
+                popUpTitle = "Release Configuration";
+            } else {
+                bo = BuildOptions.Development | BuildOptions.AllowDebugging;
+                if (buildType == BuildType.Development)
+                    popUpTitle = "Development Build Configuration";
+                else {
+                    popUpTitle = "Fast Build Configuration";
+
+                    string name = DateTime.Now.ToString(new CultureInfo("en-GB"));
+                    name = name.Replace(" ", "_");
+                    name = name.Replace(":", "-");
+                    name = name.Replace("/", "-");
+                    bm.bd.buildName = "drop_" + name;
+                    bm.bd.workPath = "Build/" + bm.bd.buildName;
+                    bm.bd.win = true;
+                    bm.bd.lin = false;
+                    bm.bd.mac = false;
+                    bm.bd.scenes = new List<string>();
+                    bm.bd.countScenes = false;
+                }
+            }
 
             // Construct configuration confirmation string
-            string succes = GetSuccesString(bm);
+            string popupMessage = GetSuccesString(bm, buildType);
 
-            Debug.Log(succes);
+            Debug.Log(popupMessage);
 
             // Show confirmation dialog
-            if (EditorUtility.DisplayDialog("Build configuration", succes, "Proceed", "Stop")) {
+            if (EditorUtility.DisplayDialog(popUpTitle, popupMessage, "Proceed", "Stop")) {
 
                 Debug.Log("Proceed to build");
                 Debug.Log("Using \"" + bm.bd.workPath + "\" directory");
@@ -59,37 +94,43 @@ public class BuildManager {
 
                 // Build Windows
                 if (goOn && bm.bd.win) {
-                    goOn = BuildWindows(bm, bo);
+                    goOn = BuildWindows(bm, bo, buildType);
                 }
 
                 // Build Linux
                 if (goOn && bm.bd.lin) {
-                    goOn = BuildLinux(bm, bo);
+                    goOn = BuildLinux(bm, bo, buildType);
                 }
 
                 // Build Mac
                 if (goOn && bm.bd.mac) {
-                    goOn = BuildMac(bm, bo);
+                    goOn = BuildMac(bm, bo, buildType);
+                }
+
+                if (buildType == BuildType.Release) {
+
+                    if (goOn)
+                        // Wait for all work done
+                        System.Threading.Thread.Sleep(5000);
+
+                    // Packing all
+                    Debug.Log("Packing");
+
+                    if (goOn)
+                        // Compress to one file
+                        Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
+
+                    if (goOn)
+                        // Wait for all work done
+                        System.Threading.Thread.Sleep(15000);
+
+                    // Share file
+                    if (goOn && bm.bd.share)
+                        ShareFile(bm, "Package");
                 }
 
                 if (goOn)
-                    // Wait for all work done
-                    System.Threading.Thread.Sleep(5000);
-
-                // Packing all
-                Debug.Log("Packing");
-
-                if (goOn)
-                    // Compress to one file
-                    Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
-
-                if (goOn)
-                    // Wait for all work done
-                    System.Threading.Thread.Sleep(15000);
-
-                // Share file
-                if (goOn && bm.bd.share)
-                    ShareFile(bm, "Package");
+                    ShowExplorer(bm.bd.workPath);
             }
         }
     }
@@ -221,7 +262,7 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <param name="development">Build type</param>
-    private static bool BuildWindows(BuildManager bm, BuildOptions bo) {
+    private static bool BuildWindows(BuildManager bm, BuildOptions bo, BuildType bt) {
 
         Debug.Log("Building for Windows platform");
 
@@ -235,7 +276,8 @@ public class BuildManager {
             Debug.Log("Build for Windows done");
 
             // Compress 
-            Compress(bm, "Windows", "-9 -r " + bm.bd.buildName + "_win.zip " + bm.bd.buildName + "_win.exe " + bm.bd.buildName + "_win_Data ");
+            if(bt == BuildType.Release)
+                Compress(bm, "Windows", "-9 -r " + bm.bd.buildName + "_win.zip " + bm.bd.buildName + "_win.exe " + bm.bd.buildName + "_win_Data ");
 
             return true;
 
@@ -253,7 +295,7 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <param name="development">Build type</param>
-    private static bool BuildLinux(BuildManager bm, BuildOptions bo) {
+    private static bool BuildLinux(BuildManager bm, BuildOptions bo, BuildType bt) {
 
         Debug.Log("Building for Linux platform");
 
@@ -263,11 +305,12 @@ public class BuildManager {
         // Build it
         string error = BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneLinuxUniversal, bo);
 
-        if (String.IsNullOrEmpty(error)) {
+        if (String.IsNullOrEmpty(error) && bt == BuildType.Release) {
             Debug.Log("Build for Linux done");
 
             // Compress 
-            Compress(bm, "Linux", "-9 -r " + bm.bd.buildName + "_lin.zip " + bm.bd.buildName + "_lin.x86 " + bm.bd.buildName + "_lin_Data ");
+            if (bt == BuildType.Release)
+                Compress(bm, "Linux", "-9 -r " + bm.bd.buildName + "_lin.zip " + bm.bd.buildName + "_lin.x86 " + bm.bd.buildName + "_lin_Data ");
 
             return true;
 
@@ -284,7 +327,7 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <param name="development">Build type</param>
-    private static bool BuildMac(BuildManager bm, BuildOptions bo) {
+    private static bool BuildMac(BuildManager bm, BuildOptions bo, BuildType bt) {
 
         Debug.Log("Building for Mac platform");
 
@@ -294,11 +337,12 @@ public class BuildManager {
         // Build it
         string error = BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneOSXUniversal, bo);
 
-        if (String.IsNullOrEmpty(error)) {
+        if (String.IsNullOrEmpty(error) && bt == BuildType.Release) {
             Debug.Log("Build for Mac done");
 
             // Compress 
-            Compress(bm, "Mac", "-9 -r " + bm.bd.buildName + "_mac.zip " + bm.bd.buildName + "_mac.app ");
+            if (bt == BuildType.Release)
+                Compress(bm, "Mac", "-9 -r " + bm.bd.buildName + "_mac.zip " + bm.bd.buildName + "_mac.app ");
 
             return true;
 
@@ -341,9 +385,6 @@ public class BuildManager {
             // Start compression
             proc.Start();
 
-            // Compression done
-            Debug.Log("Compression for " + label + " build done");
-
         } catch (Exception e) {
 
             // Compression failed
@@ -361,7 +402,7 @@ public class BuildManager {
 
         Debug.Log("Sharing " + label + " build");
 
-		String path = MakeAbsolute (bm.bd.sharedFolderPath);
+        string path = MakeAbsolute (bm.bd.sharedFolderPath);
 		System.IO.Directory.CreateDirectory (path);
         
 		try {
@@ -393,24 +434,59 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <returns>Configuration confirmation string</returns>
-    private static string GetSuccesString(BuildManager bm) {
+    private static string GetSuccesString(BuildManager bm, BuildType bt) {
 
-        return "Build configurated succesfully"
-        + "\nBuild name: "
-        + bm.bd.buildName
-        + "\nTarget platforms: "
-        + (bm.bd.win == true ? "Windows" : "")
-        + (bm.bd.win == true && (bm.bd.mac == true) ? ", " : "")
-        + (bm.bd.mac == true ? "Mac" : "")
-        + (((bm.bd.win == true || bm.bd.mac == true) && bm.bd.lin == true) ? ", " : "")
-        + (bm.bd.lin == true ? "Linux" : "")
-        + "\nWork folder: "
-        + bm.bd.workPath
-        + (bm.bd.share == true ?
-            "\nShared folder: " + bm.bd.sharedFolderPath
-            : "")
-        + "\nZip location: "
-        + bm.bd.zipPath;
+        string res;
+
+        if (bt == BuildType.Fast) {
+            res = " Fast Build configurated succesfully"
+
+            + "\n\nBuild name:\n"
+            + bm.bd.buildName
+
+            + "\n\nBuild for windows platforms on \""
+            + bm.bd.workPath +"\" folder";
+
+        }else if(bt == BuildType.Development) {
+
+            res = " Development Build configurated succesfully"
+
+            + "\n\nBuild name:\n"
+            + bm.bd.buildName
+
+            + "\n\nTarget platforms: "
+            + (bm.bd.win == true ? "\n - Windows" : "")
+            + (bm.bd.mac == true ? "\n - Mac" : "")
+            + (bm.bd.lin == true ? "\n - Linux" : "")
+
+            + "\n\nWork folder:\n"
+            + bm.bd.workPath;
+
+        } else {
+
+            res = " Release configurated succesfully"
+
+            + "\n\nBuild name:\n"
+            + bm.bd.buildName
+
+            + "\n\nTarget platforms: "
+            + (bm.bd.win == true ? "\n - Windows" : "")
+            + (bm.bd.mac == true ? "\n - Mac" : "")
+            + (bm.bd.lin == true ? "\n - Linux" : "")
+
+            + "\n\nWork folder:\n"
+            + bm.bd.workPath
+
+            + (bm.bd.share == true ?
+                "\n\nShared folder:\n" + bm.bd.sharedFolderPath
+                : "")
+
+            + "\n\nZip location:\n"
+            + bm.bd.zipPath;
+
+        }
+
+        return res;
     }
 
 
@@ -467,7 +543,6 @@ public class BuildManager {
 
     #endregion
 
-
     #region Public Path Utils
 
     /// <summary>
@@ -509,10 +584,20 @@ public class BuildManager {
     /// Validates if a path is absilute
     /// </summary>
     /// <param name="filePath">Path to validate</param>
-    private static bool IsAbsoluteUrl(string filePath) {
+    public static bool IsAbsoluteUrl(string filePath) {
 
         Uri result;
         return Uri.TryCreate(filePath, UriKind.Absolute, out result);
+    }
+
+
+    /// <summary>
+    /// opens a folder with desired path
+    /// </summary>
+    /// <param name="itemPath">Path to open</param>
+    public static void ShowExplorer(string itemPath) {
+        itemPath = itemPath.Replace(@"/", @"\");   // explorer doesn't like front slashes
+        System.Diagnostics.Process.Start("explorer.exe", itemPath);
     }
 
     #endregion

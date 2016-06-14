@@ -23,13 +23,18 @@ public class BuildMenuEditor: MonoBehaviour {
         BuildConfigPopup.Init();
     }
 
+    [MenuItem("Build/Fast Build", false, 27)]
+    public static void FastBuild(MenuCommand command) {
+        BuildManager.BuildGame(BuildManager.BuildType.Fast);
+    }
+
     [MenuItem("Build/Development Build", false, 27)]
     public static void DevelopmentBuild(MenuCommand command) {
-        BuildManager.BuildGame();
+        BuildManager.BuildGame(BuildManager.BuildType.Development);
     }
 
     [MenuItem("Build/Release With Postprocess", false, 28)]
     public static void BuildGame(MenuCommand command) {
-        BuildManager.BuildGame(false);
+        BuildManager.BuildGame(BuildManager.BuildType.Release);
     }
 }
