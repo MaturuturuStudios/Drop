@@ -10,10 +10,12 @@ public class GameEndController : MonoBehaviour {
 
 
     /// <summary>
-    /// Wait time showing message untill scene is changed
+    /// Wait time to show 
     /// </summary>
-    public float waitTime = 3F;
-    
+    public float delayStart = 3F;
+
+    public float delayEnd = 2f;
+
 
     /// <summary>
     /// Next scene to load
@@ -33,11 +35,6 @@ public class GameEndController : MonoBehaviour {
     /// Reference to the collider of end region.
     /// </summary>
     private BoxCollider _collider;
-
-    /// <summary>
-    /// On trigger enter control
-    /// </summary>
-    private bool _end = false;
 
     /// <summary>
     /// UI Reference
@@ -78,20 +75,6 @@ public class GameEndController : MonoBehaviour {
 
     }
 
-    /// <summary>
-    /// Update the state of the trigger
-    /// </summary>
-	void Update () {
-
-		// If the scene is ended
-	    if (_end) {
-
-            // Wait before starting the change
-            _menuNavigator.ChangeScene(nextScene.name, waitTime);
-
-        }
-    }
-
 
 	/// <summary>
     /// Activated when player enters on the trigger
@@ -102,8 +85,8 @@ public class GameEndController : MonoBehaviour {
         // Only ends game with player
         if (other.CompareTag(Tags.Player)){
 
-            // Activate counter
-            _end = true;
+            // Load scene async
+            _menuNavigator.ChangeScene(nextScene.name, delayStart, delayEnd);
 
             // Stops input
             _gci.StopInput();
@@ -124,7 +107,6 @@ public class GameEndController : MonoBehaviour {
         // Calls the configuration functions
         if (!Application.isPlaying) {
             Awake();
-            Update();
         }
 
         // Defines the color of the gizmo

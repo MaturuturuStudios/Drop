@@ -84,7 +84,7 @@ public class SceneFadeInOut : MonoBehaviour {
     /// on this script will be used</param>
     /// /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the public attribute delaySEndChangeSeconds
     /// on this script will be used</param>
-    public void ChangeScene(string nameScene, float delayStart=-1, float delayEnd=-1) {
+    public void ChangeScene(string nameScene, float delayStart = -1, float fadeTime = -1, float delayEnd = -1) {
         if (delayStart <= -1) {
             delayStart = delayStartChangeSeconds;
         }
@@ -93,7 +93,7 @@ public class SceneFadeInOut : MonoBehaviour {
             delayEnd = delayEndChangeSeconds;
         }
 
-        StartCoroutine(NextScene(nameScene, delayStart, delayEnd));
+        StartCoroutine(NextScene(nameScene, delayStart, fadeTime, delayEnd));
     }
     #endregion
 
@@ -106,14 +106,17 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <param name="delayStart">Wait before starting</param>
     /// <param name="delayEnd">Wait after ending</param>
     /// <returns></returns>
-    private IEnumerator NextScene(string nameScene, float delayStart, float delayEnd) {
+    private IEnumerator NextScene(string nameScene, float delayStart, float fadeTime, float delayEnd) {
+        AsyncOperation op = SceneManager.LoadSceneAsync(nameScene);
+        op.allowSceneActivation = false;
+
         yield return MenuNavigator.WaitForRealSeconds(delayStart);
 
-        float fadeTime = BeginFade(1);
+        BeginFade(1);
         yield return MenuNavigator.WaitForRealSeconds(fadeTime);
 
         yield return MenuNavigator.WaitForRealSeconds(delayEnd);
-        SceneManager.LoadScene(nameScene, LoadSceneMode.Single);
+        op.allowSceneActivation = true;
     }
     #endregion
     #endregion
