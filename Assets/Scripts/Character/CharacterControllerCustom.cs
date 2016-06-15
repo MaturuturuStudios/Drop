@@ -596,8 +596,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		ForceMode mode = useMass ? ForceMode.Impulse : ForceMode.VelocityChange;
 		AddForce(velocity, mode);
 
-		// Changes the character's parameters
-		Parameters = CharacterControllerParameters.FlyingParameters;
+        // Changes the character's parameters
+        _overrideParameters.Clear();
+        Parameters = CharacterControllerParameters.FlyingParameters;
 
 		// Sets the flags
 		State.IsFlying = true;
