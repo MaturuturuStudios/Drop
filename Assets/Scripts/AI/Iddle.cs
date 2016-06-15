@@ -34,9 +34,6 @@ public class Iddle : StateMachineBehaviour {
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //start timer
         _deltaTime = parameters.timeInIddle;
-
-        float speed = commonParameters.AI.walkingParameters.speed;
-        float rotationWalk = commonParameters.AI.walkingParameters.rotationVelocity;
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
     }
 
@@ -86,11 +83,11 @@ public class Iddle : StateMachineBehaviour {
             Vector3 target = commonParameters.initialPositionEnemy;
             Quaternion rotationTarget = commonParameters.initialRotationEnemy;
             
-            if (!commonParameters.AI.CheckTargetPoint(target, commonParameters.minimumWalkingDistance)) {
+            if (!AIMethods.CheckTargetPoint(commonParameters.enemy, target, commonParameters.onFloor, commonParameters.minimumWalkingDistance)) {
                 animator.SetBool("Timer", true);
             }
 
-            if(!commonParameters.AI.CheckTargetRotation(rotationTarget, commonParameters.toleranceDegreeToGoal)) {
+            if(!AIMethods.CheckTargetRotation(commonParameters.enemy, rotationTarget, commonParameters.toleranceDegreeToGoal)) {
                 animator.SetBool("Timer", true);
             }
 

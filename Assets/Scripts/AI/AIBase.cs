@@ -197,40 +197,7 @@ public class AIBase : MonoBehaviour {
     #endregion
 
     #endregion
-
-   
-    /// <summary>
-    /// True if reached the target point
-    /// </summary>
-    /// <param name="target"></param>
-    /// <param name="minimumDistance"></param>
-    /// <returns></returns>
-    public bool CheckTargetPoint(Vector3 target, float minimumDistance) {
-        // Checks if the entity is close enough to the target point
-        Vector3 position = commonParameters.enemy.transform.position;
-        //ignore axis if on floor
-        if (commonParameters.onFloor)
-            position.y = target.y;
-        float squaredDistance = (position - target).sqrMagnitude;
-        float distanceGoal = minimumDistance * minimumDistance;
-        // The squared distance is used because a multiplication is cheaper than a square root
-        //Debug.Log("check");
-        //Debug.Log(squaredDistance);
-        //Debug.Log(distanceGoal);
-        return squaredDistance < distanceGoal;
-    }
-
-    /// <summary>
-    /// True if reached the target rotation
-    /// </summary>
-    /// <param name="target"></param>
-    /// <param name="minimumDegree"></param>
-    /// <returns></returns>
-    public bool CheckTargetRotation(Quaternion target, float minimumDegree) {
-        float angle = Quaternion.Angle(commonParameters.enemy.transform.rotation, target);
-        return angle < commonParameters.toleranceDegreeToGoal;
-    }
-
+    
     public void CheckDrop() {
         int size = _animator.GetInteger("SizeDrop");
         int sizeLimit = commonParameters.sizeLimitDrop;
@@ -241,10 +208,5 @@ public class AIBase : MonoBehaviour {
         }
     }
 
-    public float GetMinimumDistance(float speed, float rotationVelocity) {
-        float time = 360 / rotationVelocity;
-        float longitude = speed * time;
-        float radius = longitude / (2 * Mathf.PI);
-        return radius;
-    }
+    
 }

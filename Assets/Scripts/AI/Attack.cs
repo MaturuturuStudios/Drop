@@ -9,8 +9,6 @@ public class AttackParameters {
     public float attackMoment;
 
     public LaunchCharacter launchDestination = new LaunchCharacter();
-    //public float impulse=40;
-    //public Transform rejectedDirection;
 }
 
 public class Attack : StateMachineBehaviour {

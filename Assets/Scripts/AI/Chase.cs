@@ -10,6 +10,10 @@ public class ChaseParameters {
     /// 
     /// </summary>
     public float rotationVelocity=170;
+    /// <summary>
+    /// if true, the axis will be fixed at rotation
+    /// </summary>
+    public AxisBoolean fixedRotation;
 }
 
 public class Chase : StateMachineBehaviour {
@@ -33,7 +37,7 @@ public class Chase : StateMachineBehaviour {
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
-		_minimumDistance = commonParameters.toleranceDistanceAttack; //GetMinimumDistance() +
+		_minimumDistance = commonParameters.toleranceDistanceAttack;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -58,38 +62,29 @@ public class Chase : StateMachineBehaviour {
         }
 
         // Saves the original position
+        Vector3 move = Vector3.zero;
         Vector3 originalPosition = commonParameters.enemy.transform.position;
-        Vector3 finalPosition = originalPosition;
-        Vector3 target = commonParameters.drop.transform.position;
+        Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, commonParameters.drop.transform.position,
+                                    FollowType.MoveTowards, commonParameters.onFloor, parameters.speed);
+        AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy, 
+                            commonParameters.toleranceDegreeToGoal, originalPosition, finalPosition);
 
-        //move towards target
-        finalPosition = Vector3.MoveTowards(originalPosition, target, parameters.speed * Time.deltaTime);
+        Vector3 direction = (finalPosition - originalPosition).normalized;
 
-        if (commonParameters.onFloor)
-            finalPosition.y = originalPosition.y;
-        
-
-        // Rotates the entity
-        Vector3 relativePos = finalPosition - originalPosition;
-        Quaternion rotation = Quaternion.LookRotation(relativePos);
-        Quaternion finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, parameters.rotationVelocity * Time.deltaTime);
-        commonParameters.enemy.transform.rotation = finalRotation;
-        
-
-
-        Vector3 move = commonParameters.enemy.transform.forward * parameters.speed * Time.deltaTime;
-        //move the entity, and set the gravity
+        //move the entity
+        move = direction * parameters.speed * Time.deltaTime;
+        //set gravity and move
         if (commonParameters.onFloor) {
             move += (commonParameters.enemy.transform.up * -1) * 25 * Time.deltaTime;
         }
-
         _controller.Move(move);
 
+
         //reached calculation is on specific IA
-        DropReached(animator);
+        CheckTargetDrop(animator);
     }
 
-    private void DropReached(Animator animator) {
+    private void CheckTargetDrop(Animator animator) {
         if (commonParameters.drop == null) {
             return;
         }
@@ -103,13 +98,4 @@ public class Chase : StateMachineBehaviour {
         if (squaredDistance < distanceTolerance)
             animator.SetBool("Reached", true);
     }
-
-    private float GetMinimumDistance() {
-        float time = 360 / parameters.rotationVelocity;
-        float longitude = parameters.speed * time;
-        float radius = longitude / (2 * Mathf.PI);
-        return radius;
-    }
-
-
 }

@@ -24,11 +24,15 @@ public class WalkingParameters {
 	/// Speed of the entity.
 	/// </summary>
 	public float speed = 10;
-    
     /// <summary>
-    /// If enabled, the entity will also rotate to look at target
+    /// if true, the axis will be fixed at rotation
     /// </summary>
-    public bool useOrientation = false;
+    public AxisBoolean fixedRotation;
+    /// <summary>
+    /// If enabled and walking disabled, the enemy
+    /// will get the initial rotation when stay on his point
+    /// </summary>
+    public bool useOrientationFinalPositionStay = false;
     /// <summary>
     /// Velocity rotation when walking
     /// </summary>
@@ -78,7 +82,7 @@ public class Walking : StateMachineBehaviour {
         //start timer
         _deltaTime = parameters.timeUntilIddle;
 
-        commonParameters.minimumWalkingDistance = commonParameters.AI.GetMinimumDistance(parameters.speed, parameters.rotationVelocity);
+        commonParameters.minimumWalkingDistance = AIMethods.GetMinimumDistance(parameters.speed, parameters.rotationVelocity);
         commonParameters.minimumWalkingDistance += commonParameters.toleranceDistanceToGoal;
 
         // Start particle system
@@ -112,11 +116,15 @@ public class Walking : StateMachineBehaviour {
         //only move if not reached the point
         if (!_positionTargeted) {
             Vector3 originalPosition = commonParameters.enemy.transform.position;
-            Vector3 finalPosition = MoveEnemy(originalPosition);
-            RotateEnemy(originalPosition, finalPosition);
+            Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, _targetPosition, parameters.followType, 
+                                                        commonParameters.onFloor, parameters.speed);
+            AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy,
+                                commonParameters.toleranceDegreeToGoal, originalPosition, finalPosition);
+
+            Vector3 direction = (finalPosition-originalPosition).normalized;
 
             //move the entity
-            move = commonParameters.enemy.transform.forward * parameters.speed * Time.deltaTime;
+            move = direction * parameters.speed * Time.deltaTime;
         }
 
         //set gravity and move
@@ -129,12 +137,13 @@ public class Walking : StateMachineBehaviour {
     }
 
     /// <summary>
-    /// Check if reached the desired point
+    /// Check if reached the desired point and rotate if needed when
+    /// arrived to the point
     /// </summary>
     /// <param name="animator"></param>
     private void CheckTargetPoint(Animator animator) {
         //reached point!
-        if (commonParameters.AI.CheckTargetPoint(_targetPosition, commonParameters.minimumWalkingDistance)) {
+        if (AIMethods.CheckTargetPoint(commonParameters.enemy, _targetPosition, commonParameters.onFloor, commonParameters.minimumWalkingDistance)) {
             //if walking, just choose another point
             if (commonParameters.walking) {
                 //don't want to stay in the point, continue!
@@ -148,21 +157,20 @@ public class Walking : StateMachineBehaviour {
 
                 //check if rotation is already targeted
                 Quaternion targetRotation = commonParameters.initialRotationEnemy;
-                if (commonParameters.AI.CheckTargetRotation(targetRotation, commonParameters.toleranceDegreeToGoal)) {
+                if (AIMethods.CheckTargetRotation(commonParameters.enemy, targetRotation, commonParameters.toleranceDegreeToGoal)) {
                     //yes? change to iddle
                     animator.SetBool("Timer", true);
                 } else {
                     //no? rotate it
-                    RotateEnemy(targetRotation);
+                    //AIMethods.RotateEnemy(commonParameters.enemy, targetRotation, 
+                    //            parameters.rotationVelocity, parameters.useOrientationFinalPosition);
                 }
-
             }
 
         } else {
             _positionTargeted = false;
         }
     }
-
    
     /// <summary>
     /// If timer to go iddle, check it
@@ -176,57 +184,6 @@ public class Walking : StateMachineBehaviour {
                 animator.SetBool("Timer", true);
                 return;
             }
-        }
-    }
-
-    /// <summary>
-    /// Move the enemy
-    /// </summary>
-    /// <param name="originalPosition"></param>
-    /// <returns></returns>
-    private Vector3 MoveEnemy(Vector3 originalPosition) {
-        Vector3 finalPosition = originalPosition;
-
-        // Moves the entity using the right function
-        switch (parameters.followType) {
-            case FollowType.MoveTowards:
-                finalPosition = Vector3.MoveTowards(originalPosition, _targetPosition, parameters.speed * Time.deltaTime);
-                break;
-            case FollowType.Lerp:
-                finalPosition = Vector3.Lerp(originalPosition, _targetPosition, parameters.speed * Time.deltaTime);
-                break;
-        }
-
-        if (commonParameters.onFloor)
-            finalPosition.y = originalPosition.y;
-
-        return finalPosition;
-    }
-
-    /// <summary>
-    /// Rotate the entity to target
-    /// The target is the new position of the entity after moving
-    /// </summary>
-    /// <param name="originalPosition">position the entity is</param>
-    /// <param name="finalPosition">target point</param>
-    private void RotateEnemy(Vector3 originalPosition, Vector3 finalPosition) {
-        if (parameters.useOrientation) {
-            Quaternion finalRotation = Quaternion.identity;
-
-            Vector3 relativePos = finalPosition - originalPosition;
-            Quaternion rotation = Quaternion.LookRotation(relativePos);
-            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, parameters.rotationVelocity * Time.deltaTime);
-
-            commonParameters.enemy.transform.rotation = finalRotation;
-        }
-    }
-
-    private void RotateEnemy(Quaternion target) {
-        if (parameters.useOrientation) {
-            //float maxDegrees = 360 / parameters.rotationVelocity;
-            Quaternion finalRotation = Quaternion.identity;
-            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, target, parameters.rotationVelocity * Time.deltaTime);
-            commonParameters.enemy.transform.rotation = finalRotation;
         }
     }
 

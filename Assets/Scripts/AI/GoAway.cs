@@ -16,9 +16,12 @@ public class GoAwayParameters {
     /// </summary>
     public float speed = 10;
     /// <summary>
+    /// if true, the axis will be fixed at rotation
+    /// </summary>
+    public AxisBoolean fixedRotation;
+    /// <summary>
     /// If enabled, the entity will rotate to face the end point
     /// </summary>
-    public bool useOrientation = false;
     public bool useOrientationFinalPosition = true;
     /// <summary>
     /// 
@@ -39,11 +42,7 @@ public class GoAway : StateMachineBehaviour {
 	/// A reference to the entity's controller.
 	/// </summary>
 	private CharacterController _controller;
-
-    /// <summary>
-    /// Minimum distance to goal
-    /// </summary>
-    //private float _minimumDistance;
+    
     /// <summary>
     /// Tell if arrived to the target point (but maybe not at the desired rotation)
     /// </summary>
@@ -54,7 +53,6 @@ public class GoAway : StateMachineBehaviour {
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         animator.SetBool("GoAway", false);
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
-        //_minimumDistance = GetMinimumDistance() + parameters.maxDistanceToGoal;
 
 		// Moves the enumerator to the first/next position
 		parameters.endPoint.MoveNext();
@@ -76,11 +74,15 @@ public class GoAway : StateMachineBehaviour {
         //only move if not reached the point
         if (!_positionTargeted) {
             Vector3 originalPosition = commonParameters.enemy.transform.position;
-            Vector3 finalPosition = MoveEnemy(originalPosition);
-            RotateEnemy(originalPosition, finalPosition);
+            Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, parameters.endPoint.Current.position, parameters.followType,
+                                                        commonParameters.onFloor, parameters.speed);
+            AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy,
+                                parameters.rotationVelocity, originalPosition, finalPosition);
+
+            Vector3 direction = (finalPosition - originalPosition).normalized;
 
             //move the entity
-            move = commonParameters.enemy.transform.forward * parameters.speed * Time.deltaTime;
+            move = direction * parameters.speed * Time.deltaTime;
         }
 
         //set gravity and move
@@ -98,7 +100,7 @@ public class GoAway : StateMachineBehaviour {
     /// <param name="animator"></param>
     private void CheckTargetPoint(Animator animator) {
         //reached point!
-        if (commonParameters.AI.CheckTargetPoint(parameters.endPoint.Current.position, commonParameters.minimumWalkingDistance)) {
+        if (AIMethods.CheckTargetPoint(commonParameters.enemy, parameters.endPoint.Current.position, commonParameters.onFloor, commonParameters.minimumWalkingDistance)) {
             Transform last = parameters.endPoint.Current;
             int lastPoint=parameters.endPoint.points.Length-1;
 
@@ -116,12 +118,13 @@ public class GoAway : StateMachineBehaviour {
                 if (parameters.useOrientationFinalPosition) {
                     //check if rotation is already targeted
                     Quaternion targetRotation = parameters.endPoint.Current.rotation;
-                    if (commonParameters.AI.CheckTargetRotation(targetRotation, commonParameters.toleranceDegreeToGoal)) {
+                    if (AIMethods.CheckTargetRotation(commonParameters.enemy, targetRotation, commonParameters.toleranceDegreeToGoal)) {
                         //yes? change to "recolect"
                         animator.SetTrigger("Recolect");
                     } else {
                         //no? rotate it
-                        RotateEnemy(targetRotation);
+                        AIMethods.RotateEnemy(commonParameters.enemy, targetRotation,
+                               commonParameters.toleranceDegreeToGoal, parameters.useOrientationFinalPosition);
                     }
                 } else {
                     animator.SetTrigger("Recolect");
@@ -133,58 +136,7 @@ public class GoAway : StateMachineBehaviour {
             _positionTargeted = false;
         }
     }
-
-    /// <summary>
-    /// Move the enemy
-    /// </summary>
-    /// <param name="originalPosition"></param>
-    /// <returns></returns>
-    private Vector3 MoveEnemy(Vector3 originalPosition) {
-        Vector3 finalPosition = originalPosition;
-        Vector3 target = parameters.endPoint.Current.position;
-
-        // Moves the entity using the right function
-        switch (parameters.followType) {
-            case FollowType.MoveTowards:
-                finalPosition = Vector3.MoveTowards(originalPosition, target, parameters.speed * Time.deltaTime);
-                break;
-            case FollowType.Lerp:
-                finalPosition = Vector3.Lerp(originalPosition, target, parameters.speed * Time.deltaTime);
-                break;
-        }
-
-        if (commonParameters.onFloor)
-            finalPosition.y = originalPosition.y;
-
-        return finalPosition;
-    }
-
-    /// <summary>
-    /// Rotate the entity to target
-    /// The target is the new position of the entity after moving
-    /// </summary>
-    /// <param name="originalPosition">position the entity is</param>
-    /// <param name="finalPosition">target point</param>
-    private void RotateEnemy(Vector3 originalPosition, Vector3 finalPosition) {
-        if (parameters.useOrientation) {
-            Quaternion finalRotation = Quaternion.identity;
-
-            Vector3 relativePos = finalPosition - originalPosition;
-            Quaternion rotation = Quaternion.LookRotation(relativePos);
-            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, rotation, parameters.rotationVelocity * Time.deltaTime);
-
-            commonParameters.enemy.transform.rotation = finalRotation;
-        }
-    }
-
-    private void RotateEnemy(Quaternion target) {
-        if (parameters.useOrientation) {
-            //float maxDegrees = 360 / parameters.rotationVelocity;
-            Quaternion finalRotation = Quaternion.identity;
-            finalRotation = Quaternion.RotateTowards(commonParameters.enemy.transform.rotation, target, parameters.rotationVelocity * Time.deltaTime);
-            commonParameters.enemy.transform.rotation = finalRotation;
-        }
-    }
+    
 
     #endregion
 }

@@ -7,6 +7,10 @@ public class DetectParameters{
     /// before chasing player
     /// </summary>
     public float timeWarningDetect = 0;
+    /// <summary>
+    /// if true, the axis will be fixed at rotation
+    /// </summary>
+    public AxisBoolean fixedRotation;
 }
 
 public class DetectPlayer : StateMachineBehaviour {
@@ -40,6 +44,13 @@ public class DetectPlayer : StateMachineBehaviour {
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        _deltaTime -= Time.deltaTime;
+        if (_deltaTime <= 0) {
+            animator.SetBool("Timer", true);
+        }
+
+        if (commonParameters.drop == null) return;
+
         int size = animator.GetInteger("SizeDrop");
         int sizeLimit = commonParameters.sizeLimitDrop;
         if (sizeLimit > 0 && size >= sizeLimit) {
@@ -47,35 +58,11 @@ public class DetectPlayer : StateMachineBehaviour {
         }
 
         //always face target
-        faceTarget();
-
-        _deltaTime -= Time.deltaTime;
-        if (_deltaTime <= 0) {
-            animator.SetBool("Timer", true);
-        }
-    }
-
-    private void faceTarget() {
-        if (commonParameters.drop == null) return;
-
-        Quaternion _lookRotation;
-        Vector3 _direction;
-        Transform targetTransform = commonParameters.drop.transform;
-        Transform enemyTransform = commonParameters.enemy.transform;
-
-        //find the vector pointing from our position to the target
-        _direction = (targetTransform.position - enemyTransform.position).normalized;
-
-        if (_direction == Vector3.zero) return;
-        //create the rotation we need to be in to look at the target
-        _lookRotation = Quaternion.LookRotation(_direction);
-
-        if (commonParameters.onFloor) {
-            _lookRotation.x = 0;
-            _lookRotation.z = 0;
-        }
-        //rotate us over time according to speed until we are in the required rotation
-        enemyTransform.rotation = Quaternion.Slerp(enemyTransform.rotation, _lookRotation, Time.deltaTime * commonParameters.RotationSpeed);
+        //faceTarget();
+        Vector3 originalPosition = commonParameters.enemy.transform.position;
+        Vector3 finalPosition = commonParameters.drop.transform.position;
+        AIMethods.RotateEnemySlerp(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy, 
+                                commonParameters.RotationSpeed, originalPosition, finalPosition);
     }
     #endregion
 }
