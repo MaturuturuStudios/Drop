@@ -119,6 +119,18 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
+    /// Camera movement velocity on XY when LookArround state
+    /// </summary>
+    public float vibrateTime = 1f;
+
+
+    /// <summary>
+    /// Camera movement velocity on XY when LookArround state
+    /// </summary>
+    public float vibrateDistance = 1f;
+
+
+    /// <summary>
     /// Bound of camera liberty movement area
     /// </summary>
     public Boundary bounds;
@@ -214,18 +226,6 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Bounds exceded controll on X
-    /// </summary>
-    private float excededX = 0F;
-
-
-    /// <summary>
-    /// Bounds exceded controll on Y
-    /// </summary>
-    private float excededY = 0F;
-
-
-    /// <summary>
     /// Look Arround Offset
     /// </summary>
     private Vector3 _lookArroundOffset;
@@ -281,15 +281,16 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Last position to check if drop is moving
+    /// Controls if drop is moving
     /// </summary>
-    private Vector3 _lastPosition;
+    private bool _moving = false;
 
 
     /// <summary>
     /// Controls if drop is moving
     /// </summary>
-    private bool _moving = false;
+    private float _vibrating = 0f;
+
     #endregion
 
     #region Methods
@@ -407,7 +408,7 @@ public class MainCameraController : MonoBehaviour {
         _lastDropSize = _dropSize;
         
         // Looking arround
-        if (_lookArroundOffset != Vector3.zero && !_moving) {
+        if (_lookArroundOffset != Vector3.zero) {
             _cameraState = CameraState.LookArround;
             ++statusModifierControl;
         }
@@ -460,8 +461,13 @@ public class MainCameraController : MonoBehaviour {
                 break;
 
             case CameraState.LookArround:
-                _velocity = velocityLookArround;
-                _zVelocity = zVelocity;
+                if (!_moving) { 
+                    _velocity = velocityLookArround;
+                    _zVelocity = zVelocity;
+                } else {
+                    _velocity = velocity;
+                    _zVelocity = zVelocity;
+                }
                 break;
 
             case CameraState.LockArea:
@@ -481,8 +487,6 @@ public class MainCameraController : MonoBehaviour {
                 _zVelocity = zVelocity;
                 break;
         }
-
-        _lastPosition = target.transform.position;
     }
     
 
@@ -539,6 +543,12 @@ public class MainCameraController : MonoBehaviour {
         newPosition = Vector2.Lerp(transform.position, destination, Time.deltaTime * _velocity);
         newPosition.z = Mathf.Lerp(transform.position.z, destination.z, Time.deltaTime * _zVelocity);
 
+
+        _vibrating -= Time.deltaTime;
+        if (_vibrating > 0f) {
+            newPosition += new Vector3(Random.Range(-vibrateDistance, vibrateDistance), Random.Range(-vibrateDistance, vibrateDistance), 0f);
+        }
+
         // Set the position to the camera
         transform.position = newPosition;
 
@@ -560,41 +570,38 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private Vector3 CheckBounds(Vector3 destination) {
 
-        // Reset bounds exceded to recalculate
-        excededX = excededY = 0;
-
         // Calculate if it is out of bounds _distanceToBorder
         _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
-        _distanceToBorder *= _invertRatio;
+
         _distanceToBorder -= _dropSize;
-        // If right bound exeded
-        if (destination.x < bounds.left + _distanceToBorder)
-            excededX = destination.x = bounds.left + _distanceToBorder;
 
-        // If top bound exceded
-        else if (destination.x > bounds.right - _distanceToBorder) {
-            excededX = destination.x = bounds.right - _distanceToBorder;
+        // If bottom bound exceded
+        if (destination.x < bounds.left + (_distanceToBorder))
+            destination.x = bounds.left + (_distanceToBorder);
 
-            // If left bound exeded
-            if (excededX < bounds.left + _distanceToBorder)
-                excededX = destination.x = bounds.left + _distanceToBorder;
+        // If top bound exceded       
+        else if (destination.x > bounds.right - (_distanceToBorder)) { 
+            destination.x = bounds.right - (_distanceToBorder);
+
+            // If bottom bound exceded
+            if (destination.x < bounds.left + (_distanceToBorder))
+            destination.x = bounds.left + (_distanceToBorder);
         }
 
         _distanceToBorder *= _invertRatio;
 
         // If bottom bound exceded
-        if (destination.y < bounds.bottom + _offset.y + (_distanceToBorder))
-            excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
-
+        if (destination.y < bounds.bottom + (_distanceToBorder))
+            destination.y = bounds.bottom + (_distanceToBorder);
         // If top bound exceded
-        else if (destination.y > bounds.top - (_distanceToBorder)) {
-            excededY = destination.y = bounds.top - (_distanceToBorder);
+        else if (destination.y > bounds.top - (_distanceToBorder)) { 
+            destination.y = bounds.top - (_distanceToBorder);
 
             // If bottom bound exceded
-            if (excededY < bounds.bottom + _offset.y + (_distanceToBorder))
-                excededY = destination.y = bounds.bottom + _offset.y + (_distanceToBorder);
-        }
-
+            if (destination.y < bounds.bottom + (_distanceToBorder))
+                destination.y = bounds.bottom + (_distanceToBorder);
+        } 
+        
         return destination;
     }
 
@@ -615,23 +622,17 @@ public class MainCameraController : MonoBehaviour {
     public void LookArround(float OffsetX, float OffsetY) {
 
         if ((OffsetX != 0 || OffsetY != 0) ) {
-            if (!_moving) {
-                // Setting look arround values depending of the input
-                _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F);
+            // Setting look arround values depending of the input
+            _lookArroundOffset = new Vector3(OffsetX, OffsetY, 0F);
 
-                // Get offset
-                if (_lookArroundOffset.y > 0)
-                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) - _offset.y) / (_distanceToBorder * lookArroundDistance );
-                else if (_lookArroundOffset.y < 0)
-                    _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) + _offset.y) / (_distanceToBorder * lookArroundDistance );
+            // Get offset
+            if (_lookArroundOffset.y > 0)
+                _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) - _offset.y) / (_distanceToBorder * lookArroundDistance );
+            else if (_lookArroundOffset.y < 0)
+                _lookArroundOffset.y *= ((_distanceToBorder * lookArroundDistance ) + _offset.y) / (_distanceToBorder * lookArroundDistance );
                 
-                _lookArroundOffset.x *= Camera.main.aspect;
-                _lookArroundOffset *= lookArroundDistance * _distanceToBorder;
-            } else {
-                // If moving, ignore look arround
-                _lookArroundOffset = Vector3.zero;
-                _cameraState = CameraState.Default;
-            }
+            _lookArroundOffset.x *= Camera.main.aspect;
+            _lookArroundOffset *= lookArroundDistance * _distanceToBorder;
         } else if (_cameraState == CameraState.LookArround) {
             // Going back
             _lookArroundOffset = Vector3.zero;
@@ -692,6 +693,18 @@ public class MainCameraController : MonoBehaviour {
         _zVelocityGoBack = zVelocityLockArea;
 
         _cameraState = CameraState.GoBackFromArea;
+    }
+
+    /// <summary>
+    /// Makes camera vibrate efect
+    /// </summary>
+    /// <param name="time"></param>
+    public void Vibrate(float time = 0) {
+
+        _vibrating = time;
+
+        if (time != 0)
+            _vibrating = vibrateTime;
     }
 
 
