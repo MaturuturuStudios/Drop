@@ -140,4 +140,28 @@ public class AIMethods {
         // The squared distance is used because a multiplication is cheaper than a square root
         return squaredDistance < distanceGoal;
     }
+
+    /// <summary>
+    /// Check drop size (go away or detect)
+    /// </summary>
+    public static void CheckDrop(Animator animator, int sizeLimitDrop) {
+        int size = animator.GetInteger("SizeDrop");
+        int sizeLimit = sizeLimitDrop;
+        if (sizeLimit > 0 && size >= sizeLimit) {
+            animator.SetBool("GoAway", true);
+        } else if ((sizeLimit <= 0 || size < sizeLimit) && size > 0) {
+            animator.SetBool("Detect", true);
+        }
+    }
+
+    public static Collider[] DropInTriggerArea(Region triggerArea, Vector3 position, LayerMask layerCast) {
+        Vector3 center = triggerArea.origin + position;
+        Vector3 halfSize = triggerArea.size / 2;
+        center.x += halfSize.x;
+        center.y += halfSize.y;
+        center.z += halfSize.z;
+        Collider[] drops = Physics.OverlapBox(center, halfSize, Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
+        return drops;
+
+    }
 }

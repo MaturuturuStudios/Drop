@@ -48,7 +48,7 @@ public class Iddle : StateMachineBehaviour {
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //check if have condition to change state
-        commonParameters.AI.CheckDrop();
+        AIMethods.CheckDrop(animator, commonParameters.sizeLimitDrop);
         CheckTimeIddle(animator);
 
         //always use the gravity

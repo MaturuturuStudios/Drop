@@ -69,7 +69,11 @@ public class Chase : StateMachineBehaviour {
         AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy, 
                             commonParameters.toleranceDegreeToGoal, originalPosition, finalPosition);
 
-        Vector3 direction = (finalPosition - originalPosition).normalized;
+        Vector3 direction = (finalPosition - originalPosition);
+        //give preference on y axis to not let the drop run away
+        direction.x *= 0.5f;
+        direction.y *= 1.5f;
+        direction=direction.normalized;
 
         //move the entity
         move = direction * parameters.speed * Time.deltaTime;

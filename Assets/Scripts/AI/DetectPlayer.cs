@@ -57,8 +57,7 @@ public class DetectPlayer : StateMachineBehaviour {
             animator.SetBool("GoAway", true);
         }
 
-        //always face target
-        //faceTarget();
+        //face target
         Vector3 originalPosition = commonParameters.enemy.transform.position;
         Vector3 finalPosition = commonParameters.drop.transform.position;
         AIMethods.RotateEnemySlerp(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy, 
