@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Creates an area where the gravity fill be changed, simulating
@@ -153,9 +154,40 @@ public class WindTube : MonoBehaviour {
 	/// </summary>
 	private const float _baseWindForce = 5.0f;
 
+	/// <summary>
+	/// List of listeners registered to this component's events.
+	/// </summary>
+	private List<WindTubeListener> _listeners = new List<WindTubeListener>();
+
 	#endregion
 
 	#region Methods
+
+	/// <summary>
+	/// Subscribes a listener to the components's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(WindTubeListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the components's events.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(WindTubeListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
+	}
 
 	/// <summary>
 	/// Unity's method called when the entity is created.
@@ -317,6 +349,12 @@ public class WindTube : MonoBehaviour {
 		CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
 		if (cccp != null)
 			cccp.CurrentWindTube = this;
+
+		// Notifies the listeners
+		foreach (WindTubeListener listener in other.GetComponents<WindTubeListener>())
+			listener.OnWindTubeEnter(this, other.gameObject);
+		foreach (WindTubeListener listener in _listeners)
+			listener.OnWindTubeEnter(this, other.gameObject);
 	}
 
 	/// <summary>
@@ -332,6 +370,12 @@ public class WindTube : MonoBehaviour {
 		CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
 		if (cccp != null)
 			cccp.CurrentWindTube = null;
+
+		// Notifies the listeners
+		foreach (WindTubeListener listener in other.GetComponents<WindTubeListener>())
+			listener.OnWindTubeExit(this, other.gameObject);
+		foreach (WindTubeListener listener in _listeners)
+			listener.OnWindTubeExit(this, other.gameObject);
 	}
 
 	/// <summary>
@@ -375,6 +419,12 @@ public class WindTube : MonoBehaviour {
 
 			return;
 		}
+
+		// Notifies the listeners
+		foreach (WindTubeListener listener in other.GetComponents<WindTubeListener>())
+			listener.OnWindTubeStay(this, other.gameObject, force);
+		foreach (WindTubeListener listener in _listeners)
+			listener.OnWindTubeStay(this, other.gameObject, force);
 	}
 
 	/// <summary>
