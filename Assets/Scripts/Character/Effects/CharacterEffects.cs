@@ -1,16 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(CharacterControllerCustom))]
 [RequireComponent(typeof(CharacterSize))]
 public class CharacterEffects : MonoBehaviour, CharacterControllerListener {
 
-    [Header("Land")]
-    public GameObject landEffectPrefab;
-
-    public float landEffectDuration = 1.5f;
-
-    public float landMinSpeed = 3.0f;
+	public MinSpeedEffectInformation land;
 
     private CharacterControllerCustom _ccc;
 
@@ -34,10 +28,9 @@ public class CharacterEffects : MonoBehaviour, CharacterControllerListener {
     }
 
     public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
-        if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > landMinSpeed * landMinSpeed) {
-            GameObject effect = Instantiate(landEffectPrefab, hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal)) as GameObject;
-            effect.transform.localScale = Vector3.one * _characterSize.GetSize();
-            Destroy(effect, landEffectDuration);
+		float minLandSpeed = land.GetMinSpeed(_characterSize.GetSize());
+        if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed) {
+            land.PlayEffect(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal), _characterSize.GetSize());
         }
     }
 

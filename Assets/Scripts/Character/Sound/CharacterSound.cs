@@ -223,7 +223,7 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		// Checks if the character is landing and plays the sound
 		Vector3 hitVelocity = Vector3.Project(ccc.Velocity, hit.normal);
-		if (!ccc.State.IsGrounded && hitVelocity.magnitude >= land.minSpeedToPlay)
+		if (!ccc.State.IsGrounded && hitVelocity.magnitude >= land.minSpeedToPlay * Mathf.Sqrt(ccc.GetComponent<CharacterSize>().GetSize()))
 			land.PlayAudio();
 	}
 
