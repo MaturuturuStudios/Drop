@@ -101,13 +101,7 @@ public class MenuNavigator : MonoBehaviour {
     /// <summary>
     /// Credits Menu
     /// </summary>
-    public MenuInstance creditsMenu = new MenuInstance(Menu.CREDITS_MENU);
-
-
-    /// <summary>
-    /// Label for the message displayed when the level is complete
-    /// </summary>
-    public GameObject levelComplete;
+    public MenuInstance creditsMenu = new MenuInstance(Menu.CREDITS_MENU);    
     #endregion
 
     #region Private Attributes
@@ -151,9 +145,6 @@ public class MenuNavigator : MonoBehaviour {
         _fading = GetComponent<SceneFadeInOut>();
         //get input controller
         _gameControllerInput = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
-
-        // Disable level complete text
-        levelComplete.SetActive(false);
 
         backgroundImageMainMenu = backgroundMainMenu.GetComponent<Image>();
     }
@@ -295,15 +286,16 @@ public class MenuNavigator : MonoBehaviour {
         //make sure to quit the confirmation
         DoConfirmQuitNo();
     }
-    
+
     /// <summary>
     /// Change the scene with fading
     /// </summary>
     /// <param name="nameScene">The next scene</param>
     /// <param name="delayStart">Delay should wait before starting. By default -1 that means the default will be used</param>
+    /// <param name="fadeDuration">Time should delay fading the screen to black. By default -1 that means the default will be used</param>
     /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the default will be used</param>
-    public void ChangeScene(string nameScene, float delayStart = -1, float delayEnd = -1) {
-        _fading.ChangeScene(nameScene, delayStart, delayEnd);
+    public void ChangeScene(string nameScene, float delayStart = -1, float fadeDuration = -1, float delayEnd = -1) {
+        _fading.ChangeScene(nameScene, delayStart, fadeDuration, delayEnd);
     }
 
     /// <summary>
@@ -332,10 +324,6 @@ public class MenuNavigator : MonoBehaviour {
     /// </summary>
     public void DoConfirmQuitYes() {
         Application.Quit();
-    }
-
-    public void ShowEndMessage() {
-        levelComplete.SetActive(true);
     }
 
     //Region of methods with special/specific actions when pushed or poped from stack

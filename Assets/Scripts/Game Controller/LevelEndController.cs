@@ -4,17 +4,17 @@ using UnityEngine.UI;
 /// <summary>
 /// Script for end Scene, you can configure the displayed message
 /// </summary>
-public class GameEndController : MonoBehaviour {
+public class LevelEndController : MonoBehaviour {
 
     #region Public Attributes
-
-
     /// <summary>
     /// Wait time to show 
     /// </summary>
-    public float delayStart = 3F;
+    public float delayStart = 1F;
 
-    public float delayEnd = 2f;
+    public float fadeDuration = 2f;
+
+    public float delayEnd = 0f;
 
 
     /// <summary>
@@ -32,6 +32,11 @@ public class GameEndController : MonoBehaviour {
     private GameControllerInput _gci;
 
     /// <summary>
+    /// Reference to independent controller
+    /// </summary>
+    private GameControllerIndependentControl _gcic;
+
+    /// <summary>
     /// Reference to the collider of end region.
     /// </summary>
     private BoxCollider _collider;
@@ -41,6 +46,11 @@ public class GameEndController : MonoBehaviour {
     /// </summary>
     private MenuNavigator _menuNavigator;
 
+    /// <summary>
+    /// Reference to level end animation
+    /// </summary>
+    private LevelEndAnim _levelEndAnim;
+    
     #endregion
 
     #region Methods
@@ -72,6 +82,10 @@ public class GameEndController : MonoBehaviour {
 
         //Get input controller
         _gci = FindObjectOfType<GameControllerInput>();
+        //Get input controller
+        _gcic = FindObjectOfType<GameControllerIndependentControl>();
+        //Get input controller
+        _levelEndAnim = FindObjectOfType<LevelEndAnim>();
 
     }
 
@@ -83,16 +97,18 @@ public class GameEndController : MonoBehaviour {
     void OnTriggerEnter(Collider other){
 
         // Only ends game with player
-        if (other.CompareTag(Tags.Player)){
-
-            // Load scene async
-            _menuNavigator.ChangeScene(nextScene.name, delayStart, delayEnd);
+        if (other.CompareTag(Tags.Player)) {
 
             // Stops input
             _gci.StopInput();
 
-            // Show message
-            _menuNavigator.ShowEndMessage();
+            // Load scene async
+            _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd);
+
+            int totalDrops = _gcic.CountAlllDrops(true);
+            int controlledDrops = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
+            // Start level end animation
+            _levelEndAnim.BeginLevelEndAnimation(totalDrops, totalDrops - controlledDrops, delayStart, fadeDuration / totalDrops);
         }
     }
 
