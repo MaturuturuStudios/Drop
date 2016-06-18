@@ -31,17 +31,17 @@ public interface CharacterShootListener {
 /// Adapter for the CharacterShootListener interface used to
 /// avoid forcing each class to implement all it's methods.
 /// </summary>
-public class CharacterShootAdapter : CharacterShootListener {
+public class CharacterShootAdapter : MonoBehaviour, CharacterShootListener {
 
-    public void OnEnterShootMode(CharacterShoot character) {
+    public virtual void OnEnterShootMode(CharacterShoot character) {
         // Do nothing
     }
 
-    public void OnExitShootMode(CharacterShoot character) {
+    public virtual void OnExitShootMode(CharacterShoot character) {
         // Do nothing
     }
 
-    public void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
+    public virtual void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
         // Do nothing
     }
 }

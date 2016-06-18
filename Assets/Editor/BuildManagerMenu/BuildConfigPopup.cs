@@ -31,7 +31,7 @@ public class BuildConfigPopup : EditorWindow {
         BuildConfigPopup window = CreateInstance<BuildConfigPopup>();
             
         // Set window dimensions
-        window.position = new Rect(Screen.width / 2, Screen.height / 2, 500, 305);
+        window.position = new Rect(Screen.width / 2, Screen.height / 2, 500, 335);
 
         // Set the popup visible
         window.ShowPopup();
@@ -88,9 +88,14 @@ public class BuildConfigPopup : EditorWindow {
 
         // Checks
         GUILayout.Label("Select target platforms:");
-        bd.win = EditorGUILayout.Toggle("Windows", bd.win);
-        bd.lin = EditorGUILayout.Toggle("Linux", bd.lin);
-        bd.mac = EditorGUILayout.Toggle("Mac", bd.mac);
+        bd.win = EditorGUILayout.Toggle("  Windows", bd.win);
+        bd.lin = EditorGUILayout.Toggle("  Linux", bd.lin);
+        bd.mac = EditorGUILayout.Toggle("  Mac", bd.mac);
+
+        GUILayout.Space(10);
+
+        // Use scene validation
+        bd.countScenes = EditorGUILayout.Toggle("Scene validation: ", bd.countScenes);
 
         GUILayout.Space(10);
 

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;
 
 /// <summary>
 /// Fade in and out the scenes
@@ -19,62 +19,98 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <summary>
     /// the texture that will overlay the screen. This can be a black image or a loading graphic
     /// </summary>
-    public Texture2D fadeOutTexture;
+    public GameObject fadeOutTexture;
     /// <summary>
-    /// The fading speed
+    /// Duration while fading
     /// </summary>
-    public float fadeSpeed = 0.8f;
+    public float fadeDuration = 0.8f;
     #endregion
 
     #region Private Attributes
-    /// <summary>
-    /// the texture's order in the draw hierarchy: a low number means it renders on top
-    /// </summary>
-    private int _drawDepth = -1000;
     /// <summary>
     /// the texture's alpha value between 0 and 1
     /// </summary>
     private float _alpha = 1.0f;
     /// <summary>
+    /// Elapsed time fading
+    /// </summary>
+    private float _elapsed = 0;
+    /// <summary>
     /// the direction to fade: in = -1 or out = 1
     /// </summary>
-    private int _fadeDir = -1;
+    private bool _isFadeIn = true;
+    /// <summary>
+    /// Dark background gameobject;
+    /// </summary>
+    private GameObject _fadeBackround;
+    /// <summary>
+    /// parent UI object
+    /// </summary>
+    private GameObject _parentUI;
     #endregion
 
 
     #region Methods
     #region Public methods
-    public void OnGUI() {
-        // fade out/in the alpha value using a direction, a speed and Time.deltaTime to convert the operation to seconds
-        _alpha += _fadeDir * fadeSpeed * Time.deltaTime;
+
+    void Start() {
+        _parentUI = GameObject.FindGameObjectWithTag("Menus");
+
+        BeginFade(true);
+    }
+
+    void Update() {
+
+        // fade out/in the alpha value using the desired time
+        _alpha += Time.deltaTime / fadeDuration;
+
         // force (clamp) the number to be between 0 and 1 because GUI.color uses Alpha values between 0 and 1
         _alpha = Mathf.Clamp01(_alpha);
 
-        // set color of our GUI (in this case our texture). All color values remain the same & the Alpha is set to the alpha variable
-        GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, _alpha);
-        // make the black texture render on top (drawn last)
-        GUI.depth = _drawDepth;
-        // draw the texture to fit the entire screen area
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), fadeOutTexture);
+        // Set local alpha
+        float alpha = _alpha;
+
+        // Looks for direction
+        if (_isFadeIn)
+            alpha = 1 - _alpha;
+
+        // Change tranparency
+        if (_fadeBackround)
+            _fadeBackround.GetComponent<Image>().color = new Color(_fadeBackround.GetComponent<Image>().color.r, _fadeBackround.GetComponent<Image>().color.g, _fadeBackround.GetComponent<Image>().color.b, alpha);
     }
+
 
     /// <summary>
     /// Sets fadeDir to the direction parameter making the scene fade in if -1 and out if 1
     /// </summary>
-    /// <param name="direction"> fade: in = -1 or out = 1</param>
-    /// <returns>the speed of complete fading</returns>
-    public float BeginFade(int direction) {
-        _fadeDir = direction;
-        return (fadeSpeed);
+    /// <param name="isFadeIn"> fade: in = true or out = false</param>
+    /// <param name="desiredFadeDuration">Duration of the fade effect</param>
+    /// <returns>the duration of complete fading</returns>
+    public float BeginFade(bool isFadeIn, float desiredFadeDuration = -1) {
+
+        // Sets direction
+        _isFadeIn = isFadeIn;
+
+        // Reset alpha
+        _alpha = 0;
+
+        // If there isn't any fadeBackround create it
+        if (!_fadeBackround)
+            _fadeBackround = GameObject.Instantiate(fadeOutTexture);
+
+        // Set object a ui element
+        _fadeBackround.transform.SetParent(_parentUI.transform, false);
+
+        // Put in the back of the animations
+        _fadeBackround.transform.SetAsFirstSibling();
+
+        // Sets the desired duration
+        if (desiredFadeDuration != -1)
+            fadeDuration = desiredFadeDuration;
+
+        return (desiredFadeDuration);
     }
 
-    /// <summary>
-    /// OnLevelWasLoaded is called when a level is loaded.
-    /// </summary>
-    public void OnLevelWasLoaded() {
-        //fade...
-        BeginFade(-1);
-    }
 
     /// <summary>
     /// Change to the next scene with a fading. This is the method that should be called
@@ -82,9 +118,10 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <param name="nameScene">The name of the next scene</param>
     /// <param name="delayStart">Delay should wait before starting. By default -1 that means the public attribute delayStartChangeSeconds
     /// on this script will be used</param>
+    /// <param name="fadeTime">Delay time should elapse the fade effect</param>
     /// /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the public attribute delaySEndChangeSeconds
     /// on this script will be used</param>
-    public void ChangeScene(string nameScene, float delayStart=-1, float delayEnd=-1) {
+    public void ChangeScene(string nameScene, float delayStart = -1, float fadeTime = -1, float delayEnd = -1) {
         if (delayStart <= -1) {
             delayStart = delayStartChangeSeconds;
         }
@@ -93,7 +130,7 @@ public class SceneFadeInOut : MonoBehaviour {
             delayEnd = delayEndChangeSeconds;
         }
 
-        StartCoroutine(NextScene(nameScene, delayStart, delayEnd));
+        StartCoroutine(NextScene(nameScene, delayStart, fadeTime, delayEnd));
     }
     #endregion
 
@@ -104,16 +141,26 @@ public class SceneFadeInOut : MonoBehaviour {
     /// </summary>
     /// <param name="nameScene">Next scene</param>
     /// <param name="delayStart">Wait before starting</param>
+    /// <param name="desiredFadeDuration">Elapsed fade duration/param>
     /// <param name="delayEnd">Wait after ending</param>
     /// <returns></returns>
-    private IEnumerator NextScene(string nameScene, float delayStart, float delayEnd) {
+    private IEnumerator NextScene(string nameScene, float delayStart, float desiredFadeDuration, float delayEnd) {
+
+        // Preload next scene
+        AsyncOperation op = SceneManager.LoadSceneAsync(nameScene);
+        // Don't load scene untill time has expired
+        op.allowSceneActivation = false;
+
         yield return MenuNavigator.WaitForRealSeconds(delayStart);
 
-        float fadeTime = BeginFade(1);
-        yield return MenuNavigator.WaitForRealSeconds(fadeTime);
+        // Start fade animation
+        BeginFade(false, desiredFadeDuration);
+        yield return MenuNavigator.WaitForRealSeconds(fadeDuration);
 
         yield return MenuNavigator.WaitForRealSeconds(delayEnd);
-        SceneManager.LoadScene(nameScene, LoadSceneMode.Single);
+
+        // When scene is loaded and time has expired, we proceed to load next scene
+        op.allowSceneActivation = true;
     }
     #endregion
     #endregion

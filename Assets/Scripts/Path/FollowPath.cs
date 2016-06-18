@@ -29,7 +29,7 @@ public class FollowPath : MonoBehaviour {
 	/// <summary>
 	/// A reference to the path this entity will follow.
 	/// </summary>
-	public PathDefinition path;
+	public PathDefinition path = new PathDefinition();
 
 	/// <summary>
 	/// Defines how will the entity move from one point to the next one.
@@ -138,7 +138,8 @@ public class FollowPath : MonoBehaviour {
 		_transform.position = Vector3.Lerp(_lastPosition, path.Current.position, factor);
 
 		// Rotates the entity
-		_transform.rotation = Quaternion.Lerp(_lastRotation, path.Current.rotation, factor);
+		if (useOrientation)
+			_transform.rotation = Quaternion.Lerp(_lastRotation, path.Current.rotation, factor);
 
 		// Automatically changes to the next point in the path
 		if (automatic) {
@@ -180,6 +181,35 @@ public class FollowPath : MonoBehaviour {
 	public void Set(int index) {
 		SaveLastPosition();
 		path.SetIndex(index);
+	}
+
+	/// <summary>
+	/// Jumps and skips the amount of steps on the path.
+	/// The amount can be negative, which will make the path to 
+	/// move backwards. If the end is reached, it will behave 
+	/// as the path type would.
+	/// </summary>
+	/// <param name="amount">Number of steps to jump</param>
+	public void Jump(int amount) {
+		SaveLastPosition();
+		path.Jump(amount);
+	}
+
+	/// <summary>
+	/// Jumps forward in the path, skipping the points in between.
+	/// </summary>
+	/// <param name="amount">Numbers of steps to jump</param>
+	public void JumpForward(int amount) {
+		// Just another name for the jump method
+		Jump(amount);
+	}
+
+	/// <summary>
+	/// Jumps backwards in the path, skipping the points in between.
+	/// </summary>
+	/// <param name="amount">Numbers of steps to jump</param>
+	public void JumpBackward(int amount) {
+		Jump(-amount);
 	}
 
 	/// <summary>

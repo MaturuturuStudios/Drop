@@ -24,7 +24,8 @@ ModelImporter:
     400014: //RootNode
     400016: Sup
     4300000: Mushroom
-    7400000: Mushroom_Rig_Animation
+    7400000: Bounce
+    7400002: Idle
     9500000: //RootNode
     13700000: Mushroom
   materials:
@@ -49,9 +50,55 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Mushroom_Rig_Animation
+      name: Bounce
       takeName: Mushroom_Rig_Animation
       firstFrame: 1
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Base
+        weight: 1
+      - path: Base/Mid
+        weight: 1
+      - path: Base/Mid/MidA
+        weight: 1
+      - path: Base/Mid/MidB
+        weight: 1
+      - path: Base/Mid/MidC
+        weight: 1
+      - path: Base/Mid/MidD
+        weight: 1
+      - path: Base/Mid/Sup
+        weight: 1
+      - path: Mushroom
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: Idle
+      takeName: Mushroom_Rig_Animation
+      firstFrame: 29
       lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0

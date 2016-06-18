@@ -3,13 +3,15 @@
 public class GameControllerInput : MonoBehaviour {
 
 	#region Attributes
-	// Internal references
+	/// Internal references
 	private GameControllerIndependentControl _switcher;
 	private MainCameraController _mainCameraController;
 	private GameControllerHelp _helpController;
-
-	//menu navigator of the scene
-	private MenuNavigator _ui;
+    
+    /// <summary>
+    /// Menu navigator of the scene
+    /// </summary>
+    private MenuNavigator _ui;
 
 	/// <summary>
 	/// Control if the trigger is pressed for only call change drop one time
@@ -20,24 +22,38 @@ public class GameControllerInput : MonoBehaviour {
 	/// Control if the shootCounter is pressed for only call it one time
 	/// </summary>
 	private bool _shootCounterPressed = false;
-	#endregion
 
-	#region Methods
-	void Start() {
+    /// <summary>
+    /// Control if the input is listening
+    /// </summary>
+    private bool _enabled;
+
+    /// <summary>
+    /// Control if there is input moving
+    /// </summary>
+    private bool _moving;
+    #endregion
+
+    #region Methods
+    void Start() {
 		// Retrives the independent control component
 		_switcher = GetComponent<GameControllerIndependentControl>();
 		_mainCameraController = GetComponentInChildren<MainCameraController>();
 		_helpController = GetComponent<GameControllerHelp>();
 
 		_ui = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
-	}
+        _enabled = true;
+
+    }
 
 	void Update() {
 		//Start button
 		if (Input.GetButtonDown(Axis.Start))
 			_ui.PauseGame();
 
-		if (_ui==null || !_ui.IsMenuActive()) {
+        _moving = false;
+
+        if (_enabled && (_ui == null || !_ui.IsMenuActive())) {
 			// Retrieves current character's components
 			CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
 			CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
@@ -47,9 +63,12 @@ public class GameControllerInput : MonoBehaviour {
             float hInput = Input.GetAxis(Axis.Horizontal);
 			cccp.HorizontalInput = hInput;
 
-			// Vertical input
-			float vInput = Input.GetAxis(Axis.Vertical);
+            // Vertical input
+            float vInput = Input.GetAxis(Axis.Vertical);
 			cccp.VerticalInput = vInput;
+
+            // Controls if player wants to move
+            _moving = hInput != 0 || vInput != 0;
 
             // Jump input
             if (Input.GetButtonDown(Axis.Jump)) {
@@ -136,15 +155,29 @@ public class GameControllerInput : MonoBehaviour {
 				}
 			}
 		}
-	}
+    }
 
-	/// <summary>
-	/// Stops the player and closes the input.
-	/// </summary>
-	public void StopInput() {
-		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
-		cccp.Stop();
-		enabled = false;
-	}
+    /// <summary>
+    /// Stops the player and closes the input.
+    /// </summary>
+    public void StopInput() {
+        CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+        cccp.Stop();
+        _enabled = false;
+    }
+
+    /// <summary>
+    /// Resumes the input.
+    /// </summary>
+    public void ResumeInput() {
+        _enabled = true;
+    }
+
+    /// <summary>
+    /// Indicates if there is moving input
+    /// </summary>
+    public bool isMoving() {
+        return _moving;
+    }
     #endregion
 }

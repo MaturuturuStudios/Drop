@@ -4,60 +4,75 @@ using System.Collections.Generic;
 public class GameControllerIndependentControl : MonoBehaviour {
 
     #region Attributes
+
+    /// <summary>
+    /// Drop prefab reference ot instantiate
+    /// </summary>
+    public GameObject PfDrop;
+
     /// <summary>
     /// Current character controlled
     /// </summary>
+    [HideInInspector]
     public GameObject currentCharacter;
+
     /// <summary>
-    /// All current characters controlled list
+    /// List of all current characters controlled
     /// </summary>
+    [HideInInspector]
     public List<GameObject> allCurrentCharacters;
 
 
-	/// <summary>
-    /// Drop prefab reference
+    /// <summary>
+    /// Drop number to diferenciate the instantiated characters
     /// </summary>
-    public GameObject PfDrop;
-	//Drop name number when dinamically create it
     private int _dropNameCounter;
-    
-    //Camera reference
+
+
+    /// <summary>
+    /// Reference to main camera controller
+    /// </summary>
     private MainCameraController _cameraController;
+
     #endregion
 
     #region Methods
-    /// <summary>
-    /// Unity's method called when this entity is created, even if it is disabled.
-    /// </summary>
+
     void Awake() {
-        //Get the camera
+
+        //Get the camera controller
         _cameraController = GetComponentInChildren<MainCameraController>();
 
-	}
-	
-    /// <summary>
-    /// Unity's method called on start script only one time
-    /// </summary>
-    void Start() {
-		//Get the mext drop number
+        //Get the mext drop number for label
         _dropNameCounter = allCurrentCharacters.Count;
-        if (_dropNameCounter == 0 && currentCharacter != null) {
-            allCurrentCharacters.Add(currentCharacter);
-            ++_dropNameCounter;
-        }
-
     }
+
 
     /// <summary>
     /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>
     /// <param name="addToControlList">Set the created drop to the controlled drops list</param>
-    public GameObject CreateDrop(bool setControl = false, bool addToControlList = true) {
-        //Create a drop
+    /// <param name="size">Set the desired size to instantiated character</param>
+    public GameObject CreateDrop(bool setControl = false, bool addToControlList = true, int size = 1) {
+
+        // Create a drop
         GameObject drop = Instantiate(PfDrop);
-		//Set the name to the object
+
+		// Set the name to the object
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
+
+        // Look for the characters pool in hierarchy
+        GameObject charactersPool = GameObject.FindGameObjectWithTag("Characters");
+        // If don't exist create it
+        if (!charactersPool)
+            charactersPool = new GameObject("Characters");
+        charactersPool.tag = "Characters";
+        // Put it into the Characters object
+        drop.transform.parent = charactersPool.transform;
+
+        // Set the desired size
+        drop.GetComponent<CharacterSize>().SetSize(size);
 
         //Add to controled drop list
         if (addToControlList)
@@ -70,13 +85,16 @@ public class GameControllerIndependentControl : MonoBehaviour {
         return drop;
     }
 
+
     /// <summary>
     /// Remove a drop under player's control from list and set it out of the scene
     /// </summary>
     /// <param name="drop">drop to remove from control & scene</param>
     /// <param name="setControlNextDrop">On drop deleted set the control to next drop</param>
     public void DestroyDrop(GameObject drop, bool setControlNextDrop = false) {
+
         if (!IsUnderControl (drop) || allCurrentCharacters.Count > 1) {
+
             //Set control to the next drop if it was the one under control
             if (setControlNextDrop && currentCharacter == drop)
                 ControlNextDrop();
@@ -91,11 +109,14 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Sets the control to the next drop in list
     /// </summary>
     public void ControlNextDrop() {
+
         if (allCurrentCharacters.Count > 1) {
+
             //Get next index
             int next_drop = allCurrentCharacters.IndexOf(currentCharacter) + 1;
 
@@ -109,11 +130,14 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Sets the control to the previous drop in list
     /// </summary>
     public void ControlBackDrop() {
+
         if (allCurrentCharacters.Count > 1) {
+
             //Get prev index
             int back_drop = allCurrentCharacters.IndexOf(currentCharacter) - 1;
 
@@ -126,6 +150,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
             SetControl(back_drop);
         }
     }
+
 
     /// <summary>
     /// Sets the control to an specific drop
@@ -149,6 +174,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Set the control to the given drop if is on the list of drops under player's control
     /// </summary>
@@ -165,6 +191,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Checks if a drops under player's control
     /// </summary>
@@ -172,5 +199,54 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public bool IsUnderControl(GameObject drop) {
         return allCurrentCharacters.Contains(drop);
     }
+
+
+    /// <summary>
+    /// Count how many characters there are into the scene
+    /// </summary>
+    /// <param name="drop">drop to check control</param>
+    public int CountAlllDrops(bool splited) {
+
+        // Look for all drops
+        GameObject[] drops = GameObject.FindGameObjectsWithTag("Player");
+
+        // Count all drops
+        int totalDrops = 0;
+        for (int i = 0; i < drops.Length; ++i) {
+            if (splited)
+                totalDrops += drops[i].GetComponent<CharacterSize>().GetSize();
+            else
+                ++totalDrops;
+        }
+
+        return totalDrops;
+
+    }
+
+
+    /// <summary>
+    /// Count how many characters there are into the scene
+    /// </summary>
+    /// <param name="drop">drop to check control</param>
+    public int CountControlledDrops(bool splited) {
+
+        // Look for all drops
+        GameObject[] drops = GameObject.FindGameObjectsWithTag("Player");
+
+        // Count drops under controll
+        int totalDrops = 0;
+        for (int i = 0; i < drops.Length; ++i) {
+            if (IsUnderControl(drops[i])) {
+                if (splited)
+                    totalDrops += drops[i].GetComponent<CharacterSize>().GetSize();
+                else
+                    ++totalDrops;
+            }
+        }
+
+        return totalDrops;
+    }
+
+
     #endregion
 }

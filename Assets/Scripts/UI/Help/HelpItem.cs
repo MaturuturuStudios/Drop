@@ -16,11 +16,17 @@ public class HelpItem : MonoBehaviour {
 	/// </summary>
     protected bool _specialTriggered;
 
-    /// <summary>
-    /// Unity's method called right after the object
-    /// is created.
-    /// </summary>
+	/// <summary>
+	/// Reference to this entity's Transform component.
+	/// </summary>
+	protected Transform _transform;
+
+	/// <summary>
+	/// Unity's method called right after the object
+	/// is created.
+	/// </summary>
 	void Awake() {
+		_transform = transform;
 		_animator = GetComponent<Animator>();
 		OnAwake();
 	}
@@ -29,7 +35,13 @@ public class HelpItem : MonoBehaviour {
     /// Unity's method called each frame.
     /// </summary>
 	void Update() {
-        SetSpecial(IsSpecialTriggered());
+		// Orientates the object to the camera
+		_transform.rotation = Camera.main.transform.rotation;
+
+		// Checks if the spectial is triggered
+		SetSpecial(IsSpecialTriggered());
+
+		// Delegates into OnUpdate
 		OnUpdate();
     }
 
@@ -46,6 +58,10 @@ public class HelpItem : MonoBehaviour {
     /// Hides the information item.
     /// </summary>
     public void Hide() {
+		// Checks if the object has been destroyed
+		if (this == null)
+			return;
+
 		if (gameObject.activeInHierarchy)
 			_animator.SetBool("shown", false);
 		OnHide();

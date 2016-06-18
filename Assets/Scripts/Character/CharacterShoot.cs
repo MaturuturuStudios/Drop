@@ -152,13 +152,14 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to start the shootmode
 	/// </summary>
     public void Aim(){
-        if (ccc.State.IsGrounded == true && (GetComponent<CharacterSize>().GetSize() > 1) && (GetComponent<CharacterSize>().GetSize() < 10) && _gcic.allCurrentCharacters.Count<4 && !st.Lookingat())
-        {           
+        float size_component=GetComponent<CharacterSize>().GetSize();
 
+        if (ccc.State.IsGrounded == true && (size_component > 1) && (size_component < 10) && _gcic.allCurrentCharacters.Count < 4 && !st.Lookingat())
+        {           
             if (!shootmode ) {
                 shootmode = true;
                 st.enabled = true;
-                _sizeshot = 1;
+                //_sizeshot = 1;
                 ccc.Parameters = CharacterControllerParameters.ShootingParameters;
 
                 // Notifies the listeners

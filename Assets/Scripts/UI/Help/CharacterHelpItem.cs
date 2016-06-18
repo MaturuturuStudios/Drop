@@ -1,20 +1,7 @@
-﻿using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// Help item for showing characters' information.
 /// </summary>
-[RequireComponent(typeof(TextMesh))]
-public class CharacterHelpItem : HelpItem {
-
-    /// <summary>
-    /// Reference to the object's TextMesh component.
-    /// </summary>
-	private TextMesh _textRenderer;
-
-	/// <summary>
-	/// Reference to the TextMesh Transform's component.
-	/// </summary>
-	private Transform _textRendererTransform;
+public class CharacterHelpItem : TextHelpItem {
 
 	/// <summary>
 	/// Reference to the parents's CharacterSize component.
@@ -23,15 +10,12 @@ public class CharacterHelpItem : HelpItem {
 
 	protected override void OnAwake() {
 		// Retrieves the desired components
-		_textRenderer = GetComponent<TextMesh>();
-		_textRendererTransform = _textRenderer.transform;
+		base.OnAwake();
 		_characterSize = GetComponentInParent<CharacterSize>();
     }
 
-	protected override void OnUpdate() {
-		// Changes the size in the text
-		int size = _characterSize.GetSize();
-		_textRenderer.text = size.ToString();
-		_textRendererTransform.rotation = Camera.main.transform.rotation;
+	protected override string GetText() {
+		// Returns the character's size
+		return _characterSize.GetSize().ToString();
 	}
 }

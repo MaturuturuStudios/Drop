@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System;
 
 public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     #region Public attributes
@@ -13,22 +12,6 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     /// A DropDown in which resolutions will show
     /// </summary>
     public Slider master;
-    /// <summary>
-    /// A DropDown for the quality selection
-    /// </summary>
-    public Slider music;
-    /// <summary>
-    /// A slider for the antialiasing
-    /// </summary>
-    public Slider ambient;
-    /// <summary>
-    /// A toggle for fullscreen
-    /// </summary>
-    public Slider effects;
-    #endregion
-
-    #region Private attributes
-    private float _previousMaster;
     #endregion
 
     #region Methods
@@ -65,56 +48,6 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
         if (master == null) {
             Debug.LogError("Don't have the master option!");
         }
-        if (music == null) {
-            Debug.LogError("Don't have the music option!");
-        }
-        if (ambient == null) {
-            Debug.LogError("Don't have the ambient option!");
-        }
-        if (effects == null) {
-            Debug.LogError("Dons't have the effects option!");
-        }
-
-        //get the music configuration
-
-
-        _previousMaster = master.value;
-    }
-
-    public void Start() {
-        master.onValueChanged.AddListener(delegate {
-            MasterChange(master);
-        });
-
-        music.onValueChanged.AddListener(delegate {
-            MusicChange(music);
-        });
-
-        ambient.onValueChanged.AddListener(delegate {
-            AmbientChange(ambient);
-        });
-
-        effects.onValueChanged.AddListener(delegate {
-            EffectsChange(effects);
-        });
-    }
-
-    private void MasterChange(Slider target) {
-        float difference = target.value - _previousMaster;
-        _previousMaster = target.value;
-
-        music.value += difference;
-        ambient.value += difference;
-        effects.value += difference;
-    }
-
-    private void MusicChange(Slider target) {
-    }
-
-    private void AmbientChange(Slider target) {
-    }
-
-    private void EffectsChange(Slider target) {
     }
 
 

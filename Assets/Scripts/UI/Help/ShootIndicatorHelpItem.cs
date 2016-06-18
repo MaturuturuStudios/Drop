@@ -3,13 +3,7 @@
 /// <summary>
 /// Help item for showing size indicators' information.
 /// </summary>
-[RequireComponent(typeof(TextMesh))]
-public class ShootIndicatorHelpItem : HelpItem {
-
-    /// <summary>
-    /// Reference to the object's TextMesh component.
-    /// </summary>
-	private TextMesh _textRenderer;
+public class ShootIndicatorHelpItem : TextHelpItem {
 
     /// <summary>
     /// Reference to the GameControllerIndependentControl component.
@@ -18,13 +12,12 @@ public class ShootIndicatorHelpItem : HelpItem {
 
 	protected override void OnAwake() {
 		// Retrieves the desired components
-		_textRenderer = GetComponent<TextMesh>();
-        _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
+		base.OnAwake();
+		_independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
     }
 
-	protected override void OnUpdate() {
+	protected override string GetText() {
 		// Changes the size in the text
-		float shootSize = _independentControl.currentCharacter.GetComponent<CharacterShootTrajectory>()._shootsize;
-		_textRenderer.text = shootSize.ToString();
+		return _independentControl.currentCharacter.GetComponent<CharacterShootTrajectory>()._shootsize.ToString();
     }
 }

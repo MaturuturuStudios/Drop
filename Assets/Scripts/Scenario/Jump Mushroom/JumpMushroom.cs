@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Objects will bounce on this object, keeping their speed in
@@ -56,9 +57,40 @@
 	/// </summary>
 	private Transform _transform;
 
+	/// <summary>
+	/// List of listeners registered to this component's events.
+	/// </summary>
+	private List<JumpMushroomListener> _listeners = new List<JumpMushroomListener>();
+
 	#endregion
 
 	#region Methods
+
+	/// <summary>
+	/// Subscribes a listener to the components's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(JumpMushroomListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the components's events.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(JumpMushroomListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
+	}
 
 	/// <summary>
 	/// Unity's method called at the beginning of the first frame this
@@ -96,11 +128,17 @@
 			if (keepPerpendicularSpeed)
 				velocity += Vector3.Project(other.relativeVelocity, _transform.right);
 			rb.velocity = velocity;
+
+			// Notifies the listeners
+			foreach (JumpMushroomListener listener in rb.GetComponents<JumpMushroomListener>())
+				listener.OnBounce(this, other.gameObject, velocity, other.contacts[0].point, other.contacts[0].normal);
+			foreach (JumpMushroomListener listener in _listeners)
+				listener.OnBounce(this, other.gameObject, velocity, other.contacts[0].point, other.contacts[0].normal);
 		}
 	}
 
 	/// <summary>
-	/// HAndles collisions with characters.
+	/// Handles collisions with characters.
 	/// </summary>
 	/// <param name="hit">Information about the collision</param>
 	void OnCustomControllerCollision(ControllerColliderHit hit) {
@@ -137,7 +175,30 @@
 			else {
 				ccc.SetForce(velocity);
 			}
+
+			// Notifies the listeners
+			foreach (JumpMushroomListener listener in ccc.GetComponents<JumpMushroomListener>())
+				listener.OnBounce(this, hit.controller.gameObject, velocity, hit.point, hit.normal);
+			foreach (JumpMushroomListener listener in _listeners)
+				listener.OnBounce(this, hit.controller.gameObject, velocity, hit.point, hit.normal);
 		}
+	}
+
+	/// <summary>
+	/// For the velocity, returns a value between 0 and 1 indicating
+	/// how near or far it is from the min and max height.
+	/// </summary>
+	/// <param name="velocity">The velocity</param>
+	/// <returns>Normalized value</returns>
+	public float GetVelocityFactor(Vector3 velocity) {
+		float speed = Vector3.Project(velocity, _transform.up).magnitude;
+		float minheightvelocity = Mathf.Sqrt(2 * 25 * minHeight);
+		float maxheightvelocity = Mathf.Sqrt(2 * 25 * maxHeight);
+		if (speed < minheightvelocity)
+			return 0;
+		if (speed > maxheightvelocity)
+			return 1;
+		return Mathf.InverseLerp(minheightvelocity, maxheightvelocity, speed);
 	}
 
 	/// <summary>

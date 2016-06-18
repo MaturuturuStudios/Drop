@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Linq;
 
 /// <summary>
 /// Modifies a spherical mesh simulating it is fluid.
@@ -211,17 +210,20 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		Vector3 chamfDirection = Vector3.Cross(deformation, Vector3.forward);
 		float deformationMagnitudeFactor = 1.0f / deformation.magnitude;
 
-		// For each vertex, calculates it's deformation
-		for (int i = 0; i < vertexToModify.Length; i++) {
-			// Calculates the distance to the deformation point
-			//Vector3 vertexDistance = _transform.TransformVector(originalVertices[i] - _deformationPoints[rayIndex]);
-			//Vector3 distanceProjection = Vector3.ProjectOnPlane(vertexDistance, deformation);
+		Vector3 distanceToVertex;
+		Vector3 chamfDeformation;
+		float length = vertexToModify.Length;
 
+		// For each vertex, calculates it's deformation
+		for (int i = 0; i < length; ++i) {
 			// Calculates the distance from the center to the vertex in global coordinates
-			Vector3 distanceToVertex = _transform.TransformPoint(originalVertices[i]) - center;
+			distanceToVertex = _transform.TransformPoint(originalVertices[i]);
+			distanceToVertex -= center;
 
 			// Calculates the deformation to apply
-			Vector3 chamfDeformation = chamfDirection * Vector3.Dot(chamfDirection, distanceToVertex) * deformationMagnitudeFactor;
+			chamfDeformation = chamfDirection;
+			chamfDeformation *= Vector3.Dot(chamfDirection, distanceToVertex);
+			chamfDeformation *= deformationMagnitudeFactor;
 
 			// Applys the chamf to the vertex
 			vertexToModify[i] += _transform.InverseTransformVector(chamfDeformation * deformationFactor);
@@ -243,22 +245,28 @@ public class SkinnedSphereDeform : MonoBehaviour {
 		float angleBetweenRaysFactor = 1.0f / angleBetweenRays;
 		float rayAngle = Mathf.Atan2(_rayDirections[rayIndex].y, _rayDirections[rayIndex].x);
 
+		Vector3 distanceToVertex;
+		float angle;
+		float weight;
+        float length = vertexToModify.Length;
+
 		// For each vertex, calculates it's deformation
-		for (int i = 0; i < vertexToModify.Length; i++) {
+		for (int i = 0; i < length; ++i) {
 			// Calculates the distance from the center to the vertex in global coordinates
-			Vector3 distanceToVertex = _transform.TransformPoint(originalVertices[i]) - center;
+			distanceToVertex = _transform.TransformPoint(originalVertices[i]);
+			distanceToVertex -= center;
 
 			// Checks if the vertex is near the ray using the angle between rays
-			float angle = Mathf.Abs(rayAngle - Mathf.Atan2(distanceToVertex.y, distanceToVertex.x));
-			if (angle > angleBetweenRays)
-				continue;
+			angle = Mathf.Abs(rayAngle - Mathf.Atan2(distanceToVertex.y, distanceToVertex.x));
+			if (angle <= angleBetweenRays) {
+				// Calculates the weight of the vertex
+				weight = 1;
+				weight -= Mathf.Abs(distanceToVertex.z) * radiusFactor;
+				weight *= 1 - angle * angleBetweenRaysFactor;
 
-			// Calculates the weight of the vertex
-			float zFactor = 1 - Mathf.Abs(distanceToVertex.z) * radiusFactor;
-			float weigth = (1 - angle * angleBetweenRaysFactor) * zFactor;
-
-			// Adds the deformation to the vertex
-			vertexToModify[i] += _transform.InverseTransformVector(deformation * weigth);
+				// Adds the deformation to the vertex
+				vertexToModify[i] += _transform.InverseTransformVector(deformation * weight);
+			}
 		}
 	}
 

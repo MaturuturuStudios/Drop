@@ -36,15 +36,19 @@ public static class ExtensionMethods {
 		hit = new RaycastHit();
 		float closestDistance = float.MaxValue;
 
+		Vector3 v0;
+		Vector3 v1;
+		Vector3 v2;
+		RaycastHit triangleHit = new RaycastHit();
+
 		// For each triangle, checks the raycast
 		for (int i = 0; i < triangles.Length; i += 3) {
-			Vector3 v0 = vertices[triangles[i]];
-			Vector3 v1 = vertices[triangles[i + 1]];
-			Vector3 v2 = vertices[triangles[i + 2]];
+			v0 = vertices[triangles[i]];
+			v1 = vertices[triangles[i + 1]];
+			v2 = vertices[triangles[i + 2]];
 
 			// Casts the ray into the triangle
-			RaycastHit triangleHit;
-            if (RaycastTriangle(origin, direction, v0, v1, v2, out triangleHit)) {
+            if (RaycastTriangle(origin, direction, v0, v1, v2, ref triangleHit)) {
 				// Checks if the triangle hit is the nearest one so far
 				if (triangleHit.distance < closestDistance) {
 					hit = triangleHit;
@@ -71,10 +75,7 @@ public static class ExtensionMethods {
 	/// <param name="v2">Third vertex of the triangle (clockwise order)</param>
 	/// <param name="hit">Information about the hit</param>
 	/// <returns>If the ray hit the triangle</returns>
-	public static bool RaycastTriangle(Vector3 origin, Vector3 direction, Vector3 v0, Vector3 v1, Vector3 v2, out RaycastHit hit) {
-		// Initializes the hit information
-		hit = new RaycastHit();
-
+	public static bool RaycastTriangle(Vector3 origin, Vector3 direction, Vector3 v0, Vector3 v1, Vector3 v2, ref RaycastHit hit) {
 		Vector3 edge1 = v1 - v0;
 		Vector3 edge2 = v2 - v0;
 

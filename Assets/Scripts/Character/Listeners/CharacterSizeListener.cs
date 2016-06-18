@@ -35,17 +35,17 @@ public interface CharacterSizeListener {
 /// Adapter for the CharacterSizeListener interface used to
 /// avoid forcing each class to implement all it's methods.
 /// </summary>
-public class CharacterSizeAdapter : CharacterSizeListener {
+public class CharacterSizeAdapter : MonoBehaviour, CharacterSizeListener {
 
-	public void OnChangeSizeStart(GameObject character, Vector3 previousScale, Vector3 nextScale) {
+	public virtual void OnChangeSizeStart(GameObject character, Vector3 previousScale, Vector3 nextScale) {
 		// Do nothing
 	}
 
-	public void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale) {
+	public virtual void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale) {
 		// Do nothing
 	}
 
-	public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
+	public virtual void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
 		// Do nothing
 	}
 }
