@@ -50,7 +50,8 @@ public class CannonShoot : ActionPerformer {
 
         ccc.transform.position = this.transform.position;
         ccc.Stop();
-        ccc.SendFlying(launch.GetNeededVelocityVector());
+        Vector3 velocity = launch.GetNeededVelocityVector();
+        ccc.SendFlying(velocity);
 
 		// Notifies the listeners
 		foreach (CannonShootListener listener in character.GetComponents<CannonShootListener>())

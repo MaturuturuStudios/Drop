@@ -171,7 +171,8 @@ public class WaterRepulsion : MonoBehaviour {
 
         //send it flying (stop previous flying)
         controller.StopFlying();
-        controller.SendFlying(launch.GetNeededVelocityVector());
+        Vector3 velocity = launch.GetNeededVelocityVector();
+        controller.SendFlying(velocity);
 
 		// Notifies the listeners
 		foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
