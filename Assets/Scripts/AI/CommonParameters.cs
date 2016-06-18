@@ -75,5 +75,8 @@ public class CommonParameters {
     public AIBase AI;
 
     [HideInInspector]
+    public AIColliders colliders;
+
+    [HideInInspector]
     public float minimumWalkingDistance;
 }

@@ -124,7 +124,7 @@ public class GoAway : StateMachineBehaviour {
                     } else {
                         //no? rotate it
                         AIMethods.RotateEnemy(commonParameters.enemy, targetRotation,
-                               commonParameters.toleranceDegreeToGoal, parameters.useOrientationFinalPosition);
+                               parameters.rotationVelocity, parameters.useOrientationFinalPosition);
                     }
                 } else {
                     animator.SetTrigger("Recolect");

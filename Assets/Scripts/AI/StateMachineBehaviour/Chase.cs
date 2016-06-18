@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [System.Serializable]
 public class ChaseParameters {
@@ -16,7 +17,7 @@ public class ChaseParameters {
     public AxisBoolean fixedRotation;
 }
 
-public class Chase : StateMachineBehaviour {
+public class Chase : StateMachineBehaviour, CollisionListener {
     #region Attributes
     [HideInInspector]
     /// <summary>
@@ -32,12 +33,17 @@ public class Chase : StateMachineBehaviour {
     /// <summary>
     /// Minimum distance to goal
     /// </summary>
-    private float _minimumDistance;
+    //private float _minimumDistance;
+    
+
+    private Animator _animator;
     #endregion
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
-		_minimumDistance = commonParameters.toleranceDistanceAttack;
+		//_minimumDistance = commonParameters.toleranceDistanceAttack;
+        commonParameters.colliders.AddListener(this);
+        _animator = animator;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -47,9 +53,12 @@ public class Chase : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
+        commonParameters.colliders.RemoveListener(this);
+        
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        
         int size = animator.GetInteger("SizeDrop");
         int sizeLimit = commonParameters.sizeLimitDrop;
         if (sizeLimit > 0 && size >= sizeLimit) {
@@ -67,7 +76,7 @@ public class Chase : StateMachineBehaviour {
         Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, commonParameters.drop.transform.position,
                                     FollowType.MoveTowards, commonParameters.onFloor, parameters.speed);
         AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy, 
-                            commonParameters.toleranceDegreeToGoal, originalPosition, finalPosition);
+                            parameters.rotationVelocity, originalPosition, finalPosition);
 
         Vector3 direction = (finalPosition - originalPosition);
         //give preference on y axis to not let the drop run away
@@ -89,17 +98,31 @@ public class Chase : StateMachineBehaviour {
     }
 
     private void CheckTargetDrop(Animator animator) {
-        if (commonParameters.drop == null) {
-            return;
-        }
+        //if (commonParameters.drop == null) {
+        //    return;
+        //}
+        //// Checks if the entity is close enough to the target point
+        //float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
+        //// The squared distance is used becouse a multiplication is cheaper than a square root
+        //float distanceTolerance = animator.GetInteger("SizeDrop");
+        //distanceTolerance += _minimumDistance;
+        //distanceTolerance *= distanceTolerance;
+        //if (squaredDistance < distanceTolerance)
+        //    animator.SetBool("Reached", true);
+    }
 
-        // Checks if the entity is close enough to the target point
-        float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
-        // The squared distance is used becouse a multiplication is cheaper than a square root
-        float distanceTolerance = animator.GetInteger("SizeDrop");
-        distanceTolerance += _minimumDistance;
-        distanceTolerance *= distanceTolerance;
-        if (squaredDistance < distanceTolerance)
-            animator.SetBool("Reached", true);
+    public void OnTriggerEnter(Collider other) {
+        if (other.gameObject.tag == Tags.Player) {
+            if (_animator == null) return;
+            _animator.SetBool("Reached", true);
+        }
+    }
+
+    public void OnTriggerStay(Collider other) {
+            if (other.gameObject.tag == Tags.Player) {
+                if (_animator == null) return;
+                _animator.SetBool("Reached", true); 
+            }
+        
     }
 }

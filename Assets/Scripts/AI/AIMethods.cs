@@ -33,15 +33,15 @@ public class AIMethods {
     /// </summary>
     /// <param name="originalPosition">position the entity is</param>
     /// <param name="finalPosition">target point</param>
-    public static void RotateEnemyTowards(GameObject enemy, AxisBoolean fixedRotation, Quaternion initialRotation, float toleranceDegree, Vector3 originalPosition, Vector3 finalPosition) {
+    public static void RotateEnemyTowards(GameObject enemy, AxisBoolean fixedRotation, Quaternion initialRotation, float speedRotation, Vector3 originalPosition, Vector3 finalPosition) {
         Quaternion finalRotation = Quaternion.identity;
 
         Vector3 relativePos = finalPosition - originalPosition;
         Quaternion rotation = Quaternion.LookRotation(relativePos);
         
-        finalRotation = Quaternion.RotateTowards(enemy.transform.rotation, rotation, toleranceDegree);
+        finalRotation = Quaternion.RotateTowards(enemy.transform.rotation, rotation, speedRotation*Time.deltaTime);
         Quaternion zero = initialRotation;
-        Quaternion rotationZero = Quaternion.RotateTowards(enemy.transform.rotation, zero, toleranceDegree);
+        Quaternion rotationZero = Quaternion.RotateTowards(enemy.transform.rotation, zero, speedRotation * Time.deltaTime);
 
         Vector3 finalEuler = finalRotation.eulerAngles;
         if (fixedRotation.axisX) {
@@ -97,10 +97,10 @@ public class AIMethods {
     /// Rotate the enemy to the target rotation
     /// </summary>
     /// <param name="target"></param>
-    public static void RotateEnemy(GameObject enemy, Quaternion target, float toleranceDegree, bool useFinalOrientation) {
+    public static void RotateEnemy(GameObject enemy, Quaternion target, float speedRotation, bool useFinalOrientation) {
         if (useFinalOrientation) {
             Quaternion finalRotation = Quaternion.identity;
-            finalRotation = Quaternion.RotateTowards(enemy.transform.rotation, target, toleranceDegree);
+            finalRotation = Quaternion.RotateTowards(enemy.transform.rotation, target, speedRotation * Time.deltaTime);
             enemy.transform.rotation = finalRotation;
         }
     }
@@ -110,6 +110,21 @@ public class AIMethods {
         float longitude = speed * time;
         float radius = longitude / (2 * Mathf.PI);
         return radius;
+    }
+
+    public static Vector3 RepelDrop(Transform originTransform, Vector3 destiny, LaunchCharacter launcher) {
+        Vector3 origin = originTransform.position;
+        //check the angle, at right or at left?
+        float angle = Mathf.Atan2(destiny.y - origin.y, destiny.x - origin.x) * 180 / Mathf.PI;
+        if (angle < 0) angle *= -1;
+        if (angle > 90) {
+            angle -= ((angle - 90) / 2);
+        } else {
+            angle += ((90 - angle) / 2);
+        }
+        launcher.SetAngle(angle);
+        launcher.pointOrigin = originTransform;
+        return launcher.GetNeededVelocityVector();
     }
 
     /// <summary>

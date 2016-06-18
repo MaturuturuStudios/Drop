@@ -119,7 +119,7 @@ public class Walking : StateMachineBehaviour {
             Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, _targetPosition, parameters.followType, 
                                                         commonParameters.onFloor, parameters.speed);
             AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy,
-                                commonParameters.toleranceDegreeToGoal, originalPosition, finalPosition);
+                                parameters.rotationVelocity, originalPosition, finalPosition);
 
             Vector3 direction = (finalPosition-originalPosition).normalized;
 

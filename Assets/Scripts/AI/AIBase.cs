@@ -51,9 +51,15 @@ public class AIBase : MonoBehaviour {
     /// The chase AI reference to send him the detected and chased drop
     /// </summary>
     protected Chase _chaseAI;
+
+    private AnimationState actualState;
+
+    private List<AIStateListener> _listeners = new List<AIStateListener>();
     #endregion
 
     #region Methods
+
+
     /// <summary>
     /// Initialization method.
     /// The character start with size one
@@ -69,6 +75,8 @@ public class AIBase : MonoBehaviour {
         commonParameters.initialPositionEnemy = commonParameters.enemy.transform.position;
         commonParameters.initialRotationEnemy = commonParameters.enemy.transform.rotation;
         commonParameters.AI = this;
+
+        commonParameters.colliders = GetComponentInChildren<AIColliders>();
     }
 
     public void Start() {
@@ -96,6 +104,8 @@ public class AIBase : MonoBehaviour {
         Attack attackAI = _animator.GetBehaviour<Attack>();
         attackAI.commonParameters = commonParameters;
         attackAI.parameters = attackParameters;
+
+        actualState = GetAnimationState(_animator.GetCurrentAnimatorStateInfo(0));
     }
 
     public void Update() {
@@ -103,10 +113,45 @@ public class AIBase : MonoBehaviour {
         CheckDropInside();
         //check if too near
         DropNear();
+
+        //check changes on animation state
+        StateListener();
     }
+
+    /// <summary>
+    /// Subscribes a listener to the animation's events.
+    /// Returns false if the listener was already subscribed.
+    /// </summary>
+    /// <param name="listener">The listener to subscribe</param>
+    /// <returns>If the listener was successfully subscribed</returns>
+    public bool AddListener(AIStateListener listener) {
+        if (_listeners.Contains(listener))
+            return false;
+        _listeners.Add(listener);
+        return true;
+    }
+
+    /// <summary>
+    /// Unsubscribes a listener to the animation's events.
+    /// Returns false if the listener wasn't subscribed yet.
+    /// </summary>
+    /// <param name="listener">The listener to unsubscribe</param>
+    /// <returns>If the listener was successfully unsubscribed</returns>
+    public bool RemoveListener(AIStateListener listener) {
+        if (!_listeners.Contains(listener))
+            return false;
+        _listeners.Remove(listener);
+        return true;
+    }
+
+  
 
     public void Scare() {
         _animator.SetBool("GoAway", true);
+    }
+
+    public AnimationState GetActualState() {
+        return actualState;
     }
 
     public void OnDrawGizmosSelected() {
@@ -135,7 +180,7 @@ public class AIBase : MonoBehaviour {
     public void OnDrawGizmos() {
         triggerArea.OndrawGizmos(Color.red, transform.position);
 
-        attackParameters.launchDestination.OnDrawGizmos();
+        attackParameters.launcher.OnDrawGizmos();
     }
 
     #region Private methods
@@ -159,6 +204,10 @@ public class AIBase : MonoBehaviour {
         } else {
             //update his size
             int sizeDrop = 0;
+            if (_sizeDetected == null) {
+                Debug.Log("bug!");
+                return;
+            }
             sizeDrop = _sizeDetected.GetSize();
 
 
@@ -240,11 +289,45 @@ public class AIBase : MonoBehaviour {
         Gizmos.DrawLine(bottomLeft, bottomRight);
         
 }
+
+    /// <summary>
+    /// Check the state of the animation to see if we have to call the listeners
+    /// </summary>
+    private void StateListener() {
+        AnimatorStateInfo info = _animator.GetCurrentAnimatorStateInfo(0);
+        AnimationState state = GetAnimationState(info);
+        if (actualState != state) {
+            // Notifies the listeners
+            foreach (AIStateListener listener in _listeners)
+                listener.OnStateAnimationChange(actualState, state);
+            actualState = state;
+        }
+    }
+
+    private AnimationState GetAnimationState(AnimatorStateInfo info) {
+        AnimationState state = AnimationState.IDDLE;
+
+        if (info.IsName("Iddle")) {
+            state = AnimationState.IDDLE;
+        } else if (info.IsName("Walk")) {
+            state = AnimationState.WALK;
+        } else if (info.IsName("Chase")) {
+            state = AnimationState.CHASE;
+        } else if (info.IsName("Detect")) {
+            state = AnimationState.DETECT;
+        } else if (info.IsName("Attack")) {
+            state = AnimationState.ATTACK;
+        } else if (info.IsName("Run Away")) {
+            state = AnimationState.RUN_AWAY;
+        } else if (info.IsName("Hidde")) {
+            state = AnimationState.HIDDE_RECOLECT;
+        } else if (info.IsName("Recolect")) {
+            state = AnimationState.HIDDE_RECOLECT;
+        }
+
+        return state;
+    }
     #endregion
 
     #endregion
-    
-   
-
-    
 }

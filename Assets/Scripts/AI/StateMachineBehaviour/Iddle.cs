@@ -51,6 +51,11 @@ public class Iddle : StateMachineBehaviour {
         AIMethods.CheckDrop(animator, commonParameters.sizeLimitDrop);
         CheckTimeIddle(animator);
 
+        Vector3 originalPosition = commonParameters.enemy.transform.position;
+        Vector3 finalPosition = originalPosition;
+        AIMethods.RotateEnemyTowards(commonParameters.enemy, commonParameters.AI.walkingParameters.fixedRotation, commonParameters.initialRotationEnemy,
+                            commonParameters.RotationSpeed, originalPosition, finalPosition);
+
         //always use the gravity
         //set gravity and move
         if (commonParameters.onFloor) {
