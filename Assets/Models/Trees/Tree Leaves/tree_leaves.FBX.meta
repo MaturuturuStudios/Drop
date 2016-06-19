@@ -1,0 +1,134 @@
+fileFormatVersion: 2
+guid: d73541c257f634f558d6fa45f55f0518
+timeCreated: 1466329836
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: tree_leaf001
+    100002: tree_leaf003
+    100004: tree_leaf004
+    100006: tree_leaf005
+    100008: tree_leaf006
+    100010: tree_leaf007
+    100012: tree_leaf009
+    100014: tree_leaf010
+    100016: tree_leaf011
+    100018: tree_leaf013
+    100020: tree_leaf014
+    100022: tree_leaf015
+    100024: //RootNode
+    400000: tree_leaf001
+    400002: tree_leaf003
+    400004: tree_leaf004
+    400006: tree_leaf005
+    400008: tree_leaf006
+    400010: tree_leaf007
+    400012: tree_leaf009
+    400014: tree_leaf010
+    400016: tree_leaf011
+    400018: tree_leaf013
+    400020: tree_leaf014
+    400022: tree_leaf015
+    400024: //RootNode
+    2300000: tree_leaf001
+    2300002: tree_leaf003
+    2300004: tree_leaf004
+    2300006: tree_leaf005
+    2300008: tree_leaf006
+    2300010: tree_leaf007
+    2300012: tree_leaf009
+    2300014: tree_leaf010
+    2300016: tree_leaf011
+    2300018: tree_leaf013
+    2300020: tree_leaf014
+    2300022: tree_leaf015
+    3300000: tree_leaf001
+    3300002: tree_leaf003
+    3300004: tree_leaf004
+    3300006: tree_leaf005
+    3300008: tree_leaf006
+    3300010: tree_leaf007
+    3300012: tree_leaf009
+    3300014: tree_leaf010
+    3300016: tree_leaf011
+    3300018: tree_leaf013
+    3300020: tree_leaf014
+    3300022: tree_leaf015
+    4300000: tree_leaf003
+    4300002: tree_leaf007
+    4300004: tree_leaf014
+    4300006: tree_leaf006
+    4300008: tree_leaf005
+    4300010: tree_leaf015
+    4300012: tree_leaf013
+    4300014: tree_leaf004
+    4300016: tree_leaf011
+    4300018: tree_leaf010
+    4300020: tree_leaf001
+    4300022: tree_leaf009
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
