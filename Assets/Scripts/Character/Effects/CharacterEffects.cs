@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(CharacterControllerCustom))]
 [RequireComponent(typeof(CharacterSize))]
@@ -9,11 +8,15 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 	public MinSpeedEffectInformation land;
 
-	public EffectInformation grow;
+	public EffectInformation jump;
 
 	public EffectInformation shoot;
 
-    private CharacterControllerCustom _ccc;
+	public EffectInformation fuse;
+
+	public LayerMask sceneMask;
+
+	private CharacterControllerCustom _ccc;
 
 	private CharacterSize _characterSize;
 
@@ -42,8 +45,11 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
     }
 
     public void OnPerformJump(CharacterControllerCustom ccc) {
-        // Do nothing
-    }
+		RaycastHit hit;
+		if (Physics.SphereCast(ccc.transform.position, _controller.radius * _characterSize.GetSize(), ccc.Parameters.Gravity, out hit, 10, sceneMask)) {
+			jump.PlayEffect(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal), _characterSize.GetSize());
+		}
+	}
 
     public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		if (hit.collider.CompareTag(Tags.Player))
@@ -68,7 +74,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 	public void OnEndFusion(CharacterFusion finalCharacter) {
 		Transform characterTransform = finalCharacter.transform;
-		grow.PlayEffect(characterTransform.position, characterTransform.rotation, finalCharacter.GetSize());
+		fuse.PlayEffect(characterTransform.position, characterTransform.rotation, finalCharacter.GetSize());
     }
 
 	public void OnEnterShootMode(CharacterShoot character) {
