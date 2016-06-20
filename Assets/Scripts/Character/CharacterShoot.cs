@@ -29,11 +29,6 @@ public class CharacterShoot : MonoBehaviour {
     #region Public Attributes
 
     /// <summary>
-	/// Shoot  particle explosion.
-	/// </summary> 
-    public ParticleSystem particleEffect;
-
-    /// <summary>
 	/// Defines the boolean to know if we are in shootmode or out of shootmode.
 	/// </summary> 
     public bool shootmode = false;
@@ -235,16 +230,6 @@ public class CharacterShoot : MonoBehaviour {
         prepareDropToFly();
 
         _ball.SetActive(true);
-
-        //set particle effect (and inmediately destroy it)
-        GameObject particleSystem = Instantiate(particleEffect.gameObject) as GameObject;
-        particleSystem.GetComponent<Transform>().position = this.transform.position + st.GetpVelocity().normalized * (this.GetComponent<CharacterController>().radius * this.transform.lossyScale.x+ _ball.GetComponent<CharacterController>().radius * _ball.transform.lossyScale.x);
-        //particleSystem.GetComponent<Transform>().TransformDirection(st.GetpVelocity());
-        //particleSystem.GetComponent<Transform>().eulerAngles= new Vector3(0,0, st.Angle());
-        //particleSystem.GetComponent<Transform>().eulerAngles = new Vector3(0, 0, st.Angle());
-
-
-        Destroy(particleSystem, particleEffect.startLifetime);
 
         _ball.GetComponent<CharacterControllerCustom>().SendFlying(st.GetpVelocity());
 

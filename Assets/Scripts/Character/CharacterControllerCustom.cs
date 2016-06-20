@@ -30,7 +30,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		set {
 			if (value != null)
 				_overrideParameters.Push(value);
-			else
+			else if (_overrideParameters.Count > 0)
 				_overrideParameters.Pop();
 		}
 	}
