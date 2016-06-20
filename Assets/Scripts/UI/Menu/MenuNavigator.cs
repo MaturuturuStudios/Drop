@@ -231,6 +231,7 @@ public class MenuNavigator : MonoBehaviour {
                     _menuPanel.Push(optionMenu);
                     break;
                 case Menu.MAP_LEVEL_MENU:
+                    if (mapLevelMenu == null) return;
                     //no dark background
                     background.SetActive(false);
                     //disable background main menu
