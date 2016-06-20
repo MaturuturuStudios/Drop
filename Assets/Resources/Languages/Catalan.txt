@@ -67,17 +67,17 @@ HelpLookAround=Look around\nPots veure més enllà si mires al teu voltant. Cons
 HelpSelect=Select\nConsulta en qualsevol moment com de gran ets tu o els teus enemics
 
 #Quality options name
-Fastest=El més ràpid
-Fast=Ràpid
+Fastest=La més ràpida
+Fast=Ràpida
 Simple=Simple
-Good=Bo
-Beautiful=Bonic
-Fantastic=Fantàstic
+Good=Bona
+Beautiful=Maca
+Fantastic=Fantàstica
 
 #Common strings in options
-SaveChanges=Guardar cambios
+SaveChanges=Guardar canvis
 Yes=Yes
 No=No
-ConfirmQuit=Confirm quit?
+ConfirmQuit=Sortir del joc?
 LevelComplete=Level complete!
 BackMenuOptions=Menú d'opcions
