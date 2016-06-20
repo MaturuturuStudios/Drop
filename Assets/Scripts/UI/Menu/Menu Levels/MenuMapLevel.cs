@@ -92,10 +92,6 @@ public class MenuMapLevel : MonoBehaviour {
     /// </summary>
     private bool[] camerasPreviousState;
     /// <summary>
-    /// List of positions for all the levels
-    /// </summary>
-    //private List<Vector2[]> levelPositions;
-    /// <summary>
     /// List of all levels
     /// </summary>
     private List<GameObject[]> levels;
@@ -135,6 +131,9 @@ public class MenuMapLevel : MonoBehaviour {
 	/// A reference to the menu's navigator.
 	/// </summary>
 	private MenuNavigator _menuNavigator;
+
+    private int fadingInWorld;
+    private int fadingOutWorld;
     #endregion
 
     #region Private class
@@ -531,10 +530,14 @@ public class MenuMapLevel : MonoBehaviour {
 		if (actualWorldActive == world)
 			return;
 
-        if (actualWorldActive >= 0)
+        if (actualWorldActive >= 0) {
+            fadingOutWorld = actualWorldActive;
             FadeOut(levelsCanvas[actualWorldActive]);
-        
+        }
+
+        fadingInWorld = world;
         FadeIn(levelsCanvas[world]);
+        
 
         //if change of world, make a zoom effect
         Zoom(true);
@@ -554,10 +557,11 @@ public class MenuMapLevel : MonoBehaviour {
         //if first time, start counter
         if (canvas != null) {
             canvasFadeIn = canvas;
+            HiddeText(fadingInWorld, false);
         }
 
         //fading...
-        canvasFadeIn.alpha = Mathf.Lerp(canvasFadeIn.alpha, 1, Time.unscaledDeltaTime*speedFading);
+        canvasFadeIn.alpha = Mathf.MoveTowards(canvasFadeIn.alpha, 1, Time.unscaledDeltaTime*speedFading);
 
         //finished
         if (canvasFadeIn.alpha >= 1) canvasFadeIn = null;
@@ -581,10 +585,25 @@ public class MenuMapLevel : MonoBehaviour {
         }
 
         //fading...
-        canvasFadeOut.alpha = Mathf.Lerp(canvasFadeOut.alpha, hiddenAlphaWorld, Time.unscaledDeltaTime*speedFading);
+        canvasFadeOut.alpha = Mathf.MoveTowards(canvasFadeOut.alpha, hiddenAlphaWorld, Time.unscaledDeltaTime*speedFading);
 
         //finished
-        if (canvasFadeOut.alpha <= hiddenAlphaWorld) canvasFadeOut = null;
+        if (canvasFadeOut.alpha <= hiddenAlphaWorld) {
+            canvasFadeOut = null;
+            //hide all text
+            HiddeText(fadingOutWorld, true);
+        }
+    }
+
+    /// <summary>
+    /// Hidde or not the text
+    /// </summary>
+    /// <param name="world">the world to hidde</param>
+    /// <param name="hidden">true if hidde the text false otherwise</param>
+    private void HiddeText(int world, bool hidden) {
+        foreach (GameObject aLevel in levels[world]) {
+            aLevel.GetComponentInChildren<Text>(true).gameObject.SetActive(!hidden);
+        }
     }
 
     /// <summary>
