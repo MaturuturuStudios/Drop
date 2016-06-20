@@ -2,7 +2,8 @@
 using System.Collections;
 using System;
 
-public abstract class LaunchCharacter : ActionPerformer {
+[System.Serializable]
+public class LaunchCharacter {
 
     /// <summary>
     /// Point in which the character will be shooted
@@ -49,8 +50,8 @@ public abstract class LaunchCharacter : ActionPerformer {
     public float GetAngleClamped(float value) {
         float finalAngle = value;
 
-        while (finalAngle > 180 || finalAngle <180) finalAngle %= 180;
-        
+        while (finalAngle > 180 || finalAngle < 0) finalAngle %= 180;
+
         if (finalAngle == 90) finalAngle = 0;
         else if (finalAngle < 90) {
             finalAngle = 90 - finalAngle;
@@ -58,7 +59,7 @@ public abstract class LaunchCharacter : ActionPerformer {
             finalAngle -= 90;
             finalAngle *= -1;
         }
-        
+
         return finalAngle;
     }
 
@@ -79,11 +80,6 @@ public abstract class LaunchCharacter : ActionPerformer {
         if (angle > 90 && angle < -90) return;
         this.angle = angle;
     }
-	
-	// Update is called once per frame
-	void Update () {
-        if (pointOrigin == null) pointOrigin = transform;
-    }
 
     /// <summary>
     /// Get the necessary velocity to send the drop to the destiny point
@@ -91,6 +87,7 @@ public abstract class LaunchCharacter : ActionPerformer {
     /// <returns></returns>
 	public Vector3 GetNeededVelocityVector() {
         Vector3 velocityVector = Vector3.zero;
+        if (pointOrigin == null) return velocityVector;
 
         //get angle [0,180]
         float finalAngle = GetAngle();
@@ -108,7 +105,7 @@ public abstract class LaunchCharacter : ActionPerformer {
 	/// </summary>
 	/// <returns>The needed velocity.</returns>
 	/// <param name="angleRadian">Angle in radian.</param>
-	protected float GetNeededVelocity(float angleRadian) {
+	private float GetNeededVelocity(float angleRadian) {
         float cosAngle = Mathf.Cos(angleRadian);
         float cosAnglePow = cosAngle * cosAngle;
         Vector3 direction = pointTarget.position - pointOrigin.position;
