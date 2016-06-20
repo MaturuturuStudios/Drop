@@ -95,7 +95,7 @@ public class OptionsMenu : MonoBehaviour {
 		
 
         //B, back or start
-        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start))
+        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back))
             //check if focus is inside the suboption
             if (IsUnderSubOption())
                 //if yes, unselect the option
@@ -104,7 +104,10 @@ public class OptionsMenu : MonoBehaviour {
                 //if not, the focus is already on the buttons menu, come back
                 _menuNavigator.ComeBack();
 
-	}
+        if (Input.GetButtonDown(Axis.Start))
+            _menuNavigator.ComeBack();
+
+    }
 
 	/// <summary>
 	/// Delaies the select until the end of the frame.

@@ -771,11 +771,15 @@ public class CharacterShootTrajectory : MonoBehaviour {
         //recorro todos los puntos y guardo las posiciones de los que estan anctivos porque implica que su raycast no ha colisionado
         for (int i = 0; i < numOfTrajectoryPoints; ++i) {
             if (_boolrender[i]) {
-                _aux.Insert(i, _trajectoryPoints[i][0].transform.position);
+                _aux.Add(_trajectoryPoints[i][0].transform.position);
             }
-            if (!_boolrender[i]) {
-                _aux.Insert(i, _trajectoryPoints[i][0].transform.position);
-                i = numOfTrajectoryPoints;
+            else {
+				if ( i > 0) {
+					Vector3 pointsDistance = _trajectoryPoints[i][0].transform.position - _trajectoryPoints[i - 1][0].transform.position;
+					Vector3 clampedDistance = Vector3.ClampMagnitude(pointsDistance, _hitpoint.distance);
+					_aux[i - 1] = _trajectoryPoints[i - 1][0].transform.position + clampedDistance;
+                }
+				break;
             }
         }
         
