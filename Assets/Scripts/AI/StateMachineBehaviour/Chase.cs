@@ -91,24 +91,6 @@ public class Chase : StateMachineBehaviour, CollisionListener {
             move += (commonParameters.enemy.transform.up * -1) * 25 * Time.deltaTime;
         }
         _controller.Move(move);
-
-
-        //reached calculation is on specific IA
-        CheckTargetDrop(animator);
-    }
-
-    private void CheckTargetDrop(Animator animator) {
-        //if (commonParameters.drop == null) {
-        //    return;
-        //}
-        //// Checks if the entity is close enough to the target point
-        //float squaredDistance = (commonParameters.drop.transform.position - commonParameters.enemy.transform.position).sqrMagnitude;
-        //// The squared distance is used becouse a multiplication is cheaper than a square root
-        //float distanceTolerance = animator.GetInteger("SizeDrop");
-        //distanceTolerance += _minimumDistance;
-        //distanceTolerance *= distanceTolerance;
-        //if (squaredDistance < distanceTolerance)
-        //    animator.SetBool("Reached", true);
     }
 
     public void OnTriggerEnter(Collider other) {

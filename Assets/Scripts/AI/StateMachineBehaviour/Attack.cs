@@ -65,6 +65,11 @@ public class Attack : StateMachineBehaviour {
         AIMethods.RotateEnemySlerp(commonParameters.enemy, parameters.fixedRotation, rotation,
                                 commonParameters.RotationSpeed, originalPosition, finalPosition);
 
+        //if move, move it
+        if (parameters.speed != 0) {
+            Move();
+        }
+
 
         float percentAnimation = stateInfo.normalizedTime;
         if (!_attackDone && percentAnimation > parameters.attackMoment) {
@@ -72,6 +77,7 @@ public class Attack : StateMachineBehaviour {
             Transform origin= commonParameters.drop.transform;
             Vector3 destiny = parameters.launcher.pointTarget.position;
             Vector3 fly = AIMethods.RepelDrop(origin, destiny, parameters.launcher);
+            controller.Stop();
             controller.SendFlying(fly);
             _attackDone = true;
         }

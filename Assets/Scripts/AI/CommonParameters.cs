@@ -26,11 +26,6 @@ public class CommonParameters {
     /// </summary>
     public float toleranceDistanceToGoal = 0.1f;
     /// <summary>
-    /// Distance tolerance of the enemy to take in account when calculate if reached the drop
-    /// The size of the drop is alreaded taked in account
-    /// </summary>
-    public float toleranceDistanceAttack = 1.0f;
-    /// <summary>
     /// Tolerance degree to target rotation
     /// </summary>
     public float toleranceDegreeToGoal = 5f;
