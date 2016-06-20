@@ -35,36 +35,36 @@ Language=Llenguatge
 
 
 #Input option
-MenuInputPause=Pause
-MenuInputMove=Move
-MenuInputIncreaseDrop=Increase drops to shoot
-MenuInputDecreaseDrop=Decrease drops to shoot
-MenuInputTurnLeft=Turn left
-MenuInputTurnRight=Turn right
-MenuInputNextDrop=Next Drop
-MenuInputPreviousDrop=Previous Drop
-MenuInputShowNumberDrop=Show number drops
-MenuInputEnterExitShoot=Enter/Exit shoot mode
-MenuInputIrrigate=Irrigate
-MenuInputJumpShoot=Jump/Shoot in shoot mode
-MenuInputAction=Action
-MenuInputLookAround=Look around
+MenuInputPause=Pausa	
+MenuInputMove=Moure's
+MenuInputIncreaseDrop=Invrementar gotes a disparar
+MenuInputDecreaseDrop=Disminuir gotes a disparar
+MenuInputTurnLeft=Girar a l'esquerra
+MenuInputTurnRight=Girar a la dreta
+MenuInputNextDrop=Gota següent
+MenuInputPreviousDrop=Gota anterior
+MenuInputShowNumberDrop=Mostrar nombre de gotes
+MenuInputEnterExitShoot=Mode tret
+MenuInputIrrigate=Regar
+MenuInputJumpShoot=Saltar/Disparar
+MenuInputAction=Acció
+MenuInputLookAround=Mirar al voltant
 
-MenuInputPreviousNextDrop=Previous/Next Drop
-MenuInputTurnLeftRight=Turn left/right
-MenuInputChangeDrop=Change drop
+MenuInputPreviousNextDrop=Gota Següent/Anterior
+MenuInputTurnLeftRight=Girar Dreta/Esquerra
+MenuInputChangeDrop=Canviar gota
 
-MenuInputGamepad=Show gamepad
-MenuInputKeyboard=Show keyboard
+MenuInputGamepad=Mostrar comandament
+MenuInputKeyboard=Mostrar teclat
 
 #Help option
-HelpText=Pobre petita gota ... On són els teus amics? On són els teus companys i la teva família? Et veus perduda i lluny de tots ells.\n\nT’explicaré un secret. Ets una gota. I totes les gotes tenen un destí. El mar. \n\nVes al mar, petita gota, ves al mar i trova las tus éssers estimats. Utilitza totes les teves habilitas per superar els obstacles i les dificultats del viatge. Salta a las parets, uneix-te a altres gotes, divideix-te i entra a petits llocs, dispara’t ven amunt, rega plantes...\n\nSigues intel·ligent, sigues aigua amic meu.
+HelpText=Pobre petita gota ... On són els teus amics? On són els teus companys i la teva família? Et veus perduda i lluny de tots ells.\n\nT’explicaré un secret. Ets una gota. I totes les gotes tenen un destí. El mar. \n\nVes al mar, petita gota, ves al mar i trova els teus éssers estimats. Utilitza totes les teves habilitas per superar els obstacles i les dificultats del viatge. Salta a las parets, uneix-te a altres gotes, divideix-te i entra a petits llocs, dispara’t ven amunt, rega plantes...\n\nSigues intel·ligent, sigues aigua amic meu.
 
-HelpWallJump=Wall Jump\nMientras estás en el aire contra una pared en la que se pueda hacer salto, pulsa de nuevo saltar para realizar un salto en pared. El proceso se puede repetir varias veces con la misma pared u otras
-HelpShoot=Shoot\nCuando eres de un tamaño suficiente, puedes entrar en modo disparo y seleccionar tanto el ángulo de disparo como el número de gotas a disparar. Durante el modo disparo no puedes moverte y puedes anular el disparo pulsando de nuevo el modo disparo
-HelpFusion=Fusion\nDos gotas pueden fusionarse si se juntan y si el espacio lo permite, sino, expulsará las que le sobran
-HelpLookAround=Look around\nPuedes ver más allá si miras a tu alrededor. Consulta la entrada para cómo mirar
-HelpSelect=Select\nConsulta en cualquier momento cuán grande eres tú o tus enemigos
+HelpWallJump=Wall Jump\nMentre estàs en l'aire contra una paret en la qual es pugui fer salt, prem de nou saltar per realitzar un salt en paret. El procés es pot repetir diverses vegades amb la mateixa paret o altres
+HelpShoot=Shoot\nQuan ets d'una grandària suficient, pots entrar en mode tret i seleccionar tant l'angle de tir com el nombre de gotes a disparar. Durant la manera tret no pots moure't i pots anul·lar el tret prement de nou la manera tret
+HelpFusion=Fusion\nDues gotes poden fusionar-se si s'ajunten i si l'espai ho permet, sinó, expulsarà les que li sobrin
+HelpLookAround=Look around\nPots veure més enllà si mires al teu voltant. Consulta l'entrada per com mirar
+HelpSelect=Select\nConsulta en qualsevol moment com de gran ets tu o els teus enemics
 
 #Quality options name
 Fastest=El més ràpid
@@ -80,3 +80,4 @@ Yes=Yes
 No=No
 ConfirmQuit=Confirm quit?
 LevelComplete=Level complete!
+BackMenuOptions=Menú d'opcions

@@ -80,3 +80,4 @@ Yes=Yes
 No=No
 ConfirmQuit=Confirm quit?
 LevelComplete=Level complete!
+BackMenuOptions=Options Menu
