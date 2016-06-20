@@ -162,8 +162,8 @@ public class Walking : StateMachineBehaviour {
                     animator.SetBool("Timer", true);
                 } else {
                     //no? rotate it
-                    //AIMethods.RotateEnemy(commonParameters.enemy, targetRotation, 
-                    //            parameters.rotationVelocity, parameters.useOrientationFinalPosition);
+                    AIMethods.RotateEnemy(commonParameters.enemy, targetRotation, 
+                                parameters.rotationVelocity, parameters.useOrientationFinalPositionStay);
                 }
             }
 
