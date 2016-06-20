@@ -3,12 +3,15 @@ using UnityEngine;
 
 [RequireComponent(typeof(CharacterControllerCustom))]
 [RequireComponent(typeof(CharacterSize))]
+[RequireComponent(typeof(CharacterShoot))]
 [RequireComponent(typeof(CharacterFusion))]
-public class CharacterEffects : MonoBehaviour, CharacterFusionListener, CharacterControllerListener {
+public class CharacterEffects : MonoBehaviour, CharacterShootListener, CharacterFusionListener, CharacterControllerListener {
 
 	public MinSpeedEffectInformation land;
 
 	public EffectInformation grow;
+
+	public EffectInformation shoot;
 
     private CharacterControllerCustom _ccc;
 
@@ -16,16 +19,23 @@ public class CharacterEffects : MonoBehaviour, CharacterFusionListener, Characte
 
 	private CharacterFusion _characterFusion;
 
+	private CharacterShoot _characterShoot;
+
+	private CharacterController _controller;
+
 	void Awake() {
         _ccc = GetComponent<CharacterControllerCustom>();
         _characterSize = GetComponent<CharacterSize>();
 		_characterFusion = GetComponent<CharacterFusion>();
-	}
+		_characterShoot = GetComponent<CharacterShoot>();
+		_controller = GetComponent<CharacterController>();
+    }
 
     void Start() {
         _ccc.AddListener(this);
 		_characterFusion.AddListener(this);
-    }
+		_characterShoot.AddListener(this);
+	}
 
     public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
         // Do nothing
@@ -60,4 +70,19 @@ public class CharacterEffects : MonoBehaviour, CharacterFusionListener, Characte
 		Transform characterTransform = finalCharacter.transform;
 		grow.PlayEffect(characterTransform.position, characterTransform.rotation, finalCharacter.GetSize());
     }
+
+	public void OnEnterShootMode(CharacterShoot character) {
+		// Do nothing
+	}
+
+	public void OnExitShootMode(CharacterShoot character) {
+		// Do nothing
+	}
+
+	public void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
+		Transform characterTransform = shotCharacter.transform;
+		int size = shootingCharacter.GetComponent<CharacterSize>().GetSize() + shotCharacter.GetComponent<CharacterSize>().GetSize();
+        float radius = _controller.radius * size;
+		shoot.PlayEffect(characterTransform.position + radius * velocity.normalized, Quaternion.LookRotation(Vector3.forward, velocity), size);
+	}
 }
