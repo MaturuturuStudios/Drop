@@ -50,8 +50,14 @@ public class InheritVelocity : MonoBehaviour {
 			Debug.LogError("Error: The referenced object was not specified!");
 			enabled = false;
 		}
-		else
-			_lastFramePosition = reference.position;
+	}
+
+	/// <summary>
+	/// Unity's method called when the script or it's object becomes enabled.
+	/// </summary>
+	void OnEnable() {
+		// Initialices the reference position
+		_lastFramePosition = reference.position;
 	}
 
 	/// <summary>
