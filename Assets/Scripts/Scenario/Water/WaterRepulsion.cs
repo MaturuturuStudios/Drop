@@ -156,7 +156,6 @@ public class WaterRepulsion : MonoBehaviour {
         _expelDrop.Add(drop);
         drop.SetActive(false);
         yield return new WaitForSeconds(delay);
-        drop.SetActive(true);
         CharacterControllerCustom controller = drop.GetComponent<CharacterControllerCustom>();
         //put drop on point expulsion
         drop.transform.position = launch.pointOrigin.position;
@@ -173,6 +172,9 @@ public class WaterRepulsion : MonoBehaviour {
         controller.StopFlying();
         Vector3 velocity = launch.GetNeededVelocityVector();
         controller.SendFlying(velocity);
+
+		// Finally, reactivates the object
+		drop.SetActive(true);
 
 		// Notifies the listeners
 		foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
