@@ -173,7 +173,7 @@ public class CharacterControllerParameters {
 	/// slope.
 	/// </summary>
 	[Range(0, 1)]
-	public float slidingDragFactor = 0.5f;
+	public float slidingDragFactor = 0.75f;
 
 	/// <summary>
 	/// Defines the precission when comparing angles. Higher values result in more reliable movement

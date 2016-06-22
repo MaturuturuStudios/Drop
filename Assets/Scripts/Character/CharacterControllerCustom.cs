@@ -489,7 +489,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			_listeners.ForEach(e => e.OnBeginJump(this, _jumpDelayTime));
 		}
 		// Wall jump
-		else if (Collisions.Where(o => o.CompareTag(Tags.WallJump)).Count() > 0) {
+		else if (State.IsSliding) {
 			float gravity = Parameters.Gravity.magnitude;
 
 			// Calculates the jump speed to reach the desired height
@@ -791,13 +791,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 				// The collider is considered a slope
 				State.IsOnSlope = true;
 
-				if (State.IsFalling) {
+				if (State.IsFalling && hit.collider.CompareTag(Tags.WallJump)) {
 					// The character is now sliding
 					State.IsSliding = true;
 
 					// If the character wasn't sliding, stops it
-					//if (!_wasSliding)		=> Temporary disabled
-					//	Stop();
+                    if (!_wasSliding)
+                        Stop();
 				}
 				else {
 					State.IsSliding = false;
