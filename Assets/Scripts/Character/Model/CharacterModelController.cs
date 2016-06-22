@@ -86,6 +86,19 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	/// </summary>
 	public float aimSpeed = 180.0f;
 
+	/// <summary>
+	/// Turn speed for the character to look on the
+	/// oposite direction when sliding down a slope,
+	/// ready to wall jump.
+	/// </summary>
+	public float wallJumpTurnSpeed = 720.0f;
+
+	/// <summary>
+	/// Angle the eyes will have while sliding down
+	/// a slope, ready to wall jump.
+	/// </summary>
+	public float wallJumpLookAngle = 45.0f;
+
 	#endregion
 
 	#region Scale
@@ -362,15 +375,27 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 			_currentEyeAimingRotation = Quaternion.Lerp(_currentEyeAimingRotation, Quaternion.Euler(0, eyeLookMaxAngle * Mathf.Sin(desiredAngle * Mathf.Deg2Rad), 0), 0.1f * aimSpeed * Time.deltaTime);
 		}
 		else {
-			// Makes the model face the right direction
-			float speed = _ccc.Velocity.x;
-			float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
-			Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
-			float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
-			_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
+			if (!_ccc.State.IsSliding) {
+				// Makes the model face the right direction
+				float speed = _ccc.Velocity.x;
+				float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
+				Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
+				float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
+				_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
 
-			// Resets the eye aiming rotation
-			_currentEyeAimingRotation = Quaternion.Lerp(_currentEyeAimingRotation, Quaternion.identity, 0.1f * aimSpeed * Time.deltaTime);
+				// Resets the eye aiming rotation
+				_currentEyeAimingRotation = Quaternion.Lerp(_currentEyeAimingRotation, Quaternion.identity, 0.1f * aimSpeed * Time.deltaTime);
+			}
+			else {
+				// Makes the model quicly face the oposite direction
+				float desiredAngle = _ccc.State.SlopeAngle > 0 ? -rotationAngle : rotationAngle;
+				Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
+				_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, wallJumpTurnSpeed * Time.deltaTime);
+
+				// Makes the eyes look upwards
+				Quaternion eyeRotation = Quaternion.Euler(0, wallJumpLookAngle, 0);
+				_currentEyeAimingRotation = Quaternion.Lerp(_currentEyeAimingRotation, eyeRotation, 0.1f * aimSpeed * Time.deltaTime);
+			}
 		}
 
 		// Adjusts the eye rotation
