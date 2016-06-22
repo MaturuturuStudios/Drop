@@ -125,9 +125,10 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <param name="delayStart">Delay should wait before starting. By default -1 that means the public attribute delayStartChangeSeconds
     /// on this script will be used</param>
     /// <param name="fadeTime">Delay time should elapse the fade effect</param>
-    /// /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the public attribute delaySEndChangeSeconds
+    /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the public attribute delaySEndChangeSeconds
     /// on this script will be used</param>
-    public void ChangeScene(string nameScene, float delayStart = -1, float fadeTime = -1, float delayEnd = -1) {
+    /// <param name="showUI">Set true to show ui elements like in level end, set false for menus</param>
+    public void ChangeScene(string nameScene, float delayStart = -1, float fadeTime = -1, float delayEnd = -1, bool showUI = false) {
         if (delayStart <= -1) {
             delayStart = delayStartChangeSeconds;
         }
@@ -136,7 +137,7 @@ public class SceneFadeInOut : MonoBehaviour {
             delayEnd = delayEndChangeSeconds;
         }
 
-        StartCoroutine(NextScene(nameScene, delayStart, fadeTime, delayEnd));
+        StartCoroutine(NextScene(nameScene, delayStart, fadeTime, delayEnd, showUI));
     }
     #endregion
 
@@ -150,7 +151,7 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <param name="desiredFadeDuration">Elapsed fade duration/param>
     /// <param name="delayEnd">Wait after ending</param>
     /// <returns></returns>
-    private IEnumerator NextScene(string nameScene, float delayStart, float desiredFadeDuration, float delayEnd) {
+    private IEnumerator NextScene(string nameScene, float delayStart, float desiredFadeDuration, float delayEnd, bool showUI) {
 
         // Start loading animation
         //_levelEndAnim.StartCoroutine(LevelLoading(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
@@ -164,7 +165,10 @@ public class SceneFadeInOut : MonoBehaviour {
 
         // Start fade animation
         BeginFade(false, desiredFadeDuration);
-        StartCoroutine(_levelEndAnim.EndMessage(fadeDuration));
+        if(showUI)
+            StartCoroutine(_levelEndAnim.EndMessage(fadeDuration));
+
+        // Wait for the fade duration
         yield return MenuNavigator.WaitForRealSeconds(fadeDuration);
 
         yield return MenuNavigator.WaitForRealSeconds(delayEnd);
