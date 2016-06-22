@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -23,7 +22,13 @@ public class LevelEndAnim : MonoBehaviour {
 
 
     /// <summary>
-    /// Wait time to start next drop animation
+    /// End mesage for publicity
+    /// </summary>
+    public GameObject EndMessageText;
+
+
+    /// <summary>
+    /// Wait time to start next drop animation, it is only used if no parameter getted in BeginLevelEndAnimation
     /// </summary>
     public float waitTimeNextDrop;
 
@@ -59,6 +64,20 @@ public class LevelEndAnim : MonoBehaviour {
     /// </summary>
     private AudioSource _audioSource;
 
+    /// <summary>
+    /// Duration while fading
+    /// </summary>
+    public float _fadeDuration = 0.8f;
+
+    /// <summary>
+    /// the texture's alpha value between 0 and 1
+    /// </summary>
+    private float _alpha = 0.0f;
+
+    /// <summary>
+    /// Reference to end message to make the fade effect
+    /// </summary>
+    GameObject _endeMessage;
     #endregion
 
 
@@ -70,8 +89,11 @@ public class LevelEndAnim : MonoBehaviour {
         _audioSource = GetComponent<AudioSource>();
     }
 
-    public void OnGUI() {
-
+    public void Update() {
+        if (_endeMessage) {
+            _alpha += Time.deltaTime / _fadeDuration;
+            _endeMessage.GetComponent<Text>().color = new Color(1, 1, 1, _alpha);
+        }
     }
 
     /// <summary>
@@ -89,7 +111,7 @@ public class LevelEndAnim : MonoBehaviour {
             delayBetweenDrops = waitTimeNextDrop;
         }
 
-        StartCoroutine(DropCounter(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
+        //StartCoroutine(DropCounter(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
     }
     #endregion
 
@@ -99,6 +121,7 @@ public class LevelEndAnim : MonoBehaviour {
     /// </summary>
     /// <param name="totalDrops">Total of drops in the level</param>
     /// <param name="wastedDrops">Number of drops left in scene</param>
+    /// <param name="startDelay">Wait before start animation</param>
     /// <param name="delayBetweenDrops">Wait before show next drop</param>
     /// <returns></returns>
     private IEnumerator DropCounter(int totalDrops, int wastedDrops, float startDelay, float delayBetweenDrops) {
@@ -106,10 +129,9 @@ public class LevelEndAnim : MonoBehaviour {
         // Wait to start fading
         yield return MenuNavigator.WaitForRealSeconds(startDelay);
 
-        for ( int i = 0; i < totalDrops; ++i) {
+        for (int i = 0; i < totalDrops; ++i) {
 
-            // Play sound
-            GameObject drop2DAnim; 
+            GameObject drop2DAnim;
             if (i < totalDrops - wastedDrops) {
                 drop2DAnim = GameObject.Instantiate(dropCounterUnitCollected);
                 _audioSource.clip = countDropCollectedSound;
@@ -120,10 +142,69 @@ public class LevelEndAnim : MonoBehaviour {
                 drop2DAnim.GetComponent<Animator>().SetBool("collected", false);
             }
 
+            // Play sound
             _audioSource.Play();
 
+            // Set animation UI Component
+            drop2DAnim.transform.SetParent(_parentUI.transform, false);
 
-            // Create a new animation
+            drop2DAnim.transform.SetAsLastSibling();
+
+            // Calculate size of animation
+            float animSize = 1024 / (totalDrops + ((totalDrops - 1) / 2) + 2);
+
+            // Set size of animation
+            drop2DAnim.GetComponent<RectTransform>().sizeDelta = new Vector2(animSize, animSize);
+
+            // Set position of animation
+            float horizontalPosition = (animSize / 2) + animSize + (animSize * i) + (animSize * i / 2);
+            if (totalDrops % 2 == 0)
+                horizontalPosition -= animSize / 4;
+            drop2DAnim.GetComponent<RectTransform>().anchoredPosition = new Vector2(horizontalPosition, Screen.height * heightPosition);
+
+            // Wait for next animation
+            yield return MenuNavigator.WaitForRealSeconds(delayBetweenDrops);
+        }
+    }
+
+
+
+    public IEnumerator EndMessage(float fadeDuration) {
+        _fadeDuration = fadeDuration;
+        _endeMessage = Instantiate(EndMessageText, Vector3.zero, Quaternion.identity) as GameObject;
+        _endeMessage.transform.SetParent(_parentUI.transform, false);
+        _endeMessage.GetComponent<Text>().color = new Color(1, 1, 1, 0);
+        yield return true;
+    }
+
+    /// <summary>
+    /// Animation shown while level is loading
+    /// </summary>
+    /// <param name="totalDrops">Total of drops in the level</param>
+    /// <param name="wastedDrops">Number of drops left in scene</param>
+    /// <param name="startDelay">Wait before start animation</param>
+    /// <param name="delayBetweenDrops">Wait before show next drop</param>
+    /// <returns></returns>
+    private IEnumerator LevelLoading(int totalDrops, int wastedDrops, float startDelay, float delayBetweenDrops) {
+
+        // Wait to start fading
+        yield return MenuNavigator.WaitForRealSeconds(startDelay);
+
+        for (int i = 0; i < totalDrops; ++i) {
+
+            GameObject drop2DAnim;
+            if (i < totalDrops - wastedDrops) {
+                drop2DAnim = GameObject.Instantiate(dropCounterUnitCollected);
+                _audioSource.clip = countDropCollectedSound;
+                drop2DAnim.GetComponent<Animator>().SetBool("collected", true);
+            } else {
+                drop2DAnim = GameObject.Instantiate(dropCounterUnitWasted);
+                _audioSource.clip = countDropWastedSound;
+                drop2DAnim.GetComponent<Animator>().SetBool("collected", false);
+            }
+
+            // Play sound
+            _audioSource.Play();
 
             // Set animation UI Component
             drop2DAnim.transform.SetParent(_parentUI.transform, false);

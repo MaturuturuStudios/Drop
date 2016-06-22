@@ -14,7 +14,7 @@ MenuNewGame=Nou Joc
 MenuGraphics=Gràfics
 MenuAudio=Àudio
 MenuInput=Controls
-MenuLanguage=Llenguatge
+MenuLanguage=Idioma
 MenuHelp=Ajuda
 MenuBack=Tornar
 
@@ -31,7 +31,7 @@ AudioAmbient=Ambient
 AudioEffects=Efectes
 
 #Language options
-Language=Llenguatge
+Language=Idioma
 
 
 #Input option

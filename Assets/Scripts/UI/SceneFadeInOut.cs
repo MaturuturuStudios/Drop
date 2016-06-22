@@ -47,6 +47,10 @@ public class SceneFadeInOut : MonoBehaviour {
     /// parent UI object
     /// </summary>
     private GameObject _parentUI;
+    /// <summary>
+    /// parent UI object
+    /// </summary>
+    private LevelEndAnim _levelEndAnim;
     #endregion
 
 
@@ -55,6 +59,8 @@ public class SceneFadeInOut : MonoBehaviour {
 
     void Start() {
         _parentUI = GameObject.FindGameObjectWithTag("Menus");
+
+        _levelEndAnim = FindObjectOfType<LevelEndAnim>();
 
         BeginFade(true);
     }
@@ -146,8 +152,11 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <returns></returns>
     private IEnumerator NextScene(string nameScene, float delayStart, float desiredFadeDuration, float delayEnd) {
 
+        // Start loading animation
+        //_levelEndAnim.StartCoroutine(LevelLoading(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
         // Preload next scene
         AsyncOperation op = SceneManager.LoadSceneAsync(nameScene);
+        
         // Don't load scene untill time has expired
         op.allowSceneActivation = false;
 
@@ -155,6 +164,7 @@ public class SceneFadeInOut : MonoBehaviour {
 
         // Start fade animation
         BeginFade(false, desiredFadeDuration);
+        StartCoroutine(_levelEndAnim.EndMessage(fadeDuration));
         yield return MenuNavigator.WaitForRealSeconds(fadeDuration);
 
         yield return MenuNavigator.WaitForRealSeconds(delayEnd);

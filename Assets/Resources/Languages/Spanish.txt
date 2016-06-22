@@ -14,7 +14,7 @@ MenuNewGame=Nuevo Juego
 MenuGraphics=Gráficos
 MenuAudio=Audio
 MenuInput=Controles
-MenuLanguage=Lenguaje
+MenuLanguage=Idioma
 MenuHelp=Ayuda
 MenuBack=Atrás
 
@@ -31,7 +31,7 @@ AudioAmbient=Ambiente
 AudioEffects=Efectos
 
 #Language options
-Language=Lenguaje
+Language=Idioma
 
 #Input option
 MenuInputPause=Pausa
