@@ -332,7 +332,7 @@ ModelImporter:
     13700002: Ojo_Der
     13700004: Ojo_Izq
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
   animations:
@@ -374,7 +374,7 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 1
     tangentImportMode: 3
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     human: []
