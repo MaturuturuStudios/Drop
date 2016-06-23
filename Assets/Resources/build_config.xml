@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <BuildData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <buildName>drop-v0.2.6</buildName>
-  <workPath>../../Builds/Drop/drop-v0.2.6</workPath>
+  <buildName>drop_intro_scene_test</buildName>
+  <workPath>Build/drop_intro_scene_test</workPath>
   <share>false</share>
   <sharedFolderPath>../../Google Drive/WorkSpace/DropOfficial/Realeases</sharedFolderPath>
   <zipPath>D:/Program Files (x86)/GnuWin32/bin/zip.exe</zipPath>
   <win>true</win>
-  <lin>true</lin>
-  <mac>true</mac>
+  <lin>false</lin>
+  <mac>false</mac>
   <countScenes>false</countScenes>
   <scenes>
+    <string>Assets/_Scenes/Intro.unity</string>
     <string>Assets/_Scenes/StartScene.unity</string>
     <string>Assets/_Scenes/Level.unity</string>
-    <string>Assets/_Scenes/Puzzles/Nacho/Level N.unity</string>
-    <string>Assets/_Scenes/Puzzles/Ruben/New_R1.unity</string>
-    <string>Assets/_Scenes/Puzzles/Robert/LevelUnderdevelpment.unity</string>
   </scenes>
 </BuildData>
