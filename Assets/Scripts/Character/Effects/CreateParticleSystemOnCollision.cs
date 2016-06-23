@@ -13,6 +13,12 @@ public class CreateParticleSystemOnCollision : MonoBehaviour {
 	public GameObject particleSystemPrefab;
 
 	/// <summary>
+	/// The layers the particle will be spawned when colliding
+	/// with.
+	/// </summary>
+	public LayerMask layerFilter;
+
+	/// <summary>
 	/// The duration of the particle system.
 	/// </summary>
 	public float duration = 3.0f;
@@ -40,6 +46,10 @@ public class CreateParticleSystemOnCollision : MonoBehaviour {
     }
 
 	void OnParticleCollision(GameObject other) {
+		// Filters the layer
+		if (((1 << other.layer) & layerFilter.value) == 0)
+			return;
+
 		// Gets this frame's collisions
 		int safeLength = _particleSystem.GetSafeCollisionEventSize();
 		ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[safeLength];
