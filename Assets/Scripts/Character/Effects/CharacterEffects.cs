@@ -14,6 +14,10 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 	public EffectInformation fuse;
 
+	public EffectInformation slide;
+
+	public EffectInformation wallJump;
+
 	public LayerMask sceneMask;
 
 	private CharacterControllerCustom _ccc;
@@ -25,6 +29,10 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	private CharacterShoot _characterShoot;
 
 	private CharacterController _controller;
+
+	private GameObject _slideEffect;
+
+	private static readonly float SLIDE_EFFECT_DURATION = 2.0f;
 
 	void Awake() {
         _ccc = GetComponent<CharacterControllerCustom>();
@@ -38,6 +46,21 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
         _ccc.AddListener(this);
 		_characterFusion.AddListener(this);
 		_characterShoot.AddListener(this);
+	}
+
+	void Update() {
+		if (_ccc.State.IsSliding) {
+			if (_slideEffect == null)
+				_slideEffect = slide.PlayEffect(transform.position, Quaternion.identity, _characterSize.GetSize());
+		}
+		else if (_slideEffect != null) {
+			foreach (ParticleSystem system in _slideEffect.GetComponentsInChildren<ParticleSystem>()) {
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = false;
+			}
+			Destroy(_slideEffect, SLIDE_EFFECT_DURATION);
+			_slideEffect = null;
+		}
 	}
 
     public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
@@ -54,10 +77,17 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
     public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		if (hit.collider.CompareTag(Tags.Player))
 			return;
+
 		float minLandSpeed = land.GetMinSpeed(_characterSize.GetSize());
+		Quaternion normalRotation = Quaternion.LookRotation(Vector3.forward, hit.normal);
         if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed) {
-            land.PlayEffect(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal), _characterSize.GetSize());
+            land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
         }
+
+		if (ccc.State.IsSliding && _slideEffect != null) {
+			_slideEffect.transform.position = hit.point;
+			_slideEffect.transform.rotation = normalRotation;
+		}
     }
 
     public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
@@ -65,7 +95,9 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
     }
 
     public void OnWallJump(CharacterControllerCustom ccc) {
-        // Do nothing
+		// Since to wall jump the character needs to be sliding, uses the slide effect position
+		if (_slideEffect != null)
+			wallJump.PlayEffect(_slideEffect.transform.position, _slideEffect.transform.rotation, _characterSize.GetSize());
     }
 
 	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {

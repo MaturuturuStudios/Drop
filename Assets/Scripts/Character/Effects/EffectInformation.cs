@@ -44,7 +44,9 @@ public class EffectInformation {
 				scale = Mathf.Sqrt(scale);
 			effect.transform.localScale = Vector3.one * scale;
 		}
-		UnityEngine.Object.Destroy(effect, duration);
+		// If the duration is positive, destroy the affect after it
+		if (duration >= 0)
+			UnityEngine.Object.Destroy(effect, duration);
 		return effect;
 	}
 }
