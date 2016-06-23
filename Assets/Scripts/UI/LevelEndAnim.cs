@@ -28,6 +28,12 @@ public class LevelEndAnim : MonoBehaviour {
 
 
     /// <summary>
+    /// loading animation
+    /// </summary>
+    public GameObject loadingAnim;
+
+
+    /// <summary>
     /// Wait time to start next drop animation, it is only used if no parameter getted in BeginLevelEndAnimation
     /// </summary>
     public float waitTimeNextDrop;
@@ -113,6 +119,33 @@ public class LevelEndAnim : MonoBehaviour {
 
         //StartCoroutine(DropCounter(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
     }
+
+
+
+
+
+    public IEnumerator EndMessage(float fadeDuration) {
+        _fadeDuration = fadeDuration;
+        _endeMessage = Instantiate(EndMessageText, Vector3.zero, Quaternion.identity) as GameObject;
+        _endeMessage.transform.SetParent(_parentUI.transform, false);
+        _endeMessage.GetComponent<Text>().color = new Color(1, 1, 1, 0);
+        yield return true;
+    }
+
+
+
+
+
+    public IEnumerator LoadingAnim(AsyncOperation op) {
+        GameObject loadingIndicator = Instantiate(loadingAnim,new Vector3(-32f, 32f,0f) , Quaternion.identity) as GameObject;
+        loadingIndicator.transform.SetParent(_parentUI.transform, false);
+
+        while (op.progress < 0.9f) {
+            yield return null;
+        }
+
+        Destroy(loadingIndicator);
+    }
     #endregion
 
     #region Private methods
@@ -165,16 +198,6 @@ public class LevelEndAnim : MonoBehaviour {
             // Wait for next animation
             yield return MenuNavigator.WaitForRealSeconds(delayBetweenDrops);
         }
-    }
-
-
-
-    public IEnumerator EndMessage(float fadeDuration) {
-        _fadeDuration = fadeDuration;
-        _endeMessage = Instantiate(EndMessageText, Vector3.zero, Quaternion.identity) as GameObject;
-        _endeMessage.transform.SetParent(_parentUI.transform, false);
-        _endeMessage.GetComponent<Text>().color = new Color(1, 1, 1, 0);
-        yield return true;
     }
 
     /// <summary>

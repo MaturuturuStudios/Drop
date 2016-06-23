@@ -103,7 +103,7 @@ public class LevelEndController : MonoBehaviour {
             _gci.StopInput();
 
             // Load scene async
-            _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd);
+            _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
 
             int totalDrops = _gcic.CountAlllDrops(true);
             int controlledDrops = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();

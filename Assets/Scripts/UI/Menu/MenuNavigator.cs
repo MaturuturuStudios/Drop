@@ -295,8 +295,8 @@ public class MenuNavigator : MonoBehaviour {
     /// <param name="delayStart">Delay should wait before starting. By default -1 that means the default will be used</param>
     /// <param name="fadeDuration">Time should delay fading the screen to black. By default -1 that means the default will be used</param>
     /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the default will be used</param>
-    public void ChangeScene(string nameScene, float delayStart = -1, float fadeDuration = -1, float delayEnd = -1) {
-        _fading.ChangeScene(nameScene, delayStart, fadeDuration, delayEnd);
+    public void ChangeScene(string nameScene, float delayStart = -1, float fadeDuration = -1, float delayEnd = -1, bool showUI =  false) {
+        _fading.ChangeScene(nameScene, delayStart, fadeDuration, delayEnd, showUI);
     }
 
     /// <summary>
