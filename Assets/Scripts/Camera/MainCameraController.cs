@@ -534,9 +534,9 @@ public class MainCameraController : MonoBehaviour {
         // Camera locked in position
         if (_cameraState == CameraState.LockArea)
             destination = _lockPosition;
-
-        // Calculate if it is out of bounds and stop it at bound exceded
-        destination = CheckBounds(destination);
+        else
+            // Calculate if it is out of bounds and stop it at bound exceded
+            destination = CheckBounds(destination);
 
         // Calculate next position
         Vector3 newPosition;
