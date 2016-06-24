@@ -31,9 +31,9 @@ public class Chase : StateMachineBehaviour, CollisionListener {
     /// </summary>
     private CharacterController _controller;
     /// <summary>
-    /// Minimum distance to goal
+    /// Keep the drop the enemy is chasing to give it to the listeners at the end of chase
     /// </summary>
-    //private float _minimumDistance;
+    private GameObject _dropChased;
     
 
     private Animator _animator;
@@ -41,9 +41,13 @@ public class Chase : StateMachineBehaviour, CollisionListener {
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
-		//_minimumDistance = commonParameters.toleranceDistanceAttack;
         commonParameters.colliders.AddListener(this);
         _animator = animator;
+
+
+        //Call listeners
+        foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
+            listener.OnBeginChase(commonParameters.AI, _dropChased);
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -54,7 +58,11 @@ public class Chase : StateMachineBehaviour, CollisionListener {
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
         commonParameters.colliders.RemoveListener(this);
-        
+
+
+        //Call listeners
+        foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
+            listener.OnEndChase(commonParameters.AI, commonParameters.drop);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -69,6 +77,7 @@ public class Chase : StateMachineBehaviour, CollisionListener {
         if (commonParameters.drop == null) {
             return;
         }
+        _dropChased = commonParameters.drop;
 
         // Saves the original position
         Vector3 move = Vector3.zero;

@@ -54,7 +54,8 @@ public class AIBase : MonoBehaviour {
 
     private AnimationState actualState;
 
-    private List<AIStateListener> _listeners = new List<AIStateListener>();
+    [HideInInspector]
+    public List<EnemyBehaviourListener> listeners = new List<EnemyBehaviourListener>();
     #endregion
 
     #region Methods
@@ -124,10 +125,10 @@ public class AIBase : MonoBehaviour {
     /// </summary>
     /// <param name="listener">The listener to subscribe</param>
     /// <returns>If the listener was successfully subscribed</returns>
-    public bool AddListener(AIStateListener listener) {
-        if (_listeners.Contains(listener))
+    public bool AddListener(EnemyBehaviourListener listener) {
+        if (listeners.Contains(listener))
             return false;
-        _listeners.Add(listener);
+        listeners.Add(listener);
         return true;
     }
 
@@ -137,10 +138,10 @@ public class AIBase : MonoBehaviour {
     /// </summary>
     /// <param name="listener">The listener to unsubscribe</param>
     /// <returns>If the listener was successfully unsubscribed</returns>
-    public bool RemoveListener(AIStateListener listener) {
-        if (!_listeners.Contains(listener))
+    public bool RemoveListener(EnemyBehaviourListener listener) {
+        if (!listeners.Contains(listener))
             return false;
-        _listeners.Remove(listener);
+        listeners.Remove(listener);
         return true;
     }
 
@@ -298,7 +299,7 @@ public class AIBase : MonoBehaviour {
         AnimationState state = GetAnimationState(info);
         if (actualState != state) {
             // Notifies the listeners
-            foreach (AIStateListener listener in _listeners)
+            foreach (EnemyBehaviourListener listener in listeners)
                 listener.OnStateAnimationChange(actualState, state);
             actualState = state;
         }

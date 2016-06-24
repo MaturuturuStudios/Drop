@@ -1,5 +1,15 @@
 ﻿using UnityEngine;
 
+public enum AnimationState {
+    IDDLE,
+    WALK,
+    CHASE,
+    DETECT,
+    ATTACK,
+    RUN_AWAY,
+    HIDDE_RECOLECT
+}
+
 /// <summary>
 /// Interface for the observers listening for the
 /// enemies' actions' events.
@@ -35,6 +45,13 @@ public interface EnemyBehaviourListener {
 	/// <param name="scaringObject">The scaring character</param>
 	/// <param name="scaringSize">The size for the enemy to be scared</param>
 	void OnBeingScared(AIBase enemy, GameObject scaringObject, int scaringSize);
+
+    /// <summary>
+    /// Event called on every change of state
+    /// </summary>
+    /// <param name="previousState"></param>
+    /// <param name="actualState"></param>
+    void OnStateAnimationChange(AnimationState previousState, AnimationState actualState);
 }
 
 /// <summary>
@@ -58,4 +75,8 @@ public class EnemyBehaviourAdapter : MonoBehaviour, EnemyBehaviourListener {
 	public virtual void OnBeingScared(AIBase enemy, GameObject scaringObject, int scaringSize) {
 		// Do nothing
 	}
+
+    public void OnStateAnimationChange(AnimationState previousState, AnimationState actualState) {
+        // Do nothing
+    }
 }

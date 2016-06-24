@@ -80,8 +80,13 @@ public class Attack : StateMachineBehaviour {
             controller.Stop();
             controller.SendFlying(fly);
             _attackDone = true;
+            
+            //Call listeners
+            foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
+                listener.OnAttack(commonParameters.AI, commonParameters.drop, fly);
         }
     }
+    
 
     private void Move() {
         // Saves the original position
