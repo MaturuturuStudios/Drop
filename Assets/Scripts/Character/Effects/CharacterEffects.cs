@@ -4,7 +4,7 @@
 [RequireComponent(typeof(CharacterSize))]
 [RequireComponent(typeof(CharacterShoot))]
 [RequireComponent(typeof(CharacterFusion))]
-public class CharacterEffects : MonoBehaviour, CharacterShootListener, CharacterFusionListener, CharacterControllerListener {
+public class CharacterEffects : MonoBehaviour, CharacterShootListener, CharacterFusionListener, CharacterControllerListener, IrrigateListener {
 
 	public MinSpeedEffectInformation land;
 
@@ -17,6 +17,8 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	public EffectInformation slide;
 
 	public EffectInformation wallJump;
+
+	public EffectInformation irrigate;
 
 	public LayerMask sceneMask;
 
@@ -122,5 +124,10 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		int size = shootingCharacter.GetComponent<CharacterSize>().GetSize() + shotCharacter.GetComponent<CharacterSize>().GetSize();
         float radius = _controller.radius * size;
 		shoot.PlayEffect(characterTransform.position + radius * velocity.normalized, Quaternion.LookRotation(Vector3.forward, velocity), size);
+	}
+
+	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
+		Transform characterTransform = irrigating.transform;
+		irrigate.PlayEffect(characterTransform.position, characterTransform.rotation, _characterSize.GetSize());
 	}
 }
