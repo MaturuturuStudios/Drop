@@ -106,7 +106,10 @@ ModelImporter:
     4300008: WP_Petalos:wind_petal2
     4300010: WP_Petalos:wind_petal5
     4300012: WP_Petalos:wind_petal6
-    7400000: Wind_Plant_Rig_Ani_B
+    7400000: Idle
+    7400002: Start
+    7400004: Loop
+    7400006: End
     9500000: //RootNode
     13700000: wind_flower
     13700002: WP_Petalos:wind_petal1
@@ -137,9 +140,9 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Wind_Plant_Rig_Ani_B
+      name: Idle
       takeName: Wind_Plant_Rig_Ani_B
-      firstFrame: 1
+      firstFrame: 79
       lastFrame: 80
       wrapMode: 0
       orientationOffsetY: 0
@@ -148,6 +151,372 @@ ModelImporter:
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Mesh
+        weight: 1
+      - path: Mesh/wind_plant
+        weight: 1
+      - path: Mesh/wind_plant/wind_flower
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal1
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal2
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal3
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal4
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal5
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal6
+        weight: 1
+      - path: WP_Rig
+        weight: 1
+      - path: WP_Rig/LeafA
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3/LeafA4
+        weight: 1
+      - path: WP_Rig/LeafB
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3/LeafB4
+        weight: 1
+      - path: WP_Rig/LeafC
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3/LeafC4
+        weight: 1
+      - path: WP_Rig/LeafD
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3/LeafD4
+        weight: 1
+      - path: WP_Rig/LeafE
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3/LeafE4
+        weight: 1
+      - path: WP_Rig/LeafF
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3/LeafF4
+        weight: 1
+      - path: WP_Rig/Mid
+        weight: 1
+      - path: WP_Rig/Mid/Mid1
+        weight: 1
+      - path: WP_Rig/Mid/Mid2
+        weight: 1
+      - path: WP_Rig/Mid/Mid3
+        weight: 1
+      - path: WP_Rig/Mid/Mid4
+        weight: 1
+      - path: WP_Rig/Mid/Sup
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: Start
+      takeName: Wind_Plant_Rig_Ani_B
+      firstFrame: 12
+      lastFrame: 32
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Mesh
+        weight: 1
+      - path: Mesh/wind_plant
+        weight: 1
+      - path: Mesh/wind_plant/wind_flower
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal1
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal2
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal3
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal4
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal5
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal6
+        weight: 1
+      - path: WP_Rig
+        weight: 1
+      - path: WP_Rig/LeafA
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3/LeafA4
+        weight: 1
+      - path: WP_Rig/LeafB
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3/LeafB4
+        weight: 1
+      - path: WP_Rig/LeafC
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3/LeafC4
+        weight: 1
+      - path: WP_Rig/LeafD
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3/LeafD4
+        weight: 1
+      - path: WP_Rig/LeafE
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3/LeafE4
+        weight: 1
+      - path: WP_Rig/LeafF
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3/LeafF4
+        weight: 1
+      - path: WP_Rig/Mid
+        weight: 1
+      - path: WP_Rig/Mid/Mid1
+        weight: 1
+      - path: WP_Rig/Mid/Mid2
+        weight: 1
+      - path: WP_Rig/Mid/Mid3
+        weight: 1
+      - path: WP_Rig/Mid/Mid4
+        weight: 1
+      - path: WP_Rig/Mid/Sup
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: Loop
+      takeName: Wind_Plant_Rig_Ani_B
+      firstFrame: 32
+      lastFrame: 56
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Mesh
+        weight: 1
+      - path: Mesh/wind_plant
+        weight: 1
+      - path: Mesh/wind_plant/wind_flower
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal1
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal2
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal3
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal4
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal5
+        weight: 1
+      - path: Mesh/wind_plant/WP_Petalos:wind_petal6
+        weight: 1
+      - path: WP_Rig
+        weight: 1
+      - path: WP_Rig/LeafA
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3
+        weight: 1
+      - path: WP_Rig/LeafA/LeafA1/LeafA2/LeafA3/LeafA4
+        weight: 1
+      - path: WP_Rig/LeafB
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3
+        weight: 1
+      - path: WP_Rig/LeafB/LeafB1/LeafB2/LeafB3/LeafB4
+        weight: 1
+      - path: WP_Rig/LeafC
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3
+        weight: 1
+      - path: WP_Rig/LeafC/LeafC1/LeafC2/LeafC3/LeafC4
+        weight: 1
+      - path: WP_Rig/LeafD
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3
+        weight: 1
+      - path: WP_Rig/LeafD/LeafD1/LeafD2/LeafD3/LeafD4
+        weight: 1
+      - path: WP_Rig/LeafE
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3
+        weight: 1
+      - path: WP_Rig/LeafE/LeafE1/LeafE2/LeafE3/LeafE4
+        weight: 1
+      - path: WP_Rig/LeafF
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3
+        weight: 1
+      - path: WP_Rig/LeafF/LeafF1/Leaf2/Leaf3/LeafF4
+        weight: 1
+      - path: WP_Rig/Mid
+        weight: 1
+      - path: WP_Rig/Mid/Mid1
+        weight: 1
+      - path: WP_Rig/Mid/Mid2
+        weight: 1
+      - path: WP_Rig/Mid/Mid3
+        weight: 1
+      - path: WP_Rig/Mid/Mid4
+        weight: 1
+      - path: WP_Rig/Mid/Sup
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: End
+      takeName: Wind_Plant_Rig_Ani_B
+      firstFrame: 56
+      lastFrame: 80
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
