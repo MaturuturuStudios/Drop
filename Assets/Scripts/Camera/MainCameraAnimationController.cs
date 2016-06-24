@@ -17,7 +17,7 @@ public class MainCameraAnimationController : MonoBehaviour {
         _mcc = GetComponentInParent<MainCameraController>();
         _cameraAnimator = GetComponent<Animator>();
         _gci.ResumeInput();
-    }
+    } 
 
     public void StopInput() {
         _gci.StopInput(true);
