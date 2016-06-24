@@ -93,11 +93,7 @@ public class LevelEndController : MonoBehaviour {
 	/// <summary>
     /// Activated when player enters on the trigger
     /// </summary>
-    /// <param name="other">Collider who enters in the trigger</param>
-    void OnTriggerEnter(Collider other){
-
-        // Only ends game with player
-        if (other.CompareTag(Tags.Player)) {
+    public void LevelEnd(){
 
             // Stops input
             _gci.StopInput();
@@ -109,7 +105,6 @@ public class LevelEndController : MonoBehaviour {
             int controlledDrops = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
             // Start level end animation
             _levelEndAnim.BeginLevelEndAnimation(totalDrops, totalDrops - controlledDrops, delayStart, fadeDuration / totalDrops);
-        }
     }
 
 

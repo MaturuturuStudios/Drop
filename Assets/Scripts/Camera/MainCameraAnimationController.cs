@@ -14,7 +14,7 @@ public class MainCameraAnimationController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         _gci = GetComponentInParent<GameControllerInput>();
-        _mcc = GetComponent<MainCameraController>();
+        _mcc = GetComponentInParent<MainCameraController>();
         _cameraAnimator = GetComponent<Animator>();
         _gci.ResumeInput();
     }
@@ -48,5 +48,10 @@ public class MainCameraAnimationController : MonoBehaviour {
 
     public void MoveEndLeave() {
         endLeave.GetComponent<FollowPath>().Next();
+    }
+
+    public void StartEndAnimation() {
+        _cameraAnimator.enabled = true;
+        _cameraAnimator.SetBool("Start", false);
     }
 }
