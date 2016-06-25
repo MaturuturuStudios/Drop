@@ -4,7 +4,7 @@
 [RequireComponent(typeof(CharacterSize))]
 [RequireComponent(typeof(CharacterShoot))]
 [RequireComponent(typeof(CharacterFusion))]
-public class CharacterEffects : MonoBehaviour, CharacterShootListener, CharacterFusionListener, CharacterControllerListener, IrrigateListener {
+public class CharacterEffects : MonoBehaviour, CharacterShootListener, CharacterFusionListener, CharacterControllerListener, IrrigateListener, EnemyBehaviourListener {
 
 	public MinSpeedEffectInformation land;
 
@@ -19,6 +19,8 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	public EffectInformation wallJump;
 
 	public EffectInformation irrigate;
+
+	public EffectInformation hit;
 
 	public LayerMask sceneMask;
 
@@ -129,5 +131,28 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
 		Transform characterTransform = irrigating.transform;
 		irrigate.PlayEffect(characterTransform.position, characterTransform.rotation, _characterSize.GetSize());
+	}
+
+	public void OnBeginChase(AIBase enemy, GameObject chasedObject) {
+		// Do nothing
+	}
+
+	public void OnEndChase(AIBase enemy, GameObject chasedObject) {
+		// Do nothing
+	}
+
+	public void OnAttack(AIBase enemy, GameObject attackedObject, Vector3 velocity) {
+		if (attackedObject == gameObject) {
+			Transform characterTransform = attackedObject.transform;
+			hit.PlayEffect(characterTransform.position, characterTransform.rotation, _characterSize.GetSize());
+		}
+	}
+
+	public void OnBeingScared(AIBase enemy, GameObject scaringObject, int scaringSize) {
+		// Do nothing
+	}
+
+	public void OnStateAnimationChange(AnimationState previousState, AnimationState actualState) {
+		// Do nothing
 	}
 }

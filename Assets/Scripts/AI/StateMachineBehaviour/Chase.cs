@@ -43,10 +43,12 @@ public class Chase : StateMachineBehaviour, CollisionListener {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
         commonParameters.colliders.AddListener(this);
         _animator = animator;
+		_dropChased = commonParameters.drop;
 
-
-        //Call listeners
-        foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
+		//Call listeners
+		foreach (EnemyBehaviourListener listener in _dropChased.GetComponents<EnemyBehaviourListener>())
+			listener.OnBeginChase(commonParameters.AI, _dropChased);
+		foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
             listener.OnBeginChase(commonParameters.AI, _dropChased);
     }
 
@@ -60,9 +62,11 @@ public class Chase : StateMachineBehaviour, CollisionListener {
         commonParameters.colliders.RemoveListener(this);
 
 
-        //Call listeners
-        foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
-            listener.OnEndChase(commonParameters.AI, commonParameters.drop);
+		//Call listeners
+		foreach (EnemyBehaviourListener listener in _dropChased.GetComponents<EnemyBehaviourListener>())
+			listener.OnEndChase(commonParameters.AI, _dropChased);
+		foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
+            listener.OnEndChase(commonParameters.AI, _dropChased);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
