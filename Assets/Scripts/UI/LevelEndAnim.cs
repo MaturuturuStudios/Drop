@@ -28,12 +28,6 @@ public class LevelEndAnim : MonoBehaviour {
 
 
     /// <summary>
-    /// loading animation
-    /// </summary>
-    public GameObject loadingAnim;
-
-
-    /// <summary>
     /// Wait time to start next drop animation, it is only used if no parameter getted in BeginLevelEndAnimation
     /// </summary>
     public float waitTimeNextDrop;
@@ -50,6 +44,7 @@ public class LevelEndAnim : MonoBehaviour {
     /// </summary>
     public AudioClip countDropCollectedSound;
 
+
     /// <summary>
     /// Sound played when the character exits shoot mode.
     /// </summary>
@@ -64,21 +59,25 @@ public class LevelEndAnim : MonoBehaviour {
     /// </summary>
     private GameObject _parentUI;
 
+
     /// <summary>
     /// Reference to the object's original AudioSource component which
     /// the values for the new ones will be copied from.
     /// </summary>
     private AudioSource _audioSource;
 
+
     /// <summary>
     /// Duration while fading
     /// </summary>
     public float _fadeDuration = 0.8f;
 
+
     /// <summary>
     /// the texture's alpha value between 0 and 1
     /// </summary>
     private float _alpha = 0.0f;
+
 
     /// <summary>
     /// Reference to end message to make the fade effect
@@ -91,16 +90,24 @@ public class LevelEndAnim : MonoBehaviour {
     #region Public methods
 
     public void Start() {
+        // Get UI parent reference
         _parentUI = GameObject.FindGameObjectWithTag("Menus");
+
+        // Get reference to audio source
         _audioSource = GetComponent<AudioSource>();
     }
 
+
     public void Update() {
+        // If there is any end message
         if (_endeMessage) {
+
+            // Calculate and set the alpha value
             _alpha += Time.deltaTime / _fadeDuration;
             _endeMessage.GetComponent<Text>().color = new Color(1, 1, 1, _alpha);
         }
     }
+
 
     /// <summary>
     /// Change to the next scene with a fading. This is the method that should be called
@@ -117,38 +124,36 @@ public class LevelEndAnim : MonoBehaviour {
             delayBetweenDrops = waitTimeNextDrop;
         }
 
+        // Drop counter animation
         //StartCoroutine(DropCounter(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
     }
+    
 
-
-
-
-
+    /// <summary>
+    /// Shows the end message of thanks
+    /// </summary>
+    /// <param name="fadeDuration">Desired duration while fading</param>
+    /// <returns></returns>
     public IEnumerator EndMessage(float fadeDuration) {
+
+        // Set desired duration
         _fadeDuration = fadeDuration;
+
+        // Instantiate an end message
         _endeMessage = Instantiate(EndMessageText, Vector3.zero, Quaternion.identity) as GameObject;
+
+        // Set object a UI object
         _endeMessage.transform.SetParent(_parentUI.transform, false);
+
+        // Set the message not visible
         _endeMessage.GetComponent<Text>().color = new Color(1, 1, 1, 0);
         yield return true;
     }
 
-
-
-
-
-    public IEnumerator LoadingAnim(AsyncOperation op) {
-        GameObject loadingIndicator = Instantiate(loadingAnim,new Vector3(-32f, 32f,0f) , Quaternion.identity) as GameObject;
-        loadingIndicator.transform.SetParent(_parentUI.transform, false);
-
-        while (op.progress < 0.9f) {
-            yield return null;
-        }
-
-        Destroy(loadingIndicator);
-    }
     #endregion
 
     #region Private methods
+
     /// <summary>
     /// Animation that shows the number of drops collected in the level
     /// </summary>
@@ -156,7 +161,6 @@ public class LevelEndAnim : MonoBehaviour {
     /// <param name="wastedDrops">Number of drops left in scene</param>
     /// <param name="startDelay">Wait before start animation</param>
     /// <param name="delayBetweenDrops">Wait before show next drop</param>
-    /// <returns></returns>
     private IEnumerator DropCounter(int totalDrops, int wastedDrops, float startDelay, float delayBetweenDrops) {
 
         // Wait to start fading
@@ -199,6 +203,7 @@ public class LevelEndAnim : MonoBehaviour {
             yield return MenuNavigator.WaitForRealSeconds(delayBetweenDrops);
         }
     }
+
 
     /// <summary>
     /// Animation shown while level is loading
@@ -250,6 +255,7 @@ public class LevelEndAnim : MonoBehaviour {
             yield return MenuNavigator.WaitForRealSeconds(delayBetweenDrops);
         }
     }
+
     #endregion
     #endregion
 }

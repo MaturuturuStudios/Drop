@@ -7,13 +7,20 @@ using UnityEngine.UI;
 public class LevelEndController : MonoBehaviour {
 
     #region Public Attributes
+
     /// <summary>
-    /// Wait time to show 
+    /// Wait time to start fading 
     /// </summary>
     public float delayStart = 1F;
 
+    /// <summary>
+    /// Elapsed time while fading
+    /// </summary>
     public float fadeDuration = 2f;
 
+    /// <summary>
+    /// Wait time after fade
+    /// </summary>
     public float delayEnd = 0f;
 
 
@@ -31,20 +38,24 @@ public class LevelEndController : MonoBehaviour {
     /// </summary>
     private GameControllerInput _gci;
 
+
     /// <summary>
     /// Reference to independent controller
     /// </summary>
     private GameControllerIndependentControl _gcic;
+
 
     /// <summary>
     /// Reference to the collider of end region.
     /// </summary>
     private BoxCollider _collider;
 
+
     /// <summary>
     /// UI Reference
     /// </summary>
     private MenuNavigator _menuNavigator;
+
 
     /// <summary>
     /// Reference to level end animation
@@ -54,7 +65,6 @@ public class LevelEndController : MonoBehaviour {
     #endregion
 
     #region Methods
-
 
     /// <summary>
     /// Unity's method called when the entity is created.
@@ -86,7 +96,6 @@ public class LevelEndController : MonoBehaviour {
         _gcic = FindObjectOfType<GameControllerIndependentControl>();
         //Get input controller
         _levelEndAnim = FindObjectOfType<LevelEndAnim>();
-
     }
 
 
@@ -106,7 +115,6 @@ public class LevelEndController : MonoBehaviour {
             // Start level end animation
             _levelEndAnim.BeginLevelEndAnimation(totalDrops, totalDrops - controlledDrops, delayStart, fadeDuration / totalDrops);
     }
-
 
 
     /// <summary>
@@ -130,5 +138,6 @@ public class LevelEndController : MonoBehaviour {
         Vector3 pos = _collider.center;
         Gizmos.DrawCube(pos, _collider.size);
     }
+
     #endregion
 }

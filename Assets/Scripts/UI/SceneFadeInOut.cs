@@ -47,6 +47,10 @@ public class SceneFadeInOut : MonoBehaviour {
     /// parent UI object
     /// </summary>
     private LevelEndAnim _levelEndAnim;
+    /// <summary>
+    /// parent UI object
+    /// </summary>
+    private LoadingAnim _loadingAnim;
     #endregion
 
 
@@ -54,10 +58,15 @@ public class SceneFadeInOut : MonoBehaviour {
     #region Public methods
 
     void Start() {
+
+        // Parent UI object nedded to set it a gui element
         _parentUI = GameObject.FindGameObjectWithTag("Menus");
 
+        // References to animations
         _levelEndAnim = FindObjectOfType<LevelEndAnim>();
+        _loadingAnim = FindObjectOfType<LoadingAnim>();
 
+        // Start fade in
         BeginFade(true);
     }
 
@@ -115,7 +124,7 @@ public class SceneFadeInOut : MonoBehaviour {
 
 
     /// <summary>
-    /// Change to the next scene with a fading. This is the method that should be called
+    /// Change to the next scene with a fading. This is the method that should be called to validate the values
     /// </summary>
     /// <param name="nameScene">The name of the next scene</param>
     /// <param name="delayStart">Delay should wait before starting. By default -1 that means the public attribute delayStartChangeSeconds
@@ -163,9 +172,8 @@ public class SceneFadeInOut : MonoBehaviour {
         BeginFade(false, desiredFadeDuration);
         if (showUI) {
             StartCoroutine(_levelEndAnim.EndMessage(fadeDuration));
-            StartCoroutine(_levelEndAnim.LoadingAnim(op));
-
         }
+        StartCoroutine(_loadingAnim.PlayLoadingAnim(op));
         // Wait for the fade duration
         yield return MenuNavigator.WaitForRealSeconds(fadeDuration);
 
