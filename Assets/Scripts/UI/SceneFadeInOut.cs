@@ -32,10 +32,6 @@ public class SceneFadeInOut : MonoBehaviour {
     /// </summary>
     private float _alpha = 1.0f;
     /// <summary>
-    /// Elapsed time fading
-    /// </summary>
-    private float _elapsed = 0;
-    /// <summary>
     /// the direction to fade: in = -1 or out = 1
     /// </summary>
     private bool _isFadeIn = true;

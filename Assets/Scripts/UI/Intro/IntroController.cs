@@ -41,7 +41,6 @@ public class IntroController : MonoBehaviour {
         _audio.clip = introMovie.audioClip;
 
         StartCoroutine(ScenePreloading(sceneToLoad.name, logoDuration));
-        AsyncOperation op = SceneManager.LoadSceneAsync(sceneToLoad.name);
 
         _images = GetComponentsInChildren<Image>();
     }
