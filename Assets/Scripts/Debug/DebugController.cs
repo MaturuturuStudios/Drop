@@ -407,15 +407,19 @@ public class DebugController : MonoBehaviour {
 		if (!Input.GetMouseButtonDown(1))
 			return;
 
-		// Spawns the character
-		GameObject newDrop = _independentControl.CreateDrop(true);
+		
 
 		// Finds the position to spawn the character
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		Plane plane = new Plane(Vector3.back, Vector3.zero);
 		float distance;
-		if (plane.Raycast(ray, out distance))
-			newDrop.transform.position = ray.GetPoint(distance);
+        // Spawns the character
+		
+        if (plane.Raycast(ray, out distance)) {
+            GameObject newDrop = _independentControl.CreateDrop(ray.GetPoint(distance), true);
+        } else {
+            GameObject newDrop = _independentControl.CreateDrop(true);
+        }
 	}
 
 	/// <summary>

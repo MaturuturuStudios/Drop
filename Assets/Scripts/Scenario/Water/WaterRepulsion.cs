@@ -122,18 +122,12 @@ public class WaterRepulsion : MonoBehaviour {
         
         if (!_expelDrop.Contains(drop)) {
             _enteredDrop.Add(drop);
-
-            //set particle effect (and inmediately destroy it)
-            //int scale=(int)(drop.transform.localScale.x);
             //position
             Vector3 position = drop.transform.position;
             position.z = 0;
-			//ParticleEnter(position, scale);
 
 
 			// Notifies the listeners
-			foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
-				listener.OnWaterEnter(this, drop);
 			foreach (WaterRepulsionListener listener in _listeners)
 				listener.OnWaterEnter(this, drop);
 		}
@@ -151,6 +145,26 @@ public class WaterRepulsion : MonoBehaviour {
         _expelDrop.Remove(drop);
     }
 
+    /// <summary>
+    /// Get the bounds of the collider
+    /// </summary>
+    /// <returns></returns>
+	public Bounds GetCollider() {
+        return _ownCollider;
+    }
+
+    /// <summary>
+    /// Draw the launch
+    /// </summary>
+    public void OnDrawGizmos() {
+        launch.OnDrawGizmos();
+    }
+
+    /// <summary>
+    /// Check the given drop and expel it
+    /// </summary>
+    /// <param name="drop"></param>
+    /// <returns></returns>
     private IEnumerator ExpelDrop(GameObject drop) {
         _expelDrop.Add(drop);
         drop.SetActive(false);
@@ -175,85 +189,10 @@ public class WaterRepulsion : MonoBehaviour {
         controller.SendFlying(velocity);
 
 		// Notifies the listeners
-		foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
-			listener.OnWaterExit(this, drop, velocity);
 		foreach (WaterRepulsionListener listener in _listeners)
 			listener.OnWaterExit(this, drop, velocity);
 	}
 
-	public Bounds GetCollider() {
-        return _ownCollider;
-    }
-
     
-
-    //private void ParticleEnter(Vector3 position, float scale) {
-    //    GameObject particleSystem = Instantiate(particleEffectEnter.gameObject) as GameObject;
-    //    position.y = _ownCollider.max.y + 0.2f;
-    //    particleSystem.GetComponent<Transform>().position = position;
-    //    ParticleSystem[] system = particleSystem.GetComponentsInChildren<ParticleSystem>();
-
-    //    ParticleSystem particle = system[0];
-
-    //        //scale the emission burst
-    //        ParticleSystem.EmissionModule emission = particle.emission;
-    //        ParticleSystem.Burst[] burst=new ParticleSystem.Burst[emission.burstCount];
-    //        emission.GetBursts(burst);
-    //        burst[0].minCount *= (short)(particleEmissionRateMultiplierScale * scale);
-    //        burst[0].maxCount *= (short)(particleEmissionRateMultiplierScale * scale);
-    //        emission.SetBursts(burst);
-
-    //        //scale the shape emission
-    //        ParticleSystem.ShapeModule shape = particle.shape;
-    //        shape.radius *= particleSizeShapeMultiplierScale* scale;
-
-
-    //    particle = system[1];
-    //    particle.startSize *= (0.5f * scale);
-    //    ParticleSystem.VelocityOverLifetimeModule velocity = particle.velocityOverLifetime;
-    //    ParticleSystem.MinMaxCurve x = velocity.y;
-    //    x.constantMax *= scale;
-
-
-    //    //destroy system
-    //    Destroy(particleSystem, particleEffectEnter.startLifetime);
-        
-    //}
-
-    //private void ParticleExit(Vector3 position, float scale) {
-    //    GameObject particleSystem = Instantiate(particleEffectExit.gameObject) as GameObject;
-    //    position.y = _ownCollider.max.y + 0.2f;
-    //    particleSystem.GetComponent<Transform>().position = position;
-    //    ParticleSystem[] system = particleSystem.GetComponentsInChildren<ParticleSystem>();
-
-    //    ParticleSystem particle = system[0];
-
-    //    //scale the emission burst
-    //    ParticleSystem.EmissionModule emission = particle.emission;
-    //    ParticleSystem.Burst[] burst = new ParticleSystem.Burst[emission.burstCount];
-    //    emission.GetBursts(burst);
-    //    burst[0].minCount *= (short)(particleEmissionRateMultiplierScale * scale);
-    //    burst[0].maxCount *= (short)(particleEmissionRateMultiplierScale * scale);
-    //    emission.SetBursts(burst);
-
-    //    //scale the shape emission
-    //    ParticleSystem.ShapeModule shape = particle.shape;
-    //    shape.radius *= particleSizeShapeMultiplierScale * scale;
-
-
-    //    particle = system[1];
-    //    particle.startSize *= (0.5f * scale);
-    //    ParticleSystem.VelocityOverLifetimeModule velocity = particle.velocityOverLifetime;
-    //    ParticleSystem.MinMaxCurve x = velocity.y;
-    //    x.constantMax *= scale;
-
-
-    //    //destroy system
-    //    Destroy(particleSystem, particleEffectExit.startLifetime);
-    //}
-
-    public void OnDrawGizmos() {
-        launch.OnDrawGizmos();
-    }
     #endregion
 }

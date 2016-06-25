@@ -213,21 +213,13 @@ public class CharacterShoot : MonoBehaviour {
      }
 
     /// <summary>
-	/// Method to prepare the drop to be shooted.
-	/// </summary>
-    private void prepareDropToFly() {
-        _ball.transform.position = this.transform.position;// + st.GetpVelocity().normalized * (c.radius * this.transform.lossyScale.x + ball.GetComponent<CharacterController>().radius * ball.transform.lossyScale.x);
-	    _ball.SetActive(false);
-    }
-
-    /// <summary>
 	/// Method to shoot the drop.
 	/// </summary>
 	private void throwBall(){
 
-        _ball = _gcic.CreateDrop(true); //AddDrop -> CreateDrop
+        _ball = _gcic.CreateDrop(this.transform.position, true); //AddDrop -> CreateDrop
         _ball.GetComponent<CharacterSize>().SetSize((int)_sizeshot);
-        prepareDropToFly();
+        _ball.SetActive(false);
 
         _ball.SetActive(true);
 

@@ -48,16 +48,21 @@ public class GameControllerIndependentControl : MonoBehaviour {
     }
 
 
+    public GameObject CreateDrop(bool setControl = false, bool addToControlList = true, int size = 1) {
+        return CreateDrop(Vector3.zero, setControl, addToControlList, size);
+    }
+
     /// <summary>
-    /// Add a drop to the scene, and under player control.nder player's control from list and set it out of the scene
+    /// Add a drop to the scene, and under player control.
+    /// Under player's control from list and set it out of the scene
     /// </summary>
     /// <param name="setControl">Set the control to the drop</param>
     /// <param name="addToControlList">Set the created drop to the controlled drops list</param>
     /// <param name="size">Set the desired size to instantiated character</param>
-    public GameObject CreateDrop(bool setControl = false, bool addToControlList = true, int size = 1) {
+    public GameObject CreateDrop(Vector3 initialPosition, bool setControl = false, bool addToControlList = true, int size = 1) {
 
         // Create a drop
-        GameObject drop = Instantiate(PfDrop);
+        GameObject drop = Instantiate(PfDrop, initialPosition, Quaternion.identity) as GameObject;
 
 		// Set the name to the object
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
