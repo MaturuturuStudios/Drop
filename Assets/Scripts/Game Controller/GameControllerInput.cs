@@ -51,7 +51,7 @@ public class GameControllerInput : MonoBehaviour {
 
     }
 
-	void Update() {
+	void FixedUpdate() {
 		//Start button
 		if (Input.GetButtonDown(Axis.Start))
 			_ui.PauseGame();
