@@ -128,10 +128,12 @@ public class WaterRepulsion : MonoBehaviour {
             //position
             Vector3 position = drop.transform.position;
             position.z = 0;
-            //ParticleEnter(position, scale);
+			//ParticleEnter(position, scale);
 
 
-            // Notifies the listeners
+			// Notifies the listeners
+			foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
+				listener.OnWaterEnter(this, drop);
 			foreach (WaterRepulsionListener listener in _listeners)
 				listener.OnWaterEnter(this, drop);
 		}
@@ -173,6 +175,8 @@ public class WaterRepulsion : MonoBehaviour {
         controller.SendFlying(velocity);
 
 		// Notifies the listeners
+		foreach (WaterRepulsionListener listener in drop.GetComponents<WaterRepulsionListener>())
+			listener.OnWaterExit(this, drop, velocity);
 		foreach (WaterRepulsionListener listener in _listeners)
 			listener.OnWaterExit(this, drop, velocity);
 	}

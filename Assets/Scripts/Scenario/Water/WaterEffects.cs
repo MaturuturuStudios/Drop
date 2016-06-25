@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using System.Collections;
 
 public class WaterEffects : MonoBehaviour, WaterRepulsionListener {
+    /// <summary>
+    /// Effect of waves
+    /// </summary>
     public GameObject waves;
+    /// <summary>
+    /// Effects for sizes above 4
+    /// </summary>
     public GameObject columnWater;
+    /// <summary>
+    /// Effects for sizes above 2
+    /// </summary>
     public GameObject splash;
 
     private float time = 5;
 
 	// Use this for initialization
 	void Start () {
-        WaterRepulsion[] waters = GetComponentsInChildren<WaterRepulsion>();
-        foreach(WaterRepulsion water in waters) {
-            water.AddListener(this);
-        }
-	}
+        GetComponentInChildren<WaterRepulsion>().AddListener(this);
+    }
 
     public void OnWaterEnter(WaterRepulsion water, GameObject character) {
         PutEffect(water, character, false);
