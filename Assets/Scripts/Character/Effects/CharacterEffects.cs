@@ -1,44 +1,112 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Listener class which plays the multiple effects produced
+/// by the character.
+/// </summary>
 [RequireComponent(typeof(CharacterControllerCustom))]
 [RequireComponent(typeof(CharacterSize))]
 [RequireComponent(typeof(CharacterShoot))]
 [RequireComponent(typeof(CharacterFusion))]
 public class CharacterEffects : MonoBehaviour, CharacterShootListener, CharacterFusionListener, CharacterControllerListener, IrrigateListener, EnemyBehaviourListener {
 
+	/// <summary>
+	/// Effect played while walking.
+	/// </summary>
+	public MinSpeedEffectInformation walk;
+
+	/// <summary>
+	/// Effect played when landing.
+	/// </summary>
 	public MinSpeedEffectInformation land;
 
+	/// <summary>
+	/// Effect played when jumping.
+	/// </summary>
 	public EffectInformation jump;
 
+	/// <summary>
+	/// Effect played when shooting.
+	/// </summary>
 	public EffectInformation shoot;
 
+	/// <summary>
+	/// Effect played when fusing.
+	/// </summary>
 	public EffectInformation fuse;
 
+	/// <summary>
+	/// Effect played while sliding.
+	/// </summary>
 	public EffectInformation slide;
 
+	/// <summary>
+	/// Effect played when wall jumping.
+	/// </summary>
 	public EffectInformation wallJump;
 
+	/// <summary>
+	/// Effect played when irrigating.
+	/// </summary>
 	public EffectInformation irrigate;
 
+	/// <summary>
+	/// Effect played when being hit.
+	/// </summary>
 	public EffectInformation hit;
 
+	/// <summary>
+	/// Mask for any collision point check.
+	/// </summary>
 	public LayerMask sceneMask;
 
+	/// <summary>
+	/// Reference to this entity's CharacterControllerCustom component.
+	/// </summary>
 	private CharacterControllerCustom _ccc;
 
+	/// <summary>
+	/// Reference to this entity's CharacterSize component.
+	/// </summary>
 	private CharacterSize _characterSize;
 
+	/// <summary>
+	/// Reference to this entity's CharacterFusion component.
+	/// </summary>
 	private CharacterFusion _characterFusion;
 
+	/// <summary>
+	/// Reference to this entity's CharacterShoot component.
+	/// </summary>
 	private CharacterShoot _characterShoot;
 
+	/// <summary>
+	/// Reference to this entity's CharacterController component.
+	/// </summary>
 	private CharacterController _controller;
 
-	private GameObject _slideEffect;
+	/// <summary>
+	/// The walking effect used by this script.
+	/// </summary>
+	private Transform _walkEffect;
 
-	private static readonly float SLIDE_EFFECT_DURATION = 2.0f;
+	/// <summary>
+	/// Reference to the walking effect's particle systems.
+	/// </summary>
+	private ParticleSystem[] _walkParticleEffects;
+
+	/// <summary>
+	/// The sliding effect used by this script.
+	/// </summary>
+	private Transform _slideEffect;
+
+	/// <summary>
+	/// Reference to the sliding effect's particle systems.
+	/// </summary>
+	private ParticleSystem[] _slideParticleEffects;
 
 	void Awake() {
+		// Retrieves the desired components
         _ccc = GetComponent<CharacterControllerCustom>();
         _characterSize = GetComponent<CharacterSize>();
 		_characterFusion = GetComponent<CharacterFusion>();
@@ -47,23 +115,43 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
     }
 
     void Start() {
+		// Subscribes itself to the publishers
         _ccc.AddListener(this);
 		_characterFusion.AddListener(this);
 		_characterShoot.AddListener(this);
+
+		// Creates and stops the walking effect
+		_walkEffect = walk.PlayEffect(transform.position, Quaternion.identity).transform;
+		_walkEffect.parent = transform;
+		_walkEffect.localScale = Vector3.one;
+		_walkParticleEffects = _walkEffect.GetComponentsInChildren<ParticleSystem>();
+		foreach (ParticleSystem system in _walkParticleEffects) {
+			ParticleSystem.EmissionModule emission = system.emission;
+			emission.enabled = false;
+		}
+
+		// Creates and stops the sliding effect
+		_slideEffect = slide.PlayEffect(transform.position, Quaternion.identity).transform;
+		_slideEffect.parent = transform;
+		_slideEffect.localScale = Vector3.one;
+		_slideParticleEffects = _slideEffect.GetComponentsInChildren<ParticleSystem>();
+        foreach (ParticleSystem system in _slideParticleEffects) {
+			ParticleSystem.EmissionModule emission = system.emission;
+			emission.enabled = false;
+		}
 	}
 
 	void Update() {
-		if (_ccc.State.IsSliding) {
-			if (_slideEffect == null)
-				_slideEffect = slide.PlayEffect(transform.position, Quaternion.identity, _characterSize.GetSize());
+		// Plays or stops the walking effect
+		foreach (ParticleSystem system in _walkParticleEffects) {
+			ParticleSystem.EmissionModule emission = system.emission;
+			emission.enabled = _ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walk.GetMinSpeed(_characterSize.GetSize());
 		}
-		else if (_slideEffect != null) {
-			foreach (ParticleSystem system in _slideEffect.GetComponentsInChildren<ParticleSystem>()) {
-				ParticleSystem.EmissionModule emission = system.emission;
-				emission.enabled = false;
-			}
-			Destroy(_slideEffect, SLIDE_EFFECT_DURATION);
-			_slideEffect = null;
+
+		// Plays or stops the sliding effect
+		foreach (ParticleSystem system in _slideParticleEffects) {
+			ParticleSystem.EmissionModule emission = system.emission;
+			emission.enabled = _ccc.State.IsSliding;
 		}
 	}
 
@@ -72,27 +160,35 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
     }
 
     public void OnPerformJump(CharacterControllerCustom ccc) {
+		// Looks for the ground and plays the jump effect
 		RaycastHit hit;
-		if (Physics.SphereCast(ccc.transform.position, _controller.radius * _characterSize.GetSize(), ccc.Parameters.Gravity, out hit, 10, sceneMask)) {
+		if (Physics.SphereCast(ccc.transform.position, _controller.radius * _characterSize.GetSize(), ccc.Parameters.Gravity, out hit, 10, sceneMask))
 			jump.PlayEffect(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal), _characterSize.GetSize());
-		}
 	}
 
     public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		if (hit.collider.CompareTag(Tags.Player))
 			return;
 
+		// Plays the landing effect
 		float minLandSpeed = land.GetMinSpeed(_characterSize.GetSize());
 		Quaternion normalRotation = Quaternion.LookRotation(Vector3.forward, hit.normal);
         if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed) {
             land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
-        }
-
-		if (ccc.State.IsSliding && _slideEffect != null) {
-			_slideEffect.transform.position = hit.point;
-			_slideEffect.transform.rotation = normalRotation;
 		}
-    }
+
+		// Positions the walking effect
+		if (ccc.State.IsGrounded) {
+			_walkEffect.position = hit.point;
+			_walkEffect.rotation = normalRotation;
+		}
+
+		// Positions the sliding effect
+		if (ccc.State.IsSliding) {
+			_slideEffect.position = hit.point;
+			_slideEffect.rotation = normalRotation;
+		}
+	}
 
     public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
         // Do nothing
@@ -109,6 +205,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	}
 
 	public void OnEndFusion(CharacterFusion finalCharacter) {
+		// Plays the fusion effect
 		Transform characterTransform = finalCharacter.transform;
 		fuse.PlayEffect(characterTransform.position, characterTransform.rotation, finalCharacter.GetSize());
     }
@@ -122,6 +219,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	}
 
 	public void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
+		// Plays the shooting effect
 		Transform characterTransform = shotCharacter.transform;
 		int size = shootingCharacter.GetComponent<CharacterSize>().GetSize() + shotCharacter.GetComponent<CharacterSize>().GetSize();
         float radius = _controller.radius * size;
@@ -129,6 +227,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	}
 
 	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
+		// Plays the irrigation effect
 		Transform characterTransform = irrigating.transform;
 		irrigate.PlayEffect(characterTransform.position, characterTransform.rotation, _characterSize.GetSize());
 	}
@@ -142,6 +241,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	}
 
 	public void OnAttack(AIBase enemy, GameObject attackedObject, Vector3 velocity) {
+		// Plays the hit effect
 		if (attackedObject == gameObject) {
 			Transform characterTransform = attackedObject.transform;
 			hit.PlayEffect(characterTransform.position, characterTransform.rotation, _characterSize.GetSize());
