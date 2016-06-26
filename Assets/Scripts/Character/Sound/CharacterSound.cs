@@ -11,7 +11,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterSize))]
 [RequireComponent(typeof(CharacterFusion))]
 [RequireComponent(typeof(CharacterShoot))]
-public class CharacterSound : MonoBehaviour, CharacterControllerListener, CharacterSizeListener, CharacterFusionListener, CharacterShootListener, EnemyBehaviourListener {
+public class CharacterSound : MonoBehaviour, CharacterControllerListener, CharacterSizeListener, CharacterFusionListener, CharacterShootListener, EnemyBehaviourListener, IrrigateListener {
 
 	#region Custom Classes
 
@@ -98,6 +98,11 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 	/// </summary>
 	public SingleSoundAudioInformation hit;
 
+	/// <summary>
+	/// AudioInformation for the irrigation sounds.
+	/// </summary>
+	public SingleSoundAudioInformation irrigate;
+
 	#endregion
 
 	#region Private Attributes
@@ -152,6 +157,7 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 		fuse.audioSource = CopyAudioSource(_originalAudioSource);
 		shoot.audioSource = CopyAudioSource(_originalAudioSource);
 		hit.audioSource = CopyAudioSource(_originalAudioSource);
+		irrigate.audioSource = CopyAudioSource(_originalAudioSource);
 	}
 
 	/// <summary>
@@ -294,6 +300,12 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 
 	public void OnStateAnimationChange(AnimationState previousState, AnimationState actualState) {
 		// Do nothing
+	}
+
+	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
+		// Plays the irrigation sound
+		if (irrigating == gameObject)
+			irrigate.PlayAudio();
 	}
 
 	#endregion
