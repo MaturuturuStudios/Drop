@@ -61,7 +61,7 @@ public class CharacterSpawner : MonoBehaviour {
             _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
 
             // Create the character of target size
-            GameObject drop = _independentControl.CreateDrop(_spawnPosition, controlled, addToControlList, size);
+            _independentControl.CreateDrop(_spawnPosition, controlled, addToControlList, size);
         }
 
         Object.Destroy(this.gameObject);

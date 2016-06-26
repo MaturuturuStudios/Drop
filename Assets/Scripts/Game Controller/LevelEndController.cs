@@ -60,7 +60,7 @@ public class LevelEndController : MonoBehaviour {
     /// <summary>
     /// Reference to level end animation
     /// </summary>
-    private LevelEndAnim _levelEndAnim;
+    private LevelEndThanks _levelEndThanks;
     
     #endregion
 
@@ -95,7 +95,7 @@ public class LevelEndController : MonoBehaviour {
         //Get input controller
         _gcic = FindObjectOfType<GameControllerIndependentControl>();
         //Get input controller
-        _levelEndAnim = FindObjectOfType<LevelEndAnim>();
+        _levelEndThanks = FindObjectOfType<LevelEndThanks>();
     }
 
 
@@ -112,8 +112,8 @@ public class LevelEndController : MonoBehaviour {
 
             int totalDrops = _gcic.CountAlllDrops(true);
             int controlledDrops = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
-            // Start level end animation
-            _levelEndAnim.BeginLevelEndAnimation(totalDrops, totalDrops - controlledDrops, delayStart, fadeDuration / totalDrops);
+        // Start level end animation
+        //_levelEndThanks.EndMessage(fadeDuration);
     }
 
 

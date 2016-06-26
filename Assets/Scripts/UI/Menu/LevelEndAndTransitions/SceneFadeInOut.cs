@@ -46,7 +46,7 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <summary>
     /// parent UI object
     /// </summary>
-    private LevelEndAnim _levelEndAnim;
+    private LevelEndThanks _levelEndThanks;
     /// <summary>
     /// parent UI object
     /// </summary>
@@ -63,7 +63,7 @@ public class SceneFadeInOut : MonoBehaviour {
         _parentUI = GameObject.FindGameObjectWithTag("Menus");
 
         // References to animations
-        _levelEndAnim = FindObjectOfType<LevelEndAnim>();
+        _levelEndThanks = FindObjectOfType<LevelEndThanks>();
         _loadingAnim = FindObjectOfType<LoadingAnim>();
 
         // Start fade in
@@ -157,9 +157,7 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <param name="delayEnd">Wait after ending</param>
     /// <returns></returns>
     private IEnumerator NextScene(string nameScene, float delayStart, float desiredFadeDuration, float delayEnd, bool showUI) {
-
-        // Start loading animation
-        //_levelEndAnim.StartCoroutine(LevelLoading(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
+        
         // Preload next scene
         AsyncOperation op = SceneManager.LoadSceneAsync(nameScene);
         
@@ -171,7 +169,7 @@ public class SceneFadeInOut : MonoBehaviour {
         // Start fade animation
         BeginFade(false, desiredFadeDuration);
         if (showUI) {
-            StartCoroutine(_levelEndAnim.EndMessage(fadeDuration));
+            StartCoroutine(_levelEndThanks.EndMessage(fadeDuration));
         }
         StartCoroutine(_loadingAnim.PlayLoadingAnim(op));
         // Wait for the fade duration
