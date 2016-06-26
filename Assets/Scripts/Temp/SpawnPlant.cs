@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Temporal.
 /// </summary>
 public class SpawnPlant : Irrigate {
 
-	public GameObject temporalObject;
+	public GameObject plant;
 
 	public float timeToEnable = 3.0f;
 
 	public GameObject particleGrow;
+
+	public GameObject interactEffect;
 
 	public float effectDuration = 3.0f;
 
@@ -19,16 +20,24 @@ public class SpawnPlant : Irrigate {
 		GameObject system = Instantiate(particleGrow) as GameObject;
 		system.transform.position = transform.position;
 		system.transform.rotation = transform.rotation;
+
+		//stops the interact effect
+		float effectDuration = 0;
+		foreach (ParticleSystem sys in interactEffect.GetComponentsInChildren<ParticleSystem>()) {
+			ParticleSystem.EmissionModule emission = sys.emission;
+			emission.enabled = false;
+			effectDuration = Mathf.Max(effectDuration, sys.startLifetime);
+        }
+		Destroy(interactEffect, effectDuration);
+
 		//play animation
 		foreach (Animator animator in GetComponentsInChildren<Animator>())
 			animator.SetTrigger("irrigate");
         Destroy(system, effectDuration);
-		//grow the plant
-		StartCoroutine(EnableTheObject());
-	}
 
-	private IEnumerator EnableTheObject() {
-		yield return new WaitForSeconds(timeToEnable);
-        temporalObject.SetActive(true);
+		//grow the plant
+		plant.SetActive(true);
+		foreach (Animator animator in plant.GetComponentsInChildren<Animator>())
+			animator.SetTrigger("irrigate");
 	}
 }
