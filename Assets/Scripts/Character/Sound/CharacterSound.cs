@@ -152,12 +152,12 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 		walk.audioSource = _originalAudioSource;
 
 		// Creates a copy of the audio source for the other sounds
-		jump.audioSource = CopyAudioSource(_originalAudioSource);
-		land.audioSource = CopyAudioSource(_originalAudioSource);
-		fuse.audioSource = CopyAudioSource(_originalAudioSource);
-		shoot.audioSource = CopyAudioSource(_originalAudioSource);
-		hit.audioSource = CopyAudioSource(_originalAudioSource);
-		irrigate.audioSource = CopyAudioSource(_originalAudioSource);
+		jump.audioSource = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
+		land.audioSource = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
+		fuse.audioSource = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
+		shoot.audioSource = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
+		hit.audioSource = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
+		irrigate.audioSource = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
 	}
 
 	/// <summary>
@@ -170,37 +170,6 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 		_characterSize.AddListener(this);
 		_characterFusion.AddListener(this);
 		_characterShoot.AddListener(this);
-	}
-
-	/// <summary>
-	/// Creates a new AudioSource from the information of the provided
-	/// one and adds it to the object.
-	/// </summary>
-	/// <param name="originalAudioSource">The AudioSource to be copied</param>
-	/// <returns>The new copied AudioSource</returns>
-	private AudioSource CopyAudioSource(AudioSource originalAudioSource) {
-		AudioSource AS = gameObject.AddComponent<AudioSource>();
-
-		AS.bypassEffects = _originalAudioSource.bypassEffects;
-		AS.bypassListenerEffects = _originalAudioSource.bypassListenerEffects;
-		AS.bypassReverbZones = _originalAudioSource.bypassReverbZones;
-		AS.dopplerLevel = _originalAudioSource.dopplerLevel;
-		AS.maxDistance = _originalAudioSource.maxDistance;
-		AS.minDistance = _originalAudioSource.minDistance;
-		AS.outputAudioMixerGroup = _originalAudioSource.outputAudioMixerGroup;
-		AS.panStereo = _originalAudioSource.panStereo;
-		AS.pitch = _originalAudioSource.pitch;
-		AS.playOnAwake = _originalAudioSource.playOnAwake;
-		AS.priority = _originalAudioSource.priority;
-		AS.reverbZoneMix = _originalAudioSource.reverbZoneMix;
-		AS.rolloffMode = _originalAudioSource.rolloffMode;
-		AS.spatialBlend = _originalAudioSource.spatialBlend;
-		AS.spatialize = _originalAudioSource.spatialize;
-		AS.spread = _originalAudioSource.spread;
-		AS.velocityUpdateMode = _originalAudioSource.velocityUpdateMode;
-		AS.volume = _originalAudioSource.volume;
-
-		return AS;
 	}
 
 	/// <summary>

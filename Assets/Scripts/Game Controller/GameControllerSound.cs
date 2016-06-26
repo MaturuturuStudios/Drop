@@ -96,7 +96,7 @@ public class GameControllerSound : MonoBehaviour {
 
 		// Creates a copy of the audio source for the other music clip
 		for (int i = 1; i < musicClips.Length; i++) {
-			_audioSources[i] = CopyAudioSource(_originalAudioSource);
+			_audioSources[i] = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
 			_audioSources[i].clip = musicClips[i].clip;
         }
 	}
@@ -165,38 +165,6 @@ public class GameControllerSound : MonoBehaviour {
             }
 			_audioSources[i].volume = targetVolume;
 		}
-	}
-
-	/// <summary>
-	/// Creates a new AudioSource from the information of the provided
-	/// one and adds it to the object.
-	/// </summary>
-	/// <param name="originalAudioSource">The AudioSource to be copied</param>
-	/// <returns>The new copied AudioSource</returns>
-	private AudioSource CopyAudioSource(AudioSource originalAudioSource) {
-		AudioSource AS = gameObject.AddComponent<AudioSource>();
-
-		AS.bypassEffects = _originalAudioSource.bypassEffects;
-		AS.bypassListenerEffects = _originalAudioSource.bypassListenerEffects;
-		AS.bypassReverbZones = _originalAudioSource.bypassReverbZones;
-		AS.dopplerLevel = _originalAudioSource.dopplerLevel;
-		AS.maxDistance = _originalAudioSource.maxDistance;
-		AS.minDistance = _originalAudioSource.minDistance;
-		AS.outputAudioMixerGroup = _originalAudioSource.outputAudioMixerGroup;
-		AS.panStereo = _originalAudioSource.panStereo;
-		AS.pitch = _originalAudioSource.pitch;
-		AS.playOnAwake = _originalAudioSource.playOnAwake;
-		AS.priority = _originalAudioSource.priority;
-		AS.reverbZoneMix = _originalAudioSource.reverbZoneMix;
-		AS.rolloffMode = _originalAudioSource.rolloffMode;
-		AS.spatialBlend = _originalAudioSource.spatialBlend;
-		AS.spatialize = _originalAudioSource.spatialize;
-		AS.spread = _originalAudioSource.spread;
-		AS.velocityUpdateMode = _originalAudioSource.velocityUpdateMode;
-		AS.volume = _originalAudioSource.volume;
-		AS.loop = _originalAudioSource.loop;
-
-		return AS;
 	}
 
 	#region Mixer Methods
