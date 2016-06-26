@@ -51,7 +51,7 @@ public class GameControllerInput : MonoBehaviour {
 
     }
 
-	void FixedUpdate() {
+	void Update() {
 		//Start button
 		if (Input.GetButtonDown(Axis.Start))
 			_ui.PauseGame();
@@ -79,7 +79,8 @@ public class GameControllerInput : MonoBehaviour {
             if (Input.GetButtonDown(Axis.Jump)) {
                 float jumpInput = Input.GetAxis(Axis.Jump);
                 cccp.JumpInput = jumpInput;
-            } else if (Input.GetButtonUp(Axis.Jump)) {
+            }
+			else if (Input.GetButtonUp(Axis.Jump)) {
                 float jumpInput = Input.GetAxis(Axis.Jump);
                 cccp.JumpInput = jumpInput;
             }
@@ -88,10 +89,12 @@ public class GameControllerInput : MonoBehaviour {
             if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
                 _switcher.ControlNextDrop();
                 _triggerPressed = true;
-            } else if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) < 0) {
+            }
+			else if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) < 0) {
                 _switcher.ControlBackDrop();
                 _triggerPressed = true;
-            } else if (Input.GetAxis(Axis.SelectDrop) == 0)
+            }
+			else if (Input.GetAxis(Axis.SelectDrop) == 0)
                 _triggerPressed = false;
 
             // Handles the direct access input
