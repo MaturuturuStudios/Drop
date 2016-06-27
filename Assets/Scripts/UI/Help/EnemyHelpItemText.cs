@@ -3,7 +3,7 @@
 /// <summary>
 /// Help item for showing enemies' information.
 /// </summary>
-public class EnemyHelpItem : HelpItem, EnemyBehaviourListener {
+public class EnemyHelpItemText : TextHelpItem, EnemyBehaviourListener {
 
 	/// <summary>
 	/// Reference to the parents's AIBase component.
@@ -24,6 +24,11 @@ public class EnemyHelpItem : HelpItem, EnemyBehaviourListener {
 		// Registers itself to the AIBase events
 		_aiComponent.AddListener(this);
     }
+
+	protected override string GetText() {
+		// Changes the size in the text
+		return _aiComponent.commonParameters.sizeLimitDrop.ToString();
+	}
 
     protected override bool IsSpecialTriggered() {
         // Compares the character's size to the enemy's limit
