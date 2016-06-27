@@ -1,10 +1,11 @@
 fileFormatVersion: 2
 guid: 8d0a531b710053143b0187e4d0dac5df
-timeCreated: 1455466081
+timeCreated: 1466990266
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - windEffect: {fileID: 166504, guid: 0d17b63ac565bc940b9adc726a6f18d0, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
