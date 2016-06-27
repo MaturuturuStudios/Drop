@@ -63,4 +63,14 @@ public static class CharacterAnimatorParameters {
 	/// Triggered when the player performs a wall jump.
 	/// </summary>
 	public static readonly string WallJump = "wall_jump";
+
+	/// <summary>
+	/// Indicates if the character is on shoot mode.
+	/// </summary>
+	public static readonly string ShootMode = "shoot_mode";
+
+	/// <summary>
+	/// Triggered when the player shoots.
+	/// </summary>
+	public static readonly string Shoot = "shoot";
 }

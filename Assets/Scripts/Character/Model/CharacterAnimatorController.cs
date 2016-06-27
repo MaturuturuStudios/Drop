@@ -5,7 +5,7 @@
 /// parameters.
 /// </summary>
 [RequireComponent(typeof(Animator))]
-public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener, CharacterFusionListener {
+public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener, CharacterFusionListener, CharacterShootListener {
 	
 	/// <summary>
 	/// A reference to the CharacterControllerCustom on
@@ -22,6 +22,11 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	/// A reference to the CharacterFusion script of the entity.
 	/// </summary>
 	private CharacterFusion _characterFusion;
+
+	/// <summary>
+	/// A reference to the CharacterShoot script of the entity.
+	/// </summary>
+	private CharacterShoot _characterShoot;
 
 	/// <summary>
 	/// A reference to the animator of the object (and the entire hierarchy).
@@ -47,10 +52,11 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		_ccc = GetComponentInParent<CharacterControllerCustom>();
 		_characterSize = GetComponentInParent<CharacterSize>();
 		_characterFusion = GetComponentInParent<CharacterFusion>();
+		_characterShoot = GetComponentInParent<CharacterShoot>(); 
 		_animator = GetComponent<Animator>();
 		_gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
 		_drop = transform.parent.gameObject;
-    }
+	}
 
 	/// <summary>
 	/// Unity's method called at the beginning of the first
@@ -60,6 +66,7 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		// Subscribes itself to the controller events
 		_ccc.AddListener(this);
 		_characterFusion.AddListener(this);
+		_characterShoot.AddListener(this);
     }
 
 	/// <summary>
@@ -83,6 +90,9 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 
 		// Updates the sliding state
 		_animator.SetBool(CharacterAnimatorParameters.Sliding, _ccc.State.IsSliding);
+
+		// Updates the shoot mode state
+		_animator.SetBool(CharacterAnimatorParameters.ShootMode, _characterShoot.shootmode);
 
 		// Updates the under control state
 		_animator.SetBool(CharacterAnimatorParameters.Controlled, _gcic.IsUnderControl(_drop));
@@ -117,11 +127,24 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	}
 
 	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {
-		// Sets the fusion jump trigger on the animator
+		// Sets the fusion trigger on the animator
 		_animator.SetTrigger(CharacterAnimatorParameters.Fusion);
 	}
 
 	public void OnEndFusion(CharacterFusion finalCharacter) {
 		// Do nothing
+	}
+
+	public void OnEnterShootMode(CharacterShoot character) {
+		// Do nothing (mapped on update)
+	}
+
+	public void OnExitShootMode(CharacterShoot character) {
+		// Do nothing (mapped on update)
+	}
+
+	public void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
+		// Sets the shoot trigger on the animator
+		_animator.SetTrigger(CharacterAnimatorParameters.Shoot);
 	}
 }
