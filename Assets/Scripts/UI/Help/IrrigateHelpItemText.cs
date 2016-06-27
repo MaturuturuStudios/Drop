@@ -3,7 +3,7 @@
 /// <summary>
 /// Help item for showing irrigatable plants' information.
 /// </summary>
-public class IrrigateHelpItem : HelpItem, IrrigateListener {
+public class IrrigateHelpItemText : TextHelpItem, IrrigateListener {
 
 	/// <summary>
 	/// Reference to the parents's Irrigate component.
@@ -25,6 +25,11 @@ public class IrrigateHelpItem : HelpItem, IrrigateListener {
 		// Registers itself to the Irrigate events
 		_irrigate.AddListener(this);
     }
+
+	protected override string GetText() {
+		// Returns the amount of drops needed (+1, as you need to be bigger)
+		return (_irrigate.dropsNeeded + 1).ToString();
+	}
 
 	protected override bool IsSpecialTriggered() {
 		// Compares the character's size to the amount needed

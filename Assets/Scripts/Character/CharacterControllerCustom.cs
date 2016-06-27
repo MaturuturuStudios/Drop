@@ -478,7 +478,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 				_jumpDelayTime = Parameters.jumpDelayPerSize * (size - Parameters.minSizeToApplyDelay);
 			}
 			else {
-				// No need for a delay, performs the jump inmediatelyç
+				// No need for a delay, performs the jump inmediately
 				PerformJump();
 			}
 
