@@ -125,23 +125,53 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
         _ccc.AddListener(this);
 		_characterFusion.AddListener(this);
 		_characterShoot.AddListener(this);
+	}
 
+	void OnEnable() {
 		// Creates and stops the walking effect
 		_walkTrailEffect = walkTrail.PlayEffect(transform.position, Quaternion.identity).transform;
 		_walkTrailParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
 		foreach (ParticleSystem system in _walkTrailEffect.GetComponentsInChildren<ParticleSystem>()) {
 			_walkTrailParticleEffects.Add(system, new ParticleSystemState(system));
-            ParticleSystem.EmissionModule emission = system.emission;
+			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 		}
 
 		// Creates and stops the sliding effect
 		_slideEffect = slide.PlayEffect(transform.position, Quaternion.identity).transform;
 		_slideParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
-        foreach (ParticleSystem system in _slideEffect.GetComponentsInChildren<ParticleSystem>()) {
+		foreach (ParticleSystem system in _slideEffect.GetComponentsInChildren<ParticleSystem>()) {
 			_slideParticleEffects.Add(system, new ParticleSystemState(system));
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
+		}
+	}
+
+	void OnDisable() {
+		// Stops and destroys the walking effect
+		if (_walkTrailEffect != null) {
+			float maxLifetime = 0;
+			foreach (ParticleSystem system in _walkTrailParticleEffects.Keys) {
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = false;
+				maxLifetime = Mathf.Max(maxLifetime, system.startLifetime);
+			}
+			_walkTrailParticleEffects.Clear();
+			Destroy(_walkTrailEffect.gameObject, maxLifetime);
+			_walkTrailEffect = null;
+		}
+
+		// Stops and destroys the sliding effect
+		if (_slideEffect != null) {
+			float maxLifetime = 0;
+			foreach (ParticleSystem system in _slideParticleEffects.Keys) {
+					ParticleSystem.EmissionModule emission = system.emission;
+					emission.enabled = false;
+					maxLifetime = Mathf.Max(maxLifetime, system.startLifetime);
+				}
+			_slideParticleEffects.Clear();
+			Destroy(_slideEffect.gameObject, maxLifetime);
+			_slideEffect = null;
 		}
 	}
 
@@ -164,8 +194,11 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// </summary>
 	public void OnWalkStep() {
 		// Plays the walk step effect
-		if (_ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkStep.GetMinSpeed(_characterSize.GetSize()))
-            walkStep.PlayEffect(_walkTrailEffect.position, _walkTrailEffect.rotation, _characterSize.GetSize());
+		if (_ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkStep.GetMinSpeed(_characterSize.GetSize())) {
+			GameObject effect = walkStep.PlayEffect(_walkTrailEffect.position, _walkTrailEffect.rotation);
+			effect.transform.parent = transform;
+			effect.transform.localScale = Vector3.one;
+        }
 	}
 
     public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
