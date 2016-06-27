@@ -5,6 +5,11 @@
 public static class CharacterAnimatorParameters {
 
 	/// <summary>
+	/// Indicates if the character is under control.
+	/// </summary>
+	public static readonly string Controlled = "controlled";
+
+	/// <summary>
 	/// The size factor of the character.
 	/// </summary>
 	public static readonly string SizeFactor = "size_factor";

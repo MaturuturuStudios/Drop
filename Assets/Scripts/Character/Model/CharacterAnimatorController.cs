@@ -24,6 +24,17 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	private Animator _animator;
 
 	/// <summary>
+	/// A reference to the game controller's GameControllerIndependentControl
+	/// component.
+	/// </summary>
+	private GameControllerIndependentControl _gcic;
+
+	/// <summary>
+	/// Reference to this object's parent object, the main object.
+	/// </summary>
+	private GameObject _drop;
+
+	/// <summary>
 	/// Unity's method called right after the object is created.
 	/// </summary>
 	void Awake() {
@@ -31,7 +42,9 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		_ccc = GetComponentInParent<CharacterControllerCustom>();
 		_characterSize = GetComponentInParent<CharacterSize>();
 		_animator = GetComponent<Animator>();
-	}
+		_gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
+		_drop = transform.parent.gameObject;
+    }
 
 	/// <summary>
 	/// Unity's method called at the beginning of the first
@@ -63,6 +76,9 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 
 		// Updates the sliding state
 		_animator.SetBool(CharacterAnimatorParameters.Sliding, _ccc.State.IsSliding);
+
+		// Updates the under control state
+		_animator.SetBool(CharacterAnimatorParameters.Controlled, _gcic.IsUnderControl(_drop));
 	}
 
 	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
