@@ -10,6 +10,11 @@ public static class CharacterAnimatorParameters {
 	public static readonly string Controlled = "controlled";
 
 	/// <summary>
+	/// Triggered when the character fuses with another character.
+	/// </summary>
+	public static readonly string Fusion = "fusion";
+
+	/// <summary>
 	/// The size factor of the character.
 	/// </summary>
 	public static readonly string SizeFactor = "size_factor";

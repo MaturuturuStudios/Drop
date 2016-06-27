@@ -5,7 +5,7 @@
 /// parameters.
 /// </summary>
 [RequireComponent(typeof(Animator))]
-public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener {
+public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener, CharacterFusionListener {
 	
 	/// <summary>
 	/// A reference to the CharacterControllerCustom on
@@ -17,6 +17,11 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	/// A reference to the CharacterSize script of the entity.
 	/// </summary>
 	private CharacterSize _characterSize;
+
+	/// <summary>
+	/// A reference to the CharacterFusion script of the entity.
+	/// </summary>
+	private CharacterFusion _characterFusion;
 
 	/// <summary>
 	/// A reference to the animator of the object (and the entire hierarchy).
@@ -41,6 +46,7 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		// Retrieves the desired components
 		_ccc = GetComponentInParent<CharacterControllerCustom>();
 		_characterSize = GetComponentInParent<CharacterSize>();
+		_characterFusion = GetComponentInParent<CharacterFusion>();
 		_animator = GetComponent<Animator>();
 		_gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
 		_drop = transform.parent.gameObject;
@@ -53,7 +59,8 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	void Start() {
 		// Subscribes itself to the controller events
 		_ccc.AddListener(this);
-	}
+		_characterFusion.AddListener(this);
+    }
 
 	/// <summary>
 	/// Unity's method called each frame.
@@ -107,5 +114,14 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	public void OnWallJump(CharacterControllerCustom ccc) {
 		// Sets the wall jump trigger on the animator
 		_animator.SetTrigger(CharacterAnimatorParameters.WallJump);
+	}
+
+	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {
+		// Sets the fusion jump trigger on the animator
+		_animator.SetTrigger(CharacterAnimatorParameters.Fusion);
+	}
+
+	public void OnEndFusion(CharacterFusion finalCharacter) {
+		// Do nothing
 	}
 }
