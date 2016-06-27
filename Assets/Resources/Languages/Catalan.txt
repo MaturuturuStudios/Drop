@@ -10,6 +10,13 @@ MenuExit=Sortir
 MenuLoadGame=Continuar Joc
 MenuNewGame=Nou Joc
 
+#Menu Credits
+MenuCreditsArtist= Artists
+MenuCreditsProgrammer=Programmers
+MenuCreditsCollaborations=Collaborations
+MenuCreditsMusician=Musicians
+MenuCreditsSoundEffects=Sound Effects
+
 #Menu options
 MenuGraphics=Gràfics
 MenuAudio=Àudio
