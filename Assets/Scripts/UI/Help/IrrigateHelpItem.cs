@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+
 /// <summary>
 /// Help item for showing irrigatable plants' information.
 /// </summary>
-public class IrrigateHelpItem : TextHelpItem {
+public class IrrigateHelpItem : TextHelpItem, IrrigateListener {
 
 	/// <summary>
 	/// Reference to the parents's Irrigate component.
@@ -20,7 +21,10 @@ public class IrrigateHelpItem : TextHelpItem {
 		// is going to be instantiated
 		_irrigate = GetComponentInParent<Irrigate>();
 		_independentControl = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
-	}
+
+		// Registers itself to the Irrigate events
+		_irrigate.AddListener(this);
+    }
 
 	protected override string GetText() {
 		// Returns the amount of drops needed
@@ -32,5 +36,11 @@ public class IrrigateHelpItem : TextHelpItem {
 		int characterSize = _independentControl.currentCharacter.GetComponent<CharacterSize>().GetSize();
 		int dropsNeeded = _irrigate.dropsNeeded;
 		return characterSize >= dropsNeeded;
+	}
+
+	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
+		// Disables the help item
+		enabled = false;
+		Hide();
 	}
 }

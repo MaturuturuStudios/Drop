@@ -91,7 +91,8 @@ public class ShowHelp : MonoBehaviour {
 	/// </summary>
 	public void Show() {
 		foreach (HelpItem helpObject in helpObjects)
-		 helpObject.Show();
+			if (helpObject.isActiveAndEnabled)
+				helpObject.Show();
 	}
 
 	/// <summary>
@@ -99,6 +100,7 @@ public class ShowHelp : MonoBehaviour {
 	/// </summary>
 	public void Hide() {
 		foreach (HelpItem helpObject in helpObjects)
-			helpObject.Hide();
+			if (helpObject.isActiveAndEnabled)
+				helpObject.Hide();
     }
 }
