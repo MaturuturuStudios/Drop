@@ -14,7 +14,12 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// <summary>
 	/// Effect played while walking.
 	/// </summary>
-	public MinSpeedEffectInformation walk;
+	public MinSpeedEffectInformation walkTrail;
+
+	/// <summary>
+	/// Effect played each step of the walking animation.
+	/// </summary>
+	public MinSpeedEffectInformation walkStep;
 
 	/// <summary>
 	/// Effect played when landing.
@@ -89,12 +94,12 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// <summary>
 	/// The walking effect used by this script.
 	/// </summary>
-	private Transform _walkEffect;
+	private Transform _walkTrailEffect;
 
 	/// <summary>
 	/// Reference to the walking effect's particle systems.
 	/// </summary>
-	private Dictionary<ParticleSystem, ParticleSystemState> _walkParticleEffects;
+	private Dictionary<ParticleSystem, ParticleSystemState> _walkTrailParticleEffects;
 
 	/// <summary>
 	/// The sliding effect used by this script.
@@ -122,10 +127,10 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		_characterShoot.AddListener(this);
 
 		// Creates and stops the walking effect
-		_walkEffect = walk.PlayEffect(transform.position, Quaternion.identity).transform;
-		_walkParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
-		foreach (ParticleSystem system in _walkEffect.GetComponentsInChildren<ParticleSystem>()) {
-			_walkParticleEffects.Add(system, new ParticleSystemState(system));
+		_walkTrailEffect = walkTrail.PlayEffect(transform.position, Quaternion.identity).transform;
+		_walkTrailParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
+		foreach (ParticleSystem system in _walkTrailEffect.GetComponentsInChildren<ParticleSystem>()) {
+			_walkTrailParticleEffects.Add(system, new ParticleSystemState(system));
             ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 		}
@@ -142,9 +147,9 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 	void Update() {
 		// Plays or stops the walking effect
-		foreach (ParticleSystem system in _walkParticleEffects.Keys) {
+		foreach (ParticleSystem system in _walkTrailParticleEffects.Keys) {
 			ParticleSystem.EmissionModule emission = system.emission;
-			emission.enabled = _ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walk.GetMinSpeed(_characterSize.GetSize());
+			emission.enabled = _ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkTrail.GetMinSpeed(_characterSize.GetSize());
 		}
 
 		// Plays or stops the sliding effect
@@ -152,6 +157,15 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = _ccc.State.IsSliding;
 		}
+	}
+
+	/// <summary>
+	/// This method will be called by the animation events.
+	/// </summary>
+	public void OnWalkStep() {
+		// Plays the walk step effect
+		if (_ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkStep.GetMinSpeed(_characterSize.GetSize()))
+            walkStep.PlayEffect(_walkTrailEffect.position, _walkTrailEffect.rotation, _characterSize.GetSize());
 	}
 
     public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
@@ -181,9 +195,9 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 		// Positions the walking effect
 		if (ccc.State.IsGrounded) {
-			_walkEffect.position = hit.point;
-			_walkEffect.rotation = normalRotation;
-			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _walkParticleEffects) {
+			_walkTrailEffect.position = hit.point;
+			_walkTrailEffect.rotation = normalRotation;
+			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _walkTrailParticleEffects) {
                 system.Key.startRotation3D = eulerRotation;
 				system.Value.UpdateWithSize(sizeFactor);
 			}
