@@ -479,7 +479,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 			}
 			else {
 				// No need for a delay, performs the jump inmediatelyç
-				Debug.Log("INSTA JUMP!");
 				PerformJump();
 			}
 

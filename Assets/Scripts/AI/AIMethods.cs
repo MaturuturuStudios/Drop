@@ -37,9 +37,13 @@ public class AIMethods {
         Quaternion finalRotation = Quaternion.identity;
 
         Vector3 relativePos = finalPosition - originalPosition;
-        Quaternion rotation = Quaternion.LookRotation(relativePos);
-        
-        finalRotation = Quaternion.RotateTowards(enemy.transform.rotation, rotation, speedRotation*Time.deltaTime);
+		Quaternion rotation;
+		if (relativePos != Vector3.zero)
+			rotation = Quaternion.LookRotation(relativePos);
+		else
+			rotation = Quaternion.identity;
+
+			finalRotation = Quaternion.RotateTowards(enemy.transform.rotation, rotation, speedRotation*Time.deltaTime);
         Quaternion zero = initialRotation;
         Quaternion rotationZero = Quaternion.RotateTowards(enemy.transform.rotation, zero, speedRotation * Time.deltaTime);
 
