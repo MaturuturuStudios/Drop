@@ -60,6 +60,9 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 
 		// Updates the grounded state
 		_animator.SetBool(CharacterAnimatorParameters.Grounded, _ccc.State.IsGrounded);
+
+		// Updates the sliding state
+		_animator.SetBool(CharacterAnimatorParameters.Sliding, _ccc.State.IsSliding);
 	}
 
 	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
@@ -86,6 +89,7 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	}
 
 	public void OnWallJump(CharacterControllerCustom ccc) {
-		// Do nothing
+		// Sets the wall jump trigger on the animator
+		_animator.SetTrigger(CharacterAnimatorParameters.WallJump);
 	}
 }

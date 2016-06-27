@@ -30,6 +30,11 @@ public static class CharacterAnimatorParameters {
 	public static readonly string Grounded = "grounded";
 
 	/// <summary>
+	/// Indicates if the character is sliding.
+	/// </summary>
+	public static readonly string Sliding = "sliding";
+
+	/// <summary>
 	/// Triggered when the player begins to jump.
 	/// </summary>
 	public static readonly string BeginJump = "begin_jump";
@@ -43,4 +48,9 @@ public static class CharacterAnimatorParameters {
 	/// Triggered when the player performs the jump.
 	/// </summary>
 	public static readonly string PerformJump = "jump";
+
+	/// <summary>
+	/// Triggered when the player performs a wall jump.
+	/// </summary>
+	public static readonly string WallJump = "wall_jump";
 }
