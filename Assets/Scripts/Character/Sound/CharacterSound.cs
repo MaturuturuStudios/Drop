@@ -171,21 +171,19 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 		_characterFusion.AddListener(this);
 		_characterShoot.AddListener(this);
 	}
-
-	/// <summary>
-	/// Unity's method called each frame.
-	/// </summary>
-	void Update() {
-		// Checks if the character is moving and plays de audio
-		float speed = Mathf.Abs(_ccc.GetNormalizedSpeed());
-		if (_ccc.State.IsGrounded && speed >= walk.minSpeedToPlay)
-			if (!walk.audioSource.isPlaying)
-				walk.PlayAudio(speed / Mathf.Sqrt(_characterSize.GetSize()));
-	}
-
 	#endregion
 
 	#region Events
+
+	/// <summary>
+	/// This method will be called by the animation each step of the walk cycle.
+	/// </summary>
+	public void OnWalkStep() {
+		// Checks if the character is moving and plays de audio
+		float speed = Mathf.Abs(_ccc.GetNormalizedSpeed());
+		if (_ccc.State.IsGrounded && speed >= walk.minSpeedToPlay)
+			walk.PlayAudio(speed / Mathf.Sqrt(_characterSize.GetSize()));
+	}
 
 	public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
 		// Plays the jump sound modified by the character rooted size

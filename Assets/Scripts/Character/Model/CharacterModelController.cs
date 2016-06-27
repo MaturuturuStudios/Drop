@@ -301,6 +301,14 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	#region Methods
 
 	/// <summary>
+	/// This method will be called by the animation each step of the walk cycle.
+	/// </summary>
+	public void OnWalkStep() {
+		// Sends the event to the parent
+		_transform.parent.SendMessage("OnWalkStep", SendMessageOptions.RequireReceiver);
+	}
+
+	/// <summary>
 	/// Unity's method called right after the object is created.
 	/// </summary>
 	void Awake() {
@@ -511,11 +519,10 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 			angle -= 360;
         return -angle / rotationAngle;
 	}
+	
+	public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
+		// Do nothing
+	}
 
 	#endregion
-
-
-    public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
-        // Do nothing
-    }
 }
