@@ -94,7 +94,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// <summary>
 	/// Reference to the walking effect's particle systems.
 	/// </summary>
-	private Dictionary<ParticleSystem, float> _walkParticleEffects;
+	private Dictionary<ParticleSystem, ParticleSystemState> _walkParticleEffects;
 
 	/// <summary>
 	/// The sliding effect used by this script.
@@ -104,7 +104,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// <summary>
 	/// Reference to the sliding effect's particle systems.
 	/// </summary>
-	private Dictionary<ParticleSystem, float> _slideParticleEffects;
+	private Dictionary<ParticleSystem, ParticleSystemState> _slideParticleEffects;
 
 	void Awake() {
 		// Retrieves the desired components
@@ -123,18 +123,18 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 		// Creates and stops the walking effect
 		_walkEffect = walk.PlayEffect(transform.position, Quaternion.identity).transform;
-		_walkParticleEffects = new Dictionary<ParticleSystem, float>();
+		_walkParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
 		foreach (ParticleSystem system in _walkEffect.GetComponentsInChildren<ParticleSystem>()) {
-			_walkParticleEffects.Add(system, system.startSize);
+			_walkParticleEffects.Add(system, new ParticleSystemState(system));
             ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 		}
 
 		// Creates and stops the sliding effect
 		_slideEffect = slide.PlayEffect(transform.position, Quaternion.identity).transform;
-		_slideParticleEffects = new Dictionary<ParticleSystem, float>();
+		_slideParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
         foreach (ParticleSystem system in _slideEffect.GetComponentsInChildren<ParticleSystem>()) {
-			_slideParticleEffects.Add(system, system.startSize);
+			_slideParticleEffects.Add(system, new ParticleSystemState(system));
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 		}
@@ -183,9 +183,9 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		if (ccc.State.IsGrounded) {
 			_walkEffect.position = hit.point;
 			_walkEffect.rotation = normalRotation;
-			foreach (KeyValuePair<ParticleSystem, float> system in _walkParticleEffects) {
-				system.Key.startSize = system.Value * sizeFactor;
+			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _walkParticleEffects) {
                 system.Key.startRotation3D = eulerRotation;
+				system.Value.UpdateWithSize(sizeFactor);
 			}
 		}
 
@@ -193,9 +193,9 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		if (ccc.State.IsSliding) {
 			_slideEffect.position = hit.point;
 			_slideEffect.rotation = normalRotation;
-			foreach (KeyValuePair<ParticleSystem, float> system in _slideParticleEffects) {
-				system.Key.startSize = system.Value * sizeFactor;
+			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _slideParticleEffects) {
 				system.Key.startRotation3D = eulerRotation;
+				system.Value.UpdateWithSize(sizeFactor);
 			}
 		}
 	}
