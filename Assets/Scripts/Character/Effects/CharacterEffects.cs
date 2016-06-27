@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Listener class which plays the multiple effects produced
@@ -93,7 +94,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// <summary>
 	/// Reference to the walking effect's particle systems.
 	/// </summary>
-	private ParticleSystem[] _walkParticleEffects;
+	private Dictionary<ParticleSystem, float> _walkParticleEffects;
 
 	/// <summary>
 	/// The sliding effect used by this script.
@@ -103,7 +104,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// <summary>
 	/// Reference to the sliding effect's particle systems.
 	/// </summary>
-	private ParticleSystem[] _slideParticleEffects;
+	private Dictionary<ParticleSystem, float> _slideParticleEffects;
 
 	void Awake() {
 		// Retrieves the desired components
@@ -112,7 +113,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		_characterFusion = GetComponent<CharacterFusion>();
 		_characterShoot = GetComponent<CharacterShoot>();
 		_controller = GetComponent<CharacterController>();
-    }
+	}
 
     void Start() {
 		// Subscribes itself to the publishers
@@ -122,20 +123,18 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 		// Creates and stops the walking effect
 		_walkEffect = walk.PlayEffect(transform.position, Quaternion.identity).transform;
-		_walkEffect.parent = transform;
-		_walkEffect.localScale = Vector3.one;
-		_walkParticleEffects = _walkEffect.GetComponentsInChildren<ParticleSystem>();
-		foreach (ParticleSystem system in _walkParticleEffects) {
-			ParticleSystem.EmissionModule emission = system.emission;
+		_walkParticleEffects = new Dictionary<ParticleSystem, float>();
+		foreach (ParticleSystem system in _walkEffect.GetComponentsInChildren<ParticleSystem>()) {
+			_walkParticleEffects.Add(system, system.startSize);
+            ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 		}
 
 		// Creates and stops the sliding effect
 		_slideEffect = slide.PlayEffect(transform.position, Quaternion.identity).transform;
-		_slideEffect.parent = transform;
-		_slideEffect.localScale = Vector3.one;
-		_slideParticleEffects = _slideEffect.GetComponentsInChildren<ParticleSystem>();
-        foreach (ParticleSystem system in _slideParticleEffects) {
+		_slideParticleEffects = new Dictionary<ParticleSystem, float>();
+        foreach (ParticleSystem system in _slideEffect.GetComponentsInChildren<ParticleSystem>()) {
+			_slideParticleEffects.Add(system, system.startSize);
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 		}
@@ -143,13 +142,13 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 
 	void Update() {
 		// Plays or stops the walking effect
-		foreach (ParticleSystem system in _walkParticleEffects) {
+		foreach (ParticleSystem system in _walkParticleEffects.Keys) {
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = _ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walk.GetMinSpeed(_characterSize.GetSize());
 		}
 
 		// Plays or stops the sliding effect
-		foreach (ParticleSystem system in _slideParticleEffects) {
+		foreach (ParticleSystem system in _slideParticleEffects.Keys) {
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = _ccc.State.IsSliding;
 		}
@@ -173,20 +172,31 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		// Plays the landing effect
 		float minLandSpeed = land.GetMinSpeed(_characterSize.GetSize());
 		Quaternion normalRotation = Quaternion.LookRotation(Vector3.forward, hit.normal);
-        if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed) {
+        if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed)
             land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
-		}
+
+		// Calculates some values for the particles
+		Vector3 eulerRotation = new Vector3(Vector3.Angle(Vector3.left, hit.normal) * Mathf.Deg2Rad, Mathf.PI / 2, 0);
+		float sizeFactor = _characterSize.GetSize();
 
 		// Positions the walking effect
 		if (ccc.State.IsGrounded) {
 			_walkEffect.position = hit.point;
 			_walkEffect.rotation = normalRotation;
+			foreach (KeyValuePair<ParticleSystem, float> system in _walkParticleEffects) {
+				system.Key.startSize = system.Value * sizeFactor;
+                system.Key.startRotation3D = eulerRotation;
+			}
 		}
 
 		// Positions the sliding effect
 		if (ccc.State.IsSliding) {
 			_slideEffect.position = hit.point;
 			_slideEffect.rotation = normalRotation;
+			foreach (KeyValuePair<ParticleSystem, float> system in _slideParticleEffects) {
+				system.Key.startSize = system.Value * sizeFactor;
+				system.Key.startRotation3D = eulerRotation;
+			}
 		}
 	}
 
