@@ -37,7 +37,9 @@ public class CreditsMenu : MonoBehaviour {
 
 	public void OnEnable() {
         if (_actualMenuSelected!=null) {
-            _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
+            Animator anim = _actualMenuSelected.GetComponent<Animator>();
+            if(anim!=null)
+                anim.SetBool("Setted", false);
         }
 
         //make sure the option is visible and running

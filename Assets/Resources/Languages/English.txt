@@ -10,6 +10,13 @@ MenuExit=Exit
 MenuLoadGame=Continue Game
 MenuNewGame=New Game
 
+#Menu Credits
+MenuCreditsArtist= Artists
+MenuCreditsProgrammer=Programmers
+MenuCreditsCollaborations=Collaborations
+MenuCreditsMusician=Musicians
+MenuCreditsSoundEffects=Sound Effects
+
 #Menu options
 MenuGraphics=Graphics
 MenuAudio=Audio
