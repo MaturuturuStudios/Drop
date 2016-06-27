@@ -21,7 +21,10 @@ public class SpawnPlant : Irrigate {
 		system.transform.position = transform.position;
 		system.transform.rotation = transform.rotation;
 
-		//stops the interact effect
+		// Plays the sound
+		GetComponent<AudioSource>().Play();
+
+		// Stops the interact effect
 		float effectDuration = 0;
 		foreach (ParticleSystem sys in interactEffect.GetComponentsInChildren<ParticleSystem>()) {
 			ParticleSystem.EmissionModule emission = sys.emission;
