@@ -5,7 +5,7 @@
 /// action button. Checks for interactive objects
 /// and notifies them. It also works for irrigation.
 /// </summary>
-public class CharacterAction : MonoBehaviour {
+public class CharacterAction : MonoBehaviour, IrrigateListener {
 
 	#region Private Attributes
 
@@ -67,6 +67,13 @@ public class CharacterAction : MonoBehaviour {
 			foreach (ActionPerformer actionPerformer in actionPerformers)
 				actionPerformer.DoAction(gameObject);
 		}
+	}
+	
+	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
+		// Notifies any irrigation listener on the object's children
+		foreach (IrrigateListener listener in GetComponentsInChildren<IrrigateListener>())
+			if (listener != this)
+				listener.OnIrrigate(irrigated, irrigating, dropsConsumed);
 	}
 
 	#endregion

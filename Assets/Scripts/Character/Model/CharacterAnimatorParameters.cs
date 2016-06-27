@@ -73,4 +73,9 @@ public static class CharacterAnimatorParameters {
 	/// Triggered when the player shoots.
 	/// </summary>
 	public static readonly string Shoot = "shoot";
+
+	/// <summary>
+	/// Triggered when the player waters a plant.
+	/// </summary>
+	public static readonly string Irrigate = "irrigate";
 }

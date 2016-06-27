@@ -416,9 +416,10 @@ public class DebugController : MonoBehaviour {
         // Spawns the character
 		
         if (plane.Raycast(ray, out distance)) {
-            GameObject newDrop = _independentControl.CreateDrop(ray.GetPoint(distance), true);
-        } else {
-            GameObject newDrop = _independentControl.CreateDrop(true);
+            _independentControl.CreateDrop(ray.GetPoint(distance), true);
+        }
+		else {
+             _independentControl.CreateDrop(true);
         }
 	}
 

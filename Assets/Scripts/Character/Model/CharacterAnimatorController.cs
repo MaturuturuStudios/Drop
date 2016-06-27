@@ -5,7 +5,7 @@
 /// parameters.
 /// </summary>
 [RequireComponent(typeof(Animator))]
-public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener, CharacterFusionListener, CharacterShootListener {
+public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener, CharacterFusionListener, CharacterShootListener, IrrigateListener {
 	
 	/// <summary>
 	/// A reference to the CharacterControllerCustom on
@@ -146,5 +146,10 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	public void OnShoot(CharacterShoot shootingCharacter, GameObject shotCharacter, Vector3 velocity) {
 		// Sets the shoot trigger on the animator
 		_animator.SetTrigger(CharacterAnimatorParameters.Shoot);
+	}
+
+	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
+		// Sets the irrigate trigger on the animator
+		_animator.SetTrigger(CharacterAnimatorParameters.Irrigate);
 	}
 }
