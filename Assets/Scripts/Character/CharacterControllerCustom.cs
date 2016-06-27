@@ -75,12 +75,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 	#region Public Attributes
 
 	/// <summary>
-	/// There is an error factor on height calculations when holding the jump button.
-	/// </summary>
-	[HideInInspector]
-	public float errorFactor = 1.1f;
-
-	/// <summary>
 	/// Default parameters. If no parameters have been specified, the default ones will 
 	/// be used.
 	/// </summary>
@@ -119,11 +113,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// Time since the last time the character jumped.
 	/// </summary>
 	private float _jumpingTime;
-
-	/// <summary>
-	/// Remaining time the player can hold the jump button to jump higher.
-	/// </summary>
-	private float _jumpHoldTime;
 
 	/// <summary>
 	/// After been sent flying, specifies if the character will stop flying when
@@ -481,9 +470,18 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Normal jump
 		if (!State.IsOnSlope) {
-			// Starts the jump anticipation
-			_waitingForJump = true;
-			_jumpDelayTime = Parameters.jumpDelay * Mathf.Sqrt(GetSize());
+			// Checks the character size
+			int size = GetSize();
+			if (size > Parameters.minSizeToApplyDelay) {
+				// Starts a delay for the jump's anticipation
+				_waitingForJump = true;
+				_jumpDelayTime = Parameters.jumpDelayPerSize * (size - Parameters.minSizeToApplyDelay);
+			}
+			else {
+				// No need for a delay, performs the jump inmediatelyç
+				Debug.Log("INSTA JUMP!");
+				PerformJump();
+			}
 
 			// Notifies the listeners
 			_listeners.ForEach(e => e.OnBeginJump(this, _jumpDelayTime));
@@ -521,16 +519,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 	private void PerformJump() {
 		// Calculates the jump speed to reach the desired height
-		float jumpHeight = errorFactor * GetSize() * Parameters.jumpMagnitude;
+		float jumpHeight = GetSize() * Parameters.jumpMagnitude;
 		float gravity = Parameters.Gravity.magnitude;
-		float jumpSpeed = -2 * gravity * Parameters.jumpHoldTimeMax;
-		float root = -jumpSpeed;
-		root *= root;
-		root += 8 * gravity * jumpHeight;
-		jumpSpeed += Mathf.Sqrt(root);
-		jumpSpeed /= 2;
+		float jumpSpeed = Mathf.Sqrt(2 * gravity * jumpHeight);
 		SetVerticalForceRelative(jumpSpeed);
-		_jumpHoldTime = Parameters.jumpHoldTimeMax;
 
 		_jumpingTime = Parameters.jumpFrequency;
 
@@ -539,14 +531,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Notifies the listeners
 		_listeners.ForEach(e => e.OnPerformJump(this));
-	}
-
-	/// <summary>
-	/// Makes the character stay jumping. Used while the jump button is being pressed.
-	/// </summary>
-	public void HoldJump() {
-		if (_jumpHoldTime > 0 && !State.IsFlying)	// Disabled while flying too
-			AddForce(-Parameters.Gravity, ForceMode.Acceleration);
 	}
 
 	/// <summary>
@@ -628,7 +612,6 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// Decreases the timers
 		_jumpingTime -= Time.fixedDeltaTime;
 		_flyingTime -= Time.fixedDeltaTime;
-		_jumpHoldTime -= Time.fixedDeltaTime;
 		_jumpDelayTime -= Time.fixedDeltaTime;
 
 		// If the jump anticipation has ended, performs the jump

@@ -199,14 +199,16 @@ public class CharacterControllerParameters {
 
 	/// <summary>
 	/// Duration of the jump anticipation's animation. The character will perform the real jump
-	/// once this time has passed.
+	/// once this time has passed. This value scales with the character's size.
 	/// </summary>
-	public float jumpDelay = 0.1f;
+	public float jumpDelayPerSize = 0.05f;
 
 	/// <summary>
-	/// Amount of time allowed for the player to hold the jump button.
+	/// Minimum size for the character to have a delay on it's jump. At this size, the delay will be
+	/// 0 and it will increase in jumpDelayPerSize seconds for each extra size value.
 	/// </summary>
-	public float jumpHoldTimeMax = 0.25f;
+	[Range(1, 9)]
+	public int minSizeToApplyDelay = 3;
 
 	/// <summary>
 	/// Jumping height reached when wall jumping.
@@ -268,8 +270,8 @@ public class CharacterControllerParameters {
 		clone.jumpBehaviour = jumpBehaviour;
 		clone.jumpFrequency = jumpFrequency;
 		clone.jumpMagnitude = jumpMagnitude;
-		clone.jumpDelay = jumpDelay;
-        clone.jumpHoldTimeMax = jumpHoldTimeMax;
+		clone.jumpDelayPerSize = jumpDelayPerSize;
+		clone.minSizeToApplyDelay = minSizeToApplyDelay;
 		clone.wallJumpHeight = wallJumpHeight;
 		clone.wallJumpDistance = wallJumpDistance;
 		clone.baseMass = baseMass;
@@ -300,8 +302,8 @@ public class CharacterControllerParameters {
 		sb.Append("Jump Bheaviour: ").Append(jumpBehaviour.ToString()).Append("\n");
 		sb.Append("Jump Frequency: ").Append(jumpFrequency).Append("\n");
 		sb.Append("Jump Magnitude: ").Append(jumpMagnitude).Append("\n");
-		sb.Append("Jump Delay: ").Append(jumpDelay).Append("\n");
-		sb.Append("Jump Hold Time: ").Append(jumpHoldTimeMax).Append("\n");
+		sb.Append("Jump Delay: ").Append(jumpDelayPerSize).Append("\n");
+		sb.Append("Min Delay Size: ").Append(minSizeToApplyDelay).Append("\n");
 		sb.Append("WallJ. Height: ").Append(wallJumpHeight).Append("\n");
 		sb.Append("WallJ. Distance: ").Append(wallJumpDistance).Append("\n");
 		sb.Append("Base Mass: ").Append(baseMass).Append("\n");

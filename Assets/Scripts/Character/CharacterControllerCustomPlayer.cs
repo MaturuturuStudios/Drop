@@ -14,7 +14,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	public float jumpPressTolerance = 0.1f;
 
 	/// <summary>
-	/// The time the player will be able to jump after the chracter stops
+	/// The time the player will be able to jump after the character stops
 	/// being grounded.
 	/// </summary>
 	public float jumpDelayTolerance = 0.1f;
@@ -95,11 +95,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// </summary>
 	private float _slopeStickTime;
 
-	/// <summary>
-	/// Flag that indicates if the player is jumping.
-	/// </summary>
-	private bool _isJumping;
-
 	#endregion
 
 	#region Methods
@@ -117,7 +112,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 		// Sets the jump button flag
 		_jumpReleased = true;
-		_isJumping = false;
 	}
 
 	/// <summary>
@@ -196,18 +190,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			groundTrick = true;
 		}
 
-		// If the character is jumping and the player is holding the jump button, add additional force
-		if (_isJumping && JumpInput > 0)
-			_controller.HoldJump();
-		else
-			_isJumping = false;
-
 		// Makes the character jump
 		if (_jumpPressTime >= 0 && _controller.CanJump()) {
 			_jumpDelayTime = -1;
 			_jumpPressTime = -1;
 			_controller.Jump();
-			_isJumping = true;
 		}
 
 		// Restores the controller state, undoing the trick
