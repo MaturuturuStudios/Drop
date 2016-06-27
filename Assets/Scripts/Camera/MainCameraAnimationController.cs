@@ -89,10 +89,9 @@ public class MainCameraAnimationController : MonoBehaviour {
 
         // Move leave to the end 
         startLeave.GetComponent<FollowPath>().delay = 0;
-        startLeave.GetComponent<FollowPath>().Next();
+        startLeave.GetComponent<FollowPath>().Set(1);
 
         // Move drop to the leave
-        // Posible bug here!! Drops is movins alone with the leave but not sure if it's allways 
         // GetComponentInParent<GameControllerIndependentControl>().currentCharacter.transform.position = startPosition;
 
         ResumeInput();
