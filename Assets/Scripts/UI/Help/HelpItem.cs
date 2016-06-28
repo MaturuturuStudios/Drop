@@ -32,9 +32,9 @@ public class HelpItem : MonoBehaviour {
 	}
 
     /// <summary>
-    /// Unity's method called each frame.
+    /// Unity's method called at the end of each frame.
     /// </summary>
-	void Update() {
+	void LateUpdate() {
 		// Orientates the object to the camera
 		_transform.rotation = Camera.main.transform.rotation;
 
