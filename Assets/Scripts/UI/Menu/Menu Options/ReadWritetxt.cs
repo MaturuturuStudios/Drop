@@ -35,8 +35,6 @@ public class ReadWritetxt : MonoBehaviour {
     /// Fuction to read a file
     /// </summary>
     public void Readfile(string file_path) {
-        path = file_path;
-
         //Read all the file and keep the data in _listoptions list
         StreamReader reader = new StreamReader(file_path); try { do { addListItem(reader.ReadLine()); } while (reader.Peek() != -1); }
 
@@ -49,7 +47,7 @@ public class ReadWritetxt : MonoBehaviour {
     /// <summary>
     /// Fuction to write a file
     /// </summary>
-    public void Writedata() {
+    public void Writedata(string path) {
         StreamWriter writer = new StreamWriter(path);
 
         for(int i=0; i < _listoptions.Capacity; i++){
