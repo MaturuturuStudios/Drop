@@ -1,27 +1,60 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Class which plays the different effects of the ant.
+/// </summary>
 [RequireComponent(typeof(AIAnt))]
 public class AntEffects : MonoBehaviour, EnemyBehaviourListener {
 
+	/// <summary>
+	/// Effect to spawn when the ant is scared.
+	/// </summary>
 	public GameObject scaredEffectPrefab;
 
+	/// <summary>
+	/// Position of the scared effect.
+	/// </summary>
 	public Transform scaredEffectTransform;
 
+	/// <summary>
+	/// Color the eyes will have while no characters are nearby.
+	/// </summary>
 	public Color eyesIdleColor = Color.yellow;
 
+	/// <summary>
+	/// Color the eyes will have while chasing a character.
+	/// </summary>
 	public Color eyesChaseColor = Color.red;
 
+	/// <summary>
+	/// Color the eyes will have while scared by a character.
+	/// </summary>
 	public Color eyesScaredColor = Color.cyan;
 
+	/// <summary>
+	/// Transition speed between eye colors.
+	/// </summary>
 	[Range(0, 1)]
 	public float colorTransitionSpeed = 0.5f;
 
+	/// <summary>
+	/// Reference to the eye renderers.
+	/// </summary>
 	public Renderer[] eyeRenderers;
 
+	/// <summary>
+	/// Reference to the ant's AI component.
+	/// </summary>
 	private AIAnt _ai;
 
+	/// <summary>
+	/// Reference to the renderers' materials.
+	/// </summary>
 	private Material[] _eyeMaterials;
 
+	/// <summary>
+	/// Color the eyes should have at this moment.
+	/// </summary>
 	private Color _targetEyeColor;
 
 	void Awake() {

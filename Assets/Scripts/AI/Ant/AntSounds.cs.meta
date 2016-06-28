@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ef1343475e3d08347bd7351e8281050e
+timeCreated: 1467155375
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - chaseSound: {fileID: 8300000, guid: bc35a9b92e4c77947b924b1965752141, type: 3}
+  - scaredSound: {fileID: 8300000, guid: 70461b7de6e466248b43f96c90b2567a, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
