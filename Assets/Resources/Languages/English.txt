@@ -23,7 +23,7 @@ MenuAudio=Audio
 MenuInput=Input
 MenuLanguage=Language
 MenuHelp=Help
-MenuBack=Back
+MenuBack=Return
 
 #Graphics Options
 GraphicsResolution=Resolution
@@ -87,4 +87,4 @@ Yes=Yes
 No=No
 ConfirmQuit=Confirm quit?
 LevelComplete=Level complete!
-BackMenuOptions=Options Menu
+BackMenuOptions=Back

@@ -11,11 +11,11 @@ MenuLoadGame=Continuar Joc
 MenuNewGame=Nou Joc
 
 #Menu Credits
-MenuCreditsArtist= Artists
-MenuCreditsProgrammer=Programmers
-MenuCreditsCollaborations=Collaborations
-MenuCreditsMusician=Musicians
-MenuCreditsSoundEffects=Sound Effects
+MenuCreditsArtist=Artistes
+MenuCreditsProgrammer=Programadors
+MenuCreditsCollaborations=Col·laboracions
+MenuCreditsMusician=Musics
+MenuCreditsSoundEffects=Efectes de só
 
 #Menu options
 MenuGraphics=Gràfics
@@ -23,7 +23,7 @@ MenuAudio=Àudio
 MenuInput=Controls
 MenuLanguage=Idioma
 MenuHelp=Ajuda
-MenuBack=Tornar
+MenuBack=Enrere
 
 #Graphics Options
 GraphicsResolution=Resolució
@@ -44,7 +44,7 @@ Language=Idioma
 #Input option
 MenuInputPause=Pausa	
 MenuInputMove=Moure's
-MenuInputIncreaseDrop=Invrementar gotes a disparar
+MenuInputIncreaseDrop=Incrementar gotes a disparar
 MenuInputDecreaseDrop=Disminuir gotes a disparar
 MenuInputTurnLeft=Girar a l'esquerra
 MenuInputTurnRight=Girar a la dreta
@@ -87,4 +87,4 @@ Yes=Yes
 No=No
 ConfirmQuit=Sortir del joc?
 LevelComplete=Level complete!
-BackMenuOptions=Menú d'opcions
+BackMenuOptions=Tornar

@@ -87,4 +87,4 @@ No=No
 #Quit
 ConfirmQuit=¿Confirmar salida?
 LevelComplete=¡Nivel completado!
-BackMenuOptions=Menú de opciones
+BackMenuOptions=Volver
