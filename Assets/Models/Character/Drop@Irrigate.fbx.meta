@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 56c300f1830d2254a9f7f110d59600e8
+guid: e7ce9ed2c2dc09c45aa00a6794c3c5ad
 timeCreated: 1467202594
 licenseType: Free
 ModelImporter:
@@ -74,7 +74,7 @@ ModelImporter:
     4300000: Ojo_Izq
     4300002: Ojo_Der
     4300004: Drop_Mesh1
-    7400000: Drop_Rig_Hit_B
+    7400000: Drop_Rig_Irrigate2_B
     9500000: //RootNode
     13700000: Drop_Mesh1
     13700002: Ojo_Der
