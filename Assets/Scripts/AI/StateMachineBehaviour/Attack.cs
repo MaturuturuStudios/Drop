@@ -78,7 +78,7 @@ public class Attack : StateMachineBehaviour {
             Vector3 destiny = parameters.launcher.pointTarget.position;
             Vector3 fly = AIMethods.RepelDrop(origin, destiny, parameters.launcher);
             controller.Stop();
-            controller.SendFlying(fly);
+            controller.SendFlyingNoRotation(fly);
             _attackDone = true;
 
 			// Notifies the listeners

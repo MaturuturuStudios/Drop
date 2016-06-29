@@ -384,12 +384,15 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 		}
 		else {
 			if (!_ccc.State.IsSliding) {
-				// Makes the model face the right direction
-				float speed = _ccc.Velocity.x;
-				float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
-				Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
-				float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
-				_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
+				// Checks if the model should rotate
+				if (_ccc.rotateWithVelocity) {
+					// Makes the model face the right direction
+					float speed = _ccc.Velocity.x;
+					float desiredAngle = speed > 0 ? -rotationAngle : rotationAngle;
+					Quaternion desiredRotation = Quaternion.Euler(0, desiredAngle, 0);
+					float turnSpeed = rotationAngularSpeed * Mathf.Abs(speed) / (_ccc.Parameters.maxSpeed * _characterSize.GetSize());
+					_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, turnSpeed * Time.deltaTime);
+				}
 
 				// Resets the eye aiming rotation
 				_currentEyeAimingRotation = Quaternion.Lerp(_currentEyeAimingRotation, Quaternion.identity, 0.1f * aimSpeed * Time.deltaTime);

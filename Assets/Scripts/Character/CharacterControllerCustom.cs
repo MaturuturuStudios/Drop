@@ -80,6 +80,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	public CharacterControllerParameters defaultParameters;
 
+	/// <summary>
+	/// If enabled, the character will rotate to face it's velocity.
+	/// </summary>
+	[HideInInspector]
+	public bool rotateWithVelocity = true;
+
 	#endregion
 
 	#region Private Attributes
@@ -182,7 +188,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 	void OnEnable() {
 		// Resets the state
 		State.Reset();
-	}
+
+		// Enables the rotation
+		rotateWithVelocity = true;
+    }
 
 	/// <summary>
 	/// Subscribes a listener to the controller's events.
@@ -590,6 +599,21 @@ public class CharacterControllerCustom : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Sends the character flying with a velocity. It will not rotate to
+	/// face the direction.
+	/// </summary>
+	/// <param name="velocity">The new character's velocity</param>
+	/// <param name="useMass">If the velocity change should consider the character's mass</param>
+	/// <param name="restoreWhenGrounded">If the character should return to normal when hitting a collider</param>
+	public void SendFlyingNoRotation(Vector3 velocity, bool useMass = false, bool restoreWhenHit = true, float flyTime = float.MaxValue) {
+		// Sets the no rotation flag
+		rotateWithVelocity = false;
+
+		// Sends the character flying
+		SendFlying(velocity, useMass, restoreWhenHit, flyTime);
+	}
+
+	/// <summary>
 	/// Stops the character from being flying. The character's parameters
 	/// will be restored to their default values.
 	/// </summary>
@@ -598,7 +622,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (State.IsFlying) {
 			Parameters = null;
 			State.IsFlying = false;
-		}
+			rotateWithVelocity = true;
+        }
 	}
 
 	#endregion
