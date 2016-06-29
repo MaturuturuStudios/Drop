@@ -1,0 +1,239 @@
+fileFormatVersion: 2
+guid: 2f447ca47d2f2a140b594e4b9d0aea74
+timeCreated: 1467209317
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Drop:Drop_Modelo
+    100002: //RootNode
+    100004: Drop_Hat
+    100006: Drop_Hat2
+    100008: Drop_Hat3
+    100010: Drop_Hat4
+    100012: Drop_Hat5
+    100014: Drop_Head
+    100016: Drop_Inf
+    100018: Drop_Inf2
+    100020: Drop_Inf3
+    100022: Drop_Inf4
+    100024: Drop_Lct_Der
+    100026: Drop_Lct_Izq
+    100028: Drop_Med
+    100030: Drop_Med2
+    100032: Drop_Med3
+    100034: Drop_Med4
+    100036: Drop_Mesh1
+    100038: Drop_Ojo_Der
+    100040: Drop_Ojo_Izq
+    100042: Drop_Ojos
+    100044: Drop_Rig
+    100046: Drop_Spine
+    100048: Drop_Spine2
+    100050: Drop_Up
+    100052: Drop_Up2
+    100054: Drop_Up3
+    100056: Drop_Up4
+    100058: Hat
+    100060: Locators
+    100062: Ojo_Der
+    100064: Ojo_Izq
+    400000: Drop:Drop_Modelo
+    400002: //RootNode
+    400004: Drop_Hat
+    400006: Drop_Hat2
+    400008: Drop_Hat3
+    400010: Drop_Hat4
+    400012: Drop_Hat5
+    400014: Drop_Head
+    400016: Drop_Inf
+    400018: Drop_Inf2
+    400020: Drop_Inf3
+    400022: Drop_Inf4
+    400024: Drop_Lct_Der
+    400026: Drop_Lct_Izq
+    400028: Drop_Med
+    400030: Drop_Med2
+    400032: Drop_Med3
+    400034: Drop_Med4
+    400036: Drop_Mesh1
+    400038: Drop_Ojo_Der
+    400040: Drop_Ojo_Izq
+    400042: Drop_Ojos
+    400044: Drop_Rig
+    400046: Drop_Spine
+    400048: Drop_Spine2
+    400050: Drop_Up
+    400052: Drop_Up2
+    400054: Drop_Up3
+    400056: Drop_Up4
+    400058: Hat
+    400060: Locators
+    400062: Ojo_Der
+    400064: Ojo_Izq
+    4300000: Ojo_Izq
+    4300002: Ojo_Der
+    4300004: Drop_Mesh1
+    7400000: Slide
+    9500000: //RootNode
+    13700000: Drop_Mesh1
+    13700002: Ojo_Der
+    13700004: Ojo_Izq
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Slide
+      takeName: Drop_Rig_WallSlide_B
+      firstFrame: 1
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Drop:Drop_Modelo
+        weight: 1
+      - path: Drop:Drop_Modelo/Drop_Mesh1
+        weight: 1
+      - path: Drop_Rig
+        weight: 1
+      - path: Drop_Rig/Drop_Spine
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2/Drop_Hat3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2/Drop_Hat3/Drop_Hat4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2/Drop_Hat3/Drop_Hat4/Drop_Hat5
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4/Locators
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4/Locators/Drop_Lct_Der
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4/Locators/Drop_Lct_Izq
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Der
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Der/Ojo_Der
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Izq
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Izq/Ojo_Izq
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 5
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
