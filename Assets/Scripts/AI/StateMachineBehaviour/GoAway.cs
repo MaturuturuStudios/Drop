@@ -27,6 +27,10 @@ public class GoAwayParameters {
     /// 
     /// </summary>
     public float rotationVelocity = 150;
+    /// <summary>
+    /// Particle system of walking effect
+    /// </summary>
+    public GameObject scapingFx;
 }
 
 public class GoAway : StateMachineBehaviour {
@@ -57,6 +61,12 @@ public class GoAway : StateMachineBehaviour {
 		// Moves the enumerator to the first/next position
 		parameters.endPoint.MoveNext();
         _positionTargeted = false;
+
+        // Starts particle system
+        foreach (ParticleSystem system in parameters.scapingFx.GetComponentsInChildren<ParticleSystem>()) {
+            ParticleSystem.EmissionModule emission = system.emission;
+            emission.enabled = true;
+        }
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -66,6 +76,12 @@ public class GoAway : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
+
+        // Stops particle system
+        foreach (ParticleSystem system in parameters.scapingFx.GetComponentsInChildren<ParticleSystem>()) {
+            ParticleSystem.EmissionModule emission = system.emission;
+            emission.enabled = false;
+        }
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
