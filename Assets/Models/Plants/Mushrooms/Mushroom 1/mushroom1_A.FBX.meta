@@ -14,6 +14,9 @@ ModelImporter:
     100012: Mushroom
     100014: //RootNode
     100016: Sup
+    100018: M_Rig
+    100020: Mid_Ctl
+    100022: Sup_Ctl
     400000: Base
     400002: Mid
     400004: MidA
@@ -23,6 +26,9 @@ ModelImporter:
     400012: Mushroom
     400014: //RootNode
     400016: Sup
+    400018: M_Rig
+    400020: Mid_Ctl
+    400022: Sup_Ctl
     4300000: Mushroom
     7400000: Bounce
     7400002: Idle
