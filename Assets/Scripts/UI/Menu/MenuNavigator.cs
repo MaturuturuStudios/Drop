@@ -9,6 +9,9 @@ using UnityEngine.SceneManagement;
 /// Control the flow between menus and specials action taken between thems
 /// </summary>
 public class MenuNavigator : MonoBehaviour {
+
+    public static Color titleColor = Color.yellow;
+
     #region Enumerations
     public enum Menu {
         NONE,

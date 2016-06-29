@@ -31,7 +31,7 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
         EventSystem.current.SetSelectedGameObject(master.gameObject);
         if (title != null) {
             //mark title as panel selected
-            title.color = Color.cyan;
+            title.color = MenuNavigator.titleColor;
         }
         return true;
     }

@@ -75,7 +75,7 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         EventSystem.current.SetSelectedGameObject(resolution.gameObject);
         if (title!=null){
             //mark title as panel selected
-            title.color = Color.cyan;
+            title.color = MenuNavigator.titleColor;
         }
         return true;
     }

@@ -87,7 +87,7 @@ public class OptionsHelp : MonoBehaviour, SubOptionInterface {
         EventSystem.current.SetSelectedGameObject(firstSelected);
         if (title != null) {
             //mark title as panel selected
-            title.color = Color.cyan;
+            title.color = MenuNavigator.titleColor;
         }
         return true;
     }

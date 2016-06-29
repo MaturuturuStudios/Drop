@@ -39,7 +39,7 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
         EventSystem.current.SetSelectedGameObject(languages.gameObject);
         if (title != null) {
             //mark title as panel selected
-            title.color = Color.cyan;
+            title.color = MenuNavigator.titleColor;
         }
         return true;
     }
