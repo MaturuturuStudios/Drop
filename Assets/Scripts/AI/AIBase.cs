@@ -86,7 +86,10 @@ public class AIBase : MonoBehaviour {
         walkingAI.commonParameters = commonParameters;
         walkingAI.parameters = walkingParameters;
 
-        GoAway runningAway = _animator.GetBehaviour<GoAway>();
+		Scared scared = _animator.GetBehaviour<Scared>();
+		scared.commonParameters = commonParameters;
+
+		GoAway runningAway = _animator.GetBehaviour<GoAway>();
         runningAway.commonParameters = commonParameters;
         runningAway.parameters = goAwayParameters;
 

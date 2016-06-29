@@ -1,0 +1,501 @@
+fileFormatVersion: 2
+guid: a81e4b0eea0835245a50a4a3f7bcbfe2
+timeCreated: 1467160138
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Ant_Body
+    100004: Ant_Mesh1
+    100006: ANT_Ojos_CTL
+    100008: Ant_Rig
+    100010: Ant_RIG_CTL
+    100012: Antena_Der
+    100014: Antena_Der_2
+    100016: Antena_Der_3
+    100018: Antena_Der_CTL
+    100020: Antena_Izq
+    100022: Antena_Izq_2
+    100024: Antena_Izq_3
+    100026: Antena_Izq_CTL
+    100028: Ass
+    100030: Ass2
+    100032: Ass3
+    100034: Ass_CTL
+    100036: Aye_Left
+    100038: Aye_Rigth
+    100040: Bee_Rig:bottomnurbsSquare1
+    100042: Bee_Rig:bottomnurbsSquare1 1
+    100044: Bee_Rig:Char_j_1
+    100046: Bee_Rig:Char_O_1
+    100048: Bee_Rig:Char_o_1
+    100050: Bee_Rig:Char_s_1
+    100052: Bee_Rig:curve1
+    100054: Bee_Rig:curve2
+    100056: Bee_Rig:curve3
+    100058: Bee_Rig:curve4
+    100060: Bee_Rig:curve5
+    100062: Bee_Rig:curve6
+    100064: Bee_Rig:curve7
+    100066: Bee_Rig:leftnurbsSquare1
+    100068: Bee_Rig:leftnurbsSquare1 1
+    100070: Bee_Rig:nurbsCircle1
+    100072: Bee_Rig:nurbsSquare2
+    100074: Bee_Rig:rightnurbsSquare1
+    100076: Bee_Rig:rightnurbsSquare1 1
+    100078: Bee_Rig:Text_Ojos_1
+    100080: Bee_Rig:topnurbsSquare1
+    100082: Bee_Rig:topnurbsSquare1 1
+    100084: Body_CTL
+    100086: Fang1
+    100088: Fang_Der
+    100090: Fang_Der2
+    100092: Fang_Der_CTL
+    100094: Fang_Izq
+    100096: Fang_Izq2
+    100098: Fang_Izq_CTL
+    100100: Head
+    100102: Head_Center
+    100104: Head_CTL
+    100106: Hip
+    100108: Hip1
+    100110: joint4
+    100112: joint5
+    100114: joint6
+    100116: joint7
+    100118: joint8
+    100120: joint9
+    100122: Left_Eye_Locator
+    100124: Leg_A_Der_CTL
+    100126: Leg_A_Izq_CTL
+    100128: Leg_B_Der_CTL
+    100130: Leg_B_Izq_CTL
+    100132: Leg_C_Der_CTL
+    100134: Leg_C_Izq_CTL
+    100136: Leg_Izq_A
+    100138: Leg_Izq_A1
+    100140: Leg_Izq_A10
+    100142: Leg_Izq_A11
+    100144: Leg_Izq_A12
+    100146: Leg_Izq_A13
+    100148: Leg_Izq_A14
+    100150: Leg_Izq_A2
+    100152: Leg_Izq_A6
+    100154: Leg_Izq_A7
+    100156: Leg_Izq_A8
+    100158: Leg_Izq_A9
+    100160: Leg_Izq_B
+    100162: Leg_Izq_B2
+    100164: Leg_Izq_B3
+    100166: Leg_Izq_B4
+    100168: Leg_Izq_B5
+    100170: Leg_Izq_B6
+    100172: Midle_CTL
+    100174: Neck
+    100176: Ojo_Der
+    100178: Ojo_Izq
+    100180: PullV_Leg_Der_A
+    100182: PullV_Leg_Der_B
+    100184: PullV_Leg_Der_C
+    100186: PullV_Leg_Izq_A
+    100188: PullV_Leg_Izq_B
+    100190: PullV_Leg_Izq_C
+    100192: Rigth_Eye_Locator
+    400000: //RootNode
+    400002: Ant_Body
+    400004: Ant_Mesh1
+    400006: ANT_Ojos_CTL
+    400008: Ant_Rig
+    400010: Ant_RIG_CTL
+    400012: Antena_Der
+    400014: Antena_Der_2
+    400016: Antena_Der_3
+    400018: Antena_Der_CTL
+    400020: Antena_Izq
+    400022: Antena_Izq_2
+    400024: Antena_Izq_3
+    400026: Antena_Izq_CTL
+    400028: Ass
+    400030: Ass2
+    400032: Ass3
+    400034: Ass_CTL
+    400036: Aye_Left
+    400038: Aye_Rigth
+    400040: Bee_Rig:bottomnurbsSquare1
+    400042: Bee_Rig:bottomnurbsSquare1 1
+    400044: Bee_Rig:Char_j_1
+    400046: Bee_Rig:Char_O_1
+    400048: Bee_Rig:Char_o_1
+    400050: Bee_Rig:Char_s_1
+    400052: Bee_Rig:curve1
+    400054: Bee_Rig:curve2
+    400056: Bee_Rig:curve3
+    400058: Bee_Rig:curve4
+    400060: Bee_Rig:curve5
+    400062: Bee_Rig:curve6
+    400064: Bee_Rig:curve7
+    400066: Bee_Rig:leftnurbsSquare1
+    400068: Bee_Rig:leftnurbsSquare1 1
+    400070: Bee_Rig:nurbsCircle1
+    400072: Bee_Rig:nurbsSquare2
+    400074: Bee_Rig:rightnurbsSquare1
+    400076: Bee_Rig:rightnurbsSquare1 1
+    400078: Bee_Rig:Text_Ojos_1
+    400080: Bee_Rig:topnurbsSquare1
+    400082: Bee_Rig:topnurbsSquare1 1
+    400084: Body_CTL
+    400086: Fang1
+    400088: Fang_Der
+    400090: Fang_Der2
+    400092: Fang_Der_CTL
+    400094: Fang_Izq
+    400096: Fang_Izq2
+    400098: Fang_Izq_CTL
+    400100: Head
+    400102: Head_Center
+    400104: Head_CTL
+    400106: Hip
+    400108: Hip1
+    400110: joint4
+    400112: joint5
+    400114: joint6
+    400116: joint7
+    400118: joint8
+    400120: joint9
+    400122: Left_Eye_Locator
+    400124: Leg_A_Der_CTL
+    400126: Leg_A_Izq_CTL
+    400128: Leg_B_Der_CTL
+    400130: Leg_B_Izq_CTL
+    400132: Leg_C_Der_CTL
+    400134: Leg_C_Izq_CTL
+    400136: Leg_Izq_A
+    400138: Leg_Izq_A1
+    400140: Leg_Izq_A10
+    400142: Leg_Izq_A11
+    400144: Leg_Izq_A12
+    400146: Leg_Izq_A13
+    400148: Leg_Izq_A14
+    400150: Leg_Izq_A2
+    400152: Leg_Izq_A6
+    400154: Leg_Izq_A7
+    400156: Leg_Izq_A8
+    400158: Leg_Izq_A9
+    400160: Leg_Izq_B
+    400162: Leg_Izq_B2
+    400164: Leg_Izq_B3
+    400166: Leg_Izq_B4
+    400168: Leg_Izq_B5
+    400170: Leg_Izq_B6
+    400172: Midle_CTL
+    400174: Neck
+    400176: Ojo_Der
+    400178: Ojo_Izq
+    400180: PullV_Leg_Der_A
+    400182: PullV_Leg_Der_B
+    400184: PullV_Leg_Der_C
+    400186: PullV_Leg_Izq_A
+    400188: PullV_Leg_Izq_B
+    400190: PullV_Leg_Izq_C
+    400192: Rigth_Eye_Locator
+    2300000: Ojo_Der
+    2300002: Ojo_Izq
+    3300000: Ojo_Der
+    3300002: Ojo_Izq
+    4300000: Ojo_Izq
+    4300002: Ojo_Der
+    4300004: Ant_Body
+    7400000: Scared
+    9500000: //RootNode
+    13700000: Ant_Body
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Scared
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Ant_Mesh1
+        weight: 1
+      - path: Ant_Mesh1/Ant_Body
+        weight: 1
+      - path: Ant_Rig
+        weight: 1
+      - path: Ant_Rig/Head
+        weight: 1
+      - path: Ant_Rig/Head/Aye_Left
+        weight: 1
+      - path: Ant_Rig/Head/Aye_Left/Left_Eye_Locator
+        weight: 1
+      - path: Ant_Rig/Head/Aye_Rigth
+        weight: 1
+      - path: Ant_Rig/Head/Aye_Rigth/Rigth_Eye_Locator
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Antena_Der
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Antena_Der/Antena_Der_2
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Antena_Der/Antena_Der_2/Antena_Der_3
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Antena_Izq
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Antena_Izq/Antena_Izq_2
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Antena_Izq/Antena_Izq_2/Antena_Izq_3
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Fang1
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Fang1/Fang_Der
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Fang1/Fang_Der/Fang_Der2
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Fang1/Fang_Izq
+        weight: 1
+      - path: Ant_Rig/Head/Head_Center/Fang1/Fang_Izq/Fang_Izq2
+        weight: 1
+      - path: Ant_Rig/Hip
+        weight: 1
+      - path: Ant_Rig/Hip/Ass
+        weight: 1
+      - path: Ant_Rig/Hip/Ass/Ass2
+        weight: 1
+      - path: Ant_Rig/Hip/Ass/Ass2/Ass3
+        weight: 1
+      - path: Ant_Rig/Hip/Hip1
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A/Leg_Izq_A1
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A/Leg_Izq_A1/Leg_Izq_A2
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A/Leg_Izq_A1/Leg_Izq_A2/joint4
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A6
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A6/Leg_Izq_A7
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A6/Leg_Izq_A7/Leg_Izq_A8
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A6/Leg_Izq_A7/Leg_Izq_A8/joint6
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A9
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A9/Leg_Izq_A10
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A9/Leg_Izq_A10/Leg_Izq_A11
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A9/Leg_Izq_A10/Leg_Izq_A11/joint7
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A12
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A12/Leg_Izq_A13
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A12/Leg_Izq_A13/Leg_Izq_A14
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_A12/Leg_Izq_A13/Leg_Izq_A14/joint9
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B/Leg_Izq_B2
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B/Leg_Izq_B2/Leg_Izq_B3
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B/Leg_Izq_B2/Leg_Izq_B3/joint5
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B4
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B4/Leg_Izq_B5
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B4/Leg_Izq_B5/Leg_Izq_B6
+        weight: 1
+      - path: Ant_Rig/Leg_Izq_B4/Leg_Izq_B5/Leg_Izq_B6/joint8
+        weight: 1
+      - path: Ant_Rig/Neck
+        weight: 1
+      - path: Ant_RIG_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:bottomnurbsSquare1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:leftnurbsSquare1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:nurbsSquare2
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:nurbsSquare2/Bee_Rig:bottomnurbsSquare1
+          1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:nurbsSquare2/Bee_Rig:leftnurbsSquare1
+          1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:nurbsSquare2/Bee_Rig:nurbsCircle1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:nurbsSquare2/Bee_Rig:rightnurbsSquare1
+          1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:nurbsSquare2/Bee_Rig:topnurbsSquare1
+          1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:rightnurbsSquare1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_j_1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_j_1/Bee_Rig:curve3
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_j_1/Bee_Rig:curve4
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_O_1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_O_1/Bee_Rig:curve1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_O_1/Bee_Rig:curve2
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_o_1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_o_1/Bee_Rig:curve5
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_o_1/Bee_Rig:curve6
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_s_1
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:Text_Ojos_1/Bee_Rig:Char_s_1/Bee_Rig:curve7
+        weight: 1
+      - path: Ant_RIG_CTL/ANT_Ojos_CTL/Bee_Rig:topnurbsSquare1
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Ass_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Head_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Head_CTL/Antena_Der_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Head_CTL/Antena_Izq_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Head_CTL/Fang_Der_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Head_CTL/Fang_Izq_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Head_CTL/Ojo_Der
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Head_CTL/Ojo_Izq
+        weight: 1
+      - path: Ant_RIG_CTL/Body_CTL/Midle_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Leg_A_Der_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Leg_A_Izq_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Leg_B_Der_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Leg_B_Izq_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Leg_C_Der_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/Leg_C_Izq_CTL
+        weight: 1
+      - path: Ant_RIG_CTL/PullV_Leg_Der_A
+        weight: 1
+      - path: Ant_RIG_CTL/PullV_Leg_Der_B
+        weight: 1
+      - path: Ant_RIG_CTL/PullV_Leg_Der_C
+        weight: 1
+      - path: Ant_RIG_CTL/PullV_Leg_Izq_A
+        weight: 1
+      - path: Ant_RIG_CTL/PullV_Leg_Izq_B
+        weight: 1
+      - path: Ant_RIG_CTL/PullV_Leg_Izq_C
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

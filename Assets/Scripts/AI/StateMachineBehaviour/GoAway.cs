@@ -57,12 +57,6 @@ public class GoAway : StateMachineBehaviour {
 		// Moves the enumerator to the first/next position
 		parameters.endPoint.MoveNext();
         _positionTargeted = false;
-
-		//Call listeners
-		foreach (EnemyBehaviourListener listener in commonParameters.drop.GetComponents<EnemyBehaviourListener>())
-			listener.OnBeingScared(commonParameters.AI, commonParameters.drop, commonParameters.sizeLimitDrop);
-		foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
-            listener.OnBeingScared(commonParameters.AI, commonParameters.drop, commonParameters.sizeLimitDrop);
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
