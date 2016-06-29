@@ -6,7 +6,7 @@ public class WalkingParameters {
     /// <summary>
     /// True if use the path to walk or false if use the area instead
     /// </summary>
-    public bool usePath=true;
+    public bool usePath = true;
     /// <summary>
 	/// A reference to the path this entity will follow.
 	/// </summary>
@@ -74,6 +74,11 @@ public class Walking : StateMachineBehaviour {
     /// Tell if arrived to the target point (but maybe not at the desired rotation)
     /// </summary>
     private bool _positionTargeted;
+
+    /// <summary>
+    /// The created walking effect.
+    /// </summary>
+    private GameObject _walkEffect;
     #endregion
 
     #region Methods
@@ -85,8 +90,11 @@ public class Walking : StateMachineBehaviour {
         commonParameters.minimumWalkingDistance = AIMethods.GetMinimumDistance(parameters.speed, parameters.rotationVelocity);
         commonParameters.minimumWalkingDistance += commonParameters.toleranceDistanceToGoal;
 
-        // Start particle system
-        parameters.walkingFX.SetActive(true);
+        // Starts particle system
+        foreach (ParticleSystem system in parameters.walkingFX.GetComponentsInChildren<ParticleSystem>()) {
+            ParticleSystem.EmissionModule emission = system.emission;
+            emission.enabled = true;
+        }
 
         // Moves the enumerator to the first/next position
         _positionTargeted = false;
@@ -101,8 +109,11 @@ public class Walking : StateMachineBehaviour {
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
 
-        // Stop particle system
-        parameters.walkingFX.SetActive(false);
+        // Stops particle system
+        foreach (ParticleSystem system in parameters.walkingFX.GetComponentsInChildren<ParticleSystem>()) {
+            ParticleSystem.EmissionModule emission = system.emission;
+            emission.enabled = false;
+        }
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -116,12 +127,12 @@ public class Walking : StateMachineBehaviour {
         //only move if not reached the point
         if (!_positionTargeted) {
             Vector3 originalPosition = commonParameters.enemy.transform.position;
-            Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, _targetPosition, parameters.followType, 
+            Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, _targetPosition, parameters.followType,
                                                         commonParameters.onFloor, parameters.speed);
             AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy,
                                 parameters.rotationVelocity, originalPosition, finalPosition);
 
-            Vector3 direction = (finalPosition-originalPosition).normalized;
+            Vector3 direction = (finalPosition - originalPosition).normalized;
 
             //move the entity
             move = direction * parameters.speed * Time.deltaTime;
@@ -162,7 +173,7 @@ public class Walking : StateMachineBehaviour {
                     animator.SetBool("Timer", true);
                 } else {
                     //no? rotate it
-                    AIMethods.RotateEnemy(commonParameters.enemy, targetRotation, 
+                    AIMethods.RotateEnemy(commonParameters.enemy, targetRotation,
                                 parameters.rotationVelocity, parameters.useOrientationFinalPositionStay);
                 }
             }
@@ -171,7 +182,7 @@ public class Walking : StateMachineBehaviour {
             _positionTargeted = false;
         }
     }
-   
+
     /// <summary>
     /// If timer to go iddle, check it
     /// </summary>
@@ -195,9 +206,9 @@ public class Walking : StateMachineBehaviour {
         if (!commonParameters.walking) {
             _targetPosition = commonParameters.initialPositionEnemy;
 
-        //choose next point
-        }else if (parameters.usePath) {
-			parameters.path.MoveNext();
+            //choose next point
+        } else if (parameters.usePath) {
+            parameters.path.MoveNext();
             _targetPosition = parameters.path.Current.position;
         } else {
             //select random point in the area
