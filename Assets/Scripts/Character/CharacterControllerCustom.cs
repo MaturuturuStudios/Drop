@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
 /// Custom controller that depends on Unity's CharacterController component.

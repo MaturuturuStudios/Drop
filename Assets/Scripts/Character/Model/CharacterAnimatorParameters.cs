@@ -78,4 +78,9 @@ public static class CharacterAnimatorParameters {
 	/// Triggered when the player waters a plant.
 	/// </summary>
 	public static readonly string Irrigate = "irrigate";
+
+	/// <summary>
+	/// Indicates is flying, hit by an enemy.
+	/// </summary>
+	public static readonly string Hit = "hit";
 }

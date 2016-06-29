@@ -5,7 +5,7 @@
 /// parameters.
 /// </summary>
 [RequireComponent(typeof(Animator))]
-public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener, CharacterFusionListener, CharacterShootListener, IrrigateListener {
+public class CharacterAnimatorController : MonoBehaviour, CharacterControllerListener, CharacterFusionListener, CharacterShootListener, IrrigateListener, EnemyBehaviourListener {
 	
 	/// <summary>
 	/// A reference to the CharacterControllerCustom on
@@ -96,6 +96,10 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 
 		// Updates the under control state
 		_animator.SetBool(CharacterAnimatorParameters.Controlled, _gcic.IsUnderControl(_drop));
+
+		// Restores the hit flag
+		if (!_ccc.State.IsFlying)
+			_animator.SetBool(CharacterAnimatorParameters.Hit, false);
 	}
 
 	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
@@ -151,5 +155,26 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {
 		// Sets the irrigate trigger on the animator
 		_animator.SetTrigger(CharacterAnimatorParameters.Irrigate);
+	}
+
+	public void OnBeginChase(AIBase enemy, GameObject chasedObject) {
+		// Do nothing
+	}
+
+	public void OnEndChase(AIBase enemy, GameObject chasedObject) {
+		// Do nothing
+	}
+
+	public void OnAttack(AIBase enemy, GameObject attackedObject, Vector3 velocity) {
+		// Sets the hit flag
+		_animator.SetBool(CharacterAnimatorParameters.Hit, true);
+	}
+
+	public void OnBeingScared(AIBase enemy, GameObject scaringObject, int scaringSize) {
+		// Do nothing
+	}
+
+	public void OnStateAnimationChange(AnimationState previousState, AnimationState actualState) {
+		// Do nothing
 	}
 }
