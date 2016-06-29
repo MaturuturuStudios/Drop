@@ -72,6 +72,11 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	public LayerMask sceneMask;
 
 	/// <summary>
+	/// Reference to the model's transform.
+	/// </summary>
+	public Transform modelTransfrom;
+
+	/// <summary>
 	/// Reference to this entity's Transform component.
 	/// </summary>
 	private Transform _transform;
@@ -238,7 +243,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	public void OnWalkStep() {
 		// Plays the walk step effect
 		if (_ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkStep.GetMinSpeed(_characterSize.GetSize())) {
-			GameObject effect = walkStep.PlayEffect(_walkTrailEffect.position, _walkTrailEffect.rotation);
+			GameObject effect = walkStep.PlayEffect(_walkTrailEffect.position, modelTransfrom.rotation);
 			effect.transform.parent = _transform;
 			effect.transform.localScale = Vector3.one;
         }
@@ -266,7 +271,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
             land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
 
 		// Calculates some values for the particles
-		Vector3 eulerRotation = new Vector3(Vector3.Angle(Vector3.left, hit.normal) * Mathf.Deg2Rad, Mathf.PI / 2, 0);
+		Vector3 eulerRotation = new Vector3(Mathf.PI + Vector3.Angle(Vector3.left, hit.normal) * Mathf.Deg2Rad, Mathf.PI / 2, 0);
 		float sizeFactor = _characterSize.GetSize();
 
 		// Positions the walking effect
