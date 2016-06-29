@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Collections;
 
 public class WaterEffects : MonoBehaviour, WaterRepulsionListener {
+
     /// <summary>
     /// Effect of waves
     /// </summary>
     public GameObject waves;
-    /// <summary>
-    /// Effects for sizes above 4
-    /// </summary>
-    public GameObject columnWater;
-    /// <summary>
-    /// Effects for sizes above 2
-    /// </summary>
-    public GameObject splash;
 
-    private float time = 5;
+	/// <summary>
+	/// Effects for sizes above 2
+	/// </summary>
+	public GameObject splash;
+
+	/// <summary>
+	/// Effects for sizes above 4
+	/// </summary>
+	public GameObject columnWater;
+
+	public float duration = 5.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -38,54 +41,29 @@ public class WaterEffects : MonoBehaviour, WaterRepulsionListener {
         Vector3 position = character.transform.position;
         position.y = collider.max.y + 0.2f;
 
-        List<GameObject> effect = new List<GameObject>();
+        List<GameObject> effects = new List<GameObject>();
+
         if (size > 0) {
-            GameObject anEffect = Instantiate(waves);
-            anEffect.transform.position = position;
-            ParticleSystem particle = anEffect.GetComponent<ParticleSystem>();
-            particle.startSize *= size;
-            particle.Stop();
-            particle.Play();
-            effect.Add(anEffect);
+            GameObject effect = Instantiate(waves, position, Quaternion.identity) as GameObject;
+			effect.transform.localScale = size * Vector3.one;
+			effects.Add(effect);
         }
 
-        if (size >2) {
-            GameObject anEffect = Instantiate(splash);
-            anEffect.transform.position = position;
-            ParticleSystem particle = anEffect.GetComponent<ParticleSystem>();
-            particle.startSize *= size;
-            ParticleSystem.ShapeModule shape = particle.shape;
-            shape.radius = size * 0.5f;
-            particle.Stop();
-            particle.Play();
-            effect.Add(anEffect);
+        if (size > 2) {
+            GameObject effect = Instantiate(splash, position, Quaternion.identity) as GameObject;
+			effect.transform.localScale = size * Vector3.one;
+			effects.Add(effect);
         }
 
-        if(size>4 && !exit){
-            GameObject anEffect = Instantiate(columnWater);
-            anEffect.transform.position = position;
-            ParticleSystem particle = anEffect.GetComponent<ParticleSystem>();
-            particle.startSize *= (size*0.3f);
-            particle.Stop();
-            particle.Play();
-            effect.Add(anEffect);
+        if (size > 4 && !exit){
+            GameObject effect = Instantiate(columnWater, position, Quaternion.identity) as GameObject;
+			effect.transform.localScale = size * Vector3.one;
+            effects.Add(effect);
         }
 
-        //destroy system
-        foreach (GameObject oneEffect in effect) {
-            StartCoroutine(StopEmission(oneEffect));
-            Destroy(oneEffect, time);
+        // Destroys the systems
+        foreach (GameObject effect in effects) {
+            Destroy(effect, duration);
         }
-    }
-
-    private IEnumerator StopEmission(GameObject emissor) {
-        ParticleSystem particle = emissor.GetComponent<ParticleSystem>();
-        yield return new WaitForSeconds(particle.duration);
-        ParticleSystem.EmissionModule module = particle.emission;
-        ParticleSystem.MinMaxCurve rate = module.rate;
-        rate.mode = ParticleSystemCurveMode.Constant;
-        rate.constantMin = 0;
-        rate.constantMax = 0;
-        module.rate = rate;
     }
 }
