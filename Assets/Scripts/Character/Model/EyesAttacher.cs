@@ -94,7 +94,7 @@ public class EyesAttacher : MonoBehaviour {
 	/// <summary>
 	/// Number of blend shapes used in the eyes.
 	/// </summary>
-	private const int BLEND_SHAPE_COUNT = 4;
+	private int _blendShapeCount;
 
 	#endregion
 
@@ -115,6 +115,7 @@ public class EyesAttacher : MonoBehaviour {
 	void Start() {
 		// Updates the mesh from the mesh renderer
 		UpdateMesh();
+		_blendShapeCount = _bakedMesh.blendShapeCount;
 
 		// Left eye
 		Vector3 direction = leftEye.position - center.position;
@@ -141,10 +142,10 @@ public class EyesAttacher : MonoBehaviour {
 
 		// Resets the eye's blend shapes
 		SkinnedMeshRenderer eyeRenderer = leftEye.GetComponentInChildren<SkinnedMeshRenderer>();
-		for (int i = 0; i < BLEND_SHAPE_COUNT; i++)
+		for (int i = 0; i < _blendShapeCount; i++)
 			eyeRenderer.SetBlendShapeWeight(i, 0);
 		eyeRenderer = rightEye.GetComponentInChildren<SkinnedMeshRenderer>();
-		for (int i = 0; i < BLEND_SHAPE_COUNT; i++)
+		for (int i = 0; i < _blendShapeCount; i++)
 			eyeRenderer.SetBlendShapeWeight(i, 0);
 	}
 

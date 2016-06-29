@@ -1,0 +1,915 @@
+fileFormatVersion: 2
+guid: 6722d3aab44bd0e48bfb8eede1214a9a
+timeCreated: 1467162734
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: bottomnurbsSquare1
+    100002: bottomnurbsSquare2
+    100004: bottomnurbsSquare3
+    100006: bottomnurbsSquare4
+    100008: bottomnurbsSquare4 1
+    100010: bottomnurbsSquare5
+    100012: bottomnurbsSquare5 1
+    100014: Char_a_1
+    100016: Char_C_1
+    100018: Char_d_1
+    100020: Char_e_1
+    100022: Char_J_1
+    100024: Char_j_1
+    100026: Char_O_1
+    100028: Char_o_1
+    100030: Char_O_2
+    100032: Char_o_2
+    100034: Char_O_3
+    100036: Char_r_1
+    100038: Char_r_2
+    100040: Char_s_1
+    100042: Char_S_2
+    100044: Char_s_2
+    100046: Cuerpo
+    100048: curve1
+    100050: curve10
+    100052: curve11
+    100054: curve12
+    100056: curve13
+    100058: curve14
+    100060: curve15
+    100062: curve16
+    100064: curve17
+    100066: curve18
+    100068: curve19
+    100070: curve2
+    100072: curve20
+    100074: curve21
+    100076: curve22
+    100078: curve23
+    100080: curve24
+    100082: curve25
+    100084: curve26
+    100086: curve27
+    100088: curve28
+    100090: curve29
+    100092: curve3
+    100094: curve30
+    100096: curve31
+    100098: curve32
+    100100: curve33
+    100102: curve34
+    100104: curve35
+    100106: curve36
+    100108: curve37
+    100110: curve38
+    100112: curve39
+    100114: curve4
+    100116: curve40
+    100118: curve41
+    100120: curve42
+    100122: curve43
+    100124: curve44
+    100126: curve45
+    100128: curve46
+    100130: curve47
+    100132: curve48
+    100134: curve49
+    100136: curve5
+    100138: curve50
+    100140: curve51
+    100142: curve52
+    100144: curve53
+    100146: curve54
+    100148: curve55
+    100150: curve56
+    100152: curve57
+    100154: curve58
+    100156: curve59
+    100158: curve6
+    100160: curve60
+    100162: curve61
+    100164: curve62
+    100166: curve63
+    100168: curve64
+    100170: curve65
+    100172: curve66
+    100174: curve67
+    100176: curve68
+    100178: curve69
+    100180: curve7
+    100182: curve70
+    100184: curve71
+    100186: curve72
+    100188: curve73
+    100190: curve74
+    100192: curve75
+    100194: curve76
+    100196: curve77
+    100198: curve78
+    100200: curve79
+    100202: curve8
+    100204: curve80
+    100206: curve81
+    100208: curve82
+    100210: curve83
+    100212: curve84
+    100214: curve85
+    100216: curve86
+    100218: curve87
+    100220: curve88
+    100222: curve89
+    100224: curve9
+    100226: curve90
+    100228: curve91
+    100230: curve92
+    100232: curve93
+    100234: curve94
+    100236: curve95
+    100238: curve96
+    100240: curve97
+    100242: curve98
+    100244: curve99
+    100246: Drop:Drop_Modelo
+    100248: //RootNode
+    100250: Drop_Hat
+    100252: Drop_Hat2
+    100254: Drop_Hat3
+    100256: Drop_Hat4
+    100258: Drop_Hat5
+    100260: Drop_Hat_CTL
+    100262: Drop_Head
+    100264: Drop_Head_CTL
+    100266: Drop_Inf
+    100268: Drop_Inf2
+    100270: Drop_Inf3
+    100272: Drop_Inf4
+    100274: Drop_Inf_CTL
+    100276: Drop_Lct_Der
+    100278: Drop_Lct_Izq
+    100280: Drop_Med
+    100282: Drop_Med2
+    100284: Drop_Med3
+    100286: Drop_Med4
+    100288: Drop_Mesh1
+    100290: Drop_Mid_CTL
+    100292: Drop_Ojo_Der
+    100294: Drop_Ojo_Der_CTL
+    100296: Drop_Ojo_Izq
+    100298: Drop_Ojo_Izq_CTL
+    100300: Drop_Ojos
+    100302: Drop_Ojos_CTL
+    100304: Drop_Rig
+    100306: Drop_Rig_Master_CTL
+    100308: Drop_Spine
+    100310: Drop_Spine2
+    100312: Drop_Up
+    100314: Drop_Up2
+    100316: Drop_Up3
+    100318: Drop_Up4
+    100320: group1
+    100322: Hat
+    100324: leftnurbsSquare1
+    100326: leftnurbsSquare2
+    100328: leftnurbsSquare3
+    100330: leftnurbsSquare4
+    100332: leftnurbsSquare4 1
+    100334: leftnurbsSquare5
+    100336: leftnurbsSquare5 1
+    100338: Locators
+    100340: nurbsCircle1
+    100342: nurbsCircle2
+    100344: nurbsCircle3
+    100346: nurbsCircle3 1
+    100348: Ojo_Der
+    100350: Ojo_Izq
+    100352: Ojos
+    100354: Ojos_CTL
+    100356: rightnurbsSquare1
+    100358: rightnurbsSquare2
+    100360: rightnurbsSquare3
+    100362: rightnurbsSquare4
+    100364: rightnurbsSquare4 1
+    100366: rightnurbsSquare5
+    100368: rightnurbsSquare5 1
+    100370: Text
+    100372: Text2
+    100374: Text3
+    100376: Text4
+    100378: Text5
+    100380: Text6
+    100382: Text7
+    100384: Text_Cerrados_1
+    100386: Text_OJOS_1
+    100388: Text_Ojos_1
+    100390: topnurbsSquare1
+    100392: topnurbsSquare2
+    100394: topnurbsSquare3
+    100396: topnurbsSquare4
+    100398: topnurbsSquare4 1
+    100400: topnurbsSquare5
+    100402: topnurbsSquare5 1
+    400000: bottomnurbsSquare1
+    400002: bottomnurbsSquare2
+    400004: bottomnurbsSquare3
+    400006: bottomnurbsSquare4
+    400008: bottomnurbsSquare4 1
+    400010: bottomnurbsSquare5
+    400012: bottomnurbsSquare5 1
+    400014: Char_a_1
+    400016: Char_C_1
+    400018: Char_d_1
+    400020: Char_e_1
+    400022: Char_J_1
+    400024: Char_j_1
+    400026: Char_O_1
+    400028: Char_o_1
+    400030: Char_O_2
+    400032: Char_o_2
+    400034: Char_O_3
+    400036: Char_r_1
+    400038: Char_r_2
+    400040: Char_s_1
+    400042: Char_S_2
+    400044: Char_s_2
+    400046: Cuerpo
+    400048: curve1
+    400050: curve10
+    400052: curve11
+    400054: curve12
+    400056: curve13
+    400058: curve14
+    400060: curve15
+    400062: curve16
+    400064: curve17
+    400066: curve18
+    400068: curve19
+    400070: curve2
+    400072: curve20
+    400074: curve21
+    400076: curve22
+    400078: curve23
+    400080: curve24
+    400082: curve25
+    400084: curve26
+    400086: curve27
+    400088: curve28
+    400090: curve29
+    400092: curve3
+    400094: curve30
+    400096: curve31
+    400098: curve32
+    400100: curve33
+    400102: curve34
+    400104: curve35
+    400106: curve36
+    400108: curve37
+    400110: curve38
+    400112: curve39
+    400114: curve4
+    400116: curve40
+    400118: curve41
+    400120: curve42
+    400122: curve43
+    400124: curve44
+    400126: curve45
+    400128: curve46
+    400130: curve47
+    400132: curve48
+    400134: curve49
+    400136: curve5
+    400138: curve50
+    400140: curve51
+    400142: curve52
+    400144: curve53
+    400146: curve54
+    400148: curve55
+    400150: curve56
+    400152: curve57
+    400154: curve58
+    400156: curve59
+    400158: curve6
+    400160: curve60
+    400162: curve61
+    400164: curve62
+    400166: curve63
+    400168: curve64
+    400170: curve65
+    400172: curve66
+    400174: curve67
+    400176: curve68
+    400178: curve69
+    400180: curve7
+    400182: curve70
+    400184: curve71
+    400186: curve72
+    400188: curve73
+    400190: curve74
+    400192: curve75
+    400194: curve76
+    400196: curve77
+    400198: curve78
+    400200: curve79
+    400202: curve8
+    400204: curve80
+    400206: curve81
+    400208: curve82
+    400210: curve83
+    400212: curve84
+    400214: curve85
+    400216: curve86
+    400218: curve87
+    400220: curve88
+    400222: curve89
+    400224: curve9
+    400226: curve90
+    400228: curve91
+    400230: curve92
+    400232: curve93
+    400234: curve94
+    400236: curve95
+    400238: curve96
+    400240: curve97
+    400242: curve98
+    400244: curve99
+    400246: Drop:Drop_Modelo
+    400248: //RootNode
+    400250: Drop_Hat
+    400252: Drop_Hat2
+    400254: Drop_Hat3
+    400256: Drop_Hat4
+    400258: Drop_Hat5
+    400260: Drop_Hat_CTL
+    400262: Drop_Head
+    400264: Drop_Head_CTL
+    400266: Drop_Inf
+    400268: Drop_Inf2
+    400270: Drop_Inf3
+    400272: Drop_Inf4
+    400274: Drop_Inf_CTL
+    400276: Drop_Lct_Der
+    400278: Drop_Lct_Izq
+    400280: Drop_Med
+    400282: Drop_Med2
+    400284: Drop_Med3
+    400286: Drop_Med4
+    400288: Drop_Mesh1
+    400290: Drop_Mid_CTL
+    400292: Drop_Ojo_Der
+    400294: Drop_Ojo_Der_CTL
+    400296: Drop_Ojo_Izq
+    400298: Drop_Ojo_Izq_CTL
+    400300: Drop_Ojos
+    400302: Drop_Ojos_CTL
+    400304: Drop_Rig
+    400306: Drop_Rig_Master_CTL
+    400308: Drop_Spine
+    400310: Drop_Spine2
+    400312: Drop_Up
+    400314: Drop_Up2
+    400316: Drop_Up3
+    400318: Drop_Up4
+    400320: group1
+    400322: Hat
+    400324: leftnurbsSquare1
+    400326: leftnurbsSquare2
+    400328: leftnurbsSquare3
+    400330: leftnurbsSquare4
+    400332: leftnurbsSquare4 1
+    400334: leftnurbsSquare5
+    400336: leftnurbsSquare5 1
+    400338: Locators
+    400340: nurbsCircle1
+    400342: nurbsCircle2
+    400344: nurbsCircle3
+    400346: nurbsCircle3 1
+    400348: Ojo_Der
+    400350: Ojo_Izq
+    400352: Ojos
+    400354: Ojos_CTL
+    400356: rightnurbsSquare1
+    400358: rightnurbsSquare2
+    400360: rightnurbsSquare3
+    400362: rightnurbsSquare4
+    400364: rightnurbsSquare4 1
+    400366: rightnurbsSquare5
+    400368: rightnurbsSquare5 1
+    400370: Text
+    400372: Text2
+    400374: Text3
+    400376: Text4
+    400378: Text5
+    400380: Text6
+    400382: Text7
+    400384: Text_Cerrados_1
+    400386: Text_OJOS_1
+    400388: Text_Ojos_1
+    400390: topnurbsSquare1
+    400392: topnurbsSquare2
+    400394: topnurbsSquare3
+    400396: topnurbsSquare4
+    400398: topnurbsSquare4 1
+    400400: topnurbsSquare5
+    400402: topnurbsSquare5 1
+    4300000: Ojo_Izq
+    4300002: Ojo_Der
+    4300004: Drop_Mesh1
+    7400000: Sleep
+    9500000: //RootNode
+    13700000: Drop_Mesh1
+    13700002: Ojo_Der
+    13700004: Ojo_Izq
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Sleep
+      takeName: Drop_Sleep
+      firstFrame: 1
+      lastFrame: 50
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Drop:Drop_Modelo
+        weight: 1
+      - path: Drop:Drop_Modelo/Drop_Mesh1
+        weight: 1
+      - path: Drop_Rig
+        weight: 1
+      - path: Drop_Rig/Drop_Spine
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Inf4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Drop_Up4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2/Drop_Hat3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2/Drop_Hat3/Drop_Hat4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Head/Hat/Drop_Hat/Drop_Hat2/Drop_Hat3/Drop_Hat4/Drop_Hat5
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med2
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med3
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4/Locators
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4/Locators/Drop_Lct_Der
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Med4/Locators/Drop_Lct_Izq
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Der
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Der/Ojo_Der
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Izq
+        weight: 1
+      - path: Drop_Rig/Drop_Spine/Drop_Spine2/Drop_Ojos/Drop_Ojo_Izq/Ojo_Izq
+        weight: 1
+      - path: Drop_Rig_Master_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/bottomnurbsSquare4
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/bottomnurbsSquare5
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/leftnurbsSquare4
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/leftnurbsSquare5
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/nurbsCircle3
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/rightnurbsSquare4
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/rightnurbsSquare5
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve72
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve73
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve74
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve75
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve76
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve77
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve78
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve79
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text5/curve80
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve52
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve53
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve54
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve55
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve56
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve57
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve58
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve59
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text6/curve60
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve61
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve62
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve63
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve64
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve65
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve66
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve67
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve68
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve69
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve70
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/Text7/curve71
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/topnurbsSquare4
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Cuerpo/topnurbsSquare5
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Drop_Inf_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Drop_Inf_CTL/Drop_Mid_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Drop_Inf_CTL/Drop_Mid_CTL/Drop_Head_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Drop_Inf_CTL/Drop_Mid_CTL/Drop_Head_CTL/Drop_Hat_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Drop_Inf_CTL/Drop_Mid_CTL/Drop_Ojos_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Drop_Inf_CTL/Drop_Mid_CTL/Drop_Ojos_CTL/Drop_Ojo_Der_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Drop_Inf_CTL/Drop_Mid_CTL/Drop_Ojos_CTL/Drop_Ojo_Izq_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/bottomnurbsSquare4 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/bottomnurbsSquare5 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/leftnurbsSquare4 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/leftnurbsSquare5 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/nurbsCircle3 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/rightnurbsSquare4 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/rightnurbsSquare5 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_a_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_a_1/curve93
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_a_1/curve94
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_C_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_C_1/curve88
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_d_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_d_1/curve95
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_d_1/curve96
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_e_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_e_1/curve89
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_e_1/curve90
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_o_2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_o_2/curve97
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_o_2/curve98
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_r_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_r_1/curve91
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_r_2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_r_2/curve92
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_s_2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Cerrados_1/Char_s_2/curve99
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_j_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_j_1/curve83
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_j_1/curve84
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_o_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_o_1/curve85
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_o_1/curve86
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_O_3
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_O_3/curve81
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_O_3/curve82
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_s_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/Text_Ojos_1/Char_s_1/curve87
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/topnurbsSquare4 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos/topnurbsSquare5 1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/bottomnurbsSquare3
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/bottomnurbsSquare1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/bottomnurbsSquare2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/leftnurbsSquare1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/leftnurbsSquare2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/nurbsCircle1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/nurbsCircle2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/rightnurbsSquare1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/rightnurbsSquare2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve20
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve21
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve22
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve23
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve24
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve25
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve26
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve27
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve28
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text/curve29
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2/curve13
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2/curve14
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2/curve15
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2/curve16
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2/curve17
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2/curve18
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text2/curve19
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve30
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve31
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve32
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve33
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve34
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve35
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve36
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve37
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve38
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve39
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve40
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve41
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve42
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve43
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve44
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text3/curve45
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve3
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve4
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve5
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve6
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve7
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve8
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve9
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve10
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve11
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text4/curve12
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_J_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_J_1/curve48
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_O_1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_O_1/curve46
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_O_1/curve47
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_O_2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_O_2/curve49
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_O_2/curve50
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_S_2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/Text_OJOS_1/Char_S_2/curve51
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/topnurbsSquare1
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/group1/topnurbsSquare2
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/leftnurbsSquare3
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/rightnurbsSquare3
+        weight: 1
+      - path: Drop_Rig_Master_CTL/Ojos_CTL/topnurbsSquare3
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 5
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

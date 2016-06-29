@@ -62,9 +62,19 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	public EffectInformation hit;
 
 	/// <summary>
+	/// Effect played while the player doesn't control the character.
+	/// </summary>
+	public EffectInformation sleep;
+
+	/// <summary>
 	/// Mask for any collision point check.
 	/// </summary>
 	public LayerMask sceneMask;
+
+	/// <summary>
+	/// Reference to this entity's Transform component.
+	/// </summary>
+	private Transform _transform;
 
 	/// <summary>
 	/// Reference to this entity's CharacterControllerCustom component.
@@ -92,6 +102,11 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	private CharacterController _controller;
 
 	/// <summary>
+	/// Reference to this game controller's GameControllerIndependentControl component.
+	/// </summary>
+	private GameControllerIndependentControl _gcic;
+
+	/// <summary>
 	/// The walking effect used by this script.
 	/// </summary>
 	private Transform _walkTrailEffect;
@@ -111,13 +126,20 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// </summary>
 	private Dictionary<ParticleSystem, ParticleSystemState> _slideParticleEffects;
 
+	/// <summary>
+	/// The sleep effect created by this script.
+	/// </summary>
+	private Transform _sleepEffect;
+
 	void Awake() {
 		// Retrieves the desired components
+		_transform = transform;
         _ccc = GetComponent<CharacterControllerCustom>();
         _characterSize = GetComponent<CharacterSize>();
 		_characterFusion = GetComponent<CharacterFusion>();
 		_characterShoot = GetComponent<CharacterShoot>();
 		_controller = GetComponent<CharacterController>();
+		_gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
 	}
 
     void Start() {
@@ -125,11 +147,19 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
         _ccc.AddListener(this);
 		_characterFusion.AddListener(this);
 		_characterShoot.AddListener(this);
+
+		// Checks if it is asleep and creates the sleeping effect
+		if (!_gcic.IsUnderControl(gameObject)) {
+			if (_sleepEffect == null)
+				_sleepEffect = sleep.PlayEffect(_transform.position, _transform.rotation).transform;
+			_sleepEffect.transform.parent = _transform;
+			_sleepEffect.transform.localScale = Vector3.one;
+		}
 	}
 
 	void OnEnable() {
 		// Creates and stops the walking effect
-		_walkTrailEffect = walkTrail.PlayEffect(transform.position, Quaternion.identity).transform;
+		_walkTrailEffect = walkTrail.PlayEffect(_transform.position, Quaternion.identity).transform;
 		_walkTrailParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
 		foreach (ParticleSystem system in _walkTrailEffect.GetComponentsInChildren<ParticleSystem>()) {
 			_walkTrailParticleEffects.Add(system, new ParticleSystemState(system));
@@ -138,7 +168,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		}
 
 		// Creates and stops the sliding effect
-		_slideEffect = slide.PlayEffect(transform.position, Quaternion.identity).transform;
+		_slideEffect = slide.PlayEffect(_transform.position, Quaternion.identity).transform;
 		_slideParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
 		foreach (ParticleSystem system in _slideEffect.GetComponentsInChildren<ParticleSystem>()) {
 			_slideParticleEffects.Add(system, new ParticleSystemState(system));
@@ -165,15 +195,15 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		if (_slideEffect != null) {
 			float maxLifetime = 0;
 			foreach (ParticleSystem system in _slideParticleEffects.Keys) {
-					ParticleSystem.EmissionModule emission = system.emission;
-					emission.enabled = false;
-					maxLifetime = Mathf.Max(maxLifetime, system.startLifetime);
-				}
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = false;
+				maxLifetime = Mathf.Max(maxLifetime, system.startLifetime);
+			}
 			_slideParticleEffects.Clear();
 			Destroy(_slideEffect.gameObject, maxLifetime);
 			_slideEffect = null;
 		}
-	}
+    }
 
 	void Update() {
 		// Plays or stops the walking effect
@@ -187,6 +217,19 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = _ccc.State.IsSliding;
 		}
+
+		// If the character is controlled, stops the sleep effect
+		if (_sleepEffect != null && _gcic.IsUnderControl(gameObject)) {
+			float maxLifetime = 0;
+			foreach (ParticleSystem system in _sleepEffect.GetComponentsInChildren<ParticleSystem>()) {
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = false;
+				maxLifetime = Mathf.Max(maxLifetime, system.startLifetime);
+			}
+			_sleepEffect.transform.parent = null;
+			Destroy(_sleepEffect.gameObject, maxLifetime);
+			_sleepEffect = null;
+		}
 	}
 
 	/// <summary>
@@ -196,7 +239,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		// Plays the walk step effect
 		if (_ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkStep.GetMinSpeed(_characterSize.GetSize())) {
 			GameObject effect = walkStep.PlayEffect(_walkTrailEffect.position, _walkTrailEffect.rotation);
-			effect.transform.parent = transform;
+			effect.transform.parent = _transform;
 			effect.transform.localScale = Vector3.one;
         }
 	}
