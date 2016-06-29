@@ -319,9 +319,11 @@ public class AIBase : MonoBehaviour {
             state = AnimationState.CHASE;
         } else if (info.IsName("Detect")) {
             state = AnimationState.DETECT;
-        } else if (info.IsName("Attack")) {
-            state = AnimationState.ATTACK;
-        } else if (info.IsName("Run Away")) {
+		} else if (info.IsName("Attack")) {
+			state = AnimationState.ATTACK;
+        } else if (info.IsName("Scared")) {
+            state = AnimationState.SCARED;
+		} else if (info.IsName("Run Away")) {
             state = AnimationState.RUN_AWAY;
         } else if (info.IsName("Hidde")) {
             state = AnimationState.HIDDE_RECOLECT;

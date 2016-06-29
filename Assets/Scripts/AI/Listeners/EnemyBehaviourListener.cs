@@ -6,6 +6,7 @@ public enum AnimationState {
     CHASE,
     DETECT,
     ATTACK,
+	SCARED,
     RUN_AWAY,
     HIDDE_RECOLECT
 }
