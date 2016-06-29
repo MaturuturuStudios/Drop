@@ -472,7 +472,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 _retrajectoring = false;
             }
             if (_lookingat) {
-                _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, _speedAnimation * looking * Time.deltaTime);
+                _oldLookingat = Mathf.MoveTowards(_oldLookingat, _angle, 20 * looking * Time.deltaTime);
 
                 setTrajectoryPoints(pos, _oldLookingat, _speed);
 
@@ -525,7 +525,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// </summary>
     public void LookatRight() {
         if (_angle < 90) {
-            _animshot = true;
+            //_animshot = true;
             _lookingat = true;
             _oldLookingat = _angle;
             _angle = 180 - _angle;
@@ -537,7 +537,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// </summary>
     public void LookatLeft(){
         if (_angle > 90) {
-            _animshot = true;
+            //_animshot = true;
             _lookingat = true;
             _oldLookingat = _angle;
             _angle = 180 - _angle;
