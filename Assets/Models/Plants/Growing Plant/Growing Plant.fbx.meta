@@ -39,6 +39,9 @@ ModelImporter:
     400030: tallo1
     4300000: tallo1
     4300002: leaf4
+    7400000: Grow
+    7400002: Idle Small
+    7400004: Idle Big
     9500000: //RootNode
     13700000: leaf4
     13700002: tallo1
@@ -62,7 +65,187 @@ ModelImporter:
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Grow
+      takeName: Gro_P_Animation
+      firstFrame: 1
+      lastFrame: 51
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Ctrl_Stalk
+        weight: 1
+      - path: Ctrl_Stalk/Stalk
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10/Stalk11
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10/Stalk11/Stalk12
+        weight: 1
+      - path: tallo1
+        weight: 1
+      - path: tallo1/leaf4
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: Idle Small
+      takeName: Gro_P_Animation
+      firstFrame: 1
+      lastFrame: 2
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Ctrl_Stalk
+        weight: 1
+      - path: Ctrl_Stalk/Stalk
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10/Stalk11
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10/Stalk11/Stalk12
+        weight: 1
+      - path: tallo1
+        weight: 1
+      - path: tallo1/leaf4
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: Idle Big
+      takeName: Gro_P_Animation
+      firstFrame: 50
+      lastFrame: 51
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Ctrl_Stalk
+        weight: 1
+      - path: Ctrl_Stalk/Stalk
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10/Stalk11
+        weight: 1
+      - path: Ctrl_Stalk/Stalk/Stalk2/Stalk3/Stalk4/Stalk5/Stalk6/Stalk7/Stalk8/Stalk9/Stalk10/Stalk11/Stalk12
+        weight: 1
+      - path: tallo1
+        weight: 1
+      - path: tallo1/leaf4
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -85,7 +268,7 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     human: []
