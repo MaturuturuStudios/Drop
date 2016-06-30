@@ -51,9 +51,9 @@ MenuInputTurnRight=Turn right
 MenuInputNextDrop=Next Drop
 MenuInputPreviousDrop=Previous Drop
 MenuInputShowNumberDrop=Show number drops
-MenuInputEnterExitShoot=Enter/Exit shoot mode
+MenuInputEnterExitShoot=Shoot mode
 MenuInputIrrigate=Irrigate
-MenuInputJumpShoot=Jump/Shoot in shoot mode
+MenuInputJumpShoot=Jump/Shoot
 MenuInputAction=Action
 MenuInputLookAround=Look around
 
