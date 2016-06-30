@@ -50,9 +50,9 @@ MenuInputTurnRight=Girar a la derecha
 MenuInputNextDrop=Siguiente gota
 MenuInputPreviousDrop=Gota anterior
 MenuInputShowNumberDrop=Mostrar número gotas
-MenuInputEnterExitShoot=Entrar/Salir modo disparo
+MenuInputEnterExitShoot=Modo disparo
 MenuInputIrrigate=Regar
-MenuInputJumpShoot=Saltar/Disparar en modo disparo
+MenuInputJumpShoot=Saltar/Disparar
 MenuInputAction=Acción
 MenuInputLookAround=Mirar alrededor
 

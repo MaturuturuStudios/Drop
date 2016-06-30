@@ -163,8 +163,8 @@ public class LevelEndThanks : MonoBehaviour {
         _endCompositionTexts = endCompostion.GetComponentsInChildren<Text>();
 
         // Wait for play thanks sound
-        yield return new WaitForSeconds(2f);
-        _audioSource.Play();
+        //yield return new WaitForSeconds(2f);
+        //_audioSource.Play();
 
         yield return true;
     }
