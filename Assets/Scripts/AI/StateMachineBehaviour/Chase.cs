@@ -50,8 +50,6 @@ public class Chase : StateMachineBehaviour, CollisionListener {
 		_dropChased = commonParameters.drop;
 
 		//Call listeners
-		foreach (EnemyBehaviourListener listener in _dropChased.GetComponents<EnemyBehaviourListener>())
-			listener.OnBeginChase(commonParameters.AI, _dropChased);
 		foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
             listener.OnBeginChase(commonParameters.AI, _dropChased);
 

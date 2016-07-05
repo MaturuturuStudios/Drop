@@ -54,30 +54,3 @@ public interface EnemyBehaviourListener {
     /// <param name="actualState"></param>
     void OnStateAnimationChange(AnimationState previousState, AnimationState actualState);
 }
-
-/// <summary>
-/// Adapter for the EnemyBehaviourListener interface used to
-/// avoid forcing each class to implement all it's methods.
-/// </summary>
-public class EnemyBehaviourAdapter : MonoBehaviour, EnemyBehaviourListener {
-
-	public virtual void OnBeginChase(AIBase enemy, GameObject chasedObject) {
-		// Do nothing
-	}
-
-	public virtual void OnEndChase(AIBase enemy, GameObject chasedObject) {
-		// Do nothing
-	}
-
-	public virtual void OnAttack(AIBase enemy, GameObject attackedObject, Vector3 hitPoint) {
-		// Do nothing
-	}
-
-	public virtual void OnBeingScared(AIBase enemy, GameObject scaringObject, int scaringSize) {
-		// Do nothing
-	}
-
-    public void OnStateAnimationChange(AnimationState previousState, AnimationState actualState) {
-        // Do nothing
-    }
-}

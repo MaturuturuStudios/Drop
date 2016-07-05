@@ -81,9 +81,9 @@ public class Attack : StateMachineBehaviour {
             controller.SendFlyingNoRotation(fly);
             _attackDone = true;
 
-			// Notifies the listeners
-			foreach (EnemyBehaviourListener listener in controller.GetComponents<EnemyBehaviourListener>())
-				listener.OnAttack(commonParameters.AI, commonParameters.drop, fly);
+            // Notifies the listeners
+            foreach (EnemyBehaviourListener listener in commonParameters.drop.GetComponents<EnemyBehaviourListener>())
+                listener.OnAttack(commonParameters.AI, commonParameters.drop, fly);
             foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
                 listener.OnAttack(commonParameters.AI, commonParameters.drop, fly);
         }
