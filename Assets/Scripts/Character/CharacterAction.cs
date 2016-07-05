@@ -7,6 +7,22 @@
 /// </summary>
 public class CharacterAction : MonoBehaviour, IrrigateListener {
 
+	#region Public Attributes
+
+	/// <summary>
+	/// Distance from the character's center to look for an
+	/// action performer.
+	/// </summary>
+	public float detectionRadius = 0.5f;
+
+	/// <summary>
+	/// If enabled, the character's radius will be used instead
+	/// of a fixed value.
+	/// </summary>
+	public bool useCharacterRadius = false;
+
+	#endregion
+
 	#region Private Attributes
 
 	/// <summary>
@@ -39,8 +55,12 @@ public class CharacterAction : MonoBehaviour, IrrigateListener {
 	/// </summary>
 	public void DoAction() {
 		// Checks for colliders overlaping it's volume
+		float radius;
+		if (useCharacterRadius)
+			radius = _transform.lossyScale.x * _controller.radius;
+		else
+			radius = detectionRadius;
 		Vector3 center = _transform.TransformPoint(_controller.center);
-		float radius = _transform.lossyScale.x * _controller.radius;
 		Collider[] overlapingColliders = Physics.OverlapSphere(center, radius);
 
 		// Checks if the colliders area interactive and notifies them
