@@ -30,6 +30,12 @@ public class IntroController : MonoBehaviour {
     /// </summary>
     public float logoFadeDuration = 0.5f;
 
+
+    /// <summary>
+    /// Time waiting untill intro can be skipped
+    /// </summary>
+    public float introLockedDuration = 2f;    
+
     #endregion
 
     #region Private attributes
@@ -101,7 +107,7 @@ public class IntroController : MonoBehaviour {
         }
 
         // Skip intro
-        if (Input.anyKeyDown || (_elapsedTime > logoDuration + 0.1 && !introMovie.isPlaying))
+        if (Input.anyKeyDown && (_elapsedTime > logoDuration + introLockedDuration))
             _op.allowSceneActivation = true;
     }
 
