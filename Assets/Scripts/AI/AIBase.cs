@@ -60,7 +60,6 @@ public class AIBase : MonoBehaviour {
 
     #region Methods
 
-
     /// <summary>
     /// Initialization method.
     /// The character start with size one
@@ -85,9 +84,6 @@ public class AIBase : MonoBehaviour {
         Walking walkingAI = _animator.GetBehaviour<Walking>();
         walkingAI.commonParameters = commonParameters;
         walkingAI.parameters = walkingParameters;
-
-		Scared scared = _animator.GetBehaviour<Scared>();
-		scared.commonParameters = commonParameters;
 
 		GoAway runningAway = _animator.GetBehaviour<GoAway>();
         runningAway.commonParameters = commonParameters;
@@ -147,8 +143,6 @@ public class AIBase : MonoBehaviour {
         listeners.Remove(listener);
         return true;
     }
-
-  
 
     public void Scare() {
         _animator.SetBool("GoAway", true);
@@ -302,6 +296,9 @@ public class AIBase : MonoBehaviour {
         AnimationState state = GetAnimationState(info);
         if (actualState != state) {
             // Notifies the listeners
+            if(commonParameters.drop!=null)
+                foreach (EnemyBehaviourListener listener in commonParameters.drop.GetComponents<EnemyBehaviourListener>())
+                    listener.OnStateAnimationChange(actualState, state);
             foreach (EnemyBehaviourListener listener in listeners)
                 listener.OnStateAnimationChange(actualState, state);
             actualState = state;

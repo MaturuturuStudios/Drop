@@ -143,20 +143,15 @@ public class GameControllerSound : MonoBehaviour {
 		if (_gcic.currentCharacter != null)
 			characterSize = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
 
-		// Checks which clip should be playing
-		int index = 0;
-		for (int i = 0; i < musicClips.Length; i++)
-			if (characterSize >= musicClips[i].characterSize)
-				index = i;
-			else
-				break;
-
 		// Modifies the volume of each audio source
+		bool atLeastOnePlaying = false;
 		for (int i = 0; i < _audioSources.Length; i++) {
 			// Determines the volume of the clip
 			float targetVolume = 0.0f;
-            if (i == index)
+            if (!atLeastOnePlaying || musicClips[i].characterSize <= characterSize) {
+				atLeastOnePlaying = true;
 				targetVolume = musicVolume;
+			}
 
 			// Does the actual modification
 			if (!instantaneus) {

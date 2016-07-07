@@ -42,10 +42,6 @@ public class WalkingParameters {
     /// Zero to not enter to iddle
     /// </summary>
     public float timeUntilIddle = 0;
-    /// <summary>
-    /// Particle system of walking effect
-    /// </summary>
-    public GameObject walkingFX;
 }
 
 public class Walking : StateMachineBehaviour {
@@ -90,12 +86,6 @@ public class Walking : StateMachineBehaviour {
         commonParameters.minimumWalkingDistance = AIMethods.GetMinimumDistance(parameters.speed, parameters.rotationVelocity);
         commonParameters.minimumWalkingDistance += commonParameters.toleranceDistanceToGoal;
 
-        // Starts particle system
-        foreach (ParticleSystem system in parameters.walkingFX.GetComponentsInChildren<ParticleSystem>()) {
-            ParticleSystem.EmissionModule emission = system.emission;
-            emission.enabled = true;
-        }
-
         // Moves the enumerator to the first/next position
         _positionTargeted = false;
         GetNextTarget();
@@ -108,12 +98,6 @@ public class Walking : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
-
-        // Stops particle system
-        foreach (ParticleSystem system in parameters.walkingFX.GetComponentsInChildren<ParticleSystem>()) {
-            ParticleSystem.EmissionModule emission = system.emission;
-            emission.enabled = false;
-        }
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
