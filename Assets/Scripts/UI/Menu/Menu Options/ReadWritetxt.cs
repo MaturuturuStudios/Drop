@@ -10,7 +10,7 @@ public class ReadWritetxt : MonoBehaviour {
     /// <summary>
     /// List of options values
     /// </summary>
-    private Dictionary<string,string> _listoptions = new Dictionary<string, string>;
+    private Dictionary<string,string> _listoptions = new Dictionary<string, string>();
 
     /// <summary>
     /// Retrieves the value of enviroment variable of current process
