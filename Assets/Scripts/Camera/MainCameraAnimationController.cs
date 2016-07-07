@@ -16,6 +16,12 @@ public class MainCameraAnimationController : MonoBehaviour {
     /// </summary>
     public Vector3 startPosition;
 
+
+    /// <summary>
+    /// Time waiting untill intro can be skipped
+    /// </summary>
+    public float introLockedDuration = 2F;
+
     #endregion
 
     #region Private attributes
@@ -47,16 +53,37 @@ public class MainCameraAnimationController : MonoBehaviour {
 
         // Stops the input
         _gci.ResumeInput();
-    } 
+    }
 
 
     /// <summary>
     /// Stops input called from animator
     /// </summary>
     public void StopInput() {
-        _gci.StopInput(true);
+
+        // Prevent input getted
+        _gci.StopInput(false);
+
+        // Wait desired time to skip intro
+        StartCoroutine(StopInput(introLockedDuration));
     }
 
+
+    /// <summary>
+    /// Shows the end message of thanks
+    /// </summary>
+    /// <param name="waitTime">Desired time to wait untill intro is skipped</param>
+    public IEnumerator StopInput(float waitTime) {
+
+        // Wait for display the intro
+        yield return new WaitForSeconds(waitTime);
+
+        // Allow intro to be skipped
+        _gci.StopInput(true);
+
+        yield return true;
+    }
+    
 
     /// <summary>
     /// Resumes input called from animator
