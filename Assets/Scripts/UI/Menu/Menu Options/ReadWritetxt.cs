@@ -10,55 +10,86 @@ public class ReadWritetxt : MonoBehaviour {
     /// <summary>
     /// List of options values
     /// </summary>
-    private List<string> _listoptions = new List<string>();
+    private Dictionary<string,string> _listoptions = new Dictionary<string, string>;
 
     /// <summary>
     /// Retrieves the value of enviroment variable of current process
     /// </summary>
-    private string _winDir = System.Environment.GetEnvironmentVariable("windir");
+    //private string _winDir = System.Environment.GetEnvironmentVariable("windir");
+
+    #endregion
+
+    #region Public attributes
 
     /// <summary>
     /// The path of the txt file
     /// </summary>
-    private string path;
+    public string path= "Assets/Scripts/UI/Menu/Menu Options/menu_options.txt";
 
     #endregion
 
     #region Method
 
     /// <summary>
+    /// Fuction to initialite
+    /// </summary>
+    public void Awake(){
+
+        //read the options file and keep the information in the dictionary _listoptions
+        Readfile();
+
+    }
+
+    /// <summary>
     /// Fuction to add data to de list of options
     /// </summary>
-    private void addListItem(string value) { this._listoptions.Add(value); }
+    private void addListItem(string key,string value) { this._listoptions.Add(key,value); }
 
     /// <summary>
     /// Fuction to read a file
     /// </summary>
-    public void Readfile(string file_path) {
+    public void Readfile() {
 
-        _listoptions.Clear();
+        string line;
+        // Create a new StreamReader, tell it which file to read and what encoding the file
+        // was saved as
+        StreamReader theReader = new StreamReader(path);
+        // Immediately clean up the reader after this block of code is done.
+        // You generally use the "using" statement for potentially memory-intensive objects
+        // instead of relying on garbage collection.
+        // (Do not confuse this with the using directive for namespace at the 
+        // beginning of a class!)
+        using (theReader) {
+            // While there's lines left in the text file, do this:
+            do {
+                line = theReader.ReadLine();
 
-        //Read all the file and keep the data in _listoptions list
-        StreamReader reader = new StreamReader(file_path); try { do { addListItem(reader.ReadLine()); } while (reader.Peek() != -1); }
-
-        catch { addListItem("El archivo está vacío"); }
-
-        finally { reader.Close(); }
+                if (line != null){
+                    // Do whatever you need to do with the text line, it's a string now
+                    // In this example, I split it into arguments based on comma
+                    // deliniators, then send that array to DoStuff()
+                    string[] entries = line.Split(',');
+                    if (entries.Length > 0)
+                        addListItem(entries[0], entries[1]);
+                }
+            }
+            while (line != null);
+            // Done reading, close the reader and return true to broadcast success    
+            theReader.Close();
+        }
 
     }
 
     /// <summary>
     /// Fuction to write a file
     /// </summary>
-    public void Writedata(string path) {
-
-        _listoptions.Clear();
-
+    public void Writedata() {
         StreamWriter writer = new StreamWriter(path);
 
-        for(int i=0; i < _listoptions.Capacity; i++){
+        foreach (KeyValuePair<string, string> entry in _listoptions){
+
             //write from the _listoptions to the file
-            writer.WriteLine(_listoptions[i]);
+            writer.WriteLine(entry.Key+","+entry.Value);
         }
         
         writer.Close();
@@ -67,10 +98,12 @@ public class ReadWritetxt : MonoBehaviour {
     }
 
     /// <summary>
-    /// Fuction put new information in the _listoptions list
+    /// Fuction put new information in the _listoptions list if the option exist put the new value if not create the new value
     /// </summary>
-    public void KeepOption(string option) {
-        _listoptions.Add(option);
+    public void KeepOption(string key,string option) {
+        if (_listoptions.ContainsKey(key))
+            _listoptions[key] = option;
+        else _listoptions.Add(key, option);
     }
 
     /// <summary>
@@ -81,11 +114,10 @@ public class ReadWritetxt : MonoBehaviour {
     }
 
     /// <summary>
-    /// Fuction to take all the _listoptions data 
+    /// Fuction to take the valuee of a key given
     /// </summary>
-    public List<string> GetOptions()
-    {
-        return _listoptions;
+    public string GetOptions(string key){
+        return _listoptions[key];
     }
 
     #endregion
