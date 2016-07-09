@@ -36,7 +36,7 @@ public class ReadWritetxt : MonoBehaviour {
     public void Awake(){
 
         //read the options file and keep the information in the dictionary _listoptions
-        Readfile();
+       // Readfile();
 
     }
 
