@@ -24,7 +24,7 @@ public class ReadWritetxt : MonoBehaviour {
     /// <summary>
     /// The path of the txt file
     /// </summary>
-    public string path= "Assets/Scripts/UI/Menu/Menu Options/menu_options.txt";
+    public string path= "Assets/Resources/menu_options.txt";
 
     #endregion
 
