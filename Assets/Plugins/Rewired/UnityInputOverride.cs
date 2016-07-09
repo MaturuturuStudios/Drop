@@ -43,7 +43,7 @@ public static class Input {
 
 #if UNITY_EDITOR
             if(!logged) {
-                Debug.Log("Rewired: Currently overriding Unity input. To disable the Unity input override permanently, delete Assets/Plugins/Rewired/UnityInputOverride.cs.");
+                //Debug.Log("Rewired: Currently overriding Unity input. To disable the Unity input override permanently, delete Assets/Plugins/Rewired/UnityInputOverride.cs.");
                 logged = true;
             }
 #endif
