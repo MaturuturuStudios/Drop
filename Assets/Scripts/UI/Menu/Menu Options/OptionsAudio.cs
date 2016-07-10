@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(ReadWritetxt))]
 public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     #region Public attributes
     /// <summary>
