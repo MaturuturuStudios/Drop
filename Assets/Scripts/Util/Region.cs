@@ -8,10 +8,17 @@ public class Region {
     public Vector3 origin = Vector3.one;
     public Vector3 size = Vector3.one;
 
-    public Vector3 GetRandomPoint() {
-        Vector3 result = new Vector3(Random.Range(origin.x, origin.x + size.x),
-                        Random.Range(origin.y, origin.y + size.y),
-                        Random.Range(origin.z, origin.z + size.z));
+    public Vector3 GetRandomPoint(Vector3 previous, float margin) {
+        Vector3 result;
+        float offset;
+        margin *= margin;
+        do {
+            result = new Vector3(Random.Range(origin.x, origin.x + size.x),
+                            Random.Range(origin.y, origin.y + size.y),
+                            Random.Range(origin.z, origin.z + size.z));
+
+            offset = (previous - result).sqrMagnitude;
+        } while (offset < margin);
         return result;
     }
 

@@ -15,6 +15,10 @@ public class FlyingParameters {
     /// Area where entity will stay walking
     /// </summary>
     public Region walkArea;
+    /// <summary>
+    /// The margin between the previous and the new point on the walk area
+    /// </summary>
+    public float marginRandomWalkArea=2;
 
     /// <summary>
 	/// Defines how will the entity move to the next point in the path.
@@ -138,7 +142,7 @@ public class Flying : StateMachineBehaviour {
             _targetPosition = parameters.path.Current.position;
         } else {
             //select random point in the area
-            _targetPosition = parameters.walkArea.GetRandomPoint() + commonParameters.rootEntityPosition.position;
+            _targetPosition = parameters.walkArea.GetRandomPoint(_targetPosition, parameters.marginRandomWalkArea) + commonParameters.rootEntityPosition.position;
         }
     }
 
