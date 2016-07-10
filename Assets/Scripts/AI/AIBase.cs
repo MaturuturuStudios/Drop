@@ -154,7 +154,9 @@ public class AIBase : MonoBehaviour {
 
     public void OnDrawGizmosSelected() {
         //draw paths
-        goAwayParameters.endPoint.OnDrawGizmos();
+        if(!goAwayParameters.endMoving)
+            goAwayParameters.endPoint.OnDrawGizmos();
+
         if (commonParameters.walking) {
             if (!walkingParameters.usePath) {
                 walkingParameters.walkArea.OndrawGizmos(Color.blue, transform.position);
@@ -202,10 +204,7 @@ public class AIBase : MonoBehaviour {
         } else {
             //update his size
             int sizeDrop = 0;
-            if (_sizeDetected == null) {
-                Debug.Log("bug!");
-                return;
-            }
+            _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
             sizeDrop = _sizeDetected.GetSize();
 
 

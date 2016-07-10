@@ -44,6 +44,7 @@ public class Iddle : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
+        animator.SetBool("Recolect", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

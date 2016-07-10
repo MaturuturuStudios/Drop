@@ -70,11 +70,6 @@ public class Walking : StateMachineBehaviour {
     /// Tell if arrived to the target point (but maybe not at the desired rotation)
     /// </summary>
     private bool _positionTargeted;
-
-    /// <summary>
-    /// The created walking effect.
-    /// </summary>
-    private GameObject _walkEffect;
     #endregion
 
     #region Methods
@@ -98,6 +93,7 @@ public class Walking : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
+        animator.SetBool("Recolect", false);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

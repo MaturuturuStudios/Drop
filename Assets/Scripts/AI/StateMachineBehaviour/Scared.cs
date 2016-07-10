@@ -29,7 +29,8 @@ public class Scared : StateMachineBehaviour {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
-	}  
+        animator.SetBool("Recolect", false);
+    }  
 
     #endregion
 }

@@ -2,43 +2,42 @@
 using System.Collections.Generic;
 
 [System.Serializable]
-public class GoAwayParameters {
+public class FlyingParameters {
     /// <summary>
-    /// A reference to the path this entity will follow.
+    /// True if use the path to walk or false if use the area instead
     /// </summary>
-    public PathDefinition endPoint;
+    public bool usePath = true;
     /// <summary>
-    /// Defines how will the entity move to the next point in the path.
-    /// </summary>
-    public FollowType followType = FollowType.MoveTowards;
+	/// A reference to the path this entity will follow.
+	/// </summary>
+	public PathDefinition path;
     /// <summary>
-    /// Speed of the entity.
+    /// Area where entity will stay walking
     /// </summary>
-    public float speed = 10;
+    public Region walkArea;
+
+    /// <summary>
+	/// Defines how will the entity move to the next point in the path.
+	/// </summary>
+	public FollowType followType = FollowType.MoveTowards;
+    /// <summary>
+	/// Speed of the entity.
+	/// </summary>
+	public float speed = 10;
     /// <summary>
     /// if true, the axis will be fixed at rotation
     /// </summary>
     public AxisBoolean fixedRotation;
     /// <summary>
-    /// If enabled, the entity will rotate to face the end point
-    /// </summary>
-    public bool useOrientationFinalPosition = true;
-    /// <summary>
-    /// 
+    /// Velocity rotation when walking
     /// </summary>
     public float rotationVelocity = 150;
-    /// <summary>
-    /// If true, the bee will fly around the point,
-    /// if not, will recolect
-    /// only apply to bee
-    /// </summary>
-    public bool endMoving = false;
 }
 
-public class GoAway : StateMachineBehaviour {
+public class Flying : StateMachineBehaviour {
     #region Public and hidden in inspector attributes
     [HideInInspector]
-    public GoAwayParameters parameters;
+    public FlyingParameters parameters;
     [HideInInspector]
     public CommonParameters commonParameters;
     #endregion
@@ -48,21 +47,27 @@ public class GoAway : StateMachineBehaviour {
 	/// A reference to the entity's controller.
 	/// </summary>
 	private CharacterController _controller;
-    
+    /// <summary>
+    /// The next point to move toward
+    /// </summary>
+    private Vector3 _targetPosition;
     /// <summary>
     /// Tell if arrived to the target point (but maybe not at the desired rotation)
     /// </summary>
     private bool _positionTargeted;
+    
     #endregion
 
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        animator.SetBool("GoAway", false);
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
 
-		// Moves the enumerator to the first/next position
-		parameters.endPoint.MoveNext();
+        commonParameters.minimumWalkingDistance = AIMethods.GetMinimumDistance(parameters.speed, parameters.rotationVelocity);
+        commonParameters.minimumWalkingDistance += commonParameters.toleranceDistanceToGoal;
+
+        // Moves the enumerator to the first/next position
         _positionTargeted = false;
+        GetNextTarget();
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -81,7 +86,7 @@ public class GoAway : StateMachineBehaviour {
         //only move if not reached the point
         if (!_positionTargeted) {
             Vector3 originalPosition = commonParameters.enemy.transform.position;
-            Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, parameters.endPoint.Current.position, parameters.followType,
+            Vector3 finalPosition = AIMethods.MoveEnemy(originalPosition, _targetPosition, parameters.followType,
                                                         commonParameters.onFloor, parameters.speed);
             AIMethods.RotateEnemyTowards(commonParameters.enemy, parameters.fixedRotation, commonParameters.initialRotationEnemy,
                                 parameters.rotationVelocity, originalPosition, finalPosition);
@@ -102,55 +107,41 @@ public class GoAway : StateMachineBehaviour {
     }
 
     /// <summary>
-    /// Check if reached the desired point
+    /// Check if reached the desired point and rotate if needed when
+    /// arrived to the point
     /// </summary>
     /// <param name="animator"></param>
     private void CheckTargetPoint(Animator animator) {
         //reached point!
-        if (AIMethods.CheckTargetPoint(commonParameters.enemy, parameters.endPoint.Current.position, commonParameters.onFloor, commonParameters.minimumWalkingDistance)) {
-            Transform last = parameters.endPoint.Current;
-            int lastPoint=parameters.endPoint.points.Length-1;
-
-            //end of path?
-            if (last != parameters.endPoint.points[lastPoint]) {
+        if (AIMethods.CheckTargetPoint(commonParameters.enemy, _targetPosition, 
+            commonParameters.onFloor, commonParameters.minimumWalkingDistance)) {
                 //don't want to stay in the point, continue!
                 _positionTargeted = false;
-                parameters.endPoint.MoveNext();
-            }
-                //if not...
-            else {
-                //don't move, only rotate
-                _positionTargeted = true;
-
-                if (parameters.useOrientationFinalPosition && !parameters.endMoving) {
-                    //check if rotation is already targeted
-                    Quaternion targetRotation = parameters.endPoint.Current.rotation;
-                    if (AIMethods.CheckTargetRotation(commonParameters.enemy, targetRotation, commonParameters.toleranceDegreeToGoal)) {
-                        //yes? change to "recolect"
-                        EndGoAway(animator);
-                    } else {
-                        //no? rotate it
-                        AIMethods.RotateEnemy(commonParameters.enemy, targetRotation,
-                               parameters.rotationVelocity, parameters.useOrientationFinalPosition);
-                    }
-                } else {
-                    EndGoAway(animator);
-                }
-
-            }
+                GetNextTarget();
 
         } else {
             _positionTargeted = false;
         }
     }
-
-    private void EndGoAway(Animator animator) {
-        if (parameters.endMoving)
-            animator.SetBool("EndFlying", true);
-        else 
-            animator.SetBool("Recolect", true);
-    }
     
+    /// <summary>
+    /// Get the next target
+    /// </summary>
+    private void GetNextTarget() {
+        //if not walking at all, the target is where the enemy actually is
+        if (!commonParameters.walking) {
+            _targetPosition = commonParameters.initialPositionEnemy;
+
+            //choose next point
+        } else if (parameters.usePath) {
+            parameters.path.MoveNext();
+            _targetPosition = parameters.path.Current.position;
+        } else {
+            //select random point in the area
+            _targetPosition = parameters.walkArea.GetRandomPoint() + commonParameters.rootEntityPosition.position;
+        }
+    }
 
     #endregion
+
 }

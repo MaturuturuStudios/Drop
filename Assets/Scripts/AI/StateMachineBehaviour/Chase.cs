@@ -15,10 +15,6 @@ public class ChaseParameters {
     /// if true, the axis will be fixed at rotation
     /// </summary>
     public AxisBoolean fixedRotation;
-    /// <summary>
-    /// Particle system of walking effect
-    /// </summary>
-    public GameObject walkingFX;
 }
 
 public class Chase : StateMachineBehaviour, CollisionListener {
@@ -52,12 +48,6 @@ public class Chase : StateMachineBehaviour, CollisionListener {
 		//Call listeners
 		foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
             listener.OnBeginChase(commonParameters.AI, _dropChased);
-
-        // Starts particle system
-        foreach (ParticleSystem system in parameters.walkingFX.GetComponentsInChildren<ParticleSystem>()) {
-            ParticleSystem.EmissionModule emission = system.emission;
-            emission.enabled = true;
-        }
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -67,6 +57,7 @@ public class Chase : StateMachineBehaviour, CollisionListener {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
+        animator.SetBool("Recolect", false);
         commonParameters.colliders.RemoveListener(this);
         
 		//Call listeners
@@ -74,12 +65,6 @@ public class Chase : StateMachineBehaviour, CollisionListener {
 			listener.OnEndChase(commonParameters.AI, _dropChased);
 		foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
             listener.OnEndChase(commonParameters.AI, _dropChased);
-
-        // Stops particle system
-        foreach (ParticleSystem system in parameters.walkingFX.GetComponentsInChildren<ParticleSystem>()) {
-            ParticleSystem.EmissionModule emission = system.emission;
-            emission.enabled = false;
-        }
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

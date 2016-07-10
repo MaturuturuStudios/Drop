@@ -46,6 +46,7 @@ public class DetectPlayer : StateMachineBehaviour, CollisionListener {
         animator.SetBool("GoAway", false);
         animator.SetBool("Reached", false);
         animator.SetBool("Near", false);
+        animator.SetBool("Recolect", false);
         commonParameters.colliders.RemoveListener(this);
     }
 
