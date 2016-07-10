@@ -31,6 +31,7 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
     public GameObject GetPanel() {
         return gameObject;
     }
+
     /// <summary>
     /// Get the focus to the panel
     /// </summary>
@@ -61,7 +62,9 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
         availableLanguages = LanguageManager.Instance.GetLanguages();
         int i = 0;
         //option selected by the user
-        string actualLanguage = Application.systemLanguage.ToString();
+        string actualLanguage = PlayerPrefs.GetString(OptionsKey.Language, "none");
+        if(actualLanguage.CompareTo("none")==0)
+            actualLanguage = Application.systemLanguage.ToString();
         //just in case, have the english prepared
         int englishIndex = -1;
         string englishLanguage = SystemLanguage.English.ToString();
@@ -76,13 +79,18 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
         }
 
         //if none selected, select the english by default
-        if (_selectedLanguage < 0) _selectedLanguage = englishIndex;
+        if (_selectedLanguage < 0) 
+            _selectedLanguage = englishIndex;
+        
         languages.value = _selectedLanguage;
         languages.RefreshShownValue();
     }
 
     public void LanguageChanged(Dropdown target) {
-        LanguageManager.Instance.ChangeLanguage(availableLanguages[target.value]);
+        string language = availableLanguages[target.value];
+        LanguageManager.Instance.ChangeLanguage(language);
+        //store the option
+        PlayerPrefs.SetString(OptionsKey.Language, language);
     }
 
     public void Start() {

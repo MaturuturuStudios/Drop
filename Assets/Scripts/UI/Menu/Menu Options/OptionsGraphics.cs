@@ -24,7 +24,7 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     /// <summary>
     /// A toggle for fullscreen
     /// </summary>
-    public Toggle fullsceen;
+    public Toggle fullscreen;
     #endregion
 
     #region Private attributes
@@ -55,7 +55,7 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     /// <summary>
     /// Antialiasing selected by the user
     /// </summary>
-    private int _changedAntiAliasing = -1;
+    private float _changedAntiAliasing = -1;
     #endregion
 
     #region Method
@@ -99,7 +99,7 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         if (antialiasing == null) {
             Debug.LogError("Don't have the antialiasing option!");
         }
-        if (fullsceen == null) {
+        if (fullscreen == null) {
             Debug.LogError("Dons't have the fullscreen option!");
         }
 
@@ -110,10 +110,15 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         FillQuality();
 
         //get the fullscreen
-        fullsceen.isOn = Screen.fullScreen;
+        int stored = PlayerPrefs.GetInt(OptionsKey.GraphicsFullscreen, 3);
+        if (stored == 3) {
+            fullscreen.isOn = Screen.fullScreen;
+        } else {
+            fullscreen.isOn = (stored == 0) ? true : false;
+        }
 
         //get the antialiasing
-        _selectedAntiAliasing = QualitySettings.antiAliasing / 2;
+        _selectedAntiAliasing = PlayerPrefs.GetInt(OptionsKey.GraphicsAntialiasing, QualitySettings.antiAliasing)/2;
         antialiasing.value = _selectedAntiAliasing;
 
     }
@@ -160,7 +165,7 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         }
 
         //store the actual quality
-        _selectedQuality = QualitySettings.GetQualityLevel();
+        _selectedQuality = PlayerPrefs.GetInt(OptionsKey.GraphicsQuality, QualitySettings.GetQualityLevel());
         quality.value = _selectedQuality;
         quality.RefreshShownValue();
     }
@@ -216,7 +221,7 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     /// </summary>
     /// <param name="target"></param>
     private void AntiAliasingChanged(Slider target) {
-
+        _changedAntiAliasing = target.value;
     }
 
     /// <summary>
@@ -241,10 +246,10 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     /// </summary>
     public void SaveChanges() {
         //change the resolution and fullscren
-        if (Screen.fullScreen != fullsceen.isOn || _selectedResolution != _changedResolution) {
+        if (Screen.fullScreen != fullscreen.isOn || _selectedResolution != _changedResolution) {
             //if no changes on resolution, set the previous one
             if (_changedResolution < 0) _changedResolution = _selectedResolution;
-            Screen.SetResolution(_resolutions[_changedResolution].width, _resolutions[_changedResolution].height, fullsceen.isOn);
+            Screen.SetResolution(_resolutions[_changedResolution].width, _resolutions[_changedResolution].height, fullscreen.isOn);
             _selectedResolution = _changedResolution;
         }
 
@@ -253,17 +258,31 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
             if (_changedAntiAliasing < 0) _changedAntiAliasing = _selectedAntiAliasing;
             if (_changedQuality < 0) _changedQuality = _selectedQuality;
 
-            QualitySettings.antiAliasing = _changedAntiAliasing * 2;
+            QualitySettings.antiAliasing = (int)(_changedAntiAliasing) * 2;
             QualitySettings.SetQualityLevel(_changedQuality);
 
             _selectedQuality = _changedQuality;
-            _selectedAntiAliasing = _changedAntiAliasing;
+            _selectedAntiAliasing = (int)(_changedAntiAliasing);
         }
 
         //recover the dirty state
         _changedQuality = -1;
         _changedResolution = -1;
         _changedAntiAliasing = -1;
+
+        StoreOptions();
+    }
+
+    private void StoreOptions() {
+        PlayerPrefs.SetInt(OptionsKey.GraphicsQuality, QualitySettings.GetQualityLevel());
+
+        int full = (fullscreen.isOn) ? 0 : 1;
+        PlayerPrefs.SetInt(OptionsKey.GraphicsFullscreen, full);
+        
+        PlayerPrefs.SetInt(OptionsKey.GraphicsAntialiasing, _selectedAntiAliasing * 2);
+        //TODO store resolucion
+        //problem, is always force setted from the initial box of unity
+        //disable it and will see how to deal with it
     }
     #endregion
 }

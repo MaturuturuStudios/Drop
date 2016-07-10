@@ -71,8 +71,12 @@ public class LanguageManager : ScriptableObject {
         _textTable = new Dictionary<string, string>();
         _languagePath = _folder + "/";
         //Set the default language
-        //TODO system language / option user...
-        LoadLanguage(Application.systemLanguage.ToString());
+        //option selected by the user
+        string actualLanguage = PlayerPrefs.GetString(OptionsKey.Language, "none");
+        if (actualLanguage.CompareTo("none") == 0)
+            actualLanguage = Application.systemLanguage.ToString();
+
+        LoadLanguage(actualLanguage);
     }
 
     /// <summary>
