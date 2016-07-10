@@ -14,6 +14,8 @@ public class OptionsMenu : MonoBehaviour {
     /// Must match with firstSelected
     /// </summary>
     public GameObject firstPanelSelected;
+
+    public GameObject background;
     #endregion
 
     #region Private Attributes
@@ -48,9 +50,9 @@ public class OptionsMenu : MonoBehaviour {
         }
 
         //make sure the option is visible and running
-        _actualPanel = firstPanelSelected.GetComponent<SubOptionInterface>();
-        _actualPanel.GetPanel().SetActive(true);
-        _actualMenuSelected = firstSelected;
+        //_actualPanel = firstPanelSelected.GetComponent<SubOptionInterface>();
+        //_actualPanel.GetPanel().SetActive(true);
+        //_actualMenuSelected = firstSelected;
         //we have to select the option in update
         _selectOption = true;
 	}
@@ -145,14 +147,21 @@ public class OptionsMenu : MonoBehaviour {
     public void UnfocusOption() {
         //deselect the main option as a panel's option focused
         _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
+        //hide it
+        _actualMenuSelected.GetComponent<OnSelectInvokeOptions>().panelToShow.SetActive(false);
         //and set the focus to the button
         EventSystem.current.SetSelectedGameObject(_actualMenuSelected);
+
+        background.SetActive(false);
     }
 
     public void FocusOption() {
         //get the option selected
         _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
-        
+
+        //show the panel
+        OnSelectInvokeOptions invoke = _actualMenuSelected.GetComponent<OnSelectInvokeOptions>();
+        invoke.ChangePanel();
 
         //send the focus to the suboption panel
         //set the focus on an element of the panel and get its title as panel under focus
@@ -175,9 +184,11 @@ public class OptionsMenu : MonoBehaviour {
         //get the script
         SubOptionInterface subOption = panel.GetComponent<SubOptionInterface>();
 
+        background.SetActive(true);
+
         //unload the previous suboption and deselect the button associated
-        _actualPanel.GetPanel().SetActive(false);
-        _actualPanel.LoseFocus();
+        //_actualPanel.GetPanel().SetActive(false);
+        //_actualPanel.LoseFocus();
 
         //store new suboption and get it setted
         _actualPanel = subOption;
