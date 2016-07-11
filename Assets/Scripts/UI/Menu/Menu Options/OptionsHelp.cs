@@ -85,16 +85,11 @@ public class OptionsHelp : MonoBehaviour, SubOptionInterface {
     public bool GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(firstSelected);
-        if (title != null) {
-            //mark title as panel selected
-            title.color = MenuNavigator.titleColor;
-        }
         return true;
     }
 
     public void LoseFocus() {
         if (title != null) {
-            title.color = Color.white;
             if (EventSystem.current.currentSelectedGameObject != null)
                 EventSystem.current.SetSelectedGameObject(null);
         }

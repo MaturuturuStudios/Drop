@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     #region Public attributes
@@ -73,21 +74,12 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     public bool GetFocus() {
         //select the option
         EventSystem.current.SetSelectedGameObject(resolution.gameObject);
-        if (title!=null){
-            //mark title as panel selected
-            title.color = MenuNavigator.titleColor;
-        }
+
         return true;
     }
 
     public void LoseFocus() {
-        if (title != null) {
-            title.color = Color.white;
-            if (EventSystem.current.currentSelectedGameObject != null)
-                EventSystem.current.SetSelectedGameObject(null);
-        }
     }
-
 
     public void Awake() {
         if (resolution == null) {

@@ -25,7 +25,6 @@ public class OptionsDummy : MonoBehaviour, SubOptionInterface {
 
     public void LoseFocus() {
         if (title != null) {
-            title.color = Color.white;
             EventSystem.current.SetSelectedGameObject(null);
         }
     }

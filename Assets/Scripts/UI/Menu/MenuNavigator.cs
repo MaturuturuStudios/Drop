@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class MenuNavigator : MonoBehaviour {
 
-    public static Color titleColor = Color.yellow;
+    //public static Color titleColor = Color.white;
 
     #region Enumerations
     public enum Menu {

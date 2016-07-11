@@ -49,10 +49,6 @@ public class OptionsMenu : MonoBehaviour {
             _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
         }
 
-        //make sure the option is visible and running
-        //_actualPanel = firstPanelSelected.GetComponent<SubOptionInterface>();
-        //_actualPanel.GetPanel().SetActive(true);
-        //_actualMenuSelected = firstSelected;
         //we have to select the option in update
         _selectOption = true;
 	}
@@ -186,15 +182,10 @@ public class OptionsMenu : MonoBehaviour {
 
         background.SetActive(true);
 
-        //unload the previous suboption and deselect the button associated
-        //_actualPanel.GetPanel().SetActive(false);
-        //_actualPanel.LoseFocus();
-
         //store new suboption and get it setted
         _actualPanel = subOption;
         _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
         _actualPanel.GetPanel().SetActive(true);
-        //_actualMenuSelected.GetComponent<Animator>().SetBool("Setted", true);
         
     }
 

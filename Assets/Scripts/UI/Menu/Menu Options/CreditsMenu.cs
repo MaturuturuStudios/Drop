@@ -147,12 +147,9 @@ public class CreditsMenu : MonoBehaviour {
             _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
             return;
         }
-        //get the script
-        //SubOptionInterface subOption = panel.GetComponent<SubOptionInterface>();
 
         //store new suboption and get it setted
         _actualMenuSelected = EventSystem.current.currentSelectedGameObject;
-        //_actualMenuSelected.GetComponent<Animator>().SetBool("Setted", true);
         
     }
 
