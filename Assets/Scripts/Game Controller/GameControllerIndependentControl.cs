@@ -68,11 +68,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
         drop.gameObject.name = "Drop" + ++_dropNameCounter;
 
         // Look for the characters pool in hierarchy
-        GameObject charactersPool = GameObject.FindGameObjectWithTag("Characters");
+        GameObject charactersPool = GameObject.Find("Characters");
         // If don't exist create it
         if (!charactersPool)
             charactersPool = new GameObject("Characters");
-        charactersPool.tag = "Characters";
         // Put it into the Characters object
         drop.transform.parent = charactersPool.transform;
 
