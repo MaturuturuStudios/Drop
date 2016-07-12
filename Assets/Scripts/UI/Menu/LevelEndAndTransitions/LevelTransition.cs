@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Fade in and out the scenes
 /// </summary>
-public class LevelEndCounter : MonoBehaviour {
+public class LevelTransition : MonoBehaviour {
 
     #region Public attributes
 
@@ -84,6 +84,23 @@ public class LevelEndCounter : MonoBehaviour {
         _audioSource = GetComponent<AudioSource>();
     }
 
+    /// <summary>
+    /// This method calls the apropiate animations for the level transitions
+    /// </summary>
+    /// <param name="totalDrops">Total of drops in game</param>
+    /// <param name="wastedDrops">Total of drops wasted</param>
+    /// <param name="startDelay">Time to start the animation</param>
+    /// <param name="delayBetweenDrops">Wait before show next drop counter animation</param>
+    public void BeginLevelTransitionAnim(int totalDrops, int wastedDrops, float startDelay, float delayBetweenDrops)
+    {
+        if (delayBetweenDrops <= -1) {
+            delayBetweenDrops = waitTimeNextDrop;
+        }
+
+        // Start counter animation
+        StartCoroutine(DropCounter(totalDrops, wastedDrops, startDelay, delayBetweenDrops));
+    }
+
 
     /// <summary>
     /// Animation that shows the number of drops collected in the level
@@ -91,11 +108,11 @@ public class LevelEndCounter : MonoBehaviour {
     /// <param name="totalDrops">Total of drops in the level</param>
     /// <param name="wastedDrops">Number of drops left in scene</param>
     /// <param name="startDelay">Wait before start animation</param>
-    /// <param name="delayBetweenDrops">Wait before show next drop</param>
+    /// <param name="delayBetweenDrops">Wait before show next drop counter animation</param>
     public IEnumerator DropCounter(int totalDrops, int wastedDrops, float startDelay, float delayBetweenDrops) {
 
         // Wait to start fading
-        yield return MenuNavigator.WaitForRealSeconds(startDelay);
+        yield return new WaitForSeconds(startDelay);
 
         for (int i = 0; i < totalDrops; ++i) {
 
@@ -131,7 +148,7 @@ public class LevelEndCounter : MonoBehaviour {
             drop2DAnim.GetComponent<RectTransform>().anchoredPosition = new Vector2(horizontalPosition, Screen.height * heightPosition);
 
             // Wait for next animation
-            yield return MenuNavigator.WaitForRealSeconds(delayBetweenDrops);
+            yield return new WaitForSeconds(delayBetweenDrops);
         }
     }
     #endregion

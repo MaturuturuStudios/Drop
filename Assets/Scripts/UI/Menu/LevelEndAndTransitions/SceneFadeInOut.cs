@@ -168,9 +168,8 @@ public class SceneFadeInOut : MonoBehaviour {
 
         // Start fade animation
         BeginFade(false, desiredFadeDuration);
-        if (showUI) {
-            StartCoroutine(_levelEndThanks.EndMessage(fadeDuration));
-        }
+
+        // Show loading icon
         StartCoroutine(_loadingAnim.PlayLoadingAnim(op));
         // Wait for the fade duration
         yield return MenuNavigator.WaitForRealSeconds(fadeDuration);

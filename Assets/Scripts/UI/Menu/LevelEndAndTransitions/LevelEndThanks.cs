@@ -29,14 +29,6 @@ public class LevelEndThanks : MonoBehaviour {
     /// </summary>
     private GameObject _parentUI;
 
-
-    /// <summary>
-    /// Reference to the object's original AudioSource component which
-    /// the values for the new ones will be copied from.
-    /// </summary>
-    private AudioSource _audioSource;
-
-
     /// <summary>
     /// Duration while fading
     /// </summary>
@@ -86,9 +78,6 @@ public class LevelEndThanks : MonoBehaviour {
     public void Start() {
         // Get UI parent reference
         _parentUI = GameObject.FindGameObjectWithTag("Menus");
-
-        // Get reference to audio source
-        _audioSource = GetComponent<AudioSource>();
 
         // Set _endComposionText an empty list
 

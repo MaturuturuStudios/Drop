@@ -58,10 +58,10 @@ public class LevelEndController : MonoBehaviour {
 
 
     /// <summary>
-    /// Reference to level end animation
+    /// Reference to level transition
     /// </summary>
-    private LevelEndThanks _levelEndThanks;
-    
+    private LevelTransition _levelTransition;    
+
     #endregion
 
     #region Methods
@@ -95,7 +95,7 @@ public class LevelEndController : MonoBehaviour {
         //Get input controller
         _gcic = FindObjectOfType<GameControllerIndependentControl>();
         //Get input controller
-        _levelEndThanks = FindObjectOfType<LevelEndThanks>();
+        _levelTransition = GetComponent<LevelTransition>();
     }
 
 
@@ -104,16 +104,16 @@ public class LevelEndController : MonoBehaviour {
     /// </summary>
     public void LevelEnd(){
 
-            // Stops input
-            _gci.StopInput();
+        // Stops input
+        _gci.StopInput();
 
-            // Load scene async
-            _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
+        // Load scene async
+        _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
 
-            int totalDrops = _gcic.CountAlllDrops(true);
-            int controlledDrops = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
-        // Start level end animation
-        //_levelEndThanks.EndMessage(fadeDuration);
+        int totalDrops = _gcic.CountAlllDrops(true);
+        int controlledDrops = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
+        // Start transition animation
+        _levelTransition.BeginLevelTransitionAnim(totalDrops, totalDrops - controlledDrops, delayStart, fadeDuration / totalDrops);
     }
 
 
