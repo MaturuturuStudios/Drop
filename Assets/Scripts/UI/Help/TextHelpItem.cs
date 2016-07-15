@@ -6,6 +6,11 @@
 [RequireComponent(typeof(TextMesh))]
 public abstract class TextHelpItem : HelpItem {
 
+	/// <summary>
+	/// The layer for the help item's text.
+	/// </summary>
+	public string textLayerName = "help";
+
     /// <summary>
     /// Reference to the object's TextMesh component.
     /// </summary>
@@ -16,17 +21,11 @@ public abstract class TextHelpItem : HelpItem {
 	/// </summary>
 	private MeshRenderer _renderer;
 
-	/// <summary>
-	/// The sorting layer of the text. Used to separate it
-	/// from the graphic.
-	/// </summary>
-	private static readonly string SORTING_LAYER_NAME = "foreground";
-
 	protected override void OnAwake() {
 		// Retrieves the desired components
 		_textRenderer = GetComponent<TextMesh>();
 		_renderer = GetComponent<MeshRenderer>();
-		_renderer.sortingLayerID = SortingLayer.NameToID(SORTING_LAYER_NAME);
+		_renderer.sortingLayerID = SortingLayer.NameToID(textLayerName);
     }
 
 	protected override void OnUpdate() {
