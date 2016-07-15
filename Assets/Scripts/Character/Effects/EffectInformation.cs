@@ -39,6 +39,7 @@ public class EffectInformation {
 	/// <returns>The created effect</returns>
 	public GameObject PlayEffect(Vector3 position, Quaternion rotation, float scale = 1.0f) {
 		GameObject effect = UnityEngine.Object.Instantiate(effectPrefab, position, rotation) as GameObject;
+		GameControllerTemporal.AddTemporal(effect);
 		if (scaleWithSize) {
 			if (rootedScale)
 				scale = Mathf.Sqrt(scale);

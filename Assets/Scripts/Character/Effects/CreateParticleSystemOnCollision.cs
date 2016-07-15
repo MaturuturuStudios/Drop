@@ -63,6 +63,10 @@ public class CreateParticleSystemOnCollision : MonoBehaviour {
 				effect.transform.parent = _transform;
 				effect.transform.localScale = Vector3.one;
 			}
+			else {
+				// Registers the effect on the game controller
+				GameControllerTemporal.AddTemporal(effect);
+			}
 			Destroy(effect, duration);
 		}
 	}

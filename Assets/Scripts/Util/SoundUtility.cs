@@ -15,6 +15,7 @@ public static class SoundUtility {
 		// Creates a new audio source
 		GameObject container = new GameObject("Sound: " + clip.name);
 		AudioSource audioSource = CopyAudioSource(originalAudioSource, container);
+		GameControllerTemporal.AddTemporal(container);
 
 		// Places the audio source and plays the sound
 		audioSource.transform.position = position;

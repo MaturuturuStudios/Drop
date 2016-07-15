@@ -28,6 +28,7 @@ public class JumpMushroomEffect : MonoBehaviour, JumpMushroomListener {
 
 	public void OnBounce(JumpMushroom mushroom, GameObject bouncingCharacter, Vector3 bounceVelocity, Vector3 collisionPoint, Vector3 collisionNormal) {
 		GameObject effect = (GameObject) Instantiate(effectPrefab, collisionPoint, Quaternion.LookRotation(Vector3.forward, collisionNormal));
+		GameControllerTemporal.AddTemporal(effect);
 		if (scaleWithSize) {
 			CharacterSize characterSize = bouncingCharacter.GetComponent<CharacterSize>();
 			effect.transform.localScale = Vector3.one;

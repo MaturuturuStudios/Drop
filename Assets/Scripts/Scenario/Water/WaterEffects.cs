@@ -63,7 +63,8 @@ public class WaterEffects : MonoBehaviour, WaterRepulsionListener {
 
         // Destroys the systems
         foreach (GameObject effect in effects) {
-            Destroy(effect, duration);
+			GameControllerTemporal.AddTemporal(effect);
+			Destroy(effect, duration);
         }
     }
 }

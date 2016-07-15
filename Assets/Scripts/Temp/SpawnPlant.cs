@@ -18,6 +18,7 @@ public class SpawnPlant : Irrigate {
 	protected override void OnIrrigate() {
 		//set the particles
 		GameObject system = Instantiate(particleGrow) as GameObject;
+		GameControllerTemporal.AddTemporal(system);
 		system.transform.position = transform.position;
 		system.transform.rotation = transform.rotation;
 
