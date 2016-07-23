@@ -7,16 +7,14 @@ public class HighlightedOnSelectSubOption : MonoBehaviour, ISelectHandler, IDese
     public Animator asociatedTitle;
 
     public void OnDeselect(BaseEventData eventData) {
-        asociatedTitle.SetBool("Disabled", false);
-        asociatedTitle.SetBool("Selected", false);
-        asociatedTitle.SetBool("Normal", true);
+        asociatedTitle.SetTrigger("Normal");
     }
 
     public void OnSelect(BaseEventData eventData) {
-        asociatedTitle.SetBool("Normal", false);
-        asociatedTitle.SetBool("Disabled", false);
-        asociatedTitle.SetBool("Selected", true);
+        asociatedTitle.SetTrigger("Selected");
     }
 
-    
+    public void Disable() {
+        asociatedTitle.SetTrigger("Disabled");
+    }
 }
