@@ -77,9 +77,7 @@ public class GameControllerInput : MonoBehaviour {
 
             // Jump input
             if (Input.GetButtonDown(Axis.Jump))
-                cccp.JumpInput = 1f;
-            else
-                cccp.JumpInput = 0f;
+                cccp.Jump();
 
             // Control that triggers are pressed only one time
             if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {

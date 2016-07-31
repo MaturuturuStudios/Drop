@@ -47,11 +47,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	public float VerticalInput { get; set; }
 
 	/// <summary>
-	/// Signed-normalized input for the jump control.
-	/// </summary>
-	public float JumpInput { get; set; }
-
-	/// <summary>
 	/// The direction the character is fancing, defined by the last input received.
 	/// </summary>
 	public Vector3 FacingDirection { get; private set; }
@@ -70,10 +65,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// </summary>
 	private CharacterControllerCustom _controller;
 
-	/// <summary>
-	/// Flag that indicates if the player has released the jump button.
-	/// </summary>
-	private bool _jumpReleased;
+    /// <summary>
+    /// Flag that indicates if the jump button has been pressed since the
+    /// previous fixed tick.
+    /// </summary>
+    private bool _jumpButtonPressed;
 
 	/// <summary>
 	/// Time since the jump button was pressed.
@@ -109,9 +105,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 
 		// By default, the player starts facing right
 		FacingDirection = Vector3.right;
-
-		// Sets the jump button flag
-		_jumpReleased = true;
 	}
 
 	/// <summary>
@@ -172,12 +165,13 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		}
 
 		// Checks if the jump button has been recently pressed
-		if (JumpInput > 0 && _jumpReleased) {
-			_jumpReleased = false;
+		if (_jumpButtonPressed) {
+            // While this counter is running the character will jump as soon as it cans
 			_jumpPressTime = jumpPressTolerance;
+
+            // Restores the flag
+            _jumpButtonPressed = false;
 		}
-		else if (JumpInput <= 0)
-			_jumpReleased = true;
 
 		// Checks if the character was grounded recently
 		bool groundTrick = false;
@@ -211,12 +205,22 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		// Removes the input
 		HorizontalInput = 0;
 		VerticalInput = 0;
-		JumpInput = 0;
+		_jumpButtonPressed = false;
 
 		// If it has to, hard stops the controller
 		if (hardStop)
 			_controller.Stop();
 	}
+
+    /// <summary>
+    /// Makes the character jump. If it can't at this moment, there will be
+    /// a grace period where the character will jump automatically as soon as
+    /// it cans.
+    /// </summary>
+    public void Jump() {
+        // Sets the jump button flag
+        _jumpButtonPressed = true;
+    }
 
 	#endregion
 }

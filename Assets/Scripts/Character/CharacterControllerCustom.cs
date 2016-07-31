@@ -643,7 +643,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// If the flying timer has expired, stops the flight
 		if (_flyingTime < 0)
-		StopFlying();
+		    StopFlying();
 
 		// Adds the gravity to the velocity. If sliding, multiply it by a drag factor.
 		float dragFactor = 1;
