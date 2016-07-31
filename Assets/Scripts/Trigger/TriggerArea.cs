@@ -349,6 +349,14 @@ public class TriggerArea : MonoBehaviour {
 		return false;
 	}
 
+    /// <summary>
+    /// Enables or disables this trigger. Usefull for other triggers.
+    /// </summary>
+    /// <param name="enabled">If the trigger should be enabled</param>
+    public void SetEnabled(bool enabled) {
+        this.enabled = enabled;
+    }
+
 	/// <summary>
 	/// Unity's method called on the editor to draw helpers.
 	/// </summary>
