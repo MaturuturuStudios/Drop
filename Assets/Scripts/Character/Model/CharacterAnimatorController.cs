@@ -44,6 +44,11 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 	/// </summary>
 	private GameObject _drop;
 
+    /// <summary>
+    /// Time in seconds since the last time the character was grounded.
+    /// </summary>
+    private float _timeSinceGrounded;
+
 	/// <summary>
 	/// Unity's method called right after the object is created.
 	/// </summary>
@@ -100,7 +105,14 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		// Restores the hit flag
 		if (!_ccc.State.IsFlying)
 			_animator.SetBool(CharacterAnimatorParameters.Hit, false);
-	}
+
+        // Updates the flying time
+        if (_ccc.State.IsGrounded)
+            _timeSinceGrounded = 0;
+        else
+            _timeSinceGrounded += Time.deltaTime;
+        _animator.SetFloat(CharacterAnimatorParameters.FloatingTime, _timeSinceGrounded);
+    }
 
 	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		// Updates the collision speed
