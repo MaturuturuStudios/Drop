@@ -731,9 +731,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
             if (!_animshot) {
                 _boolrender[i] = true;
                 _ball.SetActive(true);
-                foreach (ParticleSystem subSystem in _trajectoryPoints[i]) {
+                //foreach (ParticleSystem subSystem in _trajectoryPoints[i]) {
                     //subSystem.simulationSpace = ParticleSystemSimulationSpace.Local;
-                }          
+                //}          
             }
 
             _fwd = _trajectoryPoints[i + 1][0].transform.position - _trajectoryPoints[i][0].transform.position;

@@ -46,7 +46,7 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <summary>
     /// parent UI object
     /// </summary>
-    private LevelEndThanks _levelEndThanks;
+    //private LevelEndThanks _levelEndThanks;
     /// <summary>
     /// parent UI object
     /// </summary>
@@ -63,7 +63,7 @@ public class SceneFadeInOut : MonoBehaviour {
         _parentUI = GameObject.FindGameObjectWithTag("Menus");
 
         // References to animations
-        _levelEndThanks = FindObjectOfType<LevelEndThanks>();
+        //_levelEndThanks = FindObjectOfType<LevelEndThanks>();
         _loadingAnim = FindObjectOfType<LoadingAnim>();
 
         // Start fade in

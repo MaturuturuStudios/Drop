@@ -3,13 +3,13 @@ using System.Collections;
 
 public class AmbientPolen : MonoBehaviour {
     private ParticleSystem system;
-    private ParticleSystem.ShapeModule shape;
+    //private ParticleSystem.ShapeModule shape;
 
 
 	// Use this for initialization
 	void Awake() {
         system = GetComponent<ParticleSystem>();
-        shape = system.shape;
+        //shape = system.shape;
 	}
 	
 	// Update is called once per frame
