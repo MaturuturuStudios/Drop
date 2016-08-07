@@ -172,12 +172,6 @@ public class MainCameraController : MonoBehaviour {
 
 
     /// <summary>
-    /// Reference Vignette and chromatic aberration
-    /// </summary>
-    private VignetteAndChromaticAberration _vaca;
-
-
-    /// <summary>
     /// Target of the camera, it use to be the player
     /// </summary>
     private GameObject target;
@@ -309,9 +303,6 @@ public class MainCameraController : MonoBehaviour {
         // Get component depth of field
         _dof = GetComponent<DepthOfField>();
 
-        // Fet component of vignetting
-        _vaca = GetComponent<VignetteAndChromaticAberration>();
-
         // Sets the camera's target to the current character
         SetObjective(_independentControl.currentCharacter);
     }
@@ -351,10 +342,8 @@ public class MainCameraController : MonoBehaviour {
         // Sets distortion distance and Vignette value
         if (_dropSize < maxDistotionSize) {
             _zDistortionSized = zDistortionDistance * ((maxDistotionSize - _dropSize + 1) / maxDistotionSize);
-            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f + (0.03f * (5 - _dropSize + 1)), 0.05f * Time.deltaTime);
         } else {
             _zDistortionSized = 0;
-            _vaca.intensity = Mathf.MoveTowards(_vaca.intensity, 0.1f , 0.05f * Time.deltaTime);
         }
 
         // Set depth of field values
