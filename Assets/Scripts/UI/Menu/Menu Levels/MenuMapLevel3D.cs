@@ -14,6 +14,10 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public BoxCollider2D limits;
 
+    public float normalDistance=-300;
+    public float zoomOutDistance=-400;
+    public float timeZooming=1;
+
     /// <summary>
     /// Game object containing the map image and the worlds
     /// </summary>
@@ -140,8 +144,13 @@ public class MenuMapLevel3D : MonoBehaviour {
         //we have to select the option in update
         _selectOption = true;
         SelectMapCamera(true);
-        
-        //TODO select level       
+
+        Vector3 pos = transformCamera.localPosition;
+        pos.z = normalDistance;
+        transformCamera.localPosition = pos;
+
+        //TODO select level
+            
     }
 
     public void OnDisable() {
@@ -161,6 +170,8 @@ public class MenuMapLevel3D : MonoBehaviour {
         ConfigureWorlds();
 
         transformCamera = cameraCanvas.GetComponent<Transform>();
+        //show the world but not focus
+        //ShowLevels(actualWorldActive);
     }
 
     public void Update() {
@@ -181,14 +192,11 @@ public class MenuMapLevel3D : MonoBehaviour {
             _menuNavigator.ComeBack();
         }
 
-        //fade if needed the levels
-        //FadeIn();
-        //FadeOut();
-
         //move the camera to the target
         Vector3 actualPosition = cameraCanvas.transform.position;
 
         //TODO zoom in zoom out
+
 
         Vector3 target = WithinBounds(_targetPoint);
 
@@ -235,10 +243,15 @@ public class MenuMapLevel3D : MonoBehaviour {
         actualLevel = level;
         //show the world
         ShowLevels(world);
+
+        //if has a change of world, zoom in and out
+        if (actualWorldActive != world) StartCoroutine(Zoom());
+
         //store the actual world
         actualWorldActive = world;
         _startTime = Time.unscaledTime;
         //focus the selected level
+        //has no effect if it was already selected
         FocusLevel(world, level);
 
         //get the target point
@@ -279,6 +292,11 @@ public class MenuMapLevel3D : MonoBehaviour {
         cameraCanvas.enabled = activate;
     }
 
+    /// <summary>
+    /// Focus the level (like if the user has put the selection over the level)
+    /// </summary>
+    /// <param name="world"></param>
+    /// <param name="level"></param>
     private void FocusLevel(int world, int level) {
         if (EventSystem.current.currentSelectedGameObject != levels[world][level])
             EventSystem.current.SetSelectedGameObject(levels[world][level]);
@@ -329,7 +347,6 @@ public class MenuMapLevel3D : MonoBehaviour {
     private IEnumerator HiddeText(int world, bool hidden) {
         if (world >= 0) {
             float alpha = (hidden) ? 0:1;
-            float startTime = Time.unscaledDeltaTime;
             bool done = false;
             do {
                 GameObject first = levels[world][0];
@@ -474,6 +491,22 @@ public class MenuMapLevel3D : MonoBehaviour {
             script.delegateAction = this; //script to delegate
             i++;
         }
+    }
+    
+    private IEnumerator Zoom() {
+        float startTime = Time.unscaledTime;
+
+        float percentageTime = (Time.unscaledTime - startTime) / timeZooming;
+        do {
+            Vector3 position = transformCamera.localPosition;
+            //TODO
+            //maybe let a curve animation and evaluate it?
+            //or make this twice, one for zoom out and another for zoom in
+            position.z  = Mathf.Lerp(normalDistance, zoomOutDistance, Mathf.Sin(percentageTime*Mathf.PI));
+            transformCamera.localPosition = position;
+            yield return null;
+            percentageTime = (Time.unscaledTime - startTime) / timeZooming;
+        } while (percentageTime < 1);
     }
     #endregion
 }
