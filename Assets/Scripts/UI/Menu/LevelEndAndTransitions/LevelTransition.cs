@@ -66,11 +66,6 @@ public class LevelTransition : MonoBehaviour {
     /// </summary>
     public float _fadeDuration = 0.8f;
 
-
-    /// <summary>
-    /// the texture's alpha value between 0 and 1
-    /// </summary>
-    private float _alpha = 0.0f;
     #endregion
 
 
