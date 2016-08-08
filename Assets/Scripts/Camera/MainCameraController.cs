@@ -554,10 +554,7 @@ public class MainCameraController : MonoBehaviour {
 
         // When it is in shootmode
         if (_cameraState == CameraState.ShootMode) {
-            Debug.Log("Destination: " + destination + " ShootPosition: " + _shootPosition);
-            Vector3 testPosition = _shootPosition + _offset;
-            Debug.Log("testPosition: " + testPosition);
-            destination += testPosition;
+            destination += _shootPosition + _offset;
             destination /= 2;
 
         }
