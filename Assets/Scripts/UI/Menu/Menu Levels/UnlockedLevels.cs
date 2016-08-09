@@ -47,26 +47,20 @@ public class UnlockedLevels {
         info.level = 0;
 
         bool done = false;
-        for(int i=numberLevelsOnWorld.Length-1; i>0 && !done; i--) {
-            //this world have no levels unlocked...
-            if (unlockedLevels[i].Length == 0) continue;
-
+        for(int i=numberLevelsOnWorld.Length-1; i>=0 && !done; i--) {
             //this world have!
             info.world = i;
             //start with the low level
             info.level = 0;
             //search the higher unlocked level
-            bool levelDone = false;
-            for (int j = numberLevelsOnWorld[i]-1; j > 0 && !levelDone; j--) {
+            for (int j = numberLevelsOnWorld[i]-1; j >= 0 && !done; j--) {
                 if (!unlockedLevels[i][j]) continue;
 
-                if (info.level < i) {
-                    info.level = i;
-                    levelDone = true;
+                if (info.level <= j) {
+                    info.level = j;
+                    done = true;
                 }
             }
-            //done!
-            done = true;
         }
 
         return info;
@@ -104,10 +98,10 @@ public class UnlockedLevels {
     /// <summary>
     /// Unlock the next level available
     /// </summary>
-    public void UnlockNextLevel() {
+    public LevelInfo UnlockNextLevel() {
         LevelInfo nextLevel = GetNextAvailableLevel();
         UnlockLevel(nextLevel);
-
+        return nextLevel;
     }
 
     /// <summary>
@@ -120,7 +114,6 @@ public class UnlockedLevels {
         LevelInfo nextAvailable = lastUnlocked;
 
         int lastWorld = numberLevelsOnWorld.Length - 1;
-        int lastLevel = numberLevelsOnWorld[lastWorld] - 1;
 
         bool done = false;
         do {

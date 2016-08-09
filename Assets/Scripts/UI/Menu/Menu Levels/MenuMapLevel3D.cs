@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -40,7 +41,6 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public SpriteRenderer imageMap;
    
-
     /// <summary>
     /// The border of a normal level
     /// </summary>
@@ -49,6 +49,14 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// The border of the last level
     /// </summary>
     public Sprite ringLastLevel;
+    /// <summary>
+    /// Color for the non available levels
+    /// </summary>
+    public Color nonAvailableLevelColor;
+    /// <summary>
+    /// Color for the locked levels
+    /// </summary>
+    public Color lockedLevelColor;
     /// <summary>
     /// Time to reach the target point
     /// </summary>
@@ -62,7 +70,6 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public float hiddenAlphaWorld = 0.20f;
     #endregion
-
 
     #region Private Attributes
     /// <summary>
@@ -94,15 +101,9 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     private bool _selectOption;
     /// <summary>
-    /// The actual world actived.
-    /// Starting from 0
+    /// The actual world and level selected
     /// </summary>
-    private int actualWorldActive = 0;
-    /// <summary>
-    /// Actual level selected.
-    /// Start from 0
-    /// </summary>
-    private int actualLevel = 0;
+    private LevelInfo actualLevelInfo;
     /// <summary>
     /// Time in which the travel between points started
     /// </summary>
@@ -119,13 +120,9 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     private class OnSelectLevel : MonoBehaviour, ISelectHandler {
         /// <summary>
-        /// World the level belongs to
+        /// World and level info
         /// </summary>
-        public int world;
-        /// <summary>
-        /// level of the selectable
-        /// </summary>
-        public int level;
+        public LevelInfo level;
         /// <summary>
         /// Script to call to
         /// </summary>
@@ -147,7 +144,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             yield return new WaitForEndOfFrame();
 
             if (EventSystem.current.currentSelectedGameObject == selected) {
-                delegateAction.SelectLevel(world, level);
+                delegateAction.SelectLevel(level);
             }
         }
     }
@@ -158,19 +155,6 @@ public class MenuMapLevel3D : MonoBehaviour {
         //we have to select the option in update
         _selectOption = true;
         SelectMapCamera(true);
-        
-        //set the initial point
-        _targetPoint=levels[actualWorldActive][actualLevel].transform.position;
-        Vector3 target = WithinBounds(_targetPoint);
-        target.z = normalDistance;
-        transformCamera.position = target;
-
-        //set the distance and start zooming
-        Vector3 localPosition = transformCamera.localPosition;
-        localPosition.z = normalDistance;
-        transformCamera.localPosition = localPosition;
-
-        StartCoroutine(Zoom());
     }
 
     public void OnDisable() {
@@ -191,11 +175,12 @@ public class MenuMapLevel3D : MonoBehaviour {
         transformCamera = cameraCanvas.GetComponent<Transform>();
 
         //show the world but not focus
-        actualWorldActive = -1;
+        actualLevelInfo.world = -1;
+        actualLevelInfo.level = 0;
         ShowLevels(0);
 
-        actualLevel = 0;
-        actualWorldActive = 0;
+        actualLevelInfo.level = 0;
+        actualLevelInfo.world = 0;
     }
 
     public void Update() {
@@ -205,9 +190,23 @@ public class MenuMapLevel3D : MonoBehaviour {
             _selectOption = false;
             //select the option
             //pass the last unlocked converted in index from 0
-            SelectLevel(actualWorldActive, actualLevel);
-            //TODO: seleccionar el último nivel disponible
-            ChangeRingLevel(0, 0, actualWorldActive, actualLevel);
+            //set the initial point (last level unlocked)
+            LevelInfo lastLevel = levelsUnlocked.GetLastUnlockedLevel();
+            SelectLevel(lastLevel);
+            ChangeRingLevel(lastLevel, lastLevel);
+
+
+            _targetPoint = levels[actualLevelInfo.world][actualLevelInfo.level].transform.position;
+            Vector3 targeting = WithinBounds(_targetPoint);
+            targeting.z = normalDistance;
+            transformCamera.position = targeting;
+
+            //set the distance and start zooming
+            Vector3 localPosition = transformCamera.localPosition;
+            localPosition.z = normalDistance;
+            transformCamera.localPosition = localPosition;
+
+            StartCoroutine(Zoom());
         }
 
         //B, return, start
@@ -253,27 +252,39 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     /// <param name="world">World.</param>
     /// <param name="level">Level.</param>
-    public void SelectLevel(int world, int level = 0) {
-        if (world < 0 || level < 0 || world >= worlds.Length
-            || level >= levels[world].Length) return;
+    public void SelectLevel(LevelInfo info) {
+        if (info.world < 0 || info.level < 0 || info.world >= worlds.Length
+            || info.level >= levels[info.world].Length) return;
 
         //store the actual level
-        actualLevel = level;
+        actualLevelInfo.level = info.level;
         //show the world
-        ShowLevels(world);
+        ShowLevels(info.world);
 
         //if has a change of world, zoom in and out
-        if (actualWorldActive != world) StartCoroutine(Zoom());
+        if (actualLevelInfo.world != info.world) StartCoroutine(Zoom());
 
         //store the actual world
-        actualWorldActive = world;
+        actualLevelInfo.world = info.world;
         _startTime = Time.unscaledTime;
         //focus the selected level
         //has no effect if it was already selected
-        FocusLevel(world, level);
+        FocusLevel(info);
 
         //get the target point
-        _targetPoint = levels[world][level].transform.position;
+        _targetPoint = levels[info.world][info.level].transform.position;
+    }
+
+    /// <summary>
+    /// Search the next level available, unlock it and update the rings
+    /// </summary>
+    public void UnlockNextLevel() {
+        //get the previous unlocked
+        LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
+        //unlock the next
+        LevelInfo newUnlocked = levelsUnlocked.UnlockNextLevel();
+        //update rings
+        ChangeRingLevel(lastUnlocked, newUnlocked);
     }
     #endregion
 
@@ -315,9 +326,9 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     /// <param name="world"></param>
     /// <param name="level"></param>
-    private void FocusLevel(int world, int level) {
-        if (EventSystem.current.currentSelectedGameObject != levels[world][level])
-            EventSystem.current.SetSelectedGameObject(levels[world][level]);
+    private void FocusLevel(LevelInfo info) {
+        if (EventSystem.current.currentSelectedGameObject != levels[info.world][info.level])
+            EventSystem.current.SetSelectedGameObject(levels[info.world][info.level]);
     }
 
     /// <summary>
@@ -327,17 +338,17 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <param name="previousLevel">index from 0</param>
     /// <param name="world">index from 0</param>
     /// <param name="level">index from 0</param>
-    private void ChangeRingLevel(int previousWorld, int previousLevel, int world, int level) {
+    private void ChangeRingLevel(LevelInfo previous, LevelInfo actual) {
         //check index...
-        if (previousLevel < 0 || previousWorld < 0 || world < 0 || level < 0) return;
-        if (previousWorld >= worlds.Length || world >= worlds.Length
-            || level >= levels[world].Length || previousLevel >= levels[previousWorld].Length) return;
+        if (previous.level < 0 || previous.world < 0 || actual.world < 0 || actual.level < 0) return;
+        if (previous.world >= worlds.Length || actual.world >= worlds.Length
+            || actual.level >= levels[actual.world].Length || previous.level >= levels[previous.world].Length) return;
 
         //quit the ring to previous level
-        levels[previousWorld][previousLevel].GetComponentInChildren<SpriteRenderer>().sprite = ringBaseLevel;
+        levels[previous.world][previous.level].GetComponentInChildren<SpriteRenderer>().sprite = ringBaseLevel;
 
         //put the ring to the new level
-        levels[world][level].GetComponentInChildren<SpriteRenderer>().sprite = ringLastLevel;
+        levels[actual.world][actual.level].GetComponentInChildren<SpriteRenderer>().sprite = ringLastLevel;
     }
 
     /// <summary>
@@ -346,12 +357,12 @@ public class MenuMapLevel3D : MonoBehaviour {
 	/// <param name="world">World.</param>
 	private void ShowLevels(int world) {
         //if already actived, return
-        if (actualWorldActive == world) return;
+        if (actualLevelInfo.world == world) return;
         
 
         //if any world actived, fade it out
-        if (actualWorldActive >= 0 && actualWorldActive < worlds.Length)
-            StartCoroutine(FadeOut(levelsCanvas[actualWorldActive], actualWorldActive));
+        if (actualLevelInfo.world >= 0 && actualLevelInfo .world< worlds.Length)
+            StartCoroutine(FadeOut(levelsCanvas[actualLevelInfo.world], actualLevelInfo.world));
 
         //fade in the selected world
         StartCoroutine(FadeIn(levelsCanvas[world], world));
@@ -463,7 +474,9 @@ public class MenuMapLevel3D : MonoBehaviour {
             //configure the levels of the world
             ConfigureLevels(i);
 
-            
+            //put the special ring
+            LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
+            ChangeRingLevel(lastUnlocked, lastUnlocked);
         }
     }
 
@@ -477,6 +490,9 @@ public class MenuMapLevel3D : MonoBehaviour {
         int i = -1;
         levels.Add(new GameObject[allLevelWorld.transform.childCount - 1]);
 
+        LevelInfo theLevel;
+        theLevel.world = world;
+
         //for each level...
         foreach (Transform childTransform in allLevelWorld.transform) {
             //not the first one (title)
@@ -484,6 +500,7 @@ public class MenuMapLevel3D : MonoBehaviour {
                 i++;
                 continue;
             }
+            theLevel.level = i;
 
             //get the object of the level
             GameObject child = childTransform.gameObject;
@@ -494,8 +511,8 @@ public class MenuMapLevel3D : MonoBehaviour {
             child.AddComponent(typeof(OnSelectLevel));
             OnSelectLevel script = child.GetComponent<OnSelectLevel>();
 
-            script.world = world; //which world belongs
-            script.level = i; //number of level
+            script.level.world= world; //which world belongs
+            script.level.level = i; //number of level
 
             //get the text and hidde it
             MeshRenderer renderer = child.GetComponentInChildren<MeshRenderer>(true);
@@ -503,17 +520,23 @@ public class MenuMapLevel3D : MonoBehaviour {
             color.a = 0;
             renderer.material.color = color;
 
-            //TODO
-            //if (world > lastUnlockedWorld - 1) {
-            //    child.GetComponent<Button>().interactable = false;
-            //} else if (world == lastUnlockedWorld - 1) {
-            //    //check level
-            //    if (i > lastUnlockedLevel - 1) {
-            //        child.GetComponent<Button>().interactable = false;
-            //    } else if (i == lastUnlockedLevel - 1) { //last level
+            //check if the level is locked (or non-available)
+            if (!levelsUnlocked.IsUnlockedlevel(theLevel)) {
+                Button button = child.GetComponent<Button>();
+                ColorBlock colorBlock = button.colors;
+                colorBlock.disabledColor = lockedLevelColor;
+                button.interactable = false;
+                button.colors = colorBlock;
+            }
 
-            //    }
-            //}
+            //check if the level is non-available (put it grey)
+            if (!levelsUnlocked.IsAvailableLevel(theLevel)) {
+                Button button = child.GetComponent<Button>();
+                ColorBlock colorBlock = button.colors;
+                colorBlock.disabledColor = nonAvailableLevelColor;
+                button.interactable = false;
+                button.colors = colorBlock;
+            }
 
             script.delegateAction = this; //script to delegate
             i++;
