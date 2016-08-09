@@ -176,7 +176,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// <summary>
     /// Objects that represent the sphere that travel around the trajectory and the ball that indicate the size of the drop shooted
     /// </summary>
-    private GameObject _sphere, _ball;
+    [HideInInspector]
+    public GameObject _sphere, _ball;
 
     /// <summary>
     /// Float that catch the Axis Inputs

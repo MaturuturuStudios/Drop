@@ -21,7 +21,8 @@ public class MainCameraController : MonoBehaviour {
         LookArround,
         LockArea,
         GoBackFromArround,
-        GoBackFromArea
+        GoBackFromArea,
+        ShootMode
     }
 
     /// <summary>
@@ -285,6 +286,12 @@ public class MainCameraController : MonoBehaviour {
     /// </summary>
     private float _vibrating = 0f;
 
+
+    /// <summary>
+    /// Controls if drop is moving
+    /// </summary>
+    private Vector3 _shootPosition = Vector3.zero;
+
     #endregion
 
     #region Methods
@@ -338,6 +345,13 @@ public class MainCameraController : MonoBehaviour {
     void Update() {
         // Get drop size
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
+
+        // Get Shoot indicator position
+        bool shootMode = target.GetComponent<CharacterShoot>().shootmode;
+        if (shootMode) {            
+            _shootPosition = target.GetComponent<CharacterShootTrajectory>()._ball.transform.position;
+        } else
+            _shootPosition = Vector3.zero;
 
         // Sets distortion distance and Vignette value
         if (_dropSize < maxDistotionSize) {
@@ -424,10 +438,16 @@ public class MainCameraController : MonoBehaviour {
         if ((_cameraState == CameraState.GoBackFromArea || _cameraState == CameraState.GoBackFromArround) && _moving) {
             // When drop moves to much from the start of go back position
             _cameraState = CameraState.Default;
-        }        
+        }
+
+        // Shoot mode
+
+        if (_shootPosition != Vector3.zero) {
+            _cameraState = CameraState.ShootMode;
+        }
 
         // Default state
-        if (statusModifierControl == 0 && _cameraState != CameraState.GoBackFromArea && _cameraState != CameraState.GoBackFromArround) {
+        if (statusModifierControl == 0 && _cameraState != CameraState.GoBackFromArea && _cameraState != CameraState.GoBackFromArround && _cameraState != CameraState.ShootMode) {
             _cameraState = CameraState.Default;
         }
 
@@ -468,6 +488,11 @@ public class MainCameraController : MonoBehaviour {
             case CameraState.GoBackFromArround:
                 _velocity = _velocityGoBack;
                 _zVelocity = _zVelocityGoBack;
+                break;
+
+            case CameraState.ShootMode:
+                _velocity = velocityLockArea;
+                _zVelocity = zVelocityLockArea;
                 break;
 
             default:
@@ -526,6 +551,14 @@ public class MainCameraController : MonoBehaviour {
         else
             // Calculate if it is out of bounds and stop it at bound exceded
             destination = CheckBounds(destination);
+
+        // When it is in shootmode
+        if (_cameraState == CameraState.ShootMode) {
+            destination += _shootPosition + _offset;
+            destination /= 2;
+
+        }
+
 
         // Calculate next position
         Vector3 newPosition;
