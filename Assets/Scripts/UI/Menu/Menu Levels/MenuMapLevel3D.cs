@@ -6,6 +6,15 @@ using System.Collections.Generic;
 public class MenuMapLevel3D : MonoBehaviour {
     #region Public Attributes
     /// <summary>
+    /// List of worlds
+    /// </summary>
+    public GameObject[] worlds;
+    /// <summary>
+    /// List of levels in the worlds, with available and unlocked levels
+    /// The number of worlds must be the same as the variable worlds up here
+    /// </summary>
+    public UnlockedLevels levelsUnlocked;
+    /// <summary>
     /// The camera of the canvas
     /// </summary>
     public Camera cameraCanvas;
@@ -30,10 +39,7 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// Game object containing the map image and the worlds
     /// </summary>
     public SpriteRenderer imageMap;
-    /// <summary>
-    /// List of worlds
-    /// </summary>
-	public GameObject[] worlds;
+   
 
     /// <summary>
     /// The border of a normal level
