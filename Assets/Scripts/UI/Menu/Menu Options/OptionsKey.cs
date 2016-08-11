@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class OptionsKey : MonoBehaviour {
+public class OptionsKey {
 
     public static readonly string AudioMaster = "AudioMaster";
     public static readonly string AudioMusic = "AudioMusic";

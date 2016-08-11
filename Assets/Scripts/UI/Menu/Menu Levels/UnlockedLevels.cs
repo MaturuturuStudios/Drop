@@ -2,11 +2,26 @@
 using System;
 
 [Serializable]
-public class Array2D{
+public class ArrayBoolean{
     [SerializeField]
     public bool[] anArray;
 
     public bool this [int index] {
+        get { return anArray[index]; }
+        set { anArray[index] = value; }
+    }
+
+    public int Length {
+        get { return anArray.Length; }
+    }
+}
+
+[Serializable]
+public class ArrayScene {
+    [SerializeField]
+    public Scene[] anArray;
+
+    public Scene this[int index] {
         get { return anArray[index]; }
         set { anArray[index] = value; }
     }
@@ -28,13 +43,42 @@ public class UnlockedLevels {
     /// remember, the index start on 0
     /// </summary>
     [SerializeField]
-    private Array2D[] availableLevels;
+    private ArrayBoolean[] availableLevels;
     /// <summary>
     /// Set the unlocked levels of the game
     /// remember, the index start on 0
     /// </summary>
     [SerializeField]
-    private Array2D[] unlockedLevels;
+    private ArrayBoolean[] unlockedLevels;
+    /// <summary>
+    /// The asociated scenes to the levels
+    /// </summary>
+    [SerializeField]
+    private ArrayScene[] scenes;
+
+    /// <summary>
+    /// Return the number of worlds
+    /// </summary>
+    /// <returns></returns>
+    public int GetNumberWorld() {
+        return numberLevelsOnWorld.Length;
+    }
+
+    /// <summary>
+    /// Return the number of levels of a world
+    /// </summary>
+    /// <param name="world">the world starting on zero</param>
+    /// <returns>0 if no levels or not a world, the number otherwise</returns>
+    public int GetNumberLevels(int world) {
+        if (world < 0 || world > numberLevelsOnWorld.Length) return 0;
+        return numberLevelsOnWorld[world];
+    }
+
+    public Scene GetScene(LevelInfo level) {
+        if (level.world < 0 || level.world > numberLevelsOnWorld.Length) return null;
+        if (level.level < 0 || level.level > numberLevelsOnWorld[level.world]) return null;
+        return scenes[level.world][level.level];
+    }
     
     /// <summary>
     /// Return the last level unlocked
@@ -142,6 +186,38 @@ public class UnlockedLevels {
 
     }
 
+    public LevelInfo GetNextAvailableLevel(LevelInfo actual) {
+        LevelInfo nextAvailable = actual;
+
+        int lastWorld = numberLevelsOnWorld.Length - 1;
+
+        bool done = false;
+        do {
+            //plus the level
+            actual.level++;
+
+            //if no more level, plus the world and reset level
+            if (actual.level > numberLevelsOnWorld[actual.world]) {
+                actual.level = 0;
+                actual.world++;
+            }
+
+            //if searched in all worlds, is over
+            if (actual.world > lastWorld) done = true;
+
+            //if not available, next
+            if (!IsAvailableLevel(actual)) continue;
+            else {
+                nextAvailable = actual;
+                done = true;
+            }
+
+        } while (!done);
+
+        return nextAvailable;
+
+    }
+
     /// <summary>
     /// Return if a level is available in the game
     /// Available does not means that the level is unlocked
@@ -164,6 +240,4 @@ public class UnlockedLevels {
         else return false;
         
     }
-
-
 }

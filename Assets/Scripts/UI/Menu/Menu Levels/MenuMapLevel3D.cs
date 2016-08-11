@@ -11,11 +11,6 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public GameObject[] worlds;
     /// <summary>
-    /// List of levels in the worlds, with available and unlocked levels
-    /// The number of worlds must be the same as the variable worlds up here
-    /// </summary>
-    public UnlockedLevels levelsUnlocked;
-    /// <summary>
     /// The camera of the canvas
     /// </summary>
     public Camera cameraCanvas;
@@ -35,6 +30,8 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// Time of zooming
     /// </summary>
     public float timeZooming=1;
+
+    public AnimationCurve easeFunctionZoom;
 
     /// <summary>
     /// Game object containing the map image and the worlds
@@ -72,6 +69,11 @@ public class MenuMapLevel3D : MonoBehaviour {
     #endregion
 
     #region Private Attributes
+    /// <summary>
+    /// List of levels in the worlds, with available and unlocked levels
+    /// The number of worlds must be the same as this levels unlocked
+    /// </summary>
+    private UnlockedLevels levelsUnlocked;
     /// <summary>
 	/// A reference to the menu's navigator.
 	/// </summary>
@@ -166,6 +168,9 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
+        GameControllerData data = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerData>();
+        levelsUnlocked = data.Getlevels();
+
         levels = new List<GameObject[]>();
         levelsCanvas = new CanvasGroup[worlds.Length];
         
@@ -275,17 +280,18 @@ public class MenuMapLevel3D : MonoBehaviour {
         _targetPoint = levels[info.world][info.level].transform.position;
     }
 
-    /// <summary>
-    /// Search the next level available, unlock it and update the rings
-    /// </summary>
-    public void UnlockNextLevel() {
-        //get the previous unlocked
-        LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
-        //unlock the next
-        LevelInfo newUnlocked = levelsUnlocked.UnlockNextLevel();
-        //update rings
-        ChangeRingLevel(lastUnlocked, newUnlocked);
-    }
+    //Sobra?
+    ///// <summary>
+    ///// Search the next level available, unlock it and update the rings
+    ///// </summary>
+    //public void UnlockNextLevel() {
+    //    //get the previous unlocked
+    //    LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
+    //    //unlock the next (the levelsUnlocked will store the information)
+    //    LevelInfo newUnlocked = levelsUnlocked.UnlockNextLevel();
+    //    //update rings
+    //    ChangeRingLevel(lastUnlocked, newUnlocked);
+    //}
     #endregion
 
     #region Private Methods
@@ -473,11 +479,10 @@ public class MenuMapLevel3D : MonoBehaviour {
             levelsCanvas[i].alpha = hiddenAlphaWorld;
             //configure the levels of the world
             ConfigureLevels(i);
-
-            //put the special ring
-            LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
-            ChangeRingLevel(lastUnlocked, lastUnlocked);
         }
+        //put the special ring
+        LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
+        ChangeRingLevel(lastUnlocked, lastUnlocked);
     }
 
     /// <summary>
@@ -556,7 +561,8 @@ public class MenuMapLevel3D : MonoBehaviour {
             //TODO
             //maybe let a curve animation and evaluate it?
             //or make this twice, one for zoom out and another for zoom in
-            position.z  = Mathf.Lerp(normalDistance, zoomOutDistance, Mathf.Sin(percentageTime*Mathf.PI));
+            //position.z  = Mathf.Lerp(normalDistance, zoomOutDistance, Mathf.Sin(percentageTime*Mathf.PI));
+            position.z = Mathf.Lerp(normalDistance, zoomOutDistance, easeFunctionZoom.Evaluate(percentageTime));
             transformCamera.localPosition = position;
             yield return null;
             percentageTime = (Time.unscaledTime - startTime) / timeZooming;
