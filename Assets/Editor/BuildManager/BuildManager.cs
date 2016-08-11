@@ -67,7 +67,8 @@ public class BuildManager {
                     name = name.Replace("/", "-");
                     bm.bd.buildName = "drop_" + name;
                     bm.bd.workPath = "Build/" + bm.bd.buildName;
-                    bm.bd.win = true;
+                    bm.bd.win32 = true;
+                    bm.bd.win64 = false;
                     bm.bd.lin = false;
                     bm.bd.mac = false;
                     bm.bd.scenes = new List<string>();
@@ -81,7 +82,7 @@ public class BuildManager {
             Debug.Log(popupMessage);
 
             // Show confirmation dialog
-            if (EditorUtility.DisplayDialog(popUpTitle, popupMessage, "Proceed", "Stop")) {
+            if (EditorUtility.DisplayDialog(popUpTitle, popupMessage, "Proceed", "Abort")) {
 
                 Debug.Log("Proceed to build");
                 Debug.Log("Using \"" + bm.bd.workPath + "\" directory");
@@ -93,8 +94,13 @@ public class BuildManager {
                 bool goOn = true;
 
                 // Build Windows
-                if (goOn && bm.bd.win) {
-                    goOn = BuildWindows(bm, bo, buildType);
+                if (goOn && bm.bd.win32) {
+                    goOn = BuildWindows32(bm, bo, buildType);
+                }
+
+                // Build Windows
+                if (goOn && bm.bd.win64) {
+                    goOn = BuildWindows64(bm, bo, buildType);
                 }
 
                 // Build Linux
@@ -118,7 +124,7 @@ public class BuildManager {
 
                     if (goOn)
                         // Compress to one file
-                        Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win ? bm.bd.buildName + "_win.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
+                        Compress(bm, "Package", "-9 -r " + bm.bd.buildName + ".zip " + (bm.bd.win32 ? bm.bd.buildName + "_win32.zip " : "") + (bm.bd.win64 ? bm.bd.buildName + "_win64.zip " : "") + (bm.bd.lin ? bm.bd.buildName + "_lin.zip " : "") + (bm.bd.mac ? bm.bd.buildName + "_mac.zip " : ""));
 
                     if (goOn)
                         // Wait for all work done
@@ -262,22 +268,54 @@ public class BuildManager {
     /// </summary>
     /// <param name="bm">Buld manager object working on</param>
     /// <param name="development">Build type</param>
-    private static bool BuildWindows(BuildManager bm, BuildOptions bo, BuildType bt) {
+    private static bool BuildWindows32(BuildManager bm, BuildOptions bo, BuildType bt) {
 
-        Debug.Log("Building for Windows platform");
+        Debug.Log("Building for Windows32 platform");
 
         // Get full build name 
-        string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_win.exe";
+        string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_win32.exe";
 
         // Build it
         string error = BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneWindows, bo);
 
         if (String.IsNullOrEmpty(error)) {
-            Debug.Log("Build for Windows done");
+            Debug.Log("Build for Windows32 done");
 
             // Compress 
-            if(bt == BuildType.Release)
-                Compress(bm, "Windows", "-9 -r " + bm.bd.buildName + "_win.zip " + bm.bd.buildName + "_win.exe " + bm.bd.buildName + "_win_Data ");
+            if (bt == BuildType.Release)
+                Compress(bm, "Windows32", "-9 -r " + bm.bd.buildName + "_win32.zip " + bm.bd.buildName + "_win32.exe " + bm.bd.buildName + "_win32_Data ");
+
+            return true;
+
+        } else {
+            Debug.Log("Error While building to Windows32: " + error);
+
+            return false;
+        }
+
+    }
+
+    /// <summary>
+    /// Windows build process
+    /// </summary>
+    /// <param name="bm">Buld manager object working on</param>
+    /// <param name="development">Build type</param>
+    private static bool BuildWindows64(BuildManager bm, BuildOptions bo, BuildType bt) {
+
+        Debug.Log("Building for Windows64 platform");
+
+        // Get full build name 
+        string fullPath = bm.bd.workPath + "/" + bm.bd.buildName + "_win64.exe";
+
+        // Build it
+        string error = BuildPipeline.BuildPlayer(bm.bd.scenes.ToArray(), fullPath, BuildTarget.StandaloneWindows64, bo);
+
+        if (String.IsNullOrEmpty(error)) {
+            Debug.Log("Build for Windows64 done");
+
+            // Compress 
+            if (bt == BuildType.Release)
+                Compress(bm, "Windows64", "-9 -r " + bm.bd.buildName + "_win64.zip " + bm.bd.buildName + "_win64.exe " + bm.bd.buildName + "_win64_Data ");
 
             return true;
 
@@ -455,7 +493,8 @@ public class BuildManager {
             + bm.bd.buildName
 
             + "\n\nTarget platforms: "
-            + (bm.bd.win == true ? "\n - Windows" : "")
+            + (bm.bd.win32 == true ? "\n - Windows32" : "")
+            + (bm.bd.win64 == true ? "\n - Windows64" : "")
             + (bm.bd.mac == true ? "\n - Mac" : "")
             + (bm.bd.lin == true ? "\n - Linux" : "")
 
@@ -470,7 +509,8 @@ public class BuildManager {
             + bm.bd.buildName
 
             + "\n\nTarget platforms: "
-            + (bm.bd.win == true ? "\n - Windows" : "")
+            + (bm.bd.win32 == true ? "\n - Windows" : "")
+            + (bm.bd.win64 == true ? "\n - Windows" : "")
             + (bm.bd.mac == true ? "\n - Mac" : "")
             + (bm.bd.lin == true ? "\n - Linux" : "")
 
@@ -518,7 +558,7 @@ public class BuildManager {
         }
 
         // Look for target platforms
-        if (bd.win == false && bd.lin == false && bd.mac == false) {
+        if (bd.win32 == false && bd.win64 == false && bd.lin == false && bd.mac == false) {
             EditorUtility.DisplayDialog("Configuration error",
             "You must select at least one target platform", "Ok");
             return false;
