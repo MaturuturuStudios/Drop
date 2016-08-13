@@ -34,4 +34,9 @@ public static class Tags {
 	/// Tag for wall where the character can perform a wall jump.
 	/// </summary>
 	public static readonly string Level = "Level";
+
+    /// <summary>
+    /// Tag for the object with the data of the game
+    /// </summary>
+    public static readonly string GameData = "GameData";
 }

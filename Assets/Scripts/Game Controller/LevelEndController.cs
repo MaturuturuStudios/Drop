@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Script for end Scene, you can configure the displayed message
@@ -22,12 +22,6 @@ public class LevelEndController : MonoBehaviour {
     /// Wait time after fade
     /// </summary>
     public float delayEnd = 0f;
-
-
-    /// <summary>
-    /// Next scene to load
-    /// </summary>
-    public Scene nextScene;
 
     #endregion
 
@@ -60,8 +54,16 @@ public class LevelEndController : MonoBehaviour {
     /// <summary>
     /// Reference to level transition
     /// </summary>
-    private LevelTransition _levelTransition;    
+    private LevelTransition _levelTransition;
 
+    /// <summary>
+    /// The next scene to load
+    /// </summary>
+    private Scene nextScene;
+
+    private LevelInfo nextLevel;
+
+    private GameControllerData data;
     #endregion
 
     #region Methods
@@ -76,6 +78,9 @@ public class LevelEndController : MonoBehaviour {
 
         // Retrieves the UI Reference
         _menuNavigator = GameObject.FindGameObjectWithTag("Menus").GetComponent<MenuNavigator>();
+
+        //Get data game and store the next level
+        data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
     }
 
 
@@ -83,11 +88,17 @@ public class LevelEndController : MonoBehaviour {
     /// Unity's method called on start script only one time
     /// </summary>
     void Start(){
-        // In case that the scene is empty, by default we use StartScene
-        // TODO improve this part, try to avoid hardcoded strings
-        if (nextScene.name == "Not" || nextScene.name == "") {
+        if (data == null) {
             Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
             nextScene.name = "StartScene";
+
+        } else {
+            string nameScene = SceneManager.GetActiveScene().name;
+            nextScene = data.GetNextScene(nameScene, out nextLevel);
+
+            if (nextScene==null) {
+                nextScene = data.GetDefaultScene();
+            }
         }
 
         //Get input controller
@@ -103,9 +114,11 @@ public class LevelEndController : MonoBehaviour {
     /// Activated when player enters on the trigger
     /// </summary>
     public void LevelEnd(){
-
         // Stops input
         _gci.StopInput();
+
+        //unlock the level
+        data.UnlockLevel(nextLevel);
 
         // Load scene async
         _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);

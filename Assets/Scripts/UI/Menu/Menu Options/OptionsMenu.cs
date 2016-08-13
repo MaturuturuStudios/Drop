@@ -90,7 +90,7 @@ public class OptionsMenu : MonoBehaviour {
 		
         }else if (Input.GetAxis(Axis.SelectDrop) == 0)
 			_triggerPressed = false;
-		
+
 
         //B, back or start
         if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back))
@@ -98,7 +98,7 @@ public class OptionsMenu : MonoBehaviour {
             if (IsUnderSubOption())
                 //if yes, unselect the option
                 UnfocusOption();
-            else
+            else 
                 //if not, the focus is already on the buttons menu, come back
                 _menuNavigator.ComeBack();
 

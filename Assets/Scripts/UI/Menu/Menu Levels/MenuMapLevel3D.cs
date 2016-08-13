@@ -30,9 +30,14 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// Time of zooming
     /// </summary>
     public float timeZooming=1;
-
+    /// <summary>
+    /// The function to zoom. needs to start on zero and finish on zero
+    /// </summary>
     public AnimationCurve easeFunctionZoom;
-
+    /// <summary>
+    /// Time to wait until the level start
+    /// </summary>
+    public float waitBeforeStartLevel = 1f;
     /// <summary>
     /// Game object containing the map image and the worlds
     /// </summary>
@@ -168,7 +173,7 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
-        GameControllerData data = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerData>();
+        GameControllerData data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
         levelsUnlocked = data.Getlevels();
 
         levels = new List<GameObject[]>();
@@ -544,6 +549,12 @@ public class MenuMapLevel3D : MonoBehaviour {
             }
 
             script.delegateAction = this; //script to delegate
+
+            //get the script to give the scene asociated to this level
+            SceneLevel sceneLevel = child.GetComponent<SceneLevel>();
+            sceneLevel.waitBeforeStartLevel = waitBeforeStartLevel;
+            sceneLevel.level = levelsUnlocked.GetScene(theLevel);
+
             i++;
         }
     }

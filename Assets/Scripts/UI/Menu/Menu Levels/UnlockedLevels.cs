@@ -74,10 +74,43 @@ public class UnlockedLevels {
         return numberLevelsOnWorld[world];
     }
 
+    /// <summary>
+    /// Get the scene of a level
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns></returns>
     public Scene GetScene(LevelInfo level) {
         if (level.world < 0 || level.world > numberLevelsOnWorld.Length) return null;
         if (level.level < 0 || level.level > numberLevelsOnWorld[level.world]) return null;
         return scenes[level.world][level.level];
+    }
+
+    /// <summary>
+    /// Get the level of a scene's name
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public LevelInfo GetInfoLevel(string name) {
+        LevelInfo result;
+        result.level = -1;
+        result.world = -1;
+
+        //search on every level
+        int worlds = GetNumberWorld();
+        bool found = false;
+        for(int i=0; i<worlds && !found; i++) {
+            int levels = GetNumberLevels(i);
+            for(int j=0; j< levels && !found; j++) {
+                if (scenes[i][j] == null) continue;
+                if (scenes[i][j].name.CompareTo(name) == 0) {
+                    result.level = j;
+                    result.world = i;
+                    found = true;
+                }
+            }
+        }
+
+        return result;
     }
     
     /// <summary>

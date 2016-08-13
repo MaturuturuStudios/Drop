@@ -26,6 +26,10 @@ public class UnlockedLevelsEditor : PropertyDrawer {
     /// </summary>
     private bool unfoldedUnlockedLevels = false;
     /// <summary>
+    /// If unfold section of scenes
+    /// </summary>
+    private bool unfoldedScenes = false;
+    /// <summary>
     /// Total lines of size of the inspector
     /// </summary>
     private float totalHeight;
@@ -54,6 +58,10 @@ public class UnlockedLevelsEditor : PropertyDrawer {
         position.y += heightField;
 
         position = DrawUnlockedLevels(position, property);
+        position.y += heightField;
+
+        position = DrawScenes(position, property);
+
         //draw a divider line
         position.y += heightField + (heightField/2);
         position.height = 1.0f;
@@ -98,7 +106,7 @@ public class UnlockedLevelsEditor : PropertyDrawer {
                 position.y += heightField;
                 SerializedProperty aWorld = numberLevelsOnWorld.GetArrayElementAtIndex(i);
                 if (aWorld.intValue <= 0) aWorld.intValue = 1;
-                EditorGUI.DelayedIntField(position, aWorld);
+                EditorGUI.DelayedIntField(position, aWorld, new GUIContent("World "+(i+1)));
                 position.y++;
                 restHeight++;
             }
@@ -237,6 +245,60 @@ public class UnlockedLevelsEditor : PropertyDrawer {
                     }
                     bufferPosition.x += widthPerToggle;
                 }
+            }
+            EditorGUI.indentLevel--;
+        }
+
+        return position;
+    }
+
+    /// <summary>
+    /// Draw an array of scenes asociated to the levels
+    /// </summary>
+    /// <param name="position">the actual position in inspector</param>
+    /// <param name="property">the serialized property of class</param>
+    /// <returns>the final position</returns>
+    private Rect DrawScenes(Rect position, SerializedProperty property) {
+        SerializedProperty numberLevelsOnWorld = property.FindPropertyRelative("numberLevelsOnWorld");
+        SerializedProperty scenes = property.FindPropertyRelative("scenes");
+        int numberWorld = numberLevelsOnWorld.arraySize;
+        scenes.arraySize = numberWorld;
+
+        unfoldedScenes = EditorGUI.Foldout(position, unfoldedScenes, "Scenes", true);
+        totalHeight++;
+
+        //if unfolded...
+        if (unfoldedScenes) {
+            EditorGUI.indentLevel++;
+
+            //for every world...
+            for (int i = 0; i < numberWorld; i++) {
+                //write tittle world
+                position.y += heightField;
+                EditorGUI.LabelField(position, "World " + (i + 1));
+                position.y++;
+                restHeight++;
+                totalHeight++;
+
+                EditorGUI.indentLevel++;
+
+                //get the levels of the world
+                SerializedProperty world = scenes.GetArrayElementAtIndex(i)
+                    .FindPropertyRelative("anArray");
+                //get the number of levels
+                int numberLevels = numberLevelsOnWorld.GetArrayElementAtIndex(i).intValue;
+                //resize it
+                world.arraySize = numberLevels;
+                
+                totalHeight += numberLevels;
+                //for every level...
+                for (int j = 0; j < numberLevels; j++) {
+                    //draw it
+                    position.y += heightField;
+                    EditorGUI.PropertyField(position, world.GetArrayElementAtIndex(j), new GUIContent("Level " + (j + 1)));
+                }
+
+                EditorGUI.indentLevel--;
             }
             EditorGUI.indentLevel--;
         }

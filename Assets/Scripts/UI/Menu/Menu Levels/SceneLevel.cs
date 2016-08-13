@@ -2,9 +2,10 @@
 using System.Collections;
 
 public class SceneLevel : MonoBehaviour {
-
+    [HideInInspector]
     public Scene level = null;
-    public float waitBeforeStartLevel = 3f;
+    [HideInInspector]
+    public float waitBeforeStartLevel = 0f;
 
 
     public void StartLevel() {

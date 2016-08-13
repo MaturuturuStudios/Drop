@@ -5,29 +5,79 @@ public class PlayerDataStoreKeys {
 }
 
 public class GameControllerData : MonoBehaviour {
+    [HideInInspector]
+    public static GameControllerData control;
+    /// <summary>
+    /// The default scene to use if no scene/level are available
+    /// </summary>
+    public Scene defaultScene;
     /// <summary>
     /// Data about the available and unlocked levels
     /// </summary>
     [SerializeField]
-    private UnlockedLevels levelsUnlocked;
+    private UnlockedLevels informationLevels;
 
+    /// <summary>
+    /// Get the class of all information about the levels
+    /// </summary>
+    /// <returns></returns>
     public UnlockedLevels Getlevels() {
-        return levelsUnlocked;
+        return informationLevels;
     }
 
+    /// <summary>
+    /// Get the data and initialize it
+    /// </summary>
     public void Awake() {
+        if (control == null) {
+            DontDestroyOnLoad(gameObject);
+            control = this;
+        }else if (control != this) {
+            Destroy(gameObject);
+        }
+
+
         string unlocked = PlayerPrefs.GetString(PlayerDataStoreKeys.PlayerUnlockedLevels);
         //if have some data, use it over the inspector data
         if (unlocked.Trim().Length != 0) {
+            SetUnlockedLevels(unlocked.Trim());
+        }
 
+        if (defaultScene.name == "Not" || defaultScene.name == "") {
+            Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
+            defaultScene.name = "StartScene";
         }
     }
 
-    public Scene GetNextScene(LevelInfo actualLevel) {
-        return null; //for test!
-        LevelInfo next = levelsUnlocked.GetNextAvailableLevel(actualLevel);
-        if (next == actualLevel) return null;
-        return levelsUnlocked.GetScene(next);
+    /// <summary>
+    /// Return a default scene, used when there is no more levels
+    /// </summary>
+    /// <returns></returns>
+    public Scene GetDefaultScene() {
+        return defaultScene;
+    }
+
+    /// <summary>
+    /// Get the next scene to this one (the next available and unlocked)
+    /// </summary>
+    /// <param name="actualLevel">the actual level to continue</param>
+    /// <returns>the next available and unlocked level, if there is no next, return null</returns>
+    public Scene GetNextScene(LevelInfo actualLevel, out LevelInfo nextLevel) {
+        nextLevel = informationLevels.GetNextAvailableLevel(actualLevel);
+        if (nextLevel == actualLevel) return null;
+        return informationLevels.GetScene(nextLevel);
+    }
+
+    /// <summary>
+    /// Get the next scene to this one (the next available and unlocked)
+    /// </summary>
+    /// <param name="actualLevel">the actual level to continue</param>
+    /// <param name="nextLevel">The information of the next level</param>
+    /// <returns>the next available and unlocked level, if there is no next, return null</returns>
+    public Scene GetNextScene(string actualLevel, out LevelInfo nextLevel) {
+        LevelInfo level=informationLevels.GetInfoLevel(actualLevel);
+        Scene next=GetNextScene(level, out nextLevel);
+        return next;
     }
 
     /// <summary>
@@ -47,7 +97,7 @@ public class GameControllerData : MonoBehaviour {
     /// </summary>
     /// <returns>true if the operations was successfull, false otherwise</returns>
     public bool CompleteLevel() {
-        LevelInfo levelUnlocked = levelsUnlocked.UnlockNextLevel();
+        LevelInfo levelUnlocked = informationLevels.UnlockNextLevel();
         string completed = PlayerPrefs.GetString(PlayerDataStoreKeys.PlayerUnlockedLevels);
         completed += ";" + levelUnlocked.world + "-" + levelUnlocked.level;
         PlayerPrefs.SetString(PlayerDataStoreKeys.PlayerUnlockedLevels, completed);
@@ -73,14 +123,14 @@ public class GameControllerData : MonoBehaviour {
     /// <param name="data">the string data from the user preferences</param>
     private void SetUnlockedLevels(string data) {
         //lock every level
-        int numberWorld = levelsUnlocked.GetNumberWorld();
+        int numberWorld = informationLevels.GetNumberWorld();
         for(int i=0; i<numberWorld; i++) {
-            int numberLevels = levelsUnlocked.GetNumberLevels(i);
+            int numberLevels = informationLevels.GetNumberLevels(i);
             for(int j=0; j<numberLevels; j++) {
                 LevelInfo level;
                 level.world = i;
                 level.level = j;
-                levelsUnlocked.UnlockLevel(level, false);
+                informationLevels.UnlockLevel(level, false);
             }
         }
 
@@ -91,7 +141,7 @@ public class GameControllerData : MonoBehaviour {
             string[] aLevel = levels[i].Split('-');
             level.world = int.Parse(aLevel[0]);
             level.level = int.Parse(aLevel[1]);
-            levelsUnlocked.UnlockLevel(level);
+            informationLevels.UnlockLevel(level);
         }
     }
 }

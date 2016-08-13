@@ -18,8 +18,8 @@ public class ScenePropertyDrawer : PropertyDrawer {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
         EditorGUI.BeginProperty(position, label, property);
 		// Don't make child fields be indented
-		int indent = EditorGUI.indentLevel;
-		EditorGUI.indentLevel = 0;
+		//int indent = EditorGUI.indentLevel;
+		//EditorGUI.indentLevel = 0;
 
         //get data
         SerializedProperty sceneName;
@@ -70,7 +70,7 @@ public class ScenePropertyDrawer : PropertyDrawer {
 		DrawHelpBox (positionHelp);
         
         // Set indent back to what it was
-        EditorGUI.indentLevel = indent;
+        //EditorGUI.indentLevel = indent;
         EditorGUI.EndProperty();
     }
 
