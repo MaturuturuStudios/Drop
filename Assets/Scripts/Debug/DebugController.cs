@@ -379,6 +379,10 @@ public class DebugController : MonoBehaviour {
 
 	#region Handle Events Methods
 
+    public void ResetPlayerPrefs() {
+        PlayerPrefs.DeleteAll();
+    }
+
 	/// <summary>
 	/// Reads the input and resizes the current character.
 	/// </summary>
