@@ -167,15 +167,6 @@ public class MenuNavigator : MonoBehaviour {
             } else if (actualSelected != _selected) {
                 _selected = actualSelected;
             }
-
-            //if credits menu, watch input to come back if needed
-            if (_menuPanel.Peek().IdMenu == Menu.CREDITS_MENU) {
-                //A, B, return, start
-                if (Input.GetButtonDown(Axis.Jump) || Input.GetButtonDown(Axis.Irrigate)
-                        || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start)) {
-                    ComeBack();
-                }
-            }
         }
     }
 
@@ -286,6 +277,7 @@ public class MenuNavigator : MonoBehaviour {
     /// Close the menu if there is no more menus on stack
     /// </summary>
     public void ComeBack() {
+        Debug.Log("A come back");
         StartCoroutine(ComeBackWait());
         //make sure to quit the confirmation
         DoConfirmQuitNo();
