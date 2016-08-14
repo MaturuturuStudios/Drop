@@ -60,9 +60,13 @@ public class LevelEndController : MonoBehaviour {
     /// The next scene to load
     /// </summary>
     private Scene nextScene;
-
+    /// <summary>
+    /// The next level to load
+    /// </summary>
     private LevelInfo nextLevel;
-
+    /// <summary>
+    /// the data to ask for unlock the level
+    /// </summary>
     private GameControllerData data;
     #endregion
 

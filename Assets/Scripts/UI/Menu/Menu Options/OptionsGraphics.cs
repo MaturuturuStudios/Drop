@@ -275,6 +275,8 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         //TODO store resolucion
         //problem, is always force setted from the initial box of unity
         //disable it and will see how to deal with it
+
+        PlayerPrefs.Save();
     }
     #endregion
 }

@@ -86,6 +86,7 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
         LanguageManager.Instance.ChangeLanguage(language);
         //store the option
         PlayerPrefs.SetString(OptionsKey.Language, language);
+        PlayerPrefs.Save();
     }
 
     public void Start() {

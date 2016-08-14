@@ -219,6 +219,11 @@ public class UnlockedLevels {
 
     }
 
+    /// <summary>
+    /// Get the next available level
+    /// </summary>
+    /// <param name="actual"></param>
+    /// <returns></returns>
     public LevelInfo GetNextAvailableLevel(LevelInfo actual) {
         LevelInfo nextAvailable = actual;
 
@@ -272,5 +277,20 @@ public class UnlockedLevels {
         if (IsAvailableLevel(level)) return unlockedLevels[level.world][level.level];
         else return false;
         
+    }
+
+    public string ResumeStringUnlockedLevel() {
+        string result="";
+        int worlds = GetNumberWorld();
+        bool found = false;
+        for (int i = 0; i < worlds && !found; i++) {
+            int levels = GetNumberLevels(i);
+            for (int j = 0; j < levels && !found; j++) {
+                if (unlockedLevels[i][j] == false) continue;
+                result += ";" + i + "-" + j;
+            }
+        }
+        if (result.Length > 0) result=result.Remove(0, 1);
+        return result;
     }
 }

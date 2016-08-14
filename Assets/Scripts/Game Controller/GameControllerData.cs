@@ -11,7 +11,7 @@ public class PlayerDataStoreKeys {
     public static readonly string PlayerFirstTime = "PlayerFirstTime";
 }
 
-public class GameControllerData : MonoBehaviour {
+public class GameControllerData : MonoBehaviour, InterfaceUnlockedLevels {
     [HideInInspector]
     public static GameControllerData control;
     /// <summary>
@@ -23,14 +23,6 @@ public class GameControllerData : MonoBehaviour {
     /// </summary>
     [SerializeField]
     private UnlockedLevels informationLevels;
-
-    /// <summary>
-    /// Get the class of all information about the levels
-    /// </summary>
-    /// <returns></returns>
-    public UnlockedLevels Getlevels() {
-        return informationLevels;
-    }
 
     /// <summary>
     /// Get the data and initialize it
@@ -48,6 +40,11 @@ public class GameControllerData : MonoBehaviour {
         //if have some data, use it over the inspector data
         if (unlocked.Trim().Length != 0) {
             SetUnlockedLevels(unlocked.Trim());
+        } else {
+            //store it
+            string data=informationLevels.ResumeStringUnlockedLevel();
+            PlayerPrefs.SetString(PlayerDataStoreKeys.PlayerUnlockedLevels, data);
+            PlayerPrefs.Save();
         }
 
         if (defaultScene.name == "Not" || defaultScene.name == "") {
@@ -105,19 +102,6 @@ public class GameControllerData : MonoBehaviour {
         PlayerPrefs.DeleteAll();
         return true;
     }
-    
-    /// <summary>
-    /// Complete the level, which means the next level available will be
-    /// unlocked and the data game will be stored
-    /// </summary>
-    /// <returns>true if the operations was successfull, false otherwise</returns>
-    public bool CompleteLevel() {
-        LevelInfo levelUnlocked = informationLevels.UnlockNextLevel();
-        string completed = PlayerPrefs.GetString(PlayerDataStoreKeys.PlayerUnlockedLevels);
-        completed += ";" + levelUnlocked.world + "-" + levelUnlocked.level;
-        PlayerPrefs.SetString(PlayerDataStoreKeys.PlayerUnlockedLevels, completed);
-        return false;
-    }
 
     /// <summary>
     /// Unlock a level and store the game data
@@ -129,7 +113,47 @@ public class GameControllerData : MonoBehaviour {
         string completed = PlayerPrefs.GetString(PlayerDataStoreKeys.PlayerUnlockedLevels);
         completed += ";" + level.world + "-" + level.level;
         PlayerPrefs.SetString(PlayerDataStoreKeys.PlayerUnlockedLevels, completed);
+        PlayerPrefs.Save();
         return false;
+    }
+
+    /// <summary>
+    /// Return if a level is available in the game
+    /// Available does not means that the level is unlocked
+    /// </summary>
+    /// <param name="level">level to check</param>
+    /// <returns>false if is not available, true otherwise</returns>
+    public bool IsAvailableLevel(LevelInfo level) {
+        return informationLevels.IsAvailableLevel(level);
+    }
+
+    /// <summary>
+    /// Return if a level is unlocked
+    /// If the level is not available, is also locked
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns>false if the level is locked or unavailable</returns>
+    public bool IsUnlockedlevel(LevelInfo level) {
+        return informationLevels.IsUnlockedlevel(level);
+
+    }
+
+    /// <summary>
+    /// Get the scene of a level
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    public Scene GetScene(LevelInfo level) {
+        return informationLevels.GetScene(level);
+    }
+
+    /// <summary>
+    /// Return the last level unlocked
+    /// if not, 0,0 is always the last level
+    /// </summary>
+    /// <returns></returns>
+    public LevelInfo GetLastUnlockedLevel() {
+        return informationLevels.GetLastUnlockedLevel();
     }
 
     /// <summary>

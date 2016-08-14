@@ -366,7 +366,6 @@ public class CharacterSize : MonoBehaviour {
 
 	/// <summary>
 	/// If can't grow up, spit the extra drops and set the maximum size I can
-	/// TODO: spit the extra drops
 	/// </summary>
 	/// <param name="newScale">the scale which doesn't fit</param>
 	/// <param name="newPosition">the position according to the scale</param>
@@ -396,9 +395,6 @@ public class CharacterSize : MonoBehaviour {
 		newDrop.transform.localScale = Vector3.one;
 		newDrop.GetComponent<CharacterSize>().SetSize(numberDropsRemain);
 		//set a force modified by the size of drop
-		//newDrop.GetComponent<CharacterControllerCustomPlayer>().Stop();
-		//newDrop.GetComponent<CharacterControllerCustom>()
-		//    .AddForce(spitDirection*impulseSpit*Mathf.Sqrt(numberDropsRemain), ForceMode.VelocityChange);
 
 		CharacterControllerCustom newDropController = newDrop.GetComponent<CharacterControllerCustom>();
 		newDropController.SendFlying(spitDirection * impulseSpit * Mathf.Sqrt(numberDropsRemain), false);

@@ -75,10 +75,9 @@ public class MenuMapLevel3D : MonoBehaviour {
 
     #region Private Attributes
     /// <summary>
-    /// List of levels in the worlds, with available and unlocked levels
-    /// The number of worlds must be the same as this levels unlocked
+    /// Data reference
     /// </summary>
-    private UnlockedLevels levelsUnlocked;
+    private GameControllerData data;
     /// <summary>
 	/// A reference to the menu's navigator.
 	/// </summary>
@@ -173,8 +172,7 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
-        GameControllerData data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
-        levelsUnlocked = data.Getlevels();
+        data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
 
         levels = new List<GameObject[]>();
         levelsCanvas = new CanvasGroup[worlds.Length];
@@ -201,7 +199,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             //select the option
             //pass the last unlocked converted in index from 0
             //set the initial point (last level unlocked)
-            LevelInfo lastLevel = levelsUnlocked.GetLastUnlockedLevel();
+            LevelInfo lastLevel = data.GetLastUnlockedLevel();
             SelectLevel(lastLevel);
             ChangeRingLevel(lastLevel, lastLevel);
 
@@ -284,19 +282,6 @@ public class MenuMapLevel3D : MonoBehaviour {
         //get the target point
         _targetPoint = levels[info.world][info.level].transform.position;
     }
-
-    //Sobra?
-    ///// <summary>
-    ///// Search the next level available, unlock it and update the rings
-    ///// </summary>
-    //public void UnlockNextLevel() {
-    //    //get the previous unlocked
-    //    LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
-    //    //unlock the next (the levelsUnlocked will store the information)
-    //    LevelInfo newUnlocked = levelsUnlocked.UnlockNextLevel();
-    //    //update rings
-    //    ChangeRingLevel(lastUnlocked, newUnlocked);
-    //}
     #endregion
 
     #region Private Methods
@@ -486,7 +471,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             ConfigureLevels(i);
         }
         //put the special ring
-        LevelInfo lastUnlocked = levelsUnlocked.GetLastUnlockedLevel();
+        LevelInfo lastUnlocked = data.GetLastUnlockedLevel();
         ChangeRingLevel(lastUnlocked, lastUnlocked);
     }
 
@@ -531,7 +516,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             renderer.material.color = color;
 
             //check if the level is locked (or non-available)
-            if (!levelsUnlocked.IsUnlockedlevel(theLevel)) {
+            if (!data.IsUnlockedlevel(theLevel)) {
                 Button button = child.GetComponent<Button>();
                 ColorBlock colorBlock = button.colors;
                 colorBlock.disabledColor = lockedLevelColor;
@@ -540,7 +525,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             }
 
             //check if the level is non-available (put it grey)
-            if (!levelsUnlocked.IsAvailableLevel(theLevel)) {
+            if (!data.IsAvailableLevel(theLevel)) {
                 Button button = child.GetComponent<Button>();
                 ColorBlock colorBlock = button.colors;
                 colorBlock.disabledColor = nonAvailableLevelColor;
@@ -553,7 +538,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             //get the script to give the scene asociated to this level
             SceneLevel sceneLevel = child.GetComponent<SceneLevel>();
             sceneLevel.waitBeforeStartLevel = waitBeforeStartLevel;
-            sceneLevel.level = levelsUnlocked.GetScene(theLevel);
+            sceneLevel.level = data.GetScene(theLevel);
 
             i++;
         }
@@ -569,10 +554,6 @@ public class MenuMapLevel3D : MonoBehaviour {
         float percentageTime = (Time.unscaledTime - startTime) / timeZooming;
         do {
             Vector3 position = transformCamera.localPosition;
-            //TODO
-            //maybe let a curve animation and evaluate it?
-            //or make this twice, one for zoom out and another for zoom in
-            //position.z  = Mathf.Lerp(normalDistance, zoomOutDistance, Mathf.Sin(percentageTime*Mathf.PI));
             position.z = Mathf.Lerp(normalDistance, zoomOutDistance, easeFunctionZoom.Evaluate(percentageTime));
             transformCamera.localPosition = position;
             yield return null;

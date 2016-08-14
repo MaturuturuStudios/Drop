@@ -10,8 +10,6 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class MenuNavigator : MonoBehaviour {
 
-    //public static Color titleColor = Color.white;
-
     #region Enumerations
     public enum Menu {
         NONE,
@@ -157,13 +155,16 @@ public class MenuNavigator : MonoBehaviour {
     }
 
     public void Update() {
+        
+
         //if is some menu to open, open it
         if (_openMenu != Menu.NONE) {
             OpenMenu(_openMenu);
             _openMenu = Menu.NONE;
         }
 
-        if (IsMenuActive()) {
+        if (EventSystem.current == null) return;
+            if (IsMenuActive()) {
             GameObject actualSelected = EventSystem.current.currentSelectedGameObject;
 
             if (actualSelected == null) {
@@ -365,6 +366,7 @@ public class MenuNavigator : MonoBehaviour {
 
         //TODO change this to a better place, for example, finishing the first level
         PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
+        PlayerPrefs.Save();
     }
 
     /// <summary>
@@ -378,7 +380,6 @@ public class MenuNavigator : MonoBehaviour {
 	/// Quit the actual game and return to the main menu
 	/// </summary>
 	public void ReturnToMainMenu() {
-        //TODO: need to control other actions as save game, quit the actual scene...
         //stop the player!
         _gameControllerInput.StopInput();
 
@@ -391,7 +392,6 @@ public class MenuNavigator : MonoBehaviour {
 	/// Reset the level
 	/// </summary>
 	public void RestartLevel() {
-        //TODO: avoid input game and another triggers like win game, attack...
 		if(_gameControllerInput!=null)
         	_gameControllerInput.StopInput();
 		
@@ -415,7 +415,6 @@ public class MenuNavigator : MonoBehaviour {
 
     /// <summary>
     /// Close the game
-    /// TODO: needs a confirmation and probably more actions to close it correctly
     /// </summary>
     public void ExitGame() {
         confirmQuit.gameObject.SetActive(true);
