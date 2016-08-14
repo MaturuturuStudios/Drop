@@ -81,6 +81,7 @@ public class LevelEndController : MonoBehaviour {
 
         //Get data game and store the next level
         data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
+       
     }
 
 
@@ -89,6 +90,7 @@ public class LevelEndController : MonoBehaviour {
     /// </summary>
     void Start(){
         if (data == null) {
+            nextScene = new Scene();
             Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
             nextScene.name = "StartScene";
 

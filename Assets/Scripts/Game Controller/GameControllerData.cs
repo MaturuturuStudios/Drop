@@ -1,7 +1,14 @@
 ﻿using UnityEngine;
 
 public class PlayerDataStoreKeys {
+    /// <summary>
+    /// Store the list of unlocked levels
+    /// </summary>
     public static readonly string PlayerUnlockedLevels = "PlayerUnlockedLevels";
+    /// <summary>
+    /// Store if is the first time for the player
+    /// </summary>
+    public static readonly string PlayerFirstTime = "PlayerFirstTime";
 }
 
 public class GameControllerData : MonoBehaviour {
@@ -81,6 +88,14 @@ public class GameControllerData : MonoBehaviour {
     }
 
     /// <summary>
+    /// Get the last unlocked level
+    /// </summary>
+    /// <returns></returns>
+    public Scene GetLastUnlockedScene() {
+        return informationLevels.GetScene(informationLevels.GetLastUnlockedLevel());
+    }
+
+    /// <summary>
     /// Delete all data game and reset it
     /// </summary>
     /// <returns>true if successfull</returns>
@@ -110,6 +125,7 @@ public class GameControllerData : MonoBehaviour {
     /// <param name="level">the level to unlock</param>
     /// <returns>true if the operations was successfull, false otherwise</returns>
     public bool UnlockLevel(LevelInfo level) {
+        informationLevels.UnlockLevel(level);
         string completed = PlayerPrefs.GetString(PlayerDataStoreKeys.PlayerUnlockedLevels);
         completed += ";" + level.world + "-" + level.level;
         PlayerPrefs.SetString(PlayerDataStoreKeys.PlayerUnlockedLevels, completed);

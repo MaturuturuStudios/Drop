@@ -47,10 +47,6 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Public Attributes
-    /// <summary>
-	/// Scene to be opened when starting a new game
-	/// </summary>
-	public Scene NewGameScene;
 	/// <summary>
 	/// The background main menu. Show when used the main menu and still showed when changed to other options when
 	/// main menu is in stack
@@ -133,6 +129,10 @@ public class MenuNavigator : MonoBehaviour {
     /// The option selected before asking the exit of application
     /// </summary>
     private GameObject _previousSelectionExit;
+    /// <summary>
+    /// The scene to load con new/continue game
+    /// </summary>
+    private Scene newContinueGame;
     #endregion
 
     #region Methods
@@ -150,6 +150,10 @@ public class MenuNavigator : MonoBehaviour {
         _gameControllerInput = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
 
         backgroundImageMainMenu = backgroundMainMenu.GetComponent<Image>();
+
+        //Get the scene
+        GameControllerData data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
+        newContinueGame = data.GetLastUnlockedScene();
     }
 
     public void Update() {
@@ -277,7 +281,6 @@ public class MenuNavigator : MonoBehaviour {
     /// Close the menu if there is no more menus on stack
     /// </summary>
     public void ComeBack() {
-        Debug.Log("A come back");
         StartCoroutine(ComeBackWait());
         //make sure to quit the confirmation
         DoConfirmQuitNo();
@@ -355,17 +358,13 @@ public class MenuNavigator : MonoBehaviour {
 
 
     /// <summary>
-	/// Start a new game
+	/// Start/continue a new game
 	/// </summary>
 	public void NewGame() {
-        ChangeScene(NewGameScene.name);
-    }
+        ChangeScene(newContinueGame.name);
 
-    /// <summary>
-	/// Load a previous game
-	/// </summary>
-	public void LoadGame() {
-        //TODO: load previous game
+        //TODO change this to a better place, for example, finishing the first level
+        PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
     }
 
     /// <summary>
