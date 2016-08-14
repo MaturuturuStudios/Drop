@@ -69,6 +69,11 @@ public class IntroController : MonoBehaviour {
     /// </summary>
     private float _elapsedTime = 0f;
 
+    /// <summary>
+    /// Control if the video has started
+    /// </summary>
+    private bool startedVideo = false;
+
     #endregion
     
     #region Public methods
@@ -109,6 +114,10 @@ public class IntroController : MonoBehaviour {
         // Skip intro
         if (Input.anyKeyDown && (_elapsedTime > logoDuration + introLockedDuration))
             _op.allowSceneActivation = true;
+
+        //if finished video
+        if(startedVideo && !introMovie.isPlaying)
+            _op.allowSceneActivation = true;
     }
 
     #endregion
@@ -135,6 +144,7 @@ public class IntroController : MonoBehaviour {
         // Play the movie and audio
         _audio.Play();
         introMovie.Play();
+        startedVideo = true;
     }
 
     #endregion
