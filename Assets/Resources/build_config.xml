@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <BuildData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <buildName>drop-t08-08-16</buildName>
-  <workPath>Build/drop-t08-08-16</workPath>
+  <buildName>drop-t11-08-16</buildName>
+  <workPath>Build/drop-t11-08-16</workPath>
   <share>false</share>
   <sharedFolderPath>../../Google Drive/WorkSpace/DropOfficial/Realeases</sharedFolderPath>
   <zipPath>D:/Program Files (x86)/GnuWin32/bin/zip.exe</zipPath>
-  <win>true</win>
+  <win32>true</win32>
+  <win64>true</win64>
   <lin>false</lin>
   <mac>false</mac>
   <countScenes>false</countScenes>
   <scenes>
     <string>Assets/_Scenes/Intro.unity</string>
     <string>Assets/_Scenes/StartScene.unity</string>
+    <string>Assets/_Scenes/Tutorial.unity</string>
     <string>Assets/_Scenes/Level.unity</string>
   </scenes>
 </BuildData>

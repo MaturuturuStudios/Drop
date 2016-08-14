@@ -36,9 +36,14 @@ public class BuildData {
     public string zipPath;
 
     /// <summary>
-    /// True when build for Windows is active
+    /// True when build for Windows32 is active
     /// </summary>
-    public bool win;
+    public bool win32;
+
+    /// <summary>
+    /// True when build for Windows64 is active
+    /// </summary>
+    public bool win64;
 
     /// <summary>
     /// True when build for Linux is active
@@ -73,7 +78,8 @@ public class BuildData {
         sharedFolderPath = "../../Google Drive/WorkSpace/DropOfficial/Realeases";
         share = false;
         zipPath = "../../Program Files (x86)/GnuWin32/bin";
-        win = true;
+        win32 = true;
+        win64 = true;
         lin = true;
         mac = true;
         scenes = new List<string>();
