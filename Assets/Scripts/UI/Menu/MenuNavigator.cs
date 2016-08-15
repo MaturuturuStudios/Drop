@@ -314,6 +314,7 @@ public class MenuNavigator : MonoBehaviour {
 
         confirmQuit.gameObject.SetActive(false);
 
+        if (EventSystem.current == null) return;
         //recover focus
         if(EventSystem.current.currentSelectedGameObject!=_previousSelectionExit)
             EventSystem.current.SetSelectedGameObject(_previousSelectionExit);
