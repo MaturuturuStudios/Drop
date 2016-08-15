@@ -84,7 +84,8 @@ public class LevelEndController : MonoBehaviour {
         _menuNavigator = GameObject.FindGameObjectWithTag("Menus").GetComponent<MenuNavigator>();
 
         //Get data game and store the next level
-        data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
+        if(Application.isPlaying)
+            data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
        
     }
 
