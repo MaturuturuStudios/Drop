@@ -81,7 +81,7 @@ public class LevelEndController : MonoBehaviour {
         _collider = gameObject.GetComponent<BoxCollider>();
 
         // Retrieves the UI Reference
-        _menuNavigator = GameObject.FindGameObjectWithTag("Menus").GetComponent<MenuNavigator>();
+        _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
 
         //Get data game and store the next level
         if(Application.isPlaying)
