@@ -10,7 +10,8 @@ public class OptionsKey {
     public static readonly string Language = "Language";
 
     public static readonly string GraphicsFullscreen = "GraphicFullscreen";
-    public static readonly string GraphicsResolution = "GraphicResolution";
+    public static readonly string GraphicsResolutionWidth = "GraphicResolutionWidth";
+    public static readonly string GraphicsResolutionheight = "GraphicResolutionHeight";
     public static readonly string GraphicsQuality = "GraphicQuality";
     public static readonly string GraphicsAntialiasing = "GraphicAntialiasing";
 }
