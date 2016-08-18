@@ -156,11 +156,15 @@ public class GameControllerInput : MonoBehaviour {
                 }
             }
 
-            if (_allowToSkip) {
-                if (Input.anyKeyDown) {
+            if (_allowToSkip &&
+                (Input.GetButtonDown(Axis.Action) ||
+                Input.GetButtonDown(Axis.Jump) ||
+                Input.GetButtonDown(Axis.Irrigate) ||
+                Input.GetButtonDown(Axis.ShootMode) ||
+                Input.GetButtonDown(Axis.Start) ||
+                (Input.anyKeyDown && Input.inputString.Length > 0))) {
                     _allowToSkip = false;
                     GetComponentInChildren<MainCameraAnimationController>().SkipIntro();
-                }
             }
         }
     }
