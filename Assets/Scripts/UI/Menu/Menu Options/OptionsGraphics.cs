@@ -202,6 +202,8 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         if (_selectedResolution < 0) {
             resolution.value = 0;
             ResolutionChanged(resolution);
+        } else {
+            resolution.value = _selectedResolution;
         }
 
         //refresh text
@@ -272,9 +274,11 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         PlayerPrefs.SetInt(OptionsKey.GraphicsFullscreen, full);
         
         PlayerPrefs.SetInt(OptionsKey.GraphicsAntialiasing, _selectedAntiAliasing * 2);
-        //TODO store resolucion
-        //problem, is always force setted from the initial box of unity
-        //disable it and will see how to deal with it
+
+        int width = _resolutions[_selectedResolution].width;
+        int height = _resolutions[_selectedResolution].height;
+        PlayerPrefs.SetInt(OptionsKey.GraphicsResolutionWidth, width);
+        PlayerPrefs.SetInt(OptionsKey.GraphicsResolutionheight, height);
 
         PlayerPrefs.Save();
     }
