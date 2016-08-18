@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Text;
 using System.Collections.Generic;
 
+using Rewired.Integration.UnityUI;
+
 /// <summary>
 /// Class that controls the debug mode. It will read the desired input
 /// commands and show all the important information.
@@ -194,8 +196,14 @@ public class DebugController : MonoBehaviour {
 		if (_cameraSwitcher == null)
 			Debug.LogError("Could not children's Debug Camera Switcher!");
 
-		// Initializes the current character
-		_currentCharacter = null;
+        // Disable hidden mouse and enable click
+        GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<HideMouse>().enabled = false;
+        Cursor.visible = true;
+        GameObject.FindGameObjectWithTag(Tags.GameController).GetComponentInChildren<RewiredStandaloneInputModule>().allowMouseInput = true;
+
+
+        // Initializes the current character
+        _currentCharacter = null;
 
 		// Adds the cameras to the camera panel
 		for (int i = 0; i < _cameraSwitcher.GetCameras().Count; i++) {
