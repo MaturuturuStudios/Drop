@@ -112,7 +112,13 @@ public class IntroController : MonoBehaviour {
         }
 
         // Skip intro
-        if (Input.GetButtonDown(Axis.Jump) && (_elapsedTime > logoDuration + introLockedDuration))
+        if ((Input.GetButtonDown(Axis.Action) ||
+            Input.GetButtonDown(Axis.Jump) ||
+            Input.GetButtonDown(Axis.Irrigate) ||
+            Input.GetButtonDown(Axis.ShootMode) ||
+            Input.GetButtonDown(Axis.Start) ||
+            (Input.anyKeyDown && Input.inputString.Length > 0)  &&
+            (_elapsedTime > logoDuration + introLockedDuration)))
             _op.allowSceneActivation = true;
 
         //if finished video
