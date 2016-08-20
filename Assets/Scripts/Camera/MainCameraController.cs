@@ -491,8 +491,8 @@ public class MainCameraController : MonoBehaviour {
                 break;
 
             case CameraState.ShootMode:
-                _velocity = velocityLockArea;
-                _zVelocity = zVelocityLockArea;
+                _velocity = velocity;
+                _zVelocity = zVelocity;
                 break;
 
             default:
