@@ -348,7 +348,7 @@ public class MainCameraController : MonoBehaviour {
 
         // Get Shoot indicator position
         bool shootMode = target.GetComponent<CharacterShoot>().shootmode;
-        if (shootMode) {            
+        if (_cameraState != CameraState.LockArea && shootMode) {            
             _shootPosition = target.GetComponent<CharacterShootTrajectory>()._ball.transform.position;
         } else
             _shootPosition = Vector3.zero;
@@ -548,15 +548,17 @@ public class MainCameraController : MonoBehaviour {
         // Camera locked in position
         if (_cameraState == CameraState.LockArea)
             destination = _lockPosition;
-        else
+        else {
             // Calculate if it is out of bounds and stop it at bound exceded
             destination = CheckBounds(destination);
 
-        // When it is in shootmode
-        if (_cameraState == CameraState.ShootMode) {
-            destination += _shootPosition + _offset;
-            destination /= 2;
-
+            // When it is in shootmode
+            if (_cameraState == CameraState.ShootMode) {
+                Debug.Log("Drop Position >" + destination + "<");
+                destination += _shootPosition + _offset;
+                destination /= 2;
+                Debug.Log("Shoot Position >" + _shootPosition + "< Destination >"+ destination + "<");
+            }
         }
 
 
