@@ -131,10 +131,18 @@ public class MenuNavigator : MonoBehaviour {
     /// The scene to load con new/continue game
     /// </summary>
     private Scene newContinueGame;
+
+
+    /// <summary>
+    /// Wait a frame/update to receive input
+    /// </summary>
+    private bool waitFrame;
     #endregion
 
     #region Methods
     public void Awake() {
+        waitFrame = false;
+
         _menuPanel = new Stack<MenuInstance>();
         //open a menu if indicated
         if (startWithMenu != Menu.NONE) {
@@ -352,6 +360,8 @@ public class MenuNavigator : MonoBehaviour {
             Time.timeScale = 0;
             OpenMenu(MenuNavigator.Menu.PAUSE_MENU);
         } else {
+            waitFrame = true;
+            StartCoroutine(WaitFrame());
             CloseMenu();
             Time.timeScale = 1;
         }
@@ -444,6 +454,11 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Other Methods
+
+    private IEnumerator WaitFrame() {
+        yield return new WaitForEndOfFrame();
+        waitFrame = false;
+    }
     /// <summary>
     /// Change to the given menu waiting few seconds before that
     /// </summary>
@@ -490,7 +505,7 @@ public class MenuNavigator : MonoBehaviour {
     /// </summary>
     /// <returns>True if any menu exists</returns>
     public bool IsMenuActive() {
-        return _menuPanel.Count > 0;
+        return _menuPanel.Count > 0 || waitFrame;
     }
     #endregion
 
