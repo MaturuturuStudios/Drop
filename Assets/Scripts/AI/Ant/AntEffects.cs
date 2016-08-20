@@ -125,7 +125,13 @@ public class AntEffects : MonoBehaviour, EnemyBehaviourListener {
 
 		// Creates the scared prefab
 		GameObject scaredEffect = Instantiate(scaredEffectPrefab, scaredEffectTransform.position, scaredEffectTransform.rotation) as GameObject;
-		scaredEffect.transform.parent = scaredEffectTransform;
+        ParticleSystem[] systems = scaredEffect.GetComponentsInChildren<ParticleSystem>();
+        foreach (ParticleSystem sys in systems) {
+            sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+            sys.Simulate(0, true, true);
+            sys.Play();
+        }
+        scaredEffect.transform.parent = scaredEffectTransform;
     }
 
 	public void OnStateAnimationChange(AnimationState previousState, AnimationState actualState) {

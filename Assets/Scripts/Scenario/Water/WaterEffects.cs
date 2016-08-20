@@ -45,19 +45,43 @@ public class WaterEffects : MonoBehaviour, WaterRepulsionListener {
 
         if (size > 0) {
             GameObject effect = Instantiate(waves, position, Quaternion.identity) as GameObject;
-			effect.transform.localScale = size * Vector3.one;
+
+            ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem sys in systems) {
+                sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+                sys.Simulate(0, true, true);
+                sys.Play();
+            }
+
+            effect.transform.localScale = size * Vector3.one;
 			effects.Add(effect);
         }
 
         if (size > 2) {
             GameObject effect = Instantiate(splash, position, Quaternion.identity) as GameObject;
-			effect.transform.localScale = size * Vector3.one;
+
+            ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem sys in systems) {
+                sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+                sys.Simulate(0, true, true);
+                sys.Play();
+            }
+
+            effect.transform.localScale = size * Vector3.one;
 			effects.Add(effect);
         }
 
         if (size > 4 && !exit){
             GameObject effect = Instantiate(columnWater, position, Quaternion.identity) as GameObject;
-			effect.transform.localScale = size * Vector3.one;
+
+            ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem sys in systems) {
+                sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+                sys.Simulate(0, true, true);
+                sys.Play();
+            }
+
+            effect.transform.localScale = size * Vector3.one;
             effects.Add(effect);
         }
 

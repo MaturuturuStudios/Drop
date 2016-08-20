@@ -200,7 +200,7 @@ public class WindTube : MonoBehaviour {
 
 		// Creates the wind effect
 		_windEffect = (GameObject) Instantiate(windEffect, _transform.position, _transform.rotation);
-		_windEffect.transform.parent = _transform;
+        _windEffect.transform.parent = _transform;
 
 		// Retrieves all the particle systems
 		_particleSystems = _windEffect.GetComponentsInChildren<ParticleSystem>();
@@ -220,7 +220,11 @@ public class WindTube : MonoBehaviour {
 			state.forceY = _particleSystems[i].forceOverLifetime.y;
 			state.forceZ = _particleSystems[i].forceOverLifetime.z;
 			_initialParticleSystemStates[i] = state;
-		}
+
+            _particleSystems[i].randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+            _particleSystems[i].Simulate(0, true, true);
+            _particleSystems[i].Play();
+        }
 
 		// Disables the particle system's emission as they will be renabled if needed
 		OnDisable();

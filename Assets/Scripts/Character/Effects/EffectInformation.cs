@@ -40,7 +40,16 @@ public class EffectInformation {
 	public GameObject PlayEffect(Vector3 position, Quaternion rotation, float scale = 1.0f) {
 		GameObject effect = UnityEngine.Object.Instantiate(effectPrefab, position, rotation) as GameObject;
 		GameControllerTemporal.AddTemporal(effect);
-		if (scaleWithSize) {
+
+        //set random fix for unity's bug
+        ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
+        foreach (ParticleSystem sys in systems) { 
+            sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+            sys.Simulate(0, true, true);
+            sys.Play();
+        }
+
+        if (scaleWithSize) {
 			if (rootedScale)
 				scale = Mathf.Sqrt(scale);
 			effect.transform.localScale = Vector3.one * scale;

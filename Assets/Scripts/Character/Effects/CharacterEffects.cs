@@ -267,8 +267,9 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		// Plays the landing effect
 		float minLandSpeed = land.GetMinSpeed(_characterSize.GetSize());
 		Quaternion normalRotation = Quaternion.LookRotation(Vector3.forward, hit.normal);
-        if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed)
+        if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed) {
             land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
+        }
 
 		// Calculates some values for the particles
 		Vector3 eulerRotation = new Vector3(Mathf.PI + Vector3.Angle(Vector3.left, hit.normal) * Mathf.Deg2Rad, Mathf.PI / 2, 0);
