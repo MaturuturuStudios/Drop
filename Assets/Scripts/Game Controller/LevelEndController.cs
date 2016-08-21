@@ -130,10 +130,8 @@ public class LevelEndController : MonoBehaviour {
         // Load scene async
         _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
 
-        int totalDrops = _gcic.CountAlllDrops(true);
-        int controlledDrops = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
         // Start transition animation
-        _levelTransition.BeginLevelTransitionAnim(totalDrops, totalDrops - controlledDrops, delayStart, fadeDuration / totalDrops);
+        _levelTransition.BeginLevelTransitionAnim(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize(), delayStart, fadeDuration);
     }
 
 
