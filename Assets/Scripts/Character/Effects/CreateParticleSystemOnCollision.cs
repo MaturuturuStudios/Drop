@@ -40,27 +40,26 @@ public class CreateParticleSystemOnCollision : MonoBehaviour {
 	/// </summary>
 	private Transform _transform;
 
-	void Awake() {
+	public void Awake() {
 		// Retrieves the desired components
 		_particleSystem = GetComponent<ParticleSystem>();
 		_transform = _particleSystem.transform;
     }
 
-	void OnParticleCollision(GameObject other) {
+	public void OnParticleCollision(GameObject other) {
 		// Filters the layer
 		if (((1 << other.layer) & layerFilter.value) == 0)
 			return;
 
 		// Gets this frame's collisions
 		int safeLength = _particleSystem.GetSafeCollisionEventSize();
-		//ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[safeLength];
         List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(safeLength);
 		int numCollisionEvents = _particleSystem.GetCollisionEvents(other, collisionEvents);
 
 		// Creates a particle effect instance for each collision
 		for (int i = 0; i < numCollisionEvents; i++) {
-			GameObject effect = Instantiate(particleSystemPrefab, collisionEvents[i].intersection, Quaternion.LookRotation(Vector3.forward, collisionEvents[i].normal)) as GameObject;
-
+            GameObject effect = Instantiate(particleSystemPrefab, collisionEvents[i].intersection, Quaternion.LookRotation(Vector3.forward, collisionEvents[i].normal)) as GameObject;
+            
             ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem sys in systems) {
                 sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
