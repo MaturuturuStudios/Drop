@@ -15,6 +15,11 @@ public class LevelTransition : MonoBehaviour {
     public GameObject levelCompleteText;
 
     /// <summary>
+    /// Text with contact info
+    /// </summary>
+    public GameObject contactText;
+
+    /// <summary>
     /// The animation of one drop collected
     /// </summary>
     public GameObject dropCounterUnitCollected;
@@ -38,43 +43,43 @@ public class LevelTransition : MonoBehaviour {
 
 
     /// <summary>
-    /// Sound played when the character exits shoot mode.
+    /// Sound played when the level is completed with less than max drops
     /// </summary>
     public AudioClip levelCompleteSound1;
 
 
     /// <summary>
-    /// Sound played when the character exits shoot mode.
+    /// Sound played when the level is completed with max drops
     /// </summary>
     public AudioClip levelCompleteSound2;
 
 
     /// <summary>
-    /// Sound played when the character exits shoot mode.
+    /// Sound played when the level is completed with more than max drops
     /// </summary>
     public AudioClip levelCompleteSound3;
 
 
     /// <summary>
-    /// Sound played when the character exits shoot mode.
+    /// Text displayed when the level is completed with less than max drops
     /// </summary>
     public string levelCompleteText1;
 
 
     /// <summary>
-    /// Sound played when the character exits shoot mode.
+    /// Text displayed when the level is completed with max drops
     /// </summary>
     public string levelCompleteText2;
 
 
     /// <summary>
-    /// Sound played when the character exits shoot mode.
+    /// Text displayed when the level is completed with more than max drops
     /// </summary>
     public string levelCompleteText3;
 
 
     /// <summary>
-    /// Sound played when the character exits shoot mode.
+    /// Drops required to complete the level 100%
     /// </summary>
     [Range (1,5)]
     public int maxDropsRequired;
@@ -157,7 +162,13 @@ public class LevelTransition : MonoBehaviour {
         } else {
             levelCompleteText.GetComponent<Text>().text = levelCompleteText3;
             _audioSource.clip = levelCompleteSound3;
+            GameObject _ContactText = Instantiate(contactText, Vector3.zero, Quaternion.identity) as GameObject;
+            _ContactText.transform.SetParent(_parentUI.transform, false);
+            _ContactText.transform.position = new Vector3(_ContactText.transform.position.x, _ContactText.transform.position.y + 100f, _ContactText.transform.position.z);
         }
+
+        if (maxDropsRequired == 1)
+            dropsHeightPosition = 0.15f;
 
         // Instantiate the message and the sound
         GameObject _ThanksMessage = Instantiate(levelCompleteText, Vector3.zero, Quaternion.identity) as GameObject;
