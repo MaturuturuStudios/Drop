@@ -1,39 +1,70 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HighJoint : MonoBehaviour
-{
+/// <summary>
+/// This class is for Plant Animation when drop is above them
+/// </summary>
+public class HighJoint : MonoBehaviour{
 
+    #region Public Attributes
+
+    /// <summary>
+    /// Vector use to change the rotation angle of the plant
+    /// </summary>
     public Vector3 destinationAngle;
 
+    #endregion
+
+    #region Private Attributes
+
+    /// <summary>
+    /// Character, Drop
+    /// </summary>
     private GameObject _character;
 
-    private bool _colisionDetected = false;
+    /// <summary>
+    /// Variable to know when the the drop has entered in the plant's trigger
+    /// </summary>
+    private bool _colisionUpDetected = false;
 
-    private float _angle = 0;
+    /// <summary>
+    /// Variable to know when the the drop has left  the plant's trigger
+    /// </summary>
+    private bool _colisionDownDetected = false;
 
+    /// <summary>
+    /// Vector with the initial position of the plant
+    /// </summary>
     private Vector3 _initialPosition;
 
+    /// <summary>
+    /// Variable to know when the the drop has left  the plant's trigger
+    /// </summary>
     private Vector3 _incrementAngle;
+
+    #endregion
+
     // Use this for initialization
-    void Start()
-    {
+    void Start(){
 
-        _initialPosition = transform.GetComponentInChildren<Collider>().transform.eulerAngles;
-        _angle = destinationAngle.z;
+        _initialPosition = transform.GetComponentInChildren<Collider>().transform.eulerAngles;      
 
-        destinationAngle = new Vector3(45, 0, 0);
-        _incrementAngle = new Vector3(25, 180, 0);
+        destinationAngle = new Vector3(30, 0, 0);
+        _incrementAngle = new Vector3(30, 180, 0);
 
-        Debug.Log("  no es nulo" + transform.eulerAngles);
     }
 
 
     // Update is called once per frame
-    void Update()
-    {
-     
-        if (_colisionDetected){
+    void Update(){
+
+        if (_colisionDownDetected){
+            transform.GetComponentInChildren<Collider>().transform.eulerAngles = Vector3.Lerp(transform.GetComponentInChildren<Collider>().transform.eulerAngles,
+                                             _incrementAngle,
+                                             Time.deltaTime);
+        }
+
+        if (_colisionUpDetected){
 
             transform.GetComponentInChildren<Collider>().transform.eulerAngles = Vector3.Lerp(transform.GetComponentInChildren<Collider>().transform.eulerAngles,
                                              _initialPosition,
@@ -45,10 +76,9 @@ public class HighJoint : MonoBehaviour
     public void OnTriggerEnter(Collider other){
         CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
         
-        if (cccp != null)
-        {
-            Debug.Log("  no es nulo" + transform.eulerAngles);
-            transform.GetComponentInChildren<Collider>().transform.eulerAngles = _incrementAngle;
+        if (cccp != null){
+            _colisionDownDetected = true;
+            _colisionUpDetected = true;
 
         }
 
@@ -56,16 +86,20 @@ public class HighJoint : MonoBehaviour
     public void OnTriggerStay(Collider other){
         CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
         
-        if (cccp != null)
-        {
-            _colisionDetected = false;
-
+        if (cccp != null){
+            _colisionDownDetected = true;
+            _colisionUpDetected = true;
         }
     }
 
     public void OnTriggerExit(Collider other){
         //transform.eulerAngles = _initialPosition;
-        _colisionDetected = true;
+        CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
+
+        if (cccp != null){
+            _colisionUpDetected = true;
+            _colisionDownDetected = false;
+        }
     }
 
 }
