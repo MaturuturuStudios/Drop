@@ -78,7 +78,7 @@ public class HighJoint : MonoBehaviour{
         
         if (cccp != null){
             _colisionDownDetected = true;
-            _colisionUpDetected = true;
+            _colisionUpDetected = false;
 
         }
 
@@ -88,7 +88,7 @@ public class HighJoint : MonoBehaviour{
         
         if (cccp != null){
             _colisionDownDetected = true;
-            _colisionUpDetected = true;
+            _colisionUpDetected = false;
         }
     }
 
