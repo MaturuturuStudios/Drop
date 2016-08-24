@@ -24,12 +24,7 @@ public class Scared : StateMachineBehaviour {
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         // Resets all flags
-        animator.SetBool("Detect", false);
-        animator.SetBool("Timer", false);
-        animator.SetBool("GoAway", false);
-        animator.SetBool("Reached", false);
-        animator.SetBool("Near", false);
-        animator.SetBool("Recolect", false);
+        AIMethods.ClearAnimatorParameters(animator);
     }  
 
     #endregion

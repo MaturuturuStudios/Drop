@@ -67,12 +67,7 @@ public class GoAway : StateMachineBehaviour {
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //reset states (using bool because trigger does not work correctly)
-        animator.SetBool("Detect", false);
-        animator.SetBool("Timer", false);
-        animator.SetBool("GoAway", false);
-        animator.SetBool("Reached", false);
-        animator.SetBool("Near", false);
-        animator.SetBool("Recolect", false);
+        AIMethods.ClearAnimatorParameters(animator);
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

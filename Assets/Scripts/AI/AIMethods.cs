@@ -69,11 +69,19 @@ public class AIMethods {
     /// </summary>
     /// <param name="originalPosition">position the entity is</param>
     /// <param name="finalPosition">target point</param>
+    /// <param name="enemy"></param>
+    /// <param name="fixedRotation"></param>
+    /// <param name="initialRotation"></param>
+    /// <param name="rotationVelocity"></param>
     public static void RotateEnemySlerp(GameObject enemy, AxisBoolean fixedRotation, Quaternion initialRotation, float rotationVelocity, Vector3 originalPosition, Vector3 finalPosition) {
         Quaternion finalRotation = Quaternion.identity;
 
         Vector3 relativePos = finalPosition - originalPosition;
-        Quaternion rotation = Quaternion.LookRotation(relativePos);
+        Quaternion rotation;
+        if (relativePos != Vector3.zero)
+            rotation = Quaternion.LookRotation(relativePos);
+        else
+            rotation = Quaternion.identity;
 
         finalRotation = Quaternion.Slerp(enemy.transform.rotation, rotation, rotationVelocity * Time.deltaTime);
         Quaternion zero = initialRotation;
@@ -93,7 +101,7 @@ public class AIMethods {
         }
         finalRotation.eulerAngles = finalEuler;
 
-        
+
         enemy.transform.rotation = finalRotation;
     }
 
@@ -174,13 +182,29 @@ public class AIMethods {
     }
 
     public static Collider[] DropInTriggerArea(Region triggerArea, Vector3 position, LayerMask layerCast) {
+        //position left bottom
         Vector3 center = triggerArea.origin + position;
         Vector3 halfSize = triggerArea.size / 2;
+        //center it
         center.x += halfSize.x;
         center.y += halfSize.y;
         center.z += halfSize.z;
         Collider[] drops = Physics.OverlapBox(center, halfSize, Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
         return drops;
 
+    }
+
+    /// <summary>
+    /// Clear all parameters of animator (booleans)
+    /// </summary>
+    /// <param name="animator"></param>
+    public static void ClearAnimatorParameters(Animator animator) {
+        animator.SetBool("Detect", false);
+        animator.SetBool("Timer", false);
+        animator.SetBool("GoAway", false);
+        animator.SetBool("Reached", false);
+        animator.SetBool("Near", false);
+        animator.SetBool("Recolect", false);
+        animator.SetBool("AirAttack", false);
     }
 }

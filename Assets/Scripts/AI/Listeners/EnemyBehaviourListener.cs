@@ -8,7 +8,8 @@ public enum AnimationState {
     ATTACK,
 	SCARED,
     RUN_AWAY,
-    HIDDE_RECOLECT
+    HIDDE_RECOLECT,
+    AIR_ATTACK
 }
 
 /// <summary>

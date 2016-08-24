@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class AttackParameters {
-    [Range(0,1)]
+public class AirAttackParameters {
+    [Range(0, 1)]
     ///<summary>
     /// in which moment of the animation should mke effective the attack
     /// </summary>
@@ -10,6 +10,7 @@ public class AttackParameters {
     /// <summary>
     /// the destination point the drop will be launched
     /// </summary>
+    [HideInInspector]
     public LaunchCharacter launcher = new LaunchCharacter();
     /// <summary>
     /// if true, the axis will be fixed at rotation
@@ -19,16 +20,12 @@ public class AttackParameters {
     /// if not zero, during attack the enemy still moves toward the drop
     /// </summary>
     public float speed;
-    /// <summary>
-    /// desired rotation while attacking
-    /// </summary>
-    public Vector3 attackRotation;
 }
 
-public class Attack : StateMachineBehaviour {
+public class AirAttack : StateMachineBehaviour {
     [HideInInspector]
     public CommonParameters commonParameters;
-    public AttackParameters parameters;
+    public AirAttackParameters parameters;
 
     /// <summary>
 	/// A reference to the entity's controller.
@@ -57,15 +54,13 @@ public class Attack : StateMachineBehaviour {
         //faceTarget
         Vector3 originalPosition = commonParameters.enemy.transform.position;
         Vector3 finalPosition = commonParameters.drop.transform.position;
-        Quaternion rotation = Quaternion.Euler(parameters.attackRotation);
-        AIMethods.RotateEnemySlerp(commonParameters.enemy, parameters.fixedRotation, rotation,
+        AIMethods.RotateEnemySlerp(commonParameters.enemy, parameters.fixedRotation, commonParameters.enemy.transform.rotation,
                                 commonParameters.RotationSpeed, originalPosition, finalPosition);
 
         //if move, move it
         if (parameters.speed != 0) {
             Move();
         }
-
 
         float percentAnimation = stateInfo.normalizedTime;
         if (!_attackDone && percentAnimation > parameters.attackMoment) {
@@ -80,14 +75,16 @@ public class Attack : StateMachineBehaviour {
             //the attack is done, we can clear the priority drop
             commonParameters.priorityDrop = false;
 
-            // Notifies the listeners
+            //Notifies the listeners
             foreach (EnemyBehaviourListener listener in commonParameters.drop.GetComponents<EnemyBehaviourListener>())
                 listener.OnAttack(commonParameters.AI, commonParameters.drop, fly);
             foreach (EnemyBehaviourListener listener in commonParameters.AI.listeners)
                 listener.OnAttack(commonParameters.AI, commonParameters.drop, fly);
         }
+
+
     }
-    
+
 
     private void Move() {
         // Saves the original position

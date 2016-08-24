@@ -5,6 +5,9 @@
 /// </summary>
 [System.Serializable]
 public class Region {
+    /// <summary>
+    /// The origin is in left bottom
+    /// </summary>
     public Vector3 origin = Vector3.one;
     public Vector3 size = Vector3.one;
 

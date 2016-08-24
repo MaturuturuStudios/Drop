@@ -34,15 +34,11 @@ public class Chase : StateMachineBehaviour, CollisionListener {
     /// Keep the drop the enemy is chasing to give it to the listeners at the end of chase
     /// </summary>
     private GameObject _dropChased;
-    
-
-    private Animator _animator;
     #endregion
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         _controller = commonParameters.enemy.GetComponent<CharacterController>();
         commonParameters.colliders.AddListener(this);
-        _animator = animator;
 		_dropChased = commonParameters.drop;
 
 		//Call listeners
@@ -52,12 +48,7 @@ public class Chase : StateMachineBehaviour, CollisionListener {
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //reset states (using bool because trigger does not work correctly)
-        animator.SetBool("Detect", false);
-        animator.SetBool("Timer", false);
-        animator.SetBool("GoAway", false);
-        animator.SetBool("Reached", false);
-        animator.SetBool("Near", false);
-        animator.SetBool("Recolect", false);
+        AIMethods.ClearAnimatorParameters(animator);
         commonParameters.colliders.RemoveListener(this);
         
 		//Call listeners
@@ -67,8 +58,9 @@ public class Chase : StateMachineBehaviour, CollisionListener {
             listener.OnEndChase(commonParameters.AI, _dropChased);
     }
 
+    private GameObject test;
+
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        
         int size = animator.GetInteger("SizeDrop");
         int sizeLimit = commonParameters.sizeLimitDrop;
         if (sizeLimit > 0 && size >= sizeLimit) {
@@ -105,17 +97,11 @@ public class Chase : StateMachineBehaviour, CollisionListener {
     }
 
     public void OnTriggerEnter(Collider other) {
-        if (other.gameObject.tag == Tags.Player) {
-            if (_animator == null) return;
-            _animator.SetBool("Reached", true);
-        }
+        commonParameters.AI.TriggerListener(other);
     }
 
     public void OnTriggerStay(Collider other) {
-            if (other.gameObject.tag == Tags.Player) {
-                if (_animator == null) return;
-                _animator.SetBool("Reached", true); 
-            }
-        
+        commonParameters.AI.TriggerListener(other);
     }
+    
 }

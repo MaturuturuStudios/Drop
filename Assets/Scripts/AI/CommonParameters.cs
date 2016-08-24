@@ -42,7 +42,11 @@ public class CommonParameters {
     /// </summary>
     public bool walking = true;
 
-
+    /// <summary>
+    /// Check if the selected drop is priority in chasing/attacking even if there is a closer drop
+    /// </summary>
+    [HideInInspector]
+    public bool priorityDrop = false;
     [HideInInspector]
     /// <summary>
     /// The entity to be chased
@@ -68,8 +72,7 @@ public class CommonParameters {
     /// </summary>
     [HideInInspector]
     public AIBase AI;
-
-    [HideInInspector]
+    
     public AIColliders colliders;
 
     [HideInInspector]

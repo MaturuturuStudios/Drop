@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [System.Serializable]
 public class DetectParameters{
@@ -26,27 +27,18 @@ public class DetectPlayer : StateMachineBehaviour, CollisionListener {
     /// Timer
     /// </summary>
     private float _deltaTime;
-
-
-    private Animator _animator;
     #endregion
 
     #region Methods
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //start timer
-        _animator = animator;
         commonParameters.colliders.AddListener(this);
         _deltaTime = parameters.timeWarningDetect;
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         //reset states (using bool because trigger does not work correctly)
-        animator.SetBool("Detect", false);
-        animator.SetBool("Timer", false);
-        animator.SetBool("GoAway", false);
-        animator.SetBool("Reached", false);
-        animator.SetBool("Near", false);
-        animator.SetBool("Recolect", false);
+        AIMethods.ClearAnimatorParameters(animator);
         commonParameters.colliders.RemoveListener(this);
     }
 
@@ -73,18 +65,12 @@ public class DetectPlayer : StateMachineBehaviour, CollisionListener {
     }
 
     public void OnTriggerEnter(Collider other) {
-        if (other.gameObject.tag == Tags.Player) {
-            if (_animator == null) return;
-            _animator.SetBool("Reached", true);
-        }
+        commonParameters.AI.TriggerListener(other);
     }
 
     public void OnTriggerStay(Collider other) {
-        if (other.gameObject.tag == Tags.Player) {
-            if (_animator == null) return;
-            _animator.SetBool("Reached", true);
-        }
-
+        commonParameters.AI.TriggerListener(other);
     }
+    
     #endregion
 }

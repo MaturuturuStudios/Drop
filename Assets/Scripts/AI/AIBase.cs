@@ -75,8 +75,6 @@ public class AIBase : MonoBehaviour {
         commonParameters.initialPositionEnemy = commonParameters.enemy.transform.position;
         commonParameters.initialRotationEnemy = commonParameters.enemy.transform.rotation;
         commonParameters.AI = this;
-
-        commonParameters.colliders = GetComponentInChildren<AIColliders>();
     }
 
     public void Start() {
@@ -85,7 +83,7 @@ public class AIBase : MonoBehaviour {
         walkingAI.commonParameters = commonParameters;
         walkingAI.parameters = walkingParameters;
 
-		GoAway runningAway = _animator.GetBehaviour<GoAway>();
+        GoAway runningAway = _animator.GetBehaviour<GoAway>();
         runningAway.commonParameters = commonParameters;
         runningAway.parameters = goAwayParameters;
 
@@ -93,7 +91,7 @@ public class AIBase : MonoBehaviour {
         detectedAI.parameters = detectParameters;
         detectedAI.commonParameters = commonParameters;
 
-        Iddle iddle= _animator.GetBehaviour<Iddle>();
+        Iddle iddle = _animator.GetBehaviour<Iddle>();
         iddle.parameters = iddleParameters;
         iddle.commonParameters = commonParameters;
 
@@ -111,8 +109,6 @@ public class AIBase : MonoBehaviour {
     public void Update() {
         //check if any drop inside the area
         CheckDropInside();
-        //check if too near
-        DropNear();
 
         //check changes on animation state
         StateListener();
@@ -146,6 +142,13 @@ public class AIBase : MonoBehaviour {
 
     public void Scare() {
         _animator.SetBool("GoAway", true);
+    }
+
+    public void TriggerListener(Collider other) {
+        if (other.gameObject.tag == Tags.Player) {
+            if (_animator == null) return;
+            _animator.SetBool("Reached", true);
+        }
     }
 
     public AnimationState GetActualState() {
@@ -184,86 +187,109 @@ public class AIBase : MonoBehaviour {
     }
 
     #region Private methods
-    private void CheckDropInside() {
+
+
+    /// <summary>
+    /// Check the drops inside the area and update their state
+    /// </summary>
+    protected void CheckDropInside() {
         //Get the collisions/trigger area
         LayerMask layerCast = (1 << LayerMask.NameToLayer("Character"));
         Collider[] drops = AIMethods.DropInTriggerArea(triggerArea, transform.position, layerCast);
 
-        //if we have a drop detected, check only him if is outside the trigger or not
-        if (commonParameters.drop == null) {
-            int sizeDrop = 0;
-            foreach (Collider dropCollider in drops) {
-                if (_independentControl.IsUnderControl(dropCollider.gameObject)) {
-                    commonParameters.drop = dropCollider.gameObject;
-                    _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
-                    sizeDrop = _sizeDetected.GetSize();
-                }
-            }
-            _animator.SetInteger("SizeDrop", sizeDrop);
+        int sizeDrop = 0;
 
-        } else {
-            //update his size
-            int sizeDrop = 0;
+        //if no drops in trigger area or not in the list, no priority drops
+        if (drops.Length == 0) commonParameters.priorityDrop = false;
+
+        //si la gota prioritaria está fuera del trigger y hay otra dentro, al momento
+        //del ataque, se expulsa a la otra gota
+        //ir a dentro del for, y comprobar que la prioritaria está dentro del trigger o ya está expulsada
+
+        //priority drop
+        // 1. the drop in air trigger (usually is controlled)
+        // 2. drop inside, preference by distance
+        // 3. if selected drop is near, attack it 
+
+        //clear drop if no priority was setted
+        if (!commonParameters.priorityDrop) commonParameters.drop = null;
+        //delete priority
+        commonParameters.priorityDrop = false;
+
+        //keep track of drop index
+        int dropIndex = -1;
+        float distance = float.MaxValue;
+        bool hasPriority = false;
+
+        //check the list of drop inside the trigger area
+        for (int i = 0; i < drops.Length && !hasPriority; i++) {
+            Collider dropCollider = drops[i];
+
+            //if has a drop (priority drop) and found it, we have a drop priority
+            //end loop
+            if (commonParameters.drop != null && drops[i].gameObject == commonParameters.drop) {
+                hasPriority = true;
+            }
+
+            //if drop is under controll, check the distance and get the closest drop
+            if (_independentControl.allCurrentCharacters.Contains(dropCollider.gameObject)) {
+                float newDistance = Vector2.Distance(dropCollider.transform.position,
+                                                commonParameters.enemy.transform.position);
+                if (newDistance > distance) continue;
+                distance = newDistance;
+                dropIndex = i;
+            }
+        }
+
+
+        //if we have a drop and no found a priority drop
+        //because there is no one, or the priority drop is outside
+        if (!hasPriority && dropIndex >= 0) {
+            //store the drop
+            commonParameters.drop = drops[dropIndex].gameObject;
             _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
             sizeDrop = _sizeDetected.GetSize();
 
-
-            //check if is outside of trigger
-            bool outside = true;
-            foreach (Collider dropCollider in drops) {
-                if (dropCollider.gameObject == commonParameters.drop) {
-                    outside = false;
-                }
-            }
-
-
-            //it's outside!
-            if (outside) {
-                _animator.SetInteger("SizeDrop", 0);
-                commonParameters.drop = null;
-            } else {
-                _animator.SetInteger("SizeDrop", sizeDrop);
-            }
+            //if founded a priority, the drop was setted, restore the priority and
+            //update the size
+        } else if (hasPriority) {
+            commonParameters.priorityDrop = true;
+            _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
+            sizeDrop = _sizeDetected.GetSize();
         }
+
+
+
+
+        //update size
+        _animator.SetInteger("SizeDrop", sizeDrop);
+        //check if the selected drop is near
+        DropNear();
     }
 
-    /// <summary>
-    /// Check if a drop is too near of the enemy
-    /// </summary>
     private void DropNear() {
+        if (commonParameters.drop == null) return;
+
         LayerMask layerCast = (1 << LayerMask.NameToLayer("Character"));
+        //check if the drop is near
+        //near data
         Vector3 size = Vector3.one;
         size *= commonParameters.near;
-        size.y = triggerArea.size.y;
+        size.y = triggerArea.size.y; //height is the same as trigger area
 
         size /= 2.0f;
-        Vector3 origin = triggerArea.origin + transform.position;
+        Vector3 origin=Vector3.zero;// = triggerArea.origin + transform.position;
         origin.x = commonParameters.enemy.transform.position.x;
         origin.y += size.y;
         origin.z = 0;
-
-        Collider[] drops = Physics.OverlapBox(origin, size, 
+        //get all drops in the trigger area (near the enemy)
+        Collider[] dropsNear = Physics.OverlapBox(origin, size,
             Quaternion.identity, layerCast, QueryTriggerInteraction.Ignore);
 
-        if (drops.Length==0){
-            return;
-        }
-
-        List<Collider> dropsInTriggerArea = new List<Collider>(AIMethods.DropInTriggerArea(triggerArea, transform.position, layerCast));
-        commonParameters.drop = drops[0].gameObject;
-        bool near = false;
-        foreach(Collider aCollider in drops){
-            if (dropsInTriggerArea.Contains(aCollider)) {
-                commonParameters.drop = aCollider.gameObject;
-                near = true;
-                break;
+        foreach (Collider drop in dropsNear) {
+            if (drop.gameObject == commonParameters.drop) {
+                _animator.SetBool("Near", true);
             }
-        }
-
-        if (near) {
-            _animator.SetBool("Near", true);
-            _sizeDetected = commonParameters.drop.GetComponent<CharacterSize>();
-            _animator.SetInteger("SizeDrop", _sizeDetected.GetSize());
         }
     }
 
@@ -298,6 +324,7 @@ public class AIBase : MonoBehaviour {
             if(commonParameters.drop!=null)
                 foreach (EnemyBehaviourListener listener in commonParameters.drop.GetComponents<EnemyBehaviourListener>())
                     listener.OnStateAnimationChange(actualState, state);
+
             foreach (EnemyBehaviourListener listener in listeners)
                 listener.OnStateAnimationChange(actualState, state);
             actualState = state;
@@ -325,6 +352,8 @@ public class AIBase : MonoBehaviour {
             state = AnimationState.HIDDE_RECOLECT;
         } else if (info.IsName("Recolect")) {
             state = AnimationState.HIDDE_RECOLECT;
+        } else if(info.IsName("Air Attack")) {
+            state = AnimationState.AIR_ATTACK;
         }
 
         return state;
