@@ -36,6 +36,11 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
     /// Get the focus to the panel
     /// </summary>
     public bool GetFocus() {
+        //the first time don't play effect
+        OnSelectInvokeAudio audio = languages.gameObject.GetComponent<OnSelectInvokeAudio>();
+        if (audio != null)
+            audio.passPlayAudio = true;
+
         //select the option
         EventSystem.current.SetSelectedGameObject(languages.gameObject);
         return true;

@@ -33,8 +33,14 @@ public class PauseMenu : MonoBehaviour {
 		if (_selectOption) {
 			//only once!
 			_selectOption = false;
-			//select the option
-			EventSystem.current.SetSelectedGameObject(firstSelected);
+
+            //the first time don't play effect
+            OnSelectInvokeAudio audio = firstSelected.GetComponent<OnSelectInvokeAudio>();
+            if (audio != null)
+                audio.passPlayAudio = true;
+
+            //select the option
+            EventSystem.current.SetSelectedGameObject(firstSelected);
 		}
 	}
     

@@ -58,8 +58,14 @@ public class OptionsMenu : MonoBehaviour {
 		if (_selectOption) {
 			//only once!
 			_selectOption = false;
-			//select the option
-			EventSystem.current.SetSelectedGameObject(firstSelected);
+
+            //the first time don't play effect
+            OnSelectInvokeAudio audio = firstSelected.GetComponent<OnSelectInvokeAudio>();
+            if (audio != null)
+                audio.passPlayAudio = true;
+
+            //select the option
+            EventSystem.current.SetSelectedGameObject(firstSelected);
         }
 
 		
@@ -145,7 +151,10 @@ public class OptionsMenu : MonoBehaviour {
         _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
         //hide it
         _actualMenuSelected.GetComponent<OnSelectInvokeOptions>().panelToShow.SetActive(false);
-        //and set the focus to the button
+        //and set the focus to the button (not sound)
+        OnSelectInvokeAudio audio = _actualMenuSelected.GetComponent<OnSelectInvokeAudio>();
+        if (audio != null)
+            audio.passPlayAudio = true;
         EventSystem.current.SetSelectedGameObject(_actualMenuSelected);
 
         background.SetActive(false);
