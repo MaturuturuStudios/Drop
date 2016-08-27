@@ -1,14 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 
 public class StartApplication : MonoBehaviour {
-    
+        
 	void Awake () {
         ApplyGraphics();
-        ApplyVolume();
-    }
-
-    private void ApplyVolume() {
-
     }
 
     private void ApplyGraphics() {

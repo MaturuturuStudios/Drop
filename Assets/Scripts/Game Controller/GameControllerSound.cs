@@ -75,7 +75,7 @@ public class GameControllerSound : MonoBehaviour {
 	/// <summary>
 	/// Unity's method called right after the object is created.
 	/// </summary>
-	void Awake() {
+	public void Awake() {
 		// Retrieves the desired components
 		_originalAudioSource = GetComponent<AudioSource>();
 		_gcic = GetComponent<GameControllerIndependentControl>();
@@ -99,13 +99,18 @@ public class GameControllerSound : MonoBehaviour {
 			_audioSources[i] = SoundUtility.CopyAudioSource(_originalAudioSource, gameObject);
 			_audioSources[i].clip = musicClips[i].clip;
         }
+
+        //Apply the stored options of the user
+        RestoreSettings();
 	}
+
+    
 
 	/// <summary>
 	/// Unity's method called right after the componenet becomes
 	/// enabled.
 	/// </summary>
-	void OnEnable() {
+	public void OnEnable() {
 		// Adjusts the volume of each music clip
 		ComputeMusicVolumes(true);
 
@@ -118,7 +123,7 @@ public class GameControllerSound : MonoBehaviour {
 	/// Unity's method called right after the componenet becomes
 	/// disabled.
 	/// </summary>
-	void OnDisable() {
+	public void OnDisable() {
 		// Stops all the audio sources
 		foreach (AudioSource audioSource in _audioSources)
 			audioSource.Stop();
@@ -127,7 +132,7 @@ public class GameControllerSound : MonoBehaviour {
 	/// <summary>
 	/// Unity's method called each frame.
 	/// </summary>
-	void Update() {
+	public void Update() {
 		// Adjusts the volume of each music clip
 		ComputeMusicVolumes();
 	}
@@ -161,6 +166,22 @@ public class GameControllerSound : MonoBehaviour {
 			_audioSources[i].volume = targetVolume;
 		}
 	}
+
+    /// <summary>
+    /// Restore the stored music's options of the user
+    /// If there is no stored options, by default is max volume
+    /// </summary>
+    private void RestoreSettings() {
+        float master = PlayerPrefs.GetFloat(OptionsKey.AudioMaster, 1);
+        float music = PlayerPrefs.GetFloat(OptionsKey.AudioMusic, 1);
+        float ambient = PlayerPrefs.GetFloat(OptionsKey.AudioAmbient, 1);
+        float effects = PlayerPrefs.GetFloat(OptionsKey.AudioEffects, 1);
+
+        SetMasterVolume(master);
+        SetMusicVolume(music);
+        SetAmbientVolume(ambient);
+        SetEffectsVolume(effects);
+    }
 
 	#region Mixer Methods
 
@@ -206,7 +227,7 @@ public class GameControllerSound : MonoBehaviour {
 	/// </summary>
 	/// <param name="value">Normalized volume</param>
 	/// <returns>Real volume</returns>
-	private float CalculateVolume(float value) {
+	public static float CalculateVolume(float value) {
 		// Since the fall in volume is exponential, uses the logarithm of the value
 		value = Mathf.Lerp(1, 10, value);
 		return Mathf.Lerp(MIN_VOLUME, MAX_VOLUME, Mathf.Log10(value));
