@@ -35,7 +35,7 @@ public class SpawnPlant : Irrigate {
 		Destroy(interactEffect, effectDuration);
 
 		//play animation
-		foreach (Animator animator in GetComponentsInChildren<Animator>())
+		foreach (Animator animator in GetComponents<Animator>())
 			animator.SetTrigger("irrigate");
         Destroy(system, effectDuration);
 

@@ -299,6 +299,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
             ParticleSystem[] subSystems = system.GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem subSystem in subSystems) {
+                subSystem.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+                subSystem.Simulate(0, true, true);
+                subSystem.Play();
+
                 ParticleSystem.EmissionModule emission = subSystem.emission;
                 emission.enabled = false;         
             }
