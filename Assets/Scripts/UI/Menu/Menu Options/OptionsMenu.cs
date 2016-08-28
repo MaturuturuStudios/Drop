@@ -120,6 +120,7 @@ public class OptionsMenu : MonoBehaviour {
 
 
         if (Input.GetButtonDown(Axis.Start)) {
+            _actualPanel.LoseFocus();
             _menuNavigator.ComeBack();
             _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
         }
@@ -164,6 +165,7 @@ public class OptionsMenu : MonoBehaviour {
         _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
         //hide it
         _actualMenuSelected.GetComponent<OnSelectInvokeOptions>().panelToShow.SetActive(false);
+        _actualPanel.LoseFocus();
         //and set the focus to the button (not sound)
         OnSelectInvokeAudio audio = _actualMenuSelected.GetComponent<OnSelectInvokeAudio>();
         if (audio != null)

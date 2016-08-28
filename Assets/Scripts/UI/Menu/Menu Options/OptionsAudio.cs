@@ -54,6 +54,8 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     }
 
     public void LoseFocus() {
+        SetStoredOptions();
+
         if (title != null) {
             if (EventSystem.current.currentSelectedGameObject != null)
                 EventSystem.current.SetSelectedGameObject(null);
@@ -75,6 +77,10 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
         }
     }
 
+    public void RestoreMusic() {
+        SetStoredOptions();
+    }
+
 
     /// <summary>
     /// When hitted, save the changes and apply them
@@ -86,7 +92,6 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
         PlayerPrefs.SetFloat(OptionsKey.AudioAmbient, ambient.value);
         PlayerPrefs.SetFloat(OptionsKey.AudioEffects, effects.value);
         PlayerPrefs.Save();
-        //come back to menu options
     }
 
     private void SetStoredOptions() {
