@@ -25,11 +25,16 @@ public class CreditsMenu : MonoBehaviour {
 	/// A reference to the menu's navigator.
 	/// </summary>
 	protected MenuNavigator _menuNavigator;
+    /// <summary>
+    /// Reference for the audio menu
+    /// </summary>
+    private AudioMenu _audioMenu;
     #endregion
 
     #region Methods
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
+        _audioMenu = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<AudioMenu>();
     }
 
 	public void OnEnable() {
@@ -51,11 +56,13 @@ public class CreditsMenu : MonoBehaviour {
             //select the option
             EventSystem.current.SetSelectedGameObject(firstSelected);
         }
-		
+
 
         //B, back or start
-        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start))
-                _menuNavigator.ComeBack();
+        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back) || Input.GetButtonDown(Axis.Start)) {
+            _menuNavigator.ComeBack();
+            _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
+        }
 
 	}
     

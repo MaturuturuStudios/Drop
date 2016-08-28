@@ -32,13 +32,20 @@ public class OptionsMenu : MonoBehaviour {
 	/// A reference to the menu's navigator.
 	/// </summary>
 	protected MenuNavigator _menuNavigator;
-
+    /// <summary>
+    /// Reference for the audio menu
+    /// </summary>
+    private AudioMenu _audioMenu;
+    /// <summary>
+    /// Variable to control the triggers
+    /// </summary>
     private bool _triggerPressed;
     #endregion
 
     #region Methods
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
+        _audioMenu = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<AudioMenu>();
     }
 
 	public void OnEnable() {
@@ -99,17 +106,23 @@ public class OptionsMenu : MonoBehaviour {
 
 
         //B, back or start
-        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back))
+        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back)) {
             //check if focus is inside the suboption
             if (IsUnderSubOption())
                 //if yes, unselect the option
                 UnfocusOption();
-            else 
+            else
                 //if not, the focus is already on the buttons menu, come back
                 _menuNavigator.ComeBack();
 
-        if (Input.GetButtonDown(Axis.Start))
+            _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
+        }
+
+
+        if (Input.GetButtonDown(Axis.Start)) {
             _menuNavigator.ComeBack();
+            _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
+        }
 
     }
 
