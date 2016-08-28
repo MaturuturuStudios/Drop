@@ -323,9 +323,14 @@ public class MenuNavigator : MonoBehaviour {
         confirmQuit.gameObject.SetActive(false);
 
         if (EventSystem.current == null) return;
-        //recover focus
-        if(EventSystem.current.currentSelectedGameObject!=_previousSelectionExit)
+        //recover focus (no sound!)
+        if (EventSystem.current.currentSelectedGameObject != _previousSelectionExit) {
+            if (_previousSelectionExit != null) {
+                OnSelectInvokeAudio audio = _previousSelectionExit.GetComponent<OnSelectInvokeAudio>();
+                if (audio != null) audio.passPlayAudio = true;
+            }
             EventSystem.current.SetSelectedGameObject(_previousSelectionExit);
+        }
     }
 
     /// <summary>
@@ -445,8 +450,11 @@ public class MenuNavigator : MonoBehaviour {
 
 
         //set selected option by default NO
-        if (EventSystem.current.currentSelectedGameObject != confirmQuitDefault)
+        if (EventSystem.current.currentSelectedGameObject != confirmQuitDefault) {
+            OnSelectInvokeAudio audio = confirmQuitDefault.GetComponent<OnSelectInvokeAudio>();
+            if (audio != null) audio.passPlayAudio = true;
             EventSystem.current.SetSelectedGameObject(confirmQuitDefault);
+        }
     }
 
 

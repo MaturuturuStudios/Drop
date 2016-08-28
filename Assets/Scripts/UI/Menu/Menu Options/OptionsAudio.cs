@@ -42,12 +42,20 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
     /// Get the focus to the panel
     /// </summary>
     public bool GetFocus() {
+        //first time don't play effect
+        //the first time don't play effect
+        OnSelectInvokeAudio audio = master.gameObject.GetComponent<OnSelectInvokeAudio>();
+        if (audio != null)
+            audio.passPlayAudio = true;
+
         //select the option
         EventSystem.current.SetSelectedGameObject(master.gameObject);
         return true;
     }
 
     public void LoseFocus() {
+        SetStoredOptions();
+
         if (title != null) {
             if (EventSystem.current.currentSelectedGameObject != null)
                 EventSystem.current.SetSelectedGameObject(null);
@@ -69,6 +77,10 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
         }
     }
 
+    public void RestoreMusic() {
+        SetStoredOptions();
+    }
+
 
     /// <summary>
     /// When hitted, save the changes and apply them
@@ -80,7 +92,6 @@ public class OptionsAudio : MonoBehaviour, SubOptionInterface {
         PlayerPrefs.SetFloat(OptionsKey.AudioAmbient, ambient.value);
         PlayerPrefs.SetFloat(OptionsKey.AudioEffects, effects.value);
         PlayerPrefs.Save();
-        //come back to menu options
     }
 
     private void SetStoredOptions() {

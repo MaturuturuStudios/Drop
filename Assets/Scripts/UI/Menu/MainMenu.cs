@@ -52,12 +52,17 @@ public class MainMenu : MonoBehaviour {
 
 	public void OnEnable() {
         _selectOption = true;
-        
     }
 
 	public void Update() {
 		if (_selectOption) {
 			_selectOption = false;
+
+            //the first time don't play effect
+            OnSelectInvokeAudio audio= selection.GetComponent<OnSelectInvokeAudio>();
+            if (audio != null)
+                audio.passPlayAudio = true;
+
 			//select the option
 			EventSystem.current.SetSelectedGameObject(selection);
         }
