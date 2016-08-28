@@ -118,6 +118,10 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// Point camera should focus
     /// </summary>
     private Vector2 _targetPoint;
+    /// <summary>
+    /// Listeners of map selection
+    /// </summary>
+    private List<MapLevelListener> _listeners = new List<MapLevelListener>();
     #endregion
 
     #region Private class
@@ -165,6 +169,32 @@ public class MenuMapLevel3D : MonoBehaviour {
 
     public void OnDisable() {
         SelectMapCamera(false);
+    }
+
+    /// <summary>
+	/// Subscribes a listener to the menu map's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(MapLevelListener listener) {
+        if (_listeners.Contains(listener))
+            return false;
+        _listeners.Add(listener);
+        return true;
+    }
+
+    /// <summary>
+    /// Unsubscribes a listener to the menu map's events.
+    /// Returns false if the listener wasn't subscribed yet.
+    /// </summary>
+    /// <param name="listener">The listener to unsubscribe</param>
+    /// <returns>If the listener was successfully unsubscribed</returns>
+    public bool RemoveListener(MapLevelListener listener) {
+        if (!_listeners.Contains(listener))
+            return false;
+        _listeners.Remove(listener);
+        return true;
     }
 
     /// <summary>
@@ -264,13 +294,22 @@ public class MenuMapLevel3D : MonoBehaviour {
         if (info.world < 0 || info.level < 0 || info.world >= worlds.Length
             || info.level >= levels[info.world].Length) return;
 
+        foreach (MapLevelListener listener in _listeners)
+            listener.OnChangeLevel(actualLevelInfo, info);
+
+
         //store the actual level
         actualLevelInfo.level = info.level;
         //show the world
         ShowLevels(info.world);
 
         //if has a change of world, zoom in and out
-        if (actualLevelInfo.world != info.world) StartCoroutine(Zoom());
+        if (actualLevelInfo.world != info.world) {
+            StartCoroutine(Zoom());
+
+            foreach (MapLevelListener listener in _listeners)
+                listener.OnChangeWorld(actualLevelInfo.world, info.world);
+        }
 
         //store the actual world
         actualLevelInfo.world = info.world;
@@ -281,6 +320,15 @@ public class MenuMapLevel3D : MonoBehaviour {
 
         //get the target point
         _targetPoint = levels[info.world][info.level].transform.position;
+    }
+
+    /// <summary>
+    /// Tell the listeners a level is selected
+    /// </summary>
+    /// <param name="level"></param>
+    public void NotifyListenersSelectedLevel(LevelInfo level) {
+        foreach (MapLevelListener listener in _listeners)
+            listener.OnSelectedLevel(level);
     }
     #endregion
 
@@ -354,11 +402,6 @@ public class MenuMapLevel3D : MonoBehaviour {
 	private void ShowLevels(int world) {
         //if already actived, return
         if (actualLevelInfo.world == world) return;
-        
-
-        //if any world actived, fade it out
-        if (actualLevelInfo.world >= 0 && actualLevelInfo .world< worlds.Length)
-            StartCoroutine(FadeOut(levelsCanvas[actualLevelInfo.world], actualLevelInfo.world));
 
         //fade in the selected world
         StartCoroutine(FadeIn(levelsCanvas[world], world));
@@ -536,9 +579,12 @@ public class MenuMapLevel3D : MonoBehaviour {
             script.delegateAction = this; //script to delegate
 
             //get the script to give the scene asociated to this level
+            //and few information
             SceneLevel sceneLevel = child.GetComponent<SceneLevel>();
             sceneLevel.waitBeforeStartLevel = waitBeforeStartLevel;
             sceneLevel.level = data.GetScene(theLevel);
+            sceneLevel.infoLevel = theLevel;
+            sceneLevel.menuMap = this;
 
             i++;
         }
