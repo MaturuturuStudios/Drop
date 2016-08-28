@@ -189,11 +189,11 @@ public class LevelTransition : MonoBehaviour {
             if (i < collectedDrops) {                
                 drop2DAnim = GameObject.Instantiate(dropCounterUnitCollected);
                 _audioSource.clip = countDropCollectedSound;
-                drop2DAnim.GetComponent<Animator>().SetBool("collected", true);
+                //drop2DAnim.GetComponent<Animator>().SetBool("collected", true);
             } else {
                 drop2DAnim = GameObject.Instantiate(dropCounterUnitWasted);
                 _audioSource.clip = countDropWastedSound;
-                drop2DAnim.GetComponent<Animator>().SetBool("collected", false);
+                //drop2DAnim.GetComponent<Animator>().SetBool("collected", false);
             }
 
             // Play sound
@@ -219,6 +219,8 @@ public class LevelTransition : MonoBehaviour {
             // Wait for next animation
             yield return new WaitForSeconds(delayBetweenDrops);
         }
+
+        //_gci
     }
     #endregion
 }

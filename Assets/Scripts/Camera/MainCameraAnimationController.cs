@@ -62,26 +62,7 @@ public class MainCameraAnimationController : MonoBehaviour {
     public void StopInput() {
 
         // Prevent input getted
-        _gci.StopInput(false);
-
-        // Wait desired time to skip intro
-        StartCoroutine(StopInput(introLockedDuration));
-    }
-
-
-    /// <summary>
-    /// Shows the end message of thanks
-    /// </summary>
-    /// <param name="waitTime">Desired time to wait untill intro is skipped</param>
-    public IEnumerator StopInput(float waitTime) {
-
-        // Wait for display the intro
-        yield return new WaitForSeconds(waitTime);
-
-        // Allow intro to be skipped
-        _gci.StopInput(true);
-
-        yield return true;
+        _gci.StopInput(true, introLockedDuration);
     }
     
 

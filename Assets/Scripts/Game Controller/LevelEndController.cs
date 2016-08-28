@@ -56,6 +56,12 @@ public class LevelEndController : MonoBehaviour {
     /// </summary>
     private LevelTransition _levelTransition;
 
+
+    /// <summary>
+    /// Reference to level transition controller
+    /// </summary>
+    private LevelTransitionController _levelTransitionController;
+
     /// <summary>
     /// The next scene to load
     /// </summary>
@@ -114,6 +120,7 @@ public class LevelEndController : MonoBehaviour {
         _gcic = FindObjectOfType<GameControllerIndependentControl>();
         //Get input controller
         _levelTransition = GetComponent<LevelTransition>();
+        _levelTransitionController = GetComponent<LevelTransitionController>();
     }
 
 
@@ -122,7 +129,7 @@ public class LevelEndController : MonoBehaviour {
     /// </summary>
     public void LevelEnd(){
         // Stops input
-        _gci.StopInput();
+        _gci.StopInput(true, delayStart + fadeDuration);
 
         //unlock the level
         data.UnlockLevel(nextLevel);
@@ -131,7 +138,11 @@ public class LevelEndController : MonoBehaviour {
         _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
 
         // Start transition animation
+        //_levelTransitionController.BeginLevelTransition(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize());
         _levelTransition.BeginLevelTransitionAnim(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize(), delayStart, fadeDuration);
+
+
+        // Reanude input after (delayStart + fadeDuration)
     }
 
 

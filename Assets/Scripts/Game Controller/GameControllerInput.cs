@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class GameControllerInput : MonoBehaviour {
 
@@ -165,19 +166,43 @@ public class GameControllerInput : MonoBehaviour {
                 Input.GetButtonDown(Axis.Start) ||
                 (Input.anyKeyDown && Input.inputString.Length > 0))) {
                     _allowToSkip = false;
-                    GetComponentInChildren<MainCameraAnimationController>().SkipIntro();
+                GetComponentInChildren<MainCameraAnimationController>().SkipIntro();
+                //GetComponentInChildren<LevelTransition>().NextScene();
             }
         }
     }
 
+
     /// <summary>
     /// Stops the player and closes the input.
     /// </summary>
-    public void StopInput(bool allowToSkip = false) {
+    /// <param name="allowToSkip"></param>
+    /// <param name="timeToReanude"></param>
+    public void StopInput(bool allowToSkip = false, float timeToReanude = 0) {
+
+        // Disable input
         CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
         cccp.Stop();
-        _allowToSkip = allowToSkip;
         _enabled = false;
+
+        // Wait for display the intro
+        StartCoroutine(WaitForSkip(allowToSkip, timeToReanude));
+    }
+
+
+    /// <summary>
+    /// Waits wait time and then allows to skip
+    /// </summary>
+    /// <param name="waitTime">Desired time to wait untill intro is skipped</param>
+    public IEnumerator WaitForSkip(bool allowToSkip, float waitTime) {
+
+        // Wait for display the intro
+        yield return new WaitForSeconds(waitTime);
+
+        // allow to skip
+        _allowToSkip = allowToSkip;
+
+        yield return true;
     }
 
     /// <summary>
