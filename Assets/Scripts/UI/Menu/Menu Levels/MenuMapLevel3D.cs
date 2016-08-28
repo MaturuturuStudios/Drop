@@ -206,7 +206,7 @@ public class MenuMapLevel3D : MonoBehaviour {
 
         levels = new List<GameObject[]>();
         levelsCanvas = new CanvasGroup[worlds.Length];
-        
+ 
 
         ConfigureWorlds();
 
@@ -214,11 +214,27 @@ public class MenuMapLevel3D : MonoBehaviour {
 
         //show the world but not focus
         actualLevelInfo.world = -1;
-        actualLevelInfo.level = 0;
-        ShowLevels(0);
+        actualLevelInfo.level = -1;
+        
+        GameObject first = levels[0][0];
+        MeshRenderer renderer = first.GetComponentInChildren<MeshRenderer>(true);
+        Color color = renderer.material.color;
+        color.a = 1;
+
+        for(int i=0; i<levels[0].Length; i++) {
+            GameObject aLevel = levels[0][i];
+            renderer = aLevel.GetComponentInChildren<MeshRenderer>(true);
+            renderer.material.color = color;
+        }
+        levelsCanvas[0].alpha = 1;
+
+
 
         actualLevelInfo.level = 0;
         actualLevelInfo.world = 0;
+
+        //deactivate map until is needed
+        this.gameObject.SetActive(false);
     }
 
     public void Update() {
@@ -230,6 +246,8 @@ public class MenuMapLevel3D : MonoBehaviour {
             //pass the last unlocked converted in index from 0
             //set the initial point (last level unlocked)
             LevelInfo lastLevel = data.GetLastUnlockedLevel();
+            Debug.Log(lastLevel.world);
+            Debug.Log(lastLevel.level);
             SelectLevel(lastLevel);
             ChangeRingLevel(lastLevel, lastLevel);
 
@@ -353,7 +371,8 @@ public class MenuMapLevel3D : MonoBehaviour {
                 cameras[i].enabled = false;
             }
 
-        } else {
+            //rare case in which the script is disabled before having an enable situation
+        } else if(cameras!=null){
             //restore status cameras
             for (int i = 0; i < cameras.Length; i++) {
                 cameras[i].gameObject.SetActive(camerasPreviousState[i]);
