@@ -25,10 +25,9 @@ public class HighJointUnity : MonoBehaviour {
 
         if (cccp != null)
         {
-            if (cccp.GetTotalMass() > 2) {                
-                HingeJoint hinge = transform.parent.GetComponent<HighJoint>(); ;
-                JointSpring hingeSpring = hinge.spring;
-            }
+            if (cccp.GetTotalMass() > 2) { 
+                 transform.parent.GetComponent<Rigidbody>().mass = rigbodyMass - (cccp.GetTotalMass() * rigbodyMassIncrease);
+             }
             Debug.Log(" MASAAAAAAAA " + transform.parent.GetComponent<Rigidbody>().mass);
         }
 
