@@ -102,7 +102,7 @@ public class LevelTransitionController : MonoBehaviour {
     /// Height position of displayed drops
     /// </summary>
     [Range(-.5f, .5f)]
-    public float dropsHeightPosition = 0f;
+    public float dropsHeightPosition = -0.15f;
 
 
     /// <summary>
@@ -176,6 +176,7 @@ public class LevelTransitionController : MonoBehaviour {
 
         // Get the canvas reference
         Canvas canvasTransition = GetComponent<Canvas>();
+        canvasTransition.sortingLayerName = "level_transition_back";
 
         // Instialize the message and the sound
         if (dropsGetted < maxDropsRequired) {
@@ -192,8 +193,8 @@ public class LevelTransitionController : MonoBehaviour {
             _ContactText.transform.position = new Vector3(_ContactText.transform.position.x, _ContactText.transform.position.y - 211f, _ContactText.transform.position.z);
         }
 
-        if (maxDropsRequired == 1)
-            dropsHeightPosition = 0.15f;
+        //if (maxDropsRequired == 1)
+            //dropsHeightPosition = 0.15f;
 
         // Instantiate the message and the sound
         GameObject levelCompleteMessage = Instantiate(levelCompleteText, Vector3.zero, Quaternion.identity) as GameObject;
