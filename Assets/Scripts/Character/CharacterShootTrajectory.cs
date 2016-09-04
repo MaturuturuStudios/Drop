@@ -636,11 +636,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// </summary>
     private void QuitTrajectory() {
         if (_lastColision == 0) {
+            //finished
+            DisableTrajectory();
             //Warning listener on character shoot
             this.GetComponent<CharacterShoot>().ShootModeEnded();
             _ccc.Parameters = null;
-            //finished
-            DisableTrajectory();
         } else {
             _percentageTraveled += _speedAnimation * Time.deltaTime;
 

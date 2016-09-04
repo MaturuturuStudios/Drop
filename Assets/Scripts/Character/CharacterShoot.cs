@@ -148,7 +148,6 @@ public class CharacterShoot : MonoBehaviour {
             //if already in shoot mode and not during an animation, quit it
             } else if (_shootMode && !_shootTrajectory.IsInAnimation()) {
                 _shootTrajectory.EndShootMode();
-                _shootMode = false;
             }
         }
     }
@@ -211,6 +210,7 @@ public class CharacterShoot : MonoBehaviour {
     /// Start the shoot mode
     /// </summary>
     private void StartShootMode() {
+        if (_shootTrajectory.IsInAnimation()) return;
         _shootTrajectory.EnableTrajectory();
         ccc.Parameters = CharacterControllerParameters.ShootingParameters;
 
