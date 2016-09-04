@@ -9,37 +9,32 @@ public class CharacterShoot : MonoBehaviour {
     #region Private Attributes
 
     /// <summary>
-	/// Defines the object that will use to create the drop shooted.
-	/// </summary> 
-    private GameObject _ball;
-
-    /// <summary>
-	/// Defines the size of the drop shooted.
-	/// </summary> 
-    private float _sizeshot = 1;
-
-    /// <summary>
     /// List of observers subscribed to the character shoot's
     /// events.
     /// </summary>
     private List<CharacterShootListener> _listeners = new List<CharacterShootListener>();
-
-    #endregion
-
-    #region Public Attributes
-
+    
     /// <summary>
 	/// Defines the boolean to know if we are in shootmode or out of shootmode.
 	/// </summary> 
-    public bool shootmode = false;
+    private bool _shootMode = false;
 
     /// <summary>
-    /// Defines the scripts objects that we will use it.
+    /// The controller of the character
     /// </summary> 
-    CharacterControllerCustom ccc;
-    CharacterShootTrajectory st;
-    GameControllerIndependentControl _gcic;
-    CharacterSize size;
+    private CharacterControllerCustom ccc;
+    /// <summary>
+    /// The trajectory of the shooting
+    /// </summary>
+    private CharacterShootTrajectory _shootTrajectory;
+    /// <summary>
+    /// The independent control to get new drops
+    /// </summary>
+    private GameControllerIndependentControl _independentControl;
+    /// <summary>
+    /// The size of the character
+    /// </summary>
+    private CharacterSize size;
 
     #endregion
 
@@ -49,16 +44,30 @@ public class CharacterShoot : MonoBehaviour {
 	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
-    void Awake (){
-        
+    public void Awake (){
         ccc = GetComponent<CharacterControllerCustom>();
-        st= GetComponent<CharacterShootTrajectory>();
-        size= GetComponent<CharacterSize>();
-
-        _gcic = GameObject.FindGameObjectWithTag(Tags.GameController)
+        _shootTrajectory = GetComponent<CharacterShootTrajectory>();
+        size = GetComponent<CharacterSize>();
+        _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
+    }
 
+    /// <summary>
+    /// Unity's method called each frame.
+    /// </summary>
+    public void Update() {
+        //check if we shouldn't be in shootmode
+        if (_shootMode
+            && (ccc.State.IsGrounded == false || size.GetSize() == 1)) {
 
+            //quit it inmediatly
+            _shootTrajectory.QuitShootMode();
+            ccc.Parameters = null;
+
+            // Notifies the listeners
+            foreach (CharacterShootListener listener in _listeners)
+                listener.OnExitShootMode(this);
+        }
     }
 
     /// <summary>
@@ -91,85 +100,64 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to know if if we are in shootmode or not.
 	/// </summary>
     public bool isShooting(){
-        return shootmode;
+        return _shootMode;
     }
 
     /// <summary>
 	/// Method to increase the size of the drop shooted
 	/// </summary>
     public void IncreaseSize() {
-        if (shootmode && !st.Animation()) {
-            float oldsize;
-
-            oldsize = _sizeshot;
-            _sizeshot++;
-            if (_sizeshot <= ( GetComponent<CharacterSize>().GetSize()/2))
-                st.selectingsize(_sizeshot);
-            else _sizeshot = oldsize;
-        }
+        if (_shootMode) _shootTrajectory.IncreaseSize();
     }
 
     /// <summary>
 	/// Method to look to the other side
 	/// </summary>
     public void LookatRight() {
-        if (shootmode && !st.Lookingat()){           
-            st.LookatRight();
-        }
+        if (_shootMode) _shootTrajectory.LookAtRight();
     }
 
     /// <summary>
 	/// Method to look to the other side
 	/// </summary>
     public void LookatLeft(){
-        if (shootmode && !st.Lookingat()){            
-            st.LookatLeft();
-        }
+        if (_shootMode) _shootTrajectory.LookAtLeft();
     }
 
     /// <summary>
     /// Method to decrease the size of the drop shooted
     /// </summary>
     public void DecreaseSize(){
-        if (shootmode  && !st.Animation()) {
-            float oldsize;
-      
-            oldsize = _sizeshot;
-            _sizeshot--;
-
-            if (_sizeshot > 0)
-                st.selectingsize(_sizeshot);
-            else _sizeshot = oldsize;
-        }
+        if (_shootMode) _shootTrajectory.DecreaseSize();
     }
 
     /// <summary>
 	/// Method to start the shootmode
 	/// </summary>
     public void Aim(){
-        float size_component=GetComponent<CharacterSize>().GetSize();
+        float actualSize=size.GetSize();
 
-        if (ccc.State.IsGrounded == true && (size_component > 1) && (size_component < 10) && _gcic.allCurrentCharacters.Count < 4 && !st.Lookingat())
-        {           
-            if (!shootmode ) {
-                shootmode = true;
-                st.enabled = true;
-                //_sizeshot = 1;
-                ccc.Parameters = CharacterControllerParameters.ShootingParameters;
+        //if can be in shoot mode, go ahead
+        if (ccc.State.IsGrounded == true && (actualSize > 1)
+            && _independentControl.CountControlledDrops() < 4 )  {  
+                     
+            //if not in shoot mode, go
+            if (!_shootMode ) {
+                StartShootMode();
 
-                // Notifies the listeners
-                foreach (CharacterShootListener listener in _listeners)
-                    listener.OnEnterShootMode(this);
-            }
-            else if (shootmode && !st.Animation()) {               
-                st.Endingd();
+            //if already in shoot mode and not during an animation, quit it
+            } else if (_shootMode && !_shootTrajectory.IsInAnimation()) {
+                _shootTrajectory.EndShootMode();
+                _shootMode = false;
             }
         }
     }
 
-    public void Endshootmode() {
-        shootmode = false;
-
+    /// <summary>
+    /// Must be called only for CharacterShootTrajectory
+    /// </summary>
+    public void ShootModeEnded() {
+        _shootMode = false;
         // Notifies the listeners
         foreach (CharacterShootListener listener in _listeners)
             listener.OnExitShootMode(this);
@@ -179,12 +167,14 @@ public class CharacterShoot : MonoBehaviour {
 	/// Method to shoot the drop
 	/// </summary>
     public void Shoot(){
-        if (shootmode && !st.Animation() && !st.SizeAnimation() && !st.Lookingat()) {
+        if (_shootMode && !_shootTrajectory.IsInAnimation() && _shootTrajectory.CanShoot()) {
+            _shootMode = false;
+            //stop inmediatly the shoot trajectory
             ccc.Parameters = null;
-            shootmode = false;
-            st.Finishing();
-            st.enabled = false;
-            GetComponent<CharacterSize>().SetSize((int)(GetComponent<CharacterSize>().GetSize()-_sizeshot));
+            //quit shoot mode
+            _shootTrajectory.QuitShootMode();
+            //reduce the size of the character
+            size.SetSize((int)(size.GetSize() -_shootTrajectory.shootSize));
 
             // Notifies the listeners
             foreach (CharacterShootListener listener in _listeners)
@@ -195,57 +185,39 @@ public class CharacterShoot : MonoBehaviour {
     }
 
     /// <summary>
-	/// Unity's method called each frame.
-	/// </summary>
-	void Update (){
-
-        //check if we shouldn't be in shootmode
-        if (shootmode && (ccc.State.IsGrounded == false || size.GetSize()==1 )){
-            shootmode = false;
-            st.Finishing();
-            st.enabled = false;
-            ccc.Parameters = null;
-
-            // Notifies the listeners
-            foreach (CharacterShootListener listener in _listeners)
-                listener.OnExitShootMode(this);
+    /// Draw the trajectory debug
+    /// </summary>
+    public void OnDrawGizmosSelected() {
+        if (!Application.isPlaying) {
+            Awake();
+            Update();
         }
-     }
+    }
 
     /// <summary>
-	/// Method to shoot the drop.
-	/// </summary>
-	private void throwBall(){
-
-        _ball = _gcic.CreateDrop(this.transform.position, true); //AddDrop -> CreateDrop
-        _ball.GetComponent<CharacterSize>().SetSize((int)_sizeshot);
-        _ball.SetActive(false);
-
-        _ball.SetActive(true);
-
-        _ball.GetComponent<CharacterControllerCustom>().SendFlying(st.GetpVelocity());
+    /// Method to shoot the drop.
+    /// </summary>
+    private void throwBall() {
+        GameObject ball = _independentControl.CreateDrop(this.transform.position, true);
+        ball.GetComponent<CharacterSize>().SetSize((int)_shootTrajectory.shootSize);
+        ball.GetComponent<CharacterControllerCustom>().SendFlying(_shootTrajectory.GetVelocityDrop());
 
         // Notifies the listeners
         foreach (CharacterShootListener listener in _listeners)
-            listener.OnShoot(this, _ball, st.GetpVelocity());
-	}
+            listener.OnShoot(this, ball, _shootTrajectory.GetVelocityDrop());
+    }
 
-    
+    /// <summary>
+    /// Start the shoot mode
+    /// </summary>
+    private void StartShootMode() {
+        _shootTrajectory.EnableTrajectory();
+        ccc.Parameters = CharacterControllerParameters.ShootingParameters;
 
-   public void OnDrawGizmosSelected () {
-       if (!Application.isPlaying){
-            Awake();
-            Update();
-       }
-           
-       for (int i = 1; i < ccc.GetComponent<CharacterSize>().GetSize(); ++i){
-
-                //Handles.color= Color.Lerp(Color.white, Color.black, (float)1/i );
-                //Handles.DrawWireDisc(transform.position, new Vector3(0, 0, 1),5 * (ccc.GetComponent<CharacterSize>().GetSize() - i));
-                //Debug.Log(" gizmo position " + transform.position + " gizmo distance " + Mathf.Sqrt((5 * (ccc.GetComponent<CharacterSize>().GetSize() - i)) * 25));
-            }
-        }
-    
-
+        _shootMode = true;
+        // Notifies the listeners
+        foreach (CharacterShootListener listener in _listeners)
+            listener.OnEnterShootMode(this);
+    }
     #endregion
 }

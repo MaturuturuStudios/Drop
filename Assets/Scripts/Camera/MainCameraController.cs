@@ -347,9 +347,9 @@ public class MainCameraController : MonoBehaviour {
         _dropSize = target.GetComponent<CharacterSize>().GetSize();
 
         // Get Shoot indicator position
-        bool shootMode = target.GetComponent<CharacterShoot>().shootmode;
-        if (_cameraState != CameraState.LockArea && shootMode) {            
-            _shootPosition = target.GetComponent<CharacterShootTrajectory>()._ball.transform.position;
+        bool shootMode = target.GetComponent<CharacterShoot>().isShooting();
+        if (_cameraState != CameraState.LockArea && shootMode) {
+            _shootPosition = target.GetComponent<CharacterShootTrajectory>().GetIndicatorPosition();
         } else
             _shootPosition = Vector3.zero;
 

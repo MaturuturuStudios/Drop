@@ -97,7 +97,7 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		_animator.SetBool(CharacterAnimatorParameters.Sliding, _ccc.State.IsSliding);
 
 		// Updates the shoot mode state
-		_animator.SetBool(CharacterAnimatorParameters.ShootMode, _characterShoot.shootmode);
+		_animator.SetBool(CharacterAnimatorParameters.ShootMode, _characterShoot.isShooting());
 
 		// Updates the under control state
 		_animator.SetBool(CharacterAnimatorParameters.Controlled, _gcic.IsUnderControl(_drop));
