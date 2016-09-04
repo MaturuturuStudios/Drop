@@ -89,6 +89,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         return drop;
     }
 
+
     /// <summary>
     /// Remove a drop under player's control from list and set it out of the scene
     /// </summary>
@@ -112,6 +113,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Sets the control to the next drop in list
     /// </summary>
@@ -132,6 +134,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Sets the control to the previous drop in list
     /// </summary>
@@ -151,6 +154,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
             SetControl(back_drop);
         }
     }
+
 
     /// <summary>
     /// Sets the control to an specific drop
@@ -174,6 +178,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Set the control to the given drop if is on the list of drops under player's control
     /// </summary>
@@ -190,6 +195,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         }
     }
 
+
     /// <summary>
     /// Checks if a drops under player's control
     /// </summary>
@@ -198,13 +204,13 @@ public class GameControllerIndependentControl : MonoBehaviour {
         return allCurrentCharacters.Contains(drop);
     }
 
+
     /// <summary>
     /// Count how many characters there are into the scene
-    /// if splited, will count the size of the drop
-    /// example, two drops of size two will return 4 if splitted is true
     /// </summary>
-    /// <param name="splited">if true, will count the size of a drop as independent</param>
-    public int CountAllDrops(bool splited = false) {
+    /// <param name="drop">drop to check control</param>
+    public int CountAlllDrops(bool splited) {
+
         // Look for all drops
         GameObject[] drops = GameObject.FindGameObjectsWithTag("Player");
 
@@ -221,21 +227,30 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
     }
 
+
     /// <summary>
     /// Count how many characters there are into the scene
-    /// if splited, will count the size of the drop
-    /// example, two drops of size two will return 4 if splitted is true
     /// </summary>
-    /// <param name="splited">if true, will count the size of a drop as independent</param>
-    public int CountControlledDrops(bool splited = false) {
-        int drops = allCurrentCharacters.Count;
-        if (splited) {
-            drops = 0;
-            for(int i=0; i<allCurrentCharacters.Count; i++) {
-                drops += allCurrentCharacters[i].GetComponent<CharacterSize>().GetSize();
+    /// <param name="drop">drop to check control</param>
+    public int CountControlledDrops(bool splited) {
+
+        // Look for all drops
+        GameObject[] drops = GameObject.FindGameObjectsWithTag("Player");
+
+        // Count drops under controll
+        int totalDrops = 0;
+        for (int i = 0; i < drops.Length; ++i) {
+            if (IsUnderControl(drops[i])) {
+                if (splited)
+                    totalDrops += drops[i].GetComponent<CharacterSize>().GetSize();
+                else
+                    ++totalDrops;
             }
         }
-        return drops;
+
+        return totalDrops;
     }
+
+
     #endregion
 }

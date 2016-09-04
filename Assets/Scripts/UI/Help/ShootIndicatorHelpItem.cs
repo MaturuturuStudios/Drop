@@ -18,6 +18,6 @@ public class ShootIndicatorHelpItem : TextHelpItem {
 
 	protected override string GetText() {
 		// Changes the size in the text
-		return _independentControl.currentCharacter.GetComponent<CharacterShootTrajectory>().shootSize.ToString();
+		return _independentControl.currentCharacter.GetComponent<CharacterShootTrajectory>()._shootsize.ToString();
     }
 }
