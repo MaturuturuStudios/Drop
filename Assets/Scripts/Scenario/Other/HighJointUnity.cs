@@ -26,7 +26,7 @@ public class HighJointUnity : MonoBehaviour {
         if (cccp != null)
         {
             if (cccp.GetTotalMass() > 2) { 
-                 transform.parent.GetComponent<Rigidbody>().mass = rigbodyMass - (cccp.GetTotalMass() * rigbodyMassIncrease);
+                 transform.parent.GetComponent<Rigidbody>().mass *= rigbodyMassIncrease;
              }
             Debug.Log(" MASAAAAAAAA " + transform.parent.GetComponent<Rigidbody>().mass);
         }
