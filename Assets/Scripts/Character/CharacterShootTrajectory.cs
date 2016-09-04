@@ -293,6 +293,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             _angle = 180 - (_angle);
         }
 
+        if (_ballIndicator != null) Destroy(_ballIndicator);
         _ballIndicator = Instantiate(trajectorySizeIndicator);
         //set the size of ball
         _ballIndicator.transform.localScale = new Vector3(_shootSize, _shootSize, _shootSize);
@@ -481,13 +482,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
         Vector3 direction = _trajectoryPoints[0] - transform.position;
         float distance = direction.magnitude;
 
-        Debug.DrawRay(transform.position, direction, Color.green);
-
         bool result = true;
         if (Physics.SphereCast(transform.position, _radio, direction, out _hitPoint, distance, mask)) {
             _lastColision = 0;
             _ballIndicator.SetActive(false);
-            Debug.Log("no shoot");
             result = false;
         } else {
             _ballIndicator.SetActive(true);
