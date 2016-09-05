@@ -219,13 +219,13 @@ public class LevelTransitionController : MonoBehaviour {
 
         // Instialize the message and the sound
         if (dropsGetted < maxDropsRequired) {
-            levelCompleteText.GetComponent<Text>().text = levelCompleteText1;
+            //levelCompleteText.GetComponent<Text>().text = levelCompleteText1;
             _audioSources[0].clip = levelCompleteSound1;
         } else if (dropsGetted == maxDropsRequired) {
-            levelCompleteText.GetComponent<Text>().text = levelCompleteText2;
+            //levelCompleteText.GetComponent<Text>().text = levelCompleteText2;
             _audioSources[0].clip = levelCompleteSound2;
         } else {
-            levelCompleteText.GetComponent<Text>().text = levelCompleteText3;
+            //levelCompleteText.GetComponent<Text>().text = levelCompleteText3;
             _audioSources[0].clip = levelCompleteSound3;
             GameObject _ContactText = Instantiate(contactText, Vector3.zero, Quaternion.identity) as GameObject;
             _ContactText.transform.SetParent(canvasTransition.transform, false);
