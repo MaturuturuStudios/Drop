@@ -121,6 +121,21 @@ public class LevelTransitionController : MonoBehaviour {
     [Range(0, 100)]
     public float canvasDistance = 4.5f;
 
+    /// <summary>
+    /// Camera who renders the background
+    /// </summary>
+    public Camera renderCamera;
+
+    /// <summary>
+    /// Cube to set the texture
+    /// </summary>
+    public GameObject cubeToTexturize;
+
+    /// <summary>
+    /// Texture to save the render
+    /// </summary>
+    public RenderTexture securityCameraTexture;
+
     #endregion
 
     #region Private Attributes
@@ -148,6 +163,30 @@ public class LevelTransitionController : MonoBehaviour {
         _audioSources = GetComponents<AudioSource>();
 
         BeginLevelTransition(dropsCollected);
+
+        Debug.Log("Start Render to texture");
+
+        // get the camera's render texture
+        RenderTexture rendText = RenderTexture.active;
+        RenderTexture.active = renderCamera.targetTexture;
+
+        // render the texture
+        renderCamera.Render();
+
+        // create a new Texture2D with the camera's texture, using its height and width
+        Texture2D cameraImage = new Texture2D(renderCamera.targetTexture.width, renderCamera.targetTexture.height, TextureFormat.RGB24, false);
+        cameraImage.ReadPixels(new Rect(0, 0, renderCamera.targetTexture.width, renderCamera.targetTexture.height), 0, 0);
+        cameraImage.Apply();
+        RenderTexture.active = rendText;
+
+        cubeToTexturize.GetComponent<Renderer>().material.mainTexture = cameraImage;
+        // store the texture into a .PNG file
+        byte[] bytes = cameraImage.EncodeToPNG();
+
+        // save the encoded image to a file
+        System.IO.File.WriteAllBytes(Application.persistentDataPath + "/camera_image.png", bytes);
+  
+
     }
 	
 	// Update is called once per frame
