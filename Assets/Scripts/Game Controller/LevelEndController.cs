@@ -115,9 +115,9 @@ public class LevelEndController : MonoBehaviour {
         }
 
         //Get input controller
-        _gci = FindObjectOfType<GameControllerInput>();
+        _gci = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
         //Get input controller
-        _gcic = FindObjectOfType<GameControllerIndependentControl>();
+        _gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
         //Get input controller
         _levelTransition = GetComponent<LevelTransition>();
         _levelTransitionController = GetComponent<LevelTransitionController>();
