@@ -187,8 +187,10 @@ public class TriggerArea : MonoBehaviour {
 				DoExit();
 		}
 
-		// Removes any destroyed collider
-		_stayingColliders = _stayingColliders.Where(e => e != null).ToList();
+		// Removes any destroyed collider, simulating an exit
+		Collider[] destroyedColliders = _stayingColliders.Where(e => e == null).ToArray();
+		foreach (Collider collider in destroyedColliders)
+			OnTriggerExit(collider);
 
 		// Checks if the currently controlled character is on the area
 		if (_stayingColliders.Where(e => _gameControllerIndependentControl.currentCharacter == e.gameObject).Count() != 0) {
@@ -273,11 +275,11 @@ public class TriggerArea : MonoBehaviour {
 			return;
 
 		// If the collider is the currently controlled character, sets the flag
-		if (other.gameObject == _gameControllerIndependentControl.currentCharacter)
+		if (other != null && other.gameObject == _gameControllerIndependentControl.currentCharacter)
 			_currentCharacterInArea = false;
 
 		// Checks if it's a valid collider
-		if (!IsValidCollider(other))
+		if (other != null && !IsValidCollider(other))
 			return;
 
 		// Removes the collider from the list
