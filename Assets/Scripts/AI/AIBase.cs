@@ -232,7 +232,7 @@ public class AIBase : MonoBehaviour {
             }
 
             //if drop is under controll, check the distance and get the closest drop
-            if (_independentControl.allCurrentCharacters.Contains(dropCollider.gameObject)) {
+            if (_independentControl.IsUnderControl(dropCollider.gameObject)) {
                 float newDistance = Vector2.Distance(dropCollider.transform.position,
                                                 commonParameters.enemy.transform.position);
                 if (newDistance > distance) continue;

@@ -374,9 +374,9 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	void LateUpdate() {
 		// Checks if the character is shooting
 		if (_characterShoot.isShooting()) {
-			// Makes the model face the right direction
-			float desiredAngle = Vector3.Angle(_characterShootTrajectory.GetpVelocity(), Vector3.right);
-			Quaternion desiredRotation = Quaternion.Euler(0, -rotationAngle * Mathf.Cos(desiredAngle * Mathf.Deg2Rad), 0);
+            // Makes the model face the right direction
+            float desiredAngle = Vector3.Angle(_characterShootTrajectory.GetVelocityDrop(), Vector3.right);
+            Quaternion desiredRotation = Quaternion.Euler(0, -rotationAngle * Mathf.Cos(desiredAngle * Mathf.Deg2Rad), 0);
 			_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, aimSpeed * Time.deltaTime);
 
 			// Makes the eyes face the right direction
