@@ -24,6 +24,12 @@ public class CharacterShoot : MonoBehaviour {
     /// </summary>
     private List<CharacterShootListener> _listeners = new List<CharacterShootListener>();
 
+	/// <summary>
+	/// Reference to the object which will be shown when the
+	/// player is unable to shoot.
+	/// </summary>
+	private ShootUnableIndicator _unableIndicator;
+
     #endregion
 
     #region Public Attributes
@@ -58,7 +64,7 @@ public class CharacterShoot : MonoBehaviour {
         _gcic = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
 
-
+		_unableIndicator = GetComponentInChildren<ShootUnableIndicator>();
     }
 
     /// <summary>
@@ -149,9 +155,13 @@ public class CharacterShoot : MonoBehaviour {
     public void Aim(){
         float size_component=GetComponent<CharacterSize>().GetSize();
 
-        if (ccc.State.IsGrounded == true && (size_component > 1) && (size_component < 10) && _gcic.allCurrentCharacters.Count < 4 && !st.Lookingat())
-        {           
-            if (!shootmode ) {
+        if (ccc.State.IsGrounded == true && (size_component < 10) && _gcic.allCurrentCharacters.Count < 4 && !st.Lookingat())
+        {
+			if (size_component <= 1) {
+				_unableIndicator.Show();
+				return;
+			}
+			if (!shootmode ) {
                 shootmode = true;
                 st.enabled = true;
                 //_sizeshot = 1;

@@ -79,13 +79,18 @@ public static class CharacterAnimatorParameters {
 	/// </summary>
 	public static readonly string Irrigate = "irrigate";
 
-    /// <summary>
-    /// Indicates if flying, hit by an enemy.
-    /// </summary>
-    public static readonly string Hit = "hit";
+	/// <summary>
+	/// Indicates if flying, hit by an enemy.
+	/// </summary>
+	public static readonly string Hit = "hit";
 
-    /// <summary>
-    /// Time in seconds since the last time the character was grounded.
-    /// </summary>
-    public static readonly string FloatingTime = "floating_time";
+	/// <summary>
+	/// Triggered when the player trys to shoot being too small.
+	/// </summary>
+	public static readonly string ShootUnable = "shoot_unable";
+
+	/// <summary>
+	/// Time in seconds since the last time the character was grounded.
+	/// </summary>
+	public static readonly string FloatingTime = "floating_time";
 }
