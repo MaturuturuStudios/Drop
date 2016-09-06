@@ -77,7 +77,7 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <summary>
     /// Data reference
     /// </summary>
-    private GameControllerData data;
+    private GameControllerData _data;
     /// <summary>
 	/// A reference to the menu's navigator.
 	/// </summary>
@@ -85,23 +85,23 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <summary>
     /// The transform of the camera
     /// </summary>
-    private Transform transformCamera;
+    private Transform _transformCamera;
     /// <summary>
     /// All the cameras in the scene
     /// </summary>
-    private Camera[] cameras;
+    private Camera[] _cameras;
     /// <summary>
     /// The previous state of all cameras
     /// </summary>
-    private bool[] camerasPreviousState;
+    private bool[] _camerasPreviousState;
     /// <summary>
 	/// The levels' panels (canvas).
 	/// </summary>
-	private CanvasGroup[] levelsCanvas;
+	private CanvasGroup[] _levelsCanvas;
     /// <summary>
     /// List of all levels
     /// </summary>
-    private List<GameObject[]> levels;
+    private List<GameObject[]> _levels;
     /// <summary>
     /// Attribute to know if we have to select the level
     /// </summary>
@@ -109,7 +109,7 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <summary>
     /// The actual world and level selected
     /// </summary>
-    private LevelInfo actualLevelInfo;
+    private LevelInfo _actualLevelInfo;
     /// <summary>
     /// Time in which the travel between points started
     /// </summary>
@@ -117,7 +117,11 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <summary>
     /// Point camera should focus
     /// </summary>
-    private Vector2 _targetPoint;
+    private Vector3 _targetPoint;
+    /// <summary>
+    /// Rotation to achieve
+    /// </summary>
+    private Quaternion _targetQuaternion;
     /// <summary>
     /// Listeners of map selection
     /// </summary>
@@ -202,36 +206,36 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
-        data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
+        _data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
 
-        levels = new List<GameObject[]>();
-        levelsCanvas = new CanvasGroup[worlds.Length];
+        _levels = new List<GameObject[]>();
+        _levelsCanvas = new CanvasGroup[worlds.Length];
  
 
         ConfigureWorlds();
 
-        transformCamera = cameraCanvas.GetComponent<Transform>();
+        _transformCamera = cameraCanvas.GetComponent<Transform>();
 
         //show the world but not focus
-        actualLevelInfo.world = -1;
-        actualLevelInfo.level = -1;
+        _actualLevelInfo.world = -1;
+        _actualLevelInfo.level = -1;
         
-        GameObject first = levels[0][0];
+        GameObject first = _levels[0][0];
         MeshRenderer renderer = first.GetComponentInChildren<MeshRenderer>(true);
         Color color = renderer.material.color;
         color.a = 1;
 
-        for(int i=0; i<levels[0].Length; i++) {
-            GameObject aLevel = levels[0][i];
+        for(int i=0; i<_levels[0].Length; i++) {
+            GameObject aLevel = _levels[0][i];
             renderer = aLevel.GetComponentInChildren<MeshRenderer>(true);
             renderer.material.color = color;
         }
-        levelsCanvas[0].alpha = 1;
+        _levelsCanvas[0].alpha = 1;
 
 
 
-        actualLevelInfo.level = 0;
-        actualLevelInfo.world = 0;
+        _actualLevelInfo.level = 0;
+        _actualLevelInfo.world = 0;
 
         //deactivate map until is needed
         this.gameObject.SetActive(false);
@@ -245,22 +249,16 @@ public class MenuMapLevel3D : MonoBehaviour {
             //select the option
             //pass the last unlocked converted in index from 0
             //set the initial point (last level unlocked)
-            LevelInfo lastLevel = data.GetLastUnlockedLevel();
-            Debug.Log(lastLevel.world);
-            Debug.Log(lastLevel.level);
+            LevelInfo lastLevel = _data.GetLastUnlockedLevel();
             SelectLevel(lastLevel);
             ChangeRingLevel(lastLevel, lastLevel);
+            
+            _targetPoint = _levels[_actualLevelInfo.world][_actualLevelInfo.level].transform.position;
+            _targetQuaternion = _levels[_actualLevelInfo.world][_actualLevelInfo.level].transform.rotation;
 
-
-            _targetPoint = levels[actualLevelInfo.world][actualLevelInfo.level].transform.position;
-            Vector3 targeting = WithinBounds(_targetPoint);
-            targeting.z = normalDistance;
-            transformCamera.position = targeting;
-
-            //set the distance and start zooming
-            Vector3 localPosition = transformCamera.localPosition;
-            localPosition.z = normalDistance;
-            transformCamera.localPosition = localPosition;
+            Vector3 targeting = _targetPoint;
+            targeting.z += normalDistance;
+            _transformCamera.position = targeting;
 
             StartCoroutine(Zoom());
         }
@@ -271,17 +269,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             _menuNavigator.ComeBack();
         }
 
-        //move the camera to the target
-        Vector3 actualPosition = cameraCanvas.transform.position;
-        Vector3 target = WithinBounds(_targetPoint);
-
-        //calculate position...
-        float percentageTime = (Time.unscaledTime - _startTime) / durationTravel;
-        float positionX = Mathf.SmoothStep(actualPosition.x, target.x, percentageTime);
-        float positionY = Mathf.SmoothStep(actualPosition.y, target.y, percentageTime);
-
-        Vector3 newPosition = new Vector3(positionX, positionY, actualPosition.z);
-        cameraCanvas.transform.position = newPosition;
+        CalculatePosition();
     }
 
     /// <summary>
@@ -299,7 +287,7 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <returns></returns>
     public int GetNumberLevels(int world) {
         if (world < 1 || world > worlds.Length) return 0;
-        return levels[world].Length;
+        return _levels[world].Length;
     }
 
     /// <summary>
@@ -310,34 +298,38 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <param name="level">Level.</param>
     public void SelectLevel(LevelInfo info) {
         if (info.world < 0 || info.level < 0 || info.world >= worlds.Length
-            || info.level >= levels[info.world].Length) return;
+            || info.level >= _levels[info.world].Length) return;
 
         foreach (MapLevelListener listener in _listeners)
-            listener.OnChangeLevel(actualLevelInfo, info);
+            listener.OnChangeLevel(_actualLevelInfo, info);
 
 
         //store the actual level
-        actualLevelInfo.level = info.level;
+        _actualLevelInfo.level = info.level;
         //show the world
         ShowLevels(info.world);
 
         //if has a change of world, zoom in and out
-        if (actualLevelInfo.world != info.world) {
+        if (_actualLevelInfo.world != info.world) {
+            //fade out the previous world
+            StartCoroutine(FadeOut(_levelsCanvas[_actualLevelInfo.world], _actualLevelInfo.world));
+
             StartCoroutine(Zoom());
 
             foreach (MapLevelListener listener in _listeners)
-                listener.OnChangeWorld(actualLevelInfo.world, info.world);
+                listener.OnChangeWorld(_actualLevelInfo.world, info.world);
         }
 
         //store the actual world
-        actualLevelInfo.world = info.world;
+        _actualLevelInfo.world = info.world;
         _startTime = Time.unscaledTime;
         //focus the selected level
         //has no effect if it was already selected
         FocusLevel(info);
 
         //get the target point
-        _targetPoint = levels[info.world][info.level].transform.position;
+        _targetPoint = _levels[info.world][info.level].transform.position;
+        _targetQuaternion = _levels[info.world][info.level].transform.rotation;
     }
 
     /// <summary>
@@ -352,6 +344,29 @@ public class MenuMapLevel3D : MonoBehaviour {
 
     #region Private Methods
     /// <summary>
+    /// Calculate the position of the camera and update it
+    /// </summary>
+    private void CalculatePosition() {
+        //move the camera to the target
+        Vector3 actualPosition = _transformCamera.position;
+
+        Vector3 result = Quaternion.Euler(_targetQuaternion.eulerAngles.x, _targetQuaternion.eulerAngles.y, 0) * -Vector3.forward;
+        Vector3 pointFinal = _targetPoint - result * normalDistance;
+
+        //calculate position...
+        float percentageTime = (Time.unscaledTime - _startTime) / durationTravel;
+        float positionX = Mathf.SmoothStep(actualPosition.x, pointFinal.x, percentageTime);
+        float positionY = Mathf.SmoothStep(actualPosition.y, pointFinal.y, percentageTime);
+        float positionZ = Mathf.Lerp(actualPosition.z, pointFinal.z, percentageTime);
+
+        Quaternion actualRotation = _transformCamera.localRotation;
+        _transformCamera.localRotation = Quaternion.Slerp(actualRotation, _targetQuaternion, percentageTime);
+
+        Vector3 newPosition = new Vector3(positionX, positionY, positionZ);
+        _transformCamera.position = newPosition;
+    }
+
+    /// <summary>
     /// Select or deselect the camera of the map, modifing the rest of the cameras
     /// </summary>
     /// <param name="activate">true if want the camera map activated</param>
@@ -359,24 +374,24 @@ public class MenuMapLevel3D : MonoBehaviour {
         if (activate) {
             //get control of the camera
             //get all cameras and store its status
-            cameras = new Camera[Camera.allCamerasCount];
-            Camera.GetAllCameras(cameras);
-            camerasPreviousState = new bool[cameras.Length];
+            _cameras = new Camera[Camera.allCamerasCount];
+            Camera.GetAllCameras(_cameras);
+            _camerasPreviousState = new bool[_cameras.Length];
 
-            for (int i = 0; i < cameras.Length; i++) {
-                camerasPreviousState[i] = cameras[i].gameObject.activeSelf;
+            for (int i = 0; i < _cameras.Length; i++) {
+                _camerasPreviousState[i] = _cameras[i].gameObject.activeSelf;
                 //want all of them disabled except our camera
-                if (cameraCanvas == cameras[i]) continue;
-                cameras[i].gameObject.SetActive(false);
-                cameras[i].enabled = false;
+                if (cameraCanvas == _cameras[i]) continue;
+                _cameras[i].gameObject.SetActive(false);
+                _cameras[i].enabled = false;
             }
 
             //rare case in which the script is disabled before having an enable situation
-        } else if(cameras!=null){
+        } else if(_cameras!=null){
             //restore status cameras
-            for (int i = 0; i < cameras.Length; i++) {
-                cameras[i].gameObject.SetActive(camerasPreviousState[i]);
-                cameras[i].enabled = true;
+            for (int i = 0; i < _cameras.Length; i++) {
+                _cameras[i].gameObject.SetActive(_camerasPreviousState[i]);
+                _cameras[i].enabled = true;
             }
         }
 
@@ -390,8 +405,8 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <param name="world"></param>
     /// <param name="level"></param>
     private void FocusLevel(LevelInfo info) {
-        if (EventSystem.current.currentSelectedGameObject != levels[info.world][info.level])
-            EventSystem.current.SetSelectedGameObject(levels[info.world][info.level]);
+        if (EventSystem.current.currentSelectedGameObject != _levels[info.world][info.level])
+            EventSystem.current.SetSelectedGameObject(_levels[info.world][info.level]);
     }
 
     /// <summary>
@@ -405,13 +420,13 @@ public class MenuMapLevel3D : MonoBehaviour {
         //check index...
         if (previous.level < 0 || previous.world < 0 || actual.world < 0 || actual.level < 0) return;
         if (previous.world >= worlds.Length || actual.world >= worlds.Length
-            || actual.level >= levels[actual.world].Length || previous.level >= levels[previous.world].Length) return;
+            || actual.level >= _levels[actual.world].Length || previous.level >= _levels[previous.world].Length) return;
 
         //quit the ring to previous level
-        levels[previous.world][previous.level].GetComponentInChildren<SpriteRenderer>().sprite = ringBaseLevel;
+        _levels[previous.world][previous.level].GetComponentInChildren<SpriteRenderer>().sprite = ringBaseLevel;
 
         //put the ring to the new level
-        levels[actual.world][actual.level].GetComponentInChildren<SpriteRenderer>().sprite = ringLastLevel;
+        _levels[actual.world][actual.level].GetComponentInChildren<SpriteRenderer>().sprite = ringLastLevel;
     }
 
     /// <summary>
@@ -420,10 +435,10 @@ public class MenuMapLevel3D : MonoBehaviour {
 	/// <param name="world">World.</param>
 	private void ShowLevels(int world) {
         //if already actived, return
-        if (actualLevelInfo.world == world) return;
+        if (_actualLevelInfo.world == world) return;
 
         //fade in the selected world
-        StartCoroutine(FadeIn(levelsCanvas[world], world));
+        StartCoroutine(FadeIn(_levelsCanvas[world], world));
     }
 
     /// <summary>
@@ -436,14 +451,14 @@ public class MenuMapLevel3D : MonoBehaviour {
             float alpha = (hidden) ? 0:1;
             bool done = false;
             do {
-                GameObject first = levels[world][0];
+                GameObject first = _levels[world][0];
                 MeshRenderer renderer = first.GetComponentInChildren<MeshRenderer>(true);
                 Color color = renderer.material.color;
                 color.a = Mathf.MoveTowards(color.a, alpha, Time.unscaledDeltaTime * speedFading);
 
                 if (Mathf.Abs(color.a - alpha) < 0.01) done = true;
 
-                foreach (GameObject aLevel in levels[world]) {
+                foreach (GameObject aLevel in _levels[world]) {
                     renderer = aLevel.GetComponentInChildren<MeshRenderer>(true);
                     renderer.material.color = color;
                 }
@@ -486,39 +501,6 @@ public class MenuMapLevel3D : MonoBehaviour {
     }
 
     /// <summary>
-    /// Return the position corrected to be inside the map
-    /// </summary>
-    /// <param name="position">the target position</param>
-    /// <returns>the corrected position</returns>
-    private Vector3 WithinBounds(Vector3 position) {
-        Vector3 target = Vector3.zero;
-
-        //z axis of the camera
-        Vector3 positionCamera = transformCamera.position;
-        //distance of the map from the camera
-        float distance = Mathf.Abs(positionCamera.z);
-
-        //vertex of the camera views
-        Vector3 upperLeftCamera = cameraCanvas.ViewportToWorldPoint(new Vector3(0, 1, distance));
-        Vector3 downRightCamera = cameraCanvas.ViewportToWorldPoint(new Vector3(1, 0, distance));
-
-        //half size of the camera view
-        float different = Mathf.Abs(upperLeftCamera.x) - Mathf.Abs(positionCamera.x);
-        float halfWidth = Mathf.Abs(different);
-        different = Mathf.Abs(downRightCamera.y) - Mathf.Abs(positionCamera.y);
-        float halfHeight = Mathf.Abs(different);
-        
-        //bounds of the map
-        Bounds boundMap = limits.bounds;
-        
-        //don't get out of the map
-        target.x = Mathf.Clamp(position.x, boundMap.min.x + halfWidth, boundMap.max.x - halfWidth);
-        target.y = Mathf.Clamp(position.y, boundMap.min.y + halfHeight, boundMap.max.y - halfHeight);
-
-        return target;
-    }
-
-    /// <summary>
     /// Configure the worlds
     /// </summary>
     private void ConfigureWorlds() {
@@ -526,14 +508,14 @@ public class MenuMapLevel3D : MonoBehaviour {
             GameObject aWorld = worlds[i];
 
             //get the canvas of the world
-            levelsCanvas[i] = aWorld.GetComponent<CanvasGroup>();
+            _levelsCanvas[i] = aWorld.GetComponent<CanvasGroup>();
             //hide it
-            levelsCanvas[i].alpha = hiddenAlphaWorld;
+            _levelsCanvas[i].alpha = hiddenAlphaWorld;
             //configure the levels of the world
             ConfigureLevels(i);
         }
         //put the special ring
-        LevelInfo lastUnlocked = data.GetLastUnlockedLevel();
+        LevelInfo lastUnlocked = _data.GetLastUnlockedLevel();
         ChangeRingLevel(lastUnlocked, lastUnlocked);
     }
 
@@ -544,25 +526,20 @@ public class MenuMapLevel3D : MonoBehaviour {
     private void ConfigureLevels(int world) {
         GameObject allLevelWorld = worlds[world];
 
-        int i = -1;
-        levels.Add(new GameObject[allLevelWorld.transform.childCount - 1]);
+        int i = 0;
+        _levels.Add(new GameObject[allLevelWorld.transform.childCount]);
 
         LevelInfo theLevel;
         theLevel.world = world;
 
         //for each level...
         foreach (Transform childTransform in allLevelWorld.transform) {
-            //not the first one (title)
-            if (i == -1) {
-                i++;
-                continue;
-            }
             theLevel.level = i;
 
             //get the object of the level
             GameObject child = childTransform.gameObject;
             //store it
-            levels[world][i] = child;
+            _levels[world][i] = child;
 
             //add a script to watch selection over the level
             child.AddComponent(typeof(OnSelectLevel));
@@ -578,7 +555,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             renderer.material.color = color;
 
             //check if the level is locked (or non-available)
-            if (!data.IsUnlockedlevel(theLevel)) {
+            if (!_data.IsUnlockedlevel(theLevel)) {
                 Button button = child.GetComponent<Button>();
                 ColorBlock colorBlock = button.colors;
                 colorBlock.disabledColor = lockedLevelColor;
@@ -587,7 +564,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             }
 
             //check if the level is non-available (put it grey)
-            if (!data.IsAvailableLevel(theLevel)) {
+            if (!_data.IsAvailableLevel(theLevel)) {
                 Button button = child.GetComponent<Button>();
                 ColorBlock colorBlock = button.colors;
                 colorBlock.disabledColor = nonAvailableLevelColor;
@@ -601,7 +578,7 @@ public class MenuMapLevel3D : MonoBehaviour {
             //and few information
             SceneLevel sceneLevel = child.GetComponent<SceneLevel>();
             sceneLevel.waitBeforeStartLevel = waitBeforeStartLevel;
-            sceneLevel.level = data.GetScene(theLevel);
+            sceneLevel.level = _data.GetScene(theLevel);
             sceneLevel.infoLevel = theLevel;
             sceneLevel.menuMap = this;
 
@@ -618,9 +595,10 @@ public class MenuMapLevel3D : MonoBehaviour {
 
         float percentageTime = (Time.unscaledTime - startTime) / timeZooming;
         do {
-            Vector3 position = transformCamera.localPosition;
-            position.z = Mathf.Lerp(normalDistance, zoomOutDistance, easeFunctionZoom.Evaluate(percentageTime));
-            transformCamera.localPosition = position;
+            Vector3 position = _transformCamera.localPosition;
+            position.z -= normalDistance;
+            position.z += Mathf.Lerp(normalDistance, zoomOutDistance, easeFunctionZoom.Evaluate(percentageTime));
+            _transformCamera.localPosition = position;
             yield return null;
             percentageTime = (Time.unscaledTime - startTime) / timeZooming;
         } while (percentageTime < 1);
