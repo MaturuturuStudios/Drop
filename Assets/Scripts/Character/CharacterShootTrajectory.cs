@@ -459,6 +459,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// Set the ending of the shoot mode, start the animation of pick up the rainbow trajectory
     /// </summary>
     public void EndShootMode() {
+        if (_endScript) return; //already ending
         _endScript = true;
         _progressTrajectory = _lastColision;
         _totalProgress=_lastColision;
@@ -541,25 +542,31 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         //when hiding rainbow or opening it
         if (_endScript || _trajectoryAnimation) {
-            int floorPart = (int)_progressTrajectory;
-            float remain = _progressTrajectory - floorPart;
+            int integerPart = (int)_progressTrajectory;
+            float remain = _progressTrajectory - integerPart;
+            Vector3 nextPoint = _trajectoryPoints[integerPart + 1];
 
-            Vector3 nextPoint = _trajectoryPoints[floorPart + 1];
-            if ((_endScript && floorPart==(int)_totalProgress-1) ||
-                (!_endScript && floorPart==_lastColision-1)) {
+            //in the last part of the trajectory don't get the next point in trajectory
+            //get the hit point of collision to get the right lerp
+            if ((_endScript && integerPart==(int)_totalProgress-1) ||
+                (!_endScript && integerPart==_lastColision-1)) {
                 nextPoint = _hitPoint.point;
             }
             //we have the point of the indicator
-            finalPosition = Vector3.Lerp(_trajectoryPoints[floorPart], nextPoint, remain);
+            if (integerPart < 0) return;
+            finalPosition = Vector3.Lerp(_trajectoryPoints[integerPart], nextPoint, remain);
 
             //we need the offset because of the radius of the indicator
             //will make the correction progresive because the offset applied when the indicator 
             //is in his final position is not adecuate at the first moment
             Vector3 move = _hitPoint.normal * displacement;
             //get the percentage of the trajectory
-            float percentage = (_endScript) ?
-                _progressTrajectory/(_totalProgress) :
-                _progressTrajectory /(_lastColision*1f);
+            float percentage = 0;
+            if (_endScript && _totalProgress!=0) {
+                percentage = _progressTrajectory / (_totalProgress);
+             } else if (_endScript && _lastColision!=0){
+                percentage = _progressTrajectory / (_lastColision * 1f);
+            }
             //ease the displacement...
             percentage = Mathf.Pow(percentage,5);
             //the final displacement
@@ -673,7 +680,6 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// </summary>
     public void OpenTrajectory() {
         if (!_trajectoryAnimation) return;
-
         _progressTrajectory += _speedAnimation * Time.deltaTime;
 
         //if progress reach the point collision, is over
@@ -759,9 +765,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         if (_trajectoryAnimation)
             last = (int)_progressTrajectory+1;
-        
+
         // adjust the line renderer to the real longitude
         //known by the last colision
+        //plus one because one special segment
         _linerenderer.SetVertexCount(last);
 
         //get the points position to renderer
@@ -770,17 +777,19 @@ public class CharacterShootTrajectory : MonoBehaviour {
         }
 
         //adjust the last point
-        //make sure we have at least two points (zero means only one point in line renderer)
+        //make sure we have at least two points (zero means only one point in line renderer, no segment at all)
         if (last > 0) {
+            Vector3 lastPosition;
             if (_trajectoryAnimation || _endScript) {
-                int floorPart = (int)_progressTrajectory;
-                float remain = _progressTrajectory - floorPart;
-                Vector3 pointCollision = Vector3.Lerp(_trajectoryPoints[floorPart], _trajectoryPoints[floorPart + 1], remain);
-                _linerenderer.SetPosition(last - 1, pointCollision);
-
+                int integerPart = (int)_progressTrajectory;
+                float remain = _progressTrajectory - integerPart;
+                lastPosition = Vector3.Lerp(_trajectoryPoints[integerPart], _trajectoryPoints[integerPart + 1], remain);
+                
             } else {
-                _linerenderer.SetPosition(last-1, _hitPoint.point);
+                lastPosition = _hitPoint.point;
             }
+
+            _linerenderer.SetPosition(last-1, lastPosition);
         }
     }
     #endregion
