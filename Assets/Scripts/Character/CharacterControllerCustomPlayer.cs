@@ -111,11 +111,11 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	/// Unity's method called every frame.
 	/// Sends the input to the controller.
 	/// </summary>
-	public void FixedUpdate() {
+	public void Update() {
 		// Decreses the timers
-		_jumpPressTime -= Time.fixedDeltaTime;
-		_jumpDelayTime -= Time.fixedDeltaTime;
-		_slopeStickTime -= Time.fixedDeltaTime;
+		_jumpPressTime -= Time.deltaTime;
+		_jumpDelayTime -= Time.deltaTime;
+		_slopeStickTime -= Time.deltaTime;
 
 		// Checks where the player is facing
 		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
