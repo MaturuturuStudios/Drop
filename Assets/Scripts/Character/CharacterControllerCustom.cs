@@ -778,7 +778,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (Vector3.Cross(normal, -Parameters.Gravity).z < 0)
 			State.SlopeAngle = -State.SlopeAngle;
 
-		if (Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit + Parameters.angleThereshold) {
+		if (!hit.collider.CompareTag(Tags.SlideAlways) && (hit.collider.CompareTag(Tags.SlideNever) || Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit + Parameters.angleThereshold)) {
 			// The collider is considered ground
 			State.IsGrounded = true;
 			State.IsFalling = false;
@@ -797,9 +797,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// Projects the speed to the normal's perpendicular
 			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
-
-			// Check if the character is on a slope
-			if (Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
+			
+			// Checks if the character is on a slope
+			if (hit.collider.CompareTag(Tags.SlideAlways) || Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
 				// The collider is considered a slope
 				State.IsOnSlope = true;
 
@@ -808,8 +808,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 					State.IsSliding = true;
 
 					// If the character wasn't sliding, stops it
-                    if (!_wasSliding)
-                        Stop();
+					if (!_wasSliding)
+						Stop();
 				}
 				else {
 					State.IsSliding = false;
