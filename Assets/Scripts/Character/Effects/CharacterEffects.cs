@@ -24,7 +24,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// <summary>
 	/// Effect played when landing.
 	/// </summary>
-	public MinSpeedEffectInformation land;
+	public MinTimeEffectInformation land;
 
 	/// <summary>
 	/// Effect played when jumping.
@@ -265,9 +265,8 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			return;
 
 		// Plays the landing effect
-		float minLandSpeed = land.GetMinSpeed(_characterSize.GetSize());
 		Quaternion normalRotation = Quaternion.LookRotation(Vector3.forward, hit.normal);
-        if (Vector3.Project(ccc.BeforeCollisionVelocity, hit.normal).sqrMagnitude > minLandSpeed) {
+        if (ccc.State.IsGrounded && ccc.State.TimeFloating > land.minTime) {
             land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
         }
 

@@ -36,10 +36,10 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 	public class LandAudioInformation : SingleSoundAudioInformation {
 
 		/// <summary>
-		/// The minimum landing speed the character should have to
-		/// play this sound.
+		/// The minimum time the player should have been floating for the
+		/// landing sound to play.
 		/// </summary>
-		public float minSpeedToPlay = 3.0f;
+		public float minTimeToPlay = 0.25f;
 	}
 
 	/// <summary>
@@ -200,14 +200,14 @@ public class CharacterSound : MonoBehaviour, CharacterControllerListener, Charac
 	}
 
 	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
-		// Checks if the character is landing and plays the sound
-		Vector3 hitVelocity = Vector3.Project(ccc.Velocity, hit.normal);
-		if (!ccc.State.IsGrounded && hitVelocity.magnitude >= land.minSpeedToPlay * Mathf.Sqrt(ccc.GetComponent<CharacterSize>().GetSize()))
-			land.PlayAudio();
+		// Do nothing
 	}
 
 	public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
-		// Do nothing
+		// Checks if the character is landing and plays the sound
+		Vector3 hitVelocity = Vector3.Project(ccc.Velocity, hit.normal);
+		if (ccc.State.IsGrounded && ccc.State.TimeFloating > land.minTimeToPlay)
+			land.PlayAudio();
 	}
 
 	public void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale) {

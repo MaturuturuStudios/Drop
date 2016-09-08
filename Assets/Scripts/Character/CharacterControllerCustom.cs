@@ -656,6 +656,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Tries the movement of the entity according to it's velocity
 		Move(Velocity * Time.fixedDeltaTime);
+
+		// Updates the flying time
+		if (!State.IsGrounded)
+			State.TimeFloating += Time.fixedDeltaTime;
+		else
+			State.TimeFloating = 0;
 	}
 
 	#region Movement Methods
