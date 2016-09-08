@@ -135,11 +135,11 @@ public class LevelEndController : MonoBehaviour {
         data.UnlockLevel(nextLevel);
 
         // Load scene async
-        _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
+        //_menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
 
         // Start transition animation
-        //_levelTransitionController.BeginLevelTransition(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize());
-        _levelTransition.BeginLevelTransitionAnim(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize(), delayStart, fadeDuration);
+        _levelTransitionController.BeginLevelTransition(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize());
+        //_levelTransition.BeginLevelTransitionAnim(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize(), delayStart, fadeDuration);
 
 
         // Reanude input after (delayStart + fadeDuration)
