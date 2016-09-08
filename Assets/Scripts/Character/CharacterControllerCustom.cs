@@ -373,7 +373,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <param name="horizontalInput">Signed-normalized value for the horizontal input</param>
 	/// <param name="verticalInput">Signed-normalized value for the vertical input</param>
-	public void SetInputForce(float horizontalInput, float verticalInput) {
+	public void SetInputForce(float horizontalInput, float verticalInput, float deltaTime) {
 		// Checks if it can move. Nullifies the input otherwise
 		if (!CanMove()) {
 			horizontalInput = 0;
@@ -420,10 +420,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Adds the right forces
 		if (horizontal && (State.IsGrounded || horizontalInput != 0)) {
-			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.fixedDeltaTime);
+			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * deltaTime);
 		}
 		if (vertical && (State.IsGrounded || verticalInput != 0)) {
-			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.fixedDeltaTime);
+			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * deltaTime);
 		}
 
 		// If it's grounded on a slope, subtracts the necessary vertical speed to stick to the ground

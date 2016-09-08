@@ -145,7 +145,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			}
 
 			// Sets the input force of the character controller
-			_controller.SetInputForce(newHorizontalInput, VerticalInput);
+			_controller.SetInputForce(newHorizontalInput, VerticalInput, Time.deltaTime);
 		}
 		else {
 			// The character is on a wind tube
