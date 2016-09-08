@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Base class for help information items.
+/// Shows messages whenever the character is unable to perform an action.
 /// </summary>
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(AudioSource))]
-public class ShootUnableIndicator : MonoBehaviour {
+public class UnableIndicator : MonoBehaviour {
 
 	/// <summary>
 	/// Amount of time the element will be shown.
 	/// </summary>
-	public float timeToHide = 1.5f;
+	public float timeToHide = 1.2f;
 
 	/// <summary>
 	/// Reference to the character's Animator component.
@@ -86,7 +86,7 @@ public class ShootUnableIndicator : MonoBehaviour {
 		_audioSource.Play();
 
 		// Plays the animation on the character
-		characterAnimator.SetTrigger(CharacterAnimatorParameters.ShootUnable);
+		characterAnimator.SetTrigger(CharacterAnimatorParameters.Unable);
 	}
 
     /// <summary>

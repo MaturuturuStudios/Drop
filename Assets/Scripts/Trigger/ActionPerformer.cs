@@ -49,14 +49,15 @@ public abstract class ActionPerformer : MonoBehaviour {
 	/// allow it's children to modify it's behaviour.
 	/// </summary>
 	/// <param name="character"></param>
-	public void DoAction(GameObject character) {
+	/// <returns>If the action succeeded or not</returns>
+	public bool DoAction(GameObject character) {
 		// Only performs the action if this component is enabled
 		if (!enabled)
-			return;
+			return false;
 
 		// If the only once call flag is set, checks if it's been already called this frame
 		if (onlyOncePerFrame && _alreadyCalledThisFrame)
-			return;
+			return false;
 		_alreadyCalledThisFrame = true;
 
 		// Performs the action
@@ -65,6 +66,7 @@ public abstract class ActionPerformer : MonoBehaviour {
 		// If the auto disable flag is set, disables itself
 		if (autoDisable && success)
 			enabled = false;
+		return success;
 	}
 
 	#endregion

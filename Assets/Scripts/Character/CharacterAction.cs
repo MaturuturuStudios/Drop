@@ -21,6 +21,18 @@ public class CharacterAction : MonoBehaviour, IrrigateListener {
 	/// </summary>
 	public bool useCharacterRadius = false;
 
+	/// <summary>
+	/// Reference to the unable indicator shown when the character
+	/// doesn't have any interactuable objects nearby.
+	/// </summary>
+	public UnableIndicator actionUnableIndicator;
+
+	/// <summary>
+	/// Reference to the unable indicator shown when the character
+	/// is too small to irrigate an object.
+	/// </summary>
+	public UnableIndicator tooSmallUnableIndicator;
+
 	#endregion
 
 	#region Private Attributes
@@ -64,11 +76,22 @@ public class CharacterAction : MonoBehaviour, IrrigateListener {
 		Collider[] overlapingColliders = Physics.OverlapSphere(center, radius);
 
 		// Checks if the colliders area interactive and notifies them
+		bool actionNearby = false;
+		bool irrigatedSuccessfully = false;
 		foreach (Collider collider in overlapingColliders) {
 			ActionPerformer[] actionPerformers = collider.GetComponents<ActionPerformer>();
-			foreach (ActionPerformer actionPerformer in actionPerformers)
-				actionPerformer.DoAction(gameObject);
+			foreach (ActionPerformer actionPerformer in actionPerformers) {
+				actionNearby = true;
+				irrigatedSuccessfully = actionPerformer.DoAction(gameObject);
+			}
 		}
+
+		// If no interactuable objects are nearby, shows an error message
+		if (!actionNearby)
+			actionUnableIndicator.Show();
+		// If there are, but it is too small to interact, shows an error message
+		else if (!irrigatedSuccessfully)
+			tooSmallUnableIndicator.Show();
 	}
 	
 	/// <summary>
@@ -76,17 +99,8 @@ public class CharacterAction : MonoBehaviour, IrrigateListener {
 	/// perform their actions.
 	/// </summary>
 	public void Irrigate() {
-		// Checks for colliders overlaping it's volume
-		Vector3 center = _transform.TransformPoint(_controller.center);
-		float radius = _transform.lossyScale.x * _controller.radius;
-		Collider[] overlapingColliders = Physics.OverlapSphere(center, radius);
-
-		// Checks if the colliders area irrigatable and notifies them
-		foreach (Collider collider in overlapingColliders) {
-			ActionPerformer[] actionPerformers = collider.GetComponents<Irrigate>();
-			foreach (ActionPerformer actionPerformer in actionPerformers)
-				actionPerformer.DoAction(gameObject);
-		}
+		// Does the same that DoAction
+		DoAction();
 	}
 	
 	public void OnIrrigate(Irrigate irrigated, GameObject irrigating, int dropsConsumed) {

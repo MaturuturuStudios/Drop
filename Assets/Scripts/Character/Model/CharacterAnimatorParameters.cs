@@ -85,9 +85,9 @@ public static class CharacterAnimatorParameters {
 	public static readonly string Hit = "hit";
 
 	/// <summary>
-	/// Triggered when the player trys to shoot being too small.
+	/// Triggered when the player trys to perform an action they are unable to.
 	/// </summary>
-	public static readonly string ShootUnable = "shoot_unable";
+	public static readonly string Unable = "unable";
 
 	/// <summary>
 	/// Time in seconds since the last time the character was grounded.
