@@ -54,35 +54,26 @@ public class HighJoint : MonoBehaviour{
 
     }
 
+	public Transform platform;
+	public float speed;
 
     // Update is called once per frame
     void Update(){
 
         if (_colisionDownDetected){
-            transform.GetComponentInChildren<Collider>().transform.eulerAngles = Vector3.Lerp(transform.GetComponentInChildren<Collider>().transform.eulerAngles,
+			platform.eulerAngles = Vector3.MoveTowards(platform.eulerAngles,
                                              _incrementAngle,
-                                             Time.deltaTime);
+                                             speed * Time.deltaTime);
         }
 
-        if (_colisionUpDetected){
-
-            transform.GetComponentInChildren<Collider>().transform.eulerAngles = Vector3.Lerp(transform.GetComponentInChildren<Collider>().transform.eulerAngles,
-                                             _initialPosition,
-                                             Time.deltaTime);
-        }
-
-    }
-
-    public void OnTriggerEnter(Collider other){
-        CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
-        
-        if (cccp != null){
-            _colisionDownDetected = true;
-            _colisionUpDetected = false;
-
+		if (_colisionUpDetected){
+			platform.eulerAngles = Vector3.MoveTowards(platform.eulerAngles,
+				_initialPosition,
+				speed * Time.deltaTime);
         }
 
     }
+
     public void OnTriggerStay(Collider other){
         CharacterControllerCustomPlayer cccp = other.gameObject.GetComponent<CharacterControllerCustomPlayer>();
         

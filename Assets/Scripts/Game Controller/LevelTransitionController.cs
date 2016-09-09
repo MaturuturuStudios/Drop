@@ -20,18 +20,6 @@ public class LevelTransitionController : MonoBehaviour {
 
 
     /// <summary>
-    /// The animation for the max drop indicator
-    /// </summary>
-    public GameObject dropShape;
-
-
-    /// <summary>
-    /// The animation of one drop collected
-    /// </summary>
-    public GameObject dropCounterUnitCollected;
-
-
-    /// <summary>
     /// Sound played when the character enters shoot mode.
     /// </summary>
     public AudioClip countDropCollectedSound;
@@ -71,7 +59,7 @@ public class LevelTransitionController : MonoBehaviour {
     /// Drops required to complete the level 100%
     /// </summary>
     [Range(1, 5)]
-    public int maxDropsRequired = 1;
+    public int maxDropsRequired = 	1;
 
 
     /// <summary>
@@ -107,12 +95,17 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Background to set the texture
     /// </summary>
-    public GameObject background;
+	public GameObject background;
 
-    /// <summary>
-    /// Background to set the texture
-    /// </summary>
-    public GameObject fireworkFX;
+	/// <summary>
+	/// Background to set the texture
+	/// </summary>
+	public GameObject fireworkFX;
+
+	/// <summary>
+	/// Background to set the texture
+	/// </summary>
+	public GameObject confettiCanonFX;
 
     /// <summary>
     /// Drop to show as counter
@@ -275,28 +268,16 @@ public class LevelTransitionController : MonoBehaviour {
             // Play sound
             _audioSources[1].Play();
 
-            // Instantiate the shape
-            GameObject drop2DAnim = GameObject.Instantiate(dropShape);
-
-            // Set animation UI Component
-            drop2DAnim.transform.SetParent(canvasTransition.transform, false);
-            drop2DAnim.transform.SetAsLastSibling();
-
             // Calculate size of animation
             float width = canvasTransition.GetComponent<RectTransform>().sizeDelta.x;
             // We use this patron BDB / BDBDB / BDBDBDB Allways blank posiotions at sides and the same size for drops and blanks Position
             float animSize = 2;
-
-            // Set size of animation
-            drop2DAnim.GetComponent<RectTransform>().sizeDelta = new Vector2(animSize, animSize);
 
             // Set position of animation
             float horizontalPosition = (animSize / 2) + animSize + (animSize * i) + (animSize * i / 2);
             if (dropsToShow % 2 == 0)
                 horizontalPosition -= animSize / 4;
             float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
-            drop2DAnim.GetComponent<RectTransform>().anchoredPosition = new Vector2(horizontalPosition, height * dropsHeightPosition);
-
             Vector3 dropCounterPosition = new Vector3(horizontalPosition + transform.position.x - (canvasTransition.GetComponent<RectTransform>().sizeDelta.x / 2) - 1.25f, transform.position.y + dropsHeightPosition, 0f);
 
             GameObject dropFX = GameObject.Instantiate(appearFX, dropCounterPosition, Quaternion.identity) as GameObject;
@@ -312,18 +293,40 @@ public class LevelTransitionController : MonoBehaviour {
             yield return new WaitForSeconds(delayBetweenDrops);
         }
 
-        StartCoroutine(FireworksFX());
+		StartCoroutine(FireworksFX(true));
+		StartCoroutine(ConfettiFX(true));
 
 
         yield return new WaitForSeconds(1);
-    }
+	}
 
-    public IEnumerator FireworksFX() {
+	public IEnumerator FireworksFX(bool fireFXon) {
+		while (fireFXon) {
 
-        GameObject drop2DAnim = GameObject.Instantiate(fireworkFX, transform.position, Quaternion.identity) as GameObject;
+			float zPos = Random.Range (0f, 15f);
+			float xBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
+			float xPos = Random.Range (-xBounce, 5f + xBounce);
+			float yBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
+			float yPos = Random.Range (0, yBounce);
+			Vector3 spawnPosition = new Vector3 (transform.position.x + xPos, transform.position.y + yPos, zPos);
+			GameObject drop2DAnim = GameObject.Instantiate(fireworkFX, spawnPosition, Quaternion.identity) as GameObject;
+			yield return new WaitForSeconds (Random.Range(0.1f, 3f));
+		}
+	}
 
-        yield return new WaitForSeconds(1);
-    }
+	public IEnumerator ConfettiFX(bool ConfettiFXon) {
+		while (ConfettiFXon) {
+
+			/*float zPos = Random.Range (0f, 15f);
+			float xBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
+			float xPos = Random.Range (-xBounce, 5f + xBounce);
+			float yBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
+			float yPos = Random.Range (0, yBounce);*/
+			Vector3 spawnPosition = new Vector3 (382f, 8.69f , 0f);
+			GameObject drop2DAnim = GameObject.Instantiate(confettiCanonFX, spawnPosition, confettiCanonFX.transform.localRotation) as GameObject;
+			yield return new WaitForSeconds (Random.Range(0.1f, 3f));
+		}
+	}
 
         #endregion
     }
