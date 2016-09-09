@@ -92,15 +92,10 @@ public class LevelTransitionController : MonoBehaviour {
     [Range(0, 100)]
     public float canvasDistance = 4.5f;
 
-    /// <summary>
-    /// Background to set the texture
-    /// </summary>
-	public GameObject background;
-
 	/// <summary>
 	/// Background to set the texture
 	/// </summary>
-	public GameObject fireworkFX;
+	public List<GameObject> fireworkFX;
 
 	/// <summary>
 	/// Background to set the texture
@@ -288,40 +283,69 @@ public class LevelTransitionController : MonoBehaviour {
             yield return new WaitForSeconds(delayBetweenDrops);
         }
 
-		StartCoroutine(FireworksFX(true));
-		StartCoroutine(ConfettiFX(true));
+        GameObject parent = GameObject.Find("Temporal Objects");
+
+        StartCoroutine(FireworksFX(true, parent));
+		StartCoroutine(ConfettiFX(true, parent));
 
 
         yield return new WaitForSeconds(1);
 	}
 
-	public IEnumerator FireworksFX(bool fireFXon) {
+	public IEnumerator FireworksFX(bool fireFXon, GameObject parent) {
+
 		while (fireFXon) {
 
-			float zPos = Random.Range (0f, 15f);
+			float zPos = Random.Range (1f, 15f);
 			float xBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
 			float xPos = Random.Range (-xBounce, 5f + xBounce);
 			float yBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
-			float yPos = Random.Range (0, yBounce);
+			float yPos = Random.Range (yBounce / 2, yBounce);
 			Vector3 spawnPosition = new Vector3 (transform.position.x + xPos, transform.position.y + yPos, zPos);
-			GameObject drop2DAnim = GameObject.Instantiate(fireworkFX, spawnPosition, Quaternion.identity) as GameObject;
-			yield return new WaitForSeconds (Random.Range(0.1f, 3f));
+
+            int randomInt = Random.Range(0, fireworkFX.Count - 1);
+            Debug.Log("Random int" + randomInt);
+
+            GameObject drop2DAnim = GameObject.Instantiate(fireworkFX[randomInt], spawnPosition, Quaternion.identity) as GameObject;
+            drop2DAnim.transform.parent = parent.transform;
+
+            StartCoroutine(DeleteFX(3f, drop2DAnim));
+            yield return new WaitForSeconds (Random.Range(0.2f, 3f));
 		}
 	}
 
-	public IEnumerator ConfettiFX(bool ConfettiFXon) {
-		while (ConfettiFXon) {
+    public IEnumerator ConfettiFX(bool ConfettiFXon, GameObject parent) {
+        while (ConfettiFXon) {
 
-			/*float zPos = Random.Range (0f, 15f);
+            /*float zPos = Random.Range (0f, 15f);
 			float xBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
 			float xPos = Random.Range (-xBounce, 5f + xBounce);
 			float yBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
 			float yPos = Random.Range (0, yBounce);*/
-			Vector3 spawnPosition = new Vector3 (382f, 8.69f , 0f);
-			GameObject drop2DAnim = GameObject.Instantiate(confettiCanonFX, spawnPosition, confettiCanonFX.transform.localRotation) as GameObject;
-			yield return new WaitForSeconds (Random.Range(0.1f, 3f));
-		}
-	}
+            Vector3 spawnPosition = Vector3.zero;
+            Quaternion spawnRotarion = Quaternion.identity;
+            if (Random.value > 0.5f) {
+                spawnPosition = new Vector3(382f + -6.920013f, 8.69f + -3.419998f, 0f + 5.91f);
 
-        #endregion
+            } else {
+                spawnPosition = new Vector3(382f + 7.920013f, 8.69f + -3.419998f, 0f + 5.91f);
+                spawnRotarion = Quaternion.Inverse(Quaternion.identity);
+            }
+            GameObject drop2DAnim = GameObject.Instantiate(confettiCanonFX, spawnPosition, spawnRotarion) as GameObject;
+            drop2DAnim.transform.parent = parent.transform;
+
+            StartCoroutine(DeleteFX(1f, drop2DAnim));
+            yield return new WaitForSeconds(Random.Range(0.1f, 3f));
+        }
     }
+
+
+    public IEnumerator DeleteFX(float waitTime, GameObject FX) {
+
+        yield return new WaitForSeconds(waitTime);
+
+        Destroy(FX);
+    }
+
+    #endregion
+}
