@@ -175,9 +175,6 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 		if (!isActiveAndEnabled)
 			return;
 
-		Debug.Log("INPUT: " + HorizontalInput);
-		Debug.Log("VELOCITY: " + _controller.Velocity);
-
 		// Decreses the timers
 		_jumpPressTime -= Time.deltaTime;
 		_jumpDelayTime -= Time.deltaTime;

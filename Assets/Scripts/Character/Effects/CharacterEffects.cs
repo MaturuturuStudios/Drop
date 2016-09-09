@@ -42,6 +42,11 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	public EffectInformation fuse;
 
 	/// <summary>
+	/// Effect played while sliding along a slope.
+	/// </summary>
+	public EffectInformation slope;
+
+	/// <summary>
 	/// Effect played while sliding.
 	/// </summary>
 	public EffectInformation slide;
@@ -132,6 +137,16 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	private Dictionary<ParticleSystem, ParticleSystemState> _slideParticleEffects;
 
 	/// <summary>
+	/// The slope effect used by this script.
+	/// </summary>
+	private Transform _slopeEffect;
+
+	/// <summary>
+	/// Reference to the slope effect's particle systems.
+	/// </summary>
+	private Dictionary<ParticleSystem, ParticleSystemState> _slopeParticleEffects;
+
+	/// <summary>
 	/// The sleep effect created by this script.
 	/// </summary>
 	private Transform _sleepEffect;
@@ -180,6 +195,15 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = false;
 		}
+
+		// Creates and stops the slope effect
+		_slopeEffect = slope.PlayEffect(_transform.position, Quaternion.identity).transform;
+		_slopeParticleEffects = new Dictionary<ParticleSystem, ParticleSystemState>();
+		foreach (ParticleSystem system in _slopeEffect.GetComponentsInChildren<ParticleSystem>()) {
+			_slopeParticleEffects.Add(system, new ParticleSystemState(system));
+			ParticleSystem.EmissionModule emission = system.emission;
+			emission.enabled = false;
+		}
 	}
 
 	void OnDisable() {
@@ -208,7 +232,20 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			Destroy(_slideEffect.gameObject, maxLifetime);
 			_slideEffect = null;
 		}
-    }
+
+		// Stops and destroys the slope effect
+		if (_slopeEffect != null) {
+			float maxLifetime = 0;
+			foreach (ParticleSystem system in _slopeParticleEffects.Keys) {
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = false;
+				maxLifetime = Mathf.Max(maxLifetime, system.startLifetime);
+			}
+			_slopeParticleEffects.Clear();
+			Destroy(_slopeEffect.gameObject, maxLifetime);
+			_slopeEffect = null;
+		}
+	}
 
 	void Update() {
 		// Plays or stops the walking effect
@@ -221,6 +258,12 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		foreach (ParticleSystem system in _slideParticleEffects.Keys) {
 			ParticleSystem.EmissionModule emission = system.emission;
 			emission.enabled = _ccc.State.IsSliding;
+		}
+
+		// Plays or stops the slope effect
+		foreach (ParticleSystem system in _slopeParticleEffects.Keys) {
+			ParticleSystem.EmissionModule emission = system.emission;
+			emission.enabled = _ccc.State.IsOnSlope && !_ccc.State.IsSliding;
 		}
 
 		// If the character is controlled, stops the sleep effect
@@ -284,8 +327,17 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			}
 		}
 
+		// Positions the slope effect
+		if (ccc.State.IsOnSlope && !ccc.State.IsSliding) {
+			_slopeEffect.position = hit.point;
+			_slopeEffect.rotation = normalRotation;
+			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _slopeParticleEffects) {
+				system.Key.startRotation3D = eulerRotation;
+				system.Value.UpdateWithSize(sizeFactor);
+			}
+		}
 		// Positions the sliding effect
-		if (ccc.State.IsSliding) {
+		else if (ccc.State.IsSliding) {
 			_slideEffect.position = hit.point;
 			_slideEffect.rotation = normalRotation;
 			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _slideParticleEffects) {
