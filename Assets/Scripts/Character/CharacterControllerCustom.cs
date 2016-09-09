@@ -762,6 +762,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (hit.collider is SphereCollider)
 			normal = -hit.normal;
 
+		// Gets the vector's projection on the XY plane
+		normal = Vector3.ProjectOnPlane(normal, Vector3.forward);
+
 		// Saves the velocity of the character
 		BeforeCollisionVelocity = Velocity;
 
