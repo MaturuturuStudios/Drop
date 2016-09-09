@@ -287,10 +287,14 @@ public class LevelTransitionController : MonoBehaviour {
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i * 2, Camera.main.transform.position.y + dropsHeightPosition, 0f);
 
             //Debug.Log("Spawn position:" + dropCounterPosition);
-            GameObject drop2DAnim = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
+			GameObject drop2DAnim = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
             dropsContainer.Add(drop2DAnim);
 
-            drop2DAnim.transform.LookAt(Camera.main.transform);
+			Vector3 direction = drop2DAnim.transform.position - (Camera.main.transform.position - 8f * (16f / 9f - 1f) * Vector3.forward);
+			direction = Vector3.ProjectOnPlane (direction, Vector3.up);
+			drop2DAnim.transform.rotation = Quaternion.LookRotation (direction);
+
+            //drop2DAnim.transform.LookAt(Camera.main.transform);
 
             GameObject dropFX = GameObject.Instantiate(appearFX, dropCounterPosition, Quaternion.identity) as GameObject;
 
