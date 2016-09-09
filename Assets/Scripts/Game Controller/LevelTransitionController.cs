@@ -102,10 +102,15 @@ public class LevelTransitionController : MonoBehaviour {
 	/// </summary>
 	public GameObject confettiCanonFX;
 
-    /// <summary>
-    /// Drop to show as counter
-    /// </summary>
-    public GameObject dropCounter;
+	/// <summary>
+	/// Drop to show as counter
+	/// </summary>
+	public GameObject dropCounter;
+
+	/// <summary>
+	/// Text to show the number of drops
+	/// </summary>
+	public GameObject dropCounterText;
 
     /// <summary>
     /// Drop to show as counter
@@ -227,6 +232,15 @@ public class LevelTransitionController : MonoBehaviour {
         // Look if player exceded max drops
         int dropsToShow = dropsGetted > maxDropsRequired ? dropsGetted : maxDropsRequired;
 
+		yield return new WaitForSeconds(0.5f);
+
+		GameObject counterText = Instantiate(dropCounterText, new Vector3(0f, 2.3f, 0f), Quaternion.identity) as GameObject;
+		counterText.transform.SetParent(canvasTransition.transform, false);
+
+		string gettedDropsString = "Getted drops: " + 0 + "/" + dropsToShow;
+
+		counterText.GetComponent<Text> ().text = gettedDropsString;
+
         // Update canvases
         Canvas.ForceUpdateCanvases();
 
@@ -251,17 +265,24 @@ public class LevelTransitionController : MonoBehaviour {
 
         yield return new WaitForSeconds(0.5f);
 
-        
+
         float increasePitch = (maxPitch - startingPitch) / dropsToShow;
         // Set start pitch and calculate the pitch to increase
         _audioSources[1].pitch = startingPitch;
         for (int i = 0; i < dropsGetted; ++i) {
 
+			gettedDropsString = "Getted drops: " + (i + 1f) + "/" + dropsToShow;
+
+			Animator couterTextAnimator = counterText.GetComponent<Animator> ();
+			couterTextAnimator.SetBool ("Jump", true);
+			StartCoroutine(ResetCounterTextState(0.2f, couterTextAnimator));
 
             _audioSources[1].clip = countDropCollectedSound;
 
             // Play sound
             _audioSources[1].Play();
+
+			counterText.GetComponent<Text> ().text = gettedDropsString;
 
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i * 2, Camera.main.transform.position.y + dropsHeightPosition, 0f);
 
@@ -337,15 +358,23 @@ public class LevelTransitionController : MonoBehaviour {
             StartCoroutine(DeleteFX(1f, drop2DAnim));
             yield return new WaitForSeconds(Random.Range(0.1f, 3f));
         }
-    }
+	}
 
 
-    public IEnumerator DeleteFX(float waitTime, GameObject FX) {
+	public IEnumerator DeleteFX(float waitTime, GameObject FX) {
 
-        yield return new WaitForSeconds(waitTime);
+		yield return new WaitForSeconds(waitTime);
 
-        Destroy(FX);
-    }
+		Destroy(FX);
+	}
+
+
+	public IEnumerator ResetCounterTextState(float waitTime, Animator couterTextAnimator) {
+
+		yield return new WaitForSeconds(waitTime);
+
+		couterTextAnimator.SetBool("Jump", false);
+	}
 
     #endregion
 }
