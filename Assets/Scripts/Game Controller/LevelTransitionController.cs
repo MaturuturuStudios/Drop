@@ -181,7 +181,7 @@ public class LevelTransitionController : MonoBehaviour {
         // Calculate and set the cube to canvas
         float pos = (5f);
 
-        GetComponentInChildren<RectTransform>().position = new Vector3(cam.transform.position.x + 0.24f, cam.transform.position.y, cam.transform.position.z + 5f);
+        GetComponentInChildren<RectTransform>().position = new Vector3(cam.transform.position.x , cam.transform.position.y, cam.transform.position.z + 5f);
 
         float h = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * pos * 2f;
 
@@ -238,11 +238,12 @@ public class LevelTransitionController : MonoBehaviour {
 
         float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
 
+        Debug.Log("dropsToShow:" + dropsToShow);
         for (int i = 0; i < dropsToShow; ++i) {
        
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i *2 , Camera.main.transform.position.y + dropsHeightPosition, 0f); 
 
-            //Debug.Log("Spawn position:" + dropCounterPosition);
+            Debug.Log("Spawn position:" + dropCounterPosition);
             GameObject drop2DAnim = GameObject.Instantiate(dropCounter, dropCounterPosition, Quaternion.identity) as GameObject;
             dropsContainer.Add(drop2DAnim);
 
@@ -250,7 +251,7 @@ public class LevelTransitionController : MonoBehaviour {
 
         yield return new WaitForSeconds(0.5f);
 
-
+        
         float increasePitch = (maxPitch - startingPitch) / dropsToShow;
         // Set start pitch and calculate the pitch to increase
         _audioSources[1].pitch = startingPitch;
@@ -287,7 +288,6 @@ public class LevelTransitionController : MonoBehaviour {
 
         StartCoroutine(FireworksFX(true, parent));
 		StartCoroutine(ConfettiFX(true, parent));
-
 
         yield return new WaitForSeconds(1);
 	}
