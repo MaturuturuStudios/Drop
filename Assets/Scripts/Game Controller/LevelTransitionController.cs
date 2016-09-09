@@ -110,7 +110,12 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Drop to show as counter
     /// </summary>
-    public GameObject characterSpawner;
+    public GameObject dropCounter;
+
+    /// <summary>
+    /// Drop to show as counter
+    /// </summary>
+    public GameObject dropCounterFilled;
 
     public Material dropMaterial;
 
@@ -134,6 +139,7 @@ public class LevelTransitionController : MonoBehaviour {
     public float _fadeDuration = 0.8f;
 
     #endregion
+
     #region Public methods
 
     // Use this for initialization
@@ -231,25 +237,18 @@ public class LevelTransitionController : MonoBehaviour {
 
         List<GameObject> dropsContainer = new List<GameObject>();
 
+        float width  = (Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * 8 * 2f) * cam.aspect;
+
+        float startPosition = -(float)(dropsToShow - 1);
+
+        float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
+
         for (int i = 0; i < dropsToShow; ++i) {
-
-            // Instantiate the shape
-
-            // Calculate size of animation
-            float width = canvasTransition.GetComponent<RectTransform>().sizeDelta.x;
-            // We use this patron BDB / BDBDB / BDBDBDB Allways blank posiotions at sides and the same size for drops and blanks Position
-            float animSize = 2;
-
-            // Set position of animation
-            float horizontalPosition = (animSize / 2) + animSize + (animSize * i) + (animSize * i / 2);
-            if (dropsToShow % 2 == 0)
-                horizontalPosition -= animSize / 4;
-            float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
        
-            Vector3 dropCounterPosition = new Vector3(horizontalPosition + transform.position.x - (canvasTransition.GetComponent<RectTransform>().sizeDelta.x / 2) -1.25f, transform.position.y + dropsHeightPosition, 0f); 
+            Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i *2 , Camera.main.transform.position.y + dropsHeightPosition, 0f); 
 
             //Debug.Log("Spawn position:" + dropCounterPosition);
-            GameObject drop2DAnim = GameObject.Instantiate(characterSpawner, dropCounterPosition, Quaternion.identity) as GameObject;
+            GameObject drop2DAnim = GameObject.Instantiate(dropCounter, dropCounterPosition, Quaternion.identity) as GameObject;
             dropsContainer.Add(drop2DAnim);
 
         }
@@ -268,21 +267,17 @@ public class LevelTransitionController : MonoBehaviour {
             // Play sound
             _audioSources[1].Play();
 
-            // Calculate size of animation
-            float width = canvasTransition.GetComponent<RectTransform>().sizeDelta.x;
-            // We use this patron BDB / BDBDB / BDBDBDB Allways blank posiotions at sides and the same size for drops and blanks Position
-            float animSize = 2;
+            Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i * 2, Camera.main.transform.position.y + dropsHeightPosition, 0f);
 
-            // Set position of animation
-            float horizontalPosition = (animSize / 2) + animSize + (animSize * i) + (animSize * i / 2);
-            if (dropsToShow % 2 == 0)
-                horizontalPosition -= animSize / 4;
-            float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
-            Vector3 dropCounterPosition = new Vector3(horizontalPosition + transform.position.x - (canvasTransition.GetComponent<RectTransform>().sizeDelta.x / 2) - 1.25f, transform.position.y + dropsHeightPosition, 0f);
+            //Debug.Log("Spawn position:" + dropCounterPosition);
+            GameObject drop2DAnim = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
+            dropsContainer.Add(drop2DAnim);
+
+            drop2DAnim.transform.LookAt(Camera.main.transform);
 
             GameObject dropFX = GameObject.Instantiate(appearFX, dropCounterPosition, Quaternion.identity) as GameObject;
 
-            dropsContainer[i].GetComponentInChildren<SkinnedMeshRenderer>().material = dropMaterial;
+            Destroy(dropsContainer[i]);
 
             // Increase pitch
             _audioSources[1].pitch += increasePitch;
