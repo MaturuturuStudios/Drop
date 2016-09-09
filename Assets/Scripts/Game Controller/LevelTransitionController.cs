@@ -177,7 +177,9 @@ public class LevelTransitionController : MonoBehaviour {
     /// </summary>
     /// <param name="dropsGetted">Number of drops collected  in the level</param>
     public IEnumerator LevelTransitionAnimation(int dropsGetted) {
-        
+
+		GameObject parent = GameObject.Find("Temporal Objects");
+
         yield return new WaitForSeconds(startDelay);
 
         // Get the camera reference
@@ -210,9 +212,11 @@ public class LevelTransitionController : MonoBehaviour {
             _audioSources[0].clip = levelCompleteSound2;
         } else {
             //levelCompleteText.GetComponent<Text>().text = levelCompleteText3;
+			Debug.Log("Overload");
             _audioSources[0].clip = levelCompleteSound3;
-            GameObject _ContactText = Instantiate(contactText, Vector3.zero, Quaternion.identity) as GameObject;
+            GameObject _ContactText = Instantiate(contactText);
             _ContactText.transform.SetParent(canvasTransition.transform, false);
+			_ContactText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
             _ContactText.transform.position = new Vector3(_ContactText.transform.position.x, _ContactText.transform.position.y - 211f, _ContactText.transform.position.z);
         }
 
@@ -258,8 +262,9 @@ public class LevelTransitionController : MonoBehaviour {
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i *2 , Camera.main.transform.position.y + dropsHeightPosition, 0f); 
 
             Debug.Log("Spawn position:" + dropCounterPosition);
-            GameObject drop2DAnim = GameObject.Instantiate(dropCounter, dropCounterPosition, Quaternion.identity) as GameObject;
-            dropsContainer.Add(drop2DAnim);
+            GameObject dropCounterIns = GameObject.Instantiate(dropCounter, dropCounterPosition, Quaternion.identity) as GameObject;
+			dropsContainer.Add(dropCounterIns);
+			dropCounterIns.transform.parent = parent.transform;
 
         }
 
@@ -287,18 +292,22 @@ public class LevelTransitionController : MonoBehaviour {
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i * 2, Camera.main.transform.position.y + dropsHeightPosition, 0f);
 
             //Debug.Log("Spawn position:" + dropCounterPosition);
-			GameObject drop2DAnim = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
-            dropsContainer.Add(drop2DAnim);
+			GameObject dropCounterFilledIns = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
+			dropsContainer.Add(dropCounterFilledIns);
 
-			Vector3 direction = drop2DAnim.transform.position - (Camera.main.transform.position - 8f * (16f / 9f - 1f) * Vector3.forward);
+			Vector3 direction = dropCounterFilledIns.transform.position - (Camera.main.transform.position - 8f * (16f / 9f - 1f) * Vector3.forward);
 			direction = Vector3.ProjectOnPlane (direction, Vector3.up);
-			drop2DAnim.transform.rotation = Quaternion.LookRotation (direction);
+			dropCounterFilledIns.transform.rotation = Quaternion.LookRotation (direction);
 
-            //drop2DAnim.transform.LookAt(Camera.main.transform);
+			dropCounterFilledIns.transform.parent = parent.transform;
 
-            GameObject dropFX = GameObject.Instantiate(appearFX, dropCounterPosition, Quaternion.identity) as GameObject;
+			GameObject appearFXIns = GameObject.Instantiate(appearFX, dropCounterPosition, Quaternion.identity) as GameObject;
 
-            Destroy(dropsContainer[i]);
+			appearFXIns.transform.parent = parent.transform;
+
+			StartCoroutine(DeleteFX(2f, appearFXIns));
+
+			Destroy(dropsContainer[i]);
 
             // Increase pitch
             _audioSources[1].pitch += increasePitch;
@@ -309,11 +318,11 @@ public class LevelTransitionController : MonoBehaviour {
             yield return new WaitForSeconds(delayBetweenDrops);
         }
 
-        GameObject parent = GameObject.Find("Temporal Objects");
 
-        StartCoroutine(FireworksFX(true, parent));
-		StartCoroutine(ConfettiFX(true, parent));
-
+		if (dropsGetted >= maxDropsRequired) {
+			StartCoroutine (FireworksFX (true, parent));
+			StartCoroutine (ConfettiFX (true, parent));
+		}
         yield return new WaitForSeconds(1);
 	}
 
@@ -331,10 +340,10 @@ public class LevelTransitionController : MonoBehaviour {
             int randomInt = Random.Range(0, fireworkFX.Count - 1);
             Debug.Log("Random int" + randomInt);
 
-            GameObject drop2DAnim = GameObject.Instantiate(fireworkFX[randomInt], spawnPosition, Quaternion.identity) as GameObject;
-            drop2DAnim.transform.parent = parent.transform;
+			GameObject fireworkFXIns = GameObject.Instantiate(fireworkFX[randomInt], spawnPosition, Quaternion.identity) as GameObject;
+			fireworkFXIns.transform.parent = parent.transform;
 
-            StartCoroutine(DeleteFX(3f, drop2DAnim));
+			StartCoroutine(DeleteFX(3f, fireworkFXIns));
             yield return new WaitForSeconds (Random.Range(0.2f, 3f));
 		}
 	}
@@ -342,11 +351,6 @@ public class LevelTransitionController : MonoBehaviour {
     public IEnumerator ConfettiFX(bool ConfettiFXon, GameObject parent) {
         while (ConfettiFXon) {
 
-            /*float zPos = Random.Range (0f, 15f);
-			float xBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
-			float xPos = Random.Range (-xBounce, 5f + xBounce);
-			float yBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
-			float yPos = Random.Range (0, yBounce);*/
             Vector3 spawnPosition = Vector3.zero;
             Quaternion spawnRotarion = Quaternion.identity;
             if (Random.value > 0.5f) {
@@ -356,10 +360,10 @@ public class LevelTransitionController : MonoBehaviour {
                 spawnPosition = new Vector3(382f + 7.920013f, 8.69f + -3.419998f, 0f + 5.91f);
                 spawnRotarion = Quaternion.Inverse(Quaternion.identity);
             }
-            GameObject drop2DAnim = GameObject.Instantiate(confettiCanonFX, spawnPosition, spawnRotarion) as GameObject;
-            drop2DAnim.transform.parent = parent.transform;
+			GameObject confettiCanonFXIns = GameObject.Instantiate(confettiCanonFX, spawnPosition, spawnRotarion) as GameObject;
+			confettiCanonFXIns.transform.parent = parent.transform;
 
-            StartCoroutine(DeleteFX(1f, drop2DAnim));
+			StartCoroutine(DeleteFX(1f, confettiCanonFXIns));
             yield return new WaitForSeconds(Random.Range(0.1f, 3f));
         }
 	}
@@ -369,7 +373,7 @@ public class LevelTransitionController : MonoBehaviour {
 
 		yield return new WaitForSeconds(waitTime);
 
-		Destroy(FX);
+		DestroyImmediate(FX);
 	}
 
 
