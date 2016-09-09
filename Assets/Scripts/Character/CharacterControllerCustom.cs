@@ -628,14 +628,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 	#endregion
 
 	/// <summary>
-	/// Unity's method called each fixed step.
 	/// Moves the character according to it's velocity.
 	/// </summary>
-	public void FixedUpdate() {
+	public void PerformMovement() {
 		// Decreases the timers
-		_jumpingTime -= Time.fixedDeltaTime;
-		_flyingTime -= Time.fixedDeltaTime;
-		_jumpDelayTime -= Time.fixedDeltaTime;
+		_jumpingTime -= Time.deltaTime;
+		_flyingTime -= Time.deltaTime;
+		_jumpDelayTime -= Time.deltaTime;
 
 		// If the jump anticipation has ended, performs the jump
 		if (_jumpDelayTime < 0 && _waitingForJump)
@@ -649,17 +648,17 @@ public class CharacterControllerCustom : MonoBehaviour {
 		float dragFactor = 1;
 		if (State.IsSliding)
 			dragFactor -= Parameters.slidingDragFactor / Mathf.Sqrt(GetSize());
-		_velocity += Parameters.Gravity * Time.fixedDeltaTime * dragFactor;
+		_velocity += Parameters.Gravity * Time.deltaTime * dragFactor;
 
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
 
 		// Tries the movement of the entity according to it's velocity
-		Move(Velocity * Time.fixedDeltaTime);
+		Move(Velocity * Time.deltaTime);
 
 		// Updates the flying time
 		if (!State.IsGrounded)
-			State.TimeFloating += Time.fixedDeltaTime;
+			State.TimeFloating += Time.deltaTime;
 		else
 			State.TimeFloating = 0;
 	}
@@ -682,7 +681,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 				_transform.Translate(moveDistance, Space.World);
 
 			// Saves the velocity of the platform
-			State.PlatformVelocity = moveDistance / Time.fixedDeltaTime;
+			State.PlatformVelocity = moveDistance / Time.deltaTime;
 		}
 		else {
 			// Resets the velocity of the platform
