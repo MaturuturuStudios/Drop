@@ -108,7 +108,7 @@ public class GameControllerInput : MonoBehaviour {
             //Camera looking arround
             float hLookInput = Input.GetAxis(Axis.CamHorizontal);
             float vLookInput = Input.GetAxis(Axis.CamVertical);
-            _mainCameraController.LookArround(hLookInput, vLookInput);
+            //_mainCameraController.LookArround(hLookInput, vLookInput);
 
             //Handle shoot input
             bool isShooting = shootComponent.isShooting();
