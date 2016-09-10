@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityStandardAssets.ImageEffects;
 
 public class LevelTransitionController : MonoBehaviour {
 
@@ -10,7 +11,17 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Level complete text
     /// </summary>
-    public GameObject levelCompleteText;
+    public GameObject levelCompleteText1;
+
+    /// <summary>
+    /// Level complete text
+    /// </summary>
+    public GameObject levelCompleteText2;
+
+    /// <summary>
+    /// Level complete text
+    /// </summary>
+    public GameObject levelCompleteText3;
 
 
     /// <summary>
@@ -180,6 +191,8 @@ public class LevelTransitionController : MonoBehaviour {
 
 		GameObject parent = GameObject.Find("Temporal Objects");
 
+        Camera.main.GetComponent<DepthOfField>().maxBlurSize = 0f;
+
         yield return new WaitForSeconds(startDelay);
 
         // Get the camera reference
@@ -201,30 +214,27 @@ public class LevelTransitionController : MonoBehaviour {
         Canvas canvasTransition = GetComponentInChildren<Canvas>();
         //canvasTransition.sortingLayerName = "level_transition_back";
 
-        
-        
+
+        GameObject levelCompleteMessage;
         // Instialize the message and the sound
         if (dropsGetted < maxDropsRequired) {
-            //levelCompleteText.GetComponent<Text>().text = levelCompleteText1;
+            levelCompleteMessage = Instantiate(levelCompleteText1, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound1;
         } else if (dropsGetted == maxDropsRequired) {
-            //levelCompleteText.GetComponent<Text>().text = levelCompleteText2;
+            levelCompleteMessage = Instantiate(levelCompleteText2, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound2;
         } else {
-            //levelCompleteText.GetComponent<Text>().text = levelCompleteText3;
-			Debug.Log("Overload");
+            levelCompleteMessage = Instantiate(levelCompleteText3, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound3;
             GameObject _ContactText = Instantiate(contactText);
             _ContactText.transform.SetParent(canvasTransition.transform, false);
 			_ContactText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            _ContactText.transform.position = new Vector3(_ContactText.transform.position.x, _ContactText.transform.position.y - 211f, _ContactText.transform.position.z);
         }
 
         //if (maxDropsRequired == 1)
             //dropsHeightPosition = 0.15f;
 
         // Instantiate the message and the sound
-        GameObject levelCompleteMessage = Instantiate(levelCompleteText, Vector3.zero, Quaternion.identity) as GameObject;
         _audioSources[0].Play();
 
         // Set object an UI object
@@ -241,7 +251,7 @@ public class LevelTransitionController : MonoBehaviour {
 		GameObject counterText = Instantiate(dropCounterText, new Vector3(0f, 2.3f, 0f), Quaternion.identity) as GameObject;
 		counterText.transform.SetParent(canvasTransition.transform, false);
 
-		string gettedDropsString = "Getted drops: " + 0 + "/" + dropsToShow;
+		string gettedDropsString = LanguageManager.Instance.GetText("SavedDrops") + ": " + 0 + " /" + maxDropsRequired;
 
 		counterText.GetComponent<Text> ().text = gettedDropsString;
 
@@ -276,7 +286,7 @@ public class LevelTransitionController : MonoBehaviour {
         _audioSources[1].pitch = startingPitch;
         for (int i = 0; i < dropsGetted; ++i) {
 
-			gettedDropsString = "Getted drops: " + (i + 1f) + "/" + dropsToShow;
+			gettedDropsString = LanguageManager.Instance.GetText("SavedDrops") + ": " + (i + 1f) + "/" + maxDropsRequired;
 
 			Animator couterTextAnimator = counterText.GetComponent<Animator> ();
 			couterTextAnimator.SetBool ("Jump", true);
@@ -344,7 +354,7 @@ public class LevelTransitionController : MonoBehaviour {
 			fireworkFXIns.transform.parent = parent.transform;
 
 			StartCoroutine(DeleteFX(3f, fireworkFXIns));
-            yield return new WaitForSeconds (Random.Range(0.2f, 3f));
+            yield return new WaitForSeconds (Random.Range(0.1f, 2f));
 		}
 	}
 
@@ -354,17 +364,17 @@ public class LevelTransitionController : MonoBehaviour {
             Vector3 spawnPosition = Vector3.zero;
             Quaternion spawnRotarion = Quaternion.identity;
             if (Random.value > 0.5f) {
-                spawnPosition = new Vector3(382f + -6.920013f, 8.69f + -3.419998f, 0f + 5.91f);
+                spawnPosition = new Vector3(Camera.main.transform.position.x + -8f, 3f, 6f);
 
             } else {
-                spawnPosition = new Vector3(382f + 7.920013f, 8.69f + -3.419998f, 0f + 5.91f);
+                spawnPosition = new Vector3(Camera.main.transform.position.x + 8f, 3f, 6f);
                 spawnRotarion = Quaternion.Inverse(Quaternion.identity);
             }
 			GameObject confettiCanonFXIns = GameObject.Instantiate(confettiCanonFX, spawnPosition, spawnRotarion) as GameObject;
 			confettiCanonFXIns.transform.parent = parent.transform;
 
 			StartCoroutine(DeleteFX(1f, confettiCanonFXIns));
-            yield return new WaitForSeconds(Random.Range(0.1f, 3f));
+            yield return new WaitForSeconds(Random.Range(0.1f, 2f));
         }
 	}
 

@@ -88,3 +88,7 @@ No=No
 ConfirmQuit=Sortir del joc?
 LevelComplete=Level complete!
 BackMenuOptions=Tornar
+
+#Level transition strings
+MaxDropsExceded=Has completat el nivell amb més gotes de les permeses, si us plau, indique'ns com a info@maturuturustudios.com
+SavedDrops=Gotes salvades
