@@ -13,7 +13,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// <summary>
     /// Drop switch sound effect
     /// </summary>
-    public AudioClip DropsSwithcSound;
+    public AudioSource audioSource;
 
     /// <summary>
     /// Current character controlled
@@ -127,8 +127,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         if (allCurrentCharacters.Count > 1) {
 
             // Play sound effect
-            GetComponents<AudioSource>()[1].clip = DropsSwithcSound;
-            GetComponents<AudioSource>()[1].Play();
+            audioSource.Play();
 
             //Get next index
             int next_drop = allCurrentCharacters.IndexOf(currentCharacter) + 1;
@@ -152,8 +151,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
         if (allCurrentCharacters.Count > 1) {
 
             // Play sound effect
-            GetComponents<AudioSource>()[1].clip = DropsSwithcSound;
-            GetComponents<AudioSource>()[1].Play();
+            audioSource.Play();
 
             //Get prev index
             int back_drop = allCurrentCharacters.IndexOf(currentCharacter) - 1;
