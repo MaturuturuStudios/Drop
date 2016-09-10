@@ -40,6 +40,11 @@ public class MainCameraAnimationController : MonoBehaviour {
     /// </summary>
     private Animator _cameraAnimator;
 
+    /// <summary>
+    /// Stores if the intra has been skipped
+    /// </summary>
+    private bool _skippedIntro = false;
+
     #endregion
 
     #region Public methods
@@ -95,15 +100,19 @@ public class MainCameraAnimationController : MonoBehaviour {
     /// </summary>
     public void SkipIntro() {
 
-        // Move leave to the end 
-        startLeave.GetComponent<FollowPath>().delay = 0;
-        startLeave.GetComponent<FollowPath>().Set(1);
+        if (!_skippedIntro) {
+            _skippedIntro = true;
 
-        // Move drop to the leave
-        // GetComponentInParent<GameControllerIndependentControl>().currentCharacter.transform.position = startPosition;
+            // Move leave to the end 
+            startLeave.GetComponent<FollowPath>().delay = 0;
+            startLeave.GetComponent<FollowPath>().Set(1);
 
-        ResumeInput();
-        ResumeCameraController();
+            // Move drop to the leave
+            // GetComponentInParent<GameControllerIndependentControl>().currentCharacter.transform.position = startPosition;
+
+            ResumeInput();
+            ResumeCameraController();
+        }
     }
 
 

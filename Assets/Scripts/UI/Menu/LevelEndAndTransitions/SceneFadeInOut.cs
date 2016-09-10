@@ -7,23 +7,25 @@ using UnityEngine.UI;
 /// Fade in and out the scenes
 /// </summary>
 public class SceneFadeInOut : MonoBehaviour {
+
     #region Public attributes
-    /// <summary>
-    /// Wait this seconds before starting with the fading
-    /// </summary>
-    public float delayStartChangeSeconds = 1.0f;
-    /// <summary>
-    /// Wait this seconds before starting with the fading
-    /// </summary>
-    public float delayEndChangeSeconds = 0f;
+
     /// <summary>
     /// the texture that will overlay the screen. This can be a black image or a loading graphic
     /// </summary>
     public GameObject fadeOutTexture;
+    
     /// <summary>
     /// Duration while fading
     /// </summary>
     public float fadeDuration = 0.8f;
+
+    /// <summary>
+    /// Async operation for load the next scene
+    /// </summary>
+    [HideInInspector]
+    public AsyncOperation op;
+
     #endregion
 
     #region Private Attributes
@@ -63,7 +65,6 @@ public class SceneFadeInOut : MonoBehaviour {
         _parentUI = GameObject.FindGameObjectWithTag("Menus");
 
         // References to animations
-        //_levelEndThanks = FindObjectOfType<LevelEndThanks>();
         _loadingAnim = FindObjectOfType<LoadingAnim>();
 
         // Start fade in
@@ -127,22 +128,10 @@ public class SceneFadeInOut : MonoBehaviour {
     /// Change to the next scene with a fading. This is the method that should be called to validate the values
     /// </summary>
     /// <param name="nameScene">The name of the next scene</param>
-    /// <param name="delayStart">Delay should wait before starting. By default -1 that means the public attribute delayStartChangeSeconds
-    /// on this script will be used</param>
-    /// <param name="fadeTime">Delay time should elapse the fade effect</param>
-    /// <param name="delayEnd">Delay should wait after ending. By default -1 that means the public attribute delaySEndChangeSeconds
-    /// on this script will be used</param>
-    /// <param name="showUI">Set true to show ui elements like in level end, set false for menus</param>
-    public void ChangeScene(string nameScene, float delayStart = -1, float fadeTime = -1, float delayEnd = -1, bool showUI = false) {
-        if (delayStart <= -1) {
-            delayStart = delayStartChangeSeconds;
-        }
+    /// <param name="maxTime">Delay should wait before start the fade to the next scene</param>
+    public void ChangeScene(string nameScene, float maxTime) {
 
-        if (delayEnd <= -1) {
-            delayEnd = delayEndChangeSeconds;
-        }
-
-        StartCoroutine(NextScene(nameScene, delayStart, fadeTime, delayEnd, showUI));
+        StartCoroutine(NextScene(nameScene, maxTime));
     }
     #endregion
 
@@ -152,29 +141,28 @@ public class SceneFadeInOut : MonoBehaviour {
     /// Wait few seconds before starting the fade between actual scene and next scene
     /// </summary>
     /// <param name="nameScene">Next scene</param>
-    /// <param name="delayStart">Wait before starting</param>
-    /// <param name="desiredFadeDuration">Elapsed fade duration/param>
-    /// <param name="delayEnd">Wait after ending</param>
+    /// <param name="maxTime">Wait before starting fading</param>
     /// <returns></returns>
-    private IEnumerator NextScene(string nameScene, float delayStart, float desiredFadeDuration, float delayEnd, bool showUI) {
+    private IEnumerator NextScene(string nameScene, float maxTime) {
         
         // Preload next scene
-        AsyncOperation op = SceneManager.LoadSceneAsync(nameScene);
+        op = SceneManager.LoadSceneAsync(nameScene);
         
         // Don't load scene untill time has expired
         op.allowSceneActivation = false;
 
-        yield return MenuNavigator.WaitForRealSeconds(delayStart);
-
-        // Start fade animation
-        BeginFade(false, desiredFadeDuration);
-
         // Show loading icon
         StartCoroutine(_loadingAnim.PlayLoadingAnim(op));
+        
+        // Wait max time to skip
+        yield return MenuNavigator.WaitForRealSeconds(maxTime);
+
+        // Start fade animation
+        BeginFade(false, fadeDuration);
+
         // Wait for the fade duration
         yield return MenuNavigator.WaitForRealSeconds(fadeDuration);
-
-        yield return MenuNavigator.WaitForRealSeconds(delayEnd);
+        
 
         // When scene is loaded and time has expired, we proceed to load next scene
         op.allowSceneActivation = true;

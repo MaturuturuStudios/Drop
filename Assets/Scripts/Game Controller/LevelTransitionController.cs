@@ -147,7 +147,12 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Duration while fading
     /// </summary>
-    public float _fadeDuration = 0.8f;
+    private bool _skippedEnd = false;
+
+    /// <summary>
+    /// variable to know if we can skip the end
+    /// </summary>
+    private bool _canSkip = false;
 
     #endregion
 
@@ -158,18 +163,6 @@ public class LevelTransitionController : MonoBehaviour {
 
         // Get reference to audio source
         _audioSources = GetComponents<AudioSource>();
-
-        //BeginLevelTransition(dropsCollected);
-
-        // Calculate and set the cube to the correct size
-        /*
-        float _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(100));
-        _distanceToBorder *= Camera.main.aspect;
-        float _invertRatio = (float)Screen.height / Screen.width;
-        cubeToTexturize.GetComponent<Transform>().localScale = new Vector3(_distanceToBorder , _distanceToBorder * _invertRatio, 0.1f);
-        */
-
-
     }
 	
 
@@ -384,15 +377,43 @@ public class LevelTransitionController : MonoBehaviour {
 		yield return new WaitForSeconds(waitTime);
 
 		DestroyImmediate(FX);
-	}
+    }
 
 
-	public IEnumerator ResetCounterTextState(float waitTime, Animator couterTextAnimator) {
+    public IEnumerator ResetCounterTextState(float waitTime, Animator couterTextAnimator) {
 
-		yield return new WaitForSeconds(waitTime);
+        yield return new WaitForSeconds(waitTime);
 
-		couterTextAnimator.SetBool("Jump", false);
-	}
+        couterTextAnimator.SetBool("Jump", false);
+    }
+
+
+    public IEnumerator WaitMinTimeToSkip(float waitTime) {
+
+        yield return new WaitForSeconds(waitTime);
+
+        _canSkip = true;
+    }
+
+    /// <summary>
+    /// Skips the intro and sets all the object to its position
+    /// </summary>
+    public void SkipEnd() {
+
+        if (!_skippedEnd && _canSkip) {
+            _skippedEnd = true;
+
+            StartCoroutine(SkipEndCoroutine(0.8f));
+        }
+    }
+
+
+    public IEnumerator SkipEndCoroutine(float waitTime) {
+        SceneFadeInOut sfio = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<SceneFadeInOut>();
+        sfio.BeginFade(false, waitTime);
+        yield return new WaitForSeconds(waitTime);
+        sfio.op.allowSceneActivation = true;
+    }
 
     #endregion
 }
