@@ -44,6 +44,12 @@ public class CharacterAction : MonoBehaviour, IrrigateListener {
 	private CharacterController _controller;
 
 	/// <summary>
+	/// Reference to the CharacterShoot component attached to
+	/// this entity.
+	/// </summary>
+	private CharacterShoot _characterShoot;
+
+	/// <summary>
 	/// Reference to this entity's Transform component.
 	/// </summary>
 	private Transform _transform;
@@ -58,6 +64,7 @@ public class CharacterAction : MonoBehaviour, IrrigateListener {
 	/// </summary>
 	void Awake() {
 		_controller = GetComponent<CharacterController>();
+		_characterShoot = GetComponent<CharacterShoot>();
 		_transform = transform;
 	}
 
@@ -66,6 +73,10 @@ public class CharacterAction : MonoBehaviour, IrrigateListener {
 	/// perform their actions.
 	/// </summary>
 	public void DoAction() {
+		// The character won't be able to perform any action if they are shooting
+		if (_characterShoot.isShooting())
+			return;
+
 		// Checks for colliders overlaping it's volume
 		float radius;
 		if (useCharacterRadius)
