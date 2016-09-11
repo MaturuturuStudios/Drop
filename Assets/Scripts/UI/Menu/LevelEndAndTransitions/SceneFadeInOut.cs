@@ -114,7 +114,7 @@ public class SceneFadeInOut : MonoBehaviour {
         _fadeBackround.transform.SetParent(_parentUI.transform, false);
 
         // Put in the back of the animations
-        _fadeBackround.transform.SetAsFirstSibling();
+        _fadeBackround.transform.SetAsLastSibling();
 
         // Sets the desired duration
         if (desiredFadeDuration != -1)
