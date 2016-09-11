@@ -146,7 +146,7 @@ public class CharacterShoot : MonoBehaviour {
         //if can be in shoot mode, go ahead
         if (ccc.State.IsGrounded == true && (actualSize > 1)
             && _independentControl.CountControlledDrops() < 4) {
-			if (size_component <= 1) {
+			if (actualSize <= 1) {
 				unableIndicator.Show();
 				return;
 			}

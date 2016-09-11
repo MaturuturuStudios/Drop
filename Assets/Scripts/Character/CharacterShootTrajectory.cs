@@ -40,6 +40,11 @@ public class CharacterShootTrajectory : MonoBehaviour {
     public float speedRainbow = 10;
 
     /// <summary>
+    /// Define the speed the angle will change
+    /// </summary>
+    public float speedInputAngle = 1;
+
+    /// <summary>
     /// Layer to indicate with what things the raycast will hit
     /// </summary>
     public LayerMask mask;
@@ -543,6 +548,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
         //when hiding rainbow or opening it
         if (_endScript || _trajectoryAnimation) {
             int integerPart = (int)_progressTrajectory;
+            if (integerPart < 0) integerPart = 0;
             float remain = _progressTrajectory - integerPart;
             Vector3 nextPoint = _trajectoryPoints[integerPart + 1];
 
@@ -631,6 +637,10 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         //disable the rest of particles
         for (int i = _lastColision; i < _particlesTrajectory.Count; i++) {
+            if (i < 0) {
+                i = 0;
+                continue;
+            }
             ParticleSystem[] subSystems = _particlesTrajectory[i];
             for (int j = 0; j < subSystems.Length; j++) {
                 ParticleSystem.EmissionModule emission = subSystems[j].emission;
@@ -669,6 +679,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             //Warning listener on character shoot
             this.GetComponent<CharacterShoot>().ShootModeEnded();
             _ccc.Parameters = null;
+            _progressTrajectory = 0;
         } else {
             _progressTrajectory -= _speedAnimation * Time.deltaTime;
             _lastColision = (int)_progressTrajectory;
@@ -695,8 +706,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
         //while changing, don't see the input
         if (!_isInLookingAtChange) {
             //get input
-            float _h = Input.GetAxis(Axis.Horizontal);
-            float _v = Input.GetAxis(Axis.Vertical);
+            float _h = Input.GetAxis(Axis.Horizontal) * speedInputAngle;
+            float _v = Input.GetAxis(Axis.Vertical) * speedInputAngle;
 
             //modify first horizontal
             _angle -= _h;
@@ -765,6 +776,8 @@ public class CharacterShootTrajectory : MonoBehaviour {
 
         if (_trajectoryAnimation)
             last = (int)_progressTrajectory+1;
+
+        if (last < 0) last = 0;
 
         // adjust the line renderer to the real longitude
         //known by the last colision
