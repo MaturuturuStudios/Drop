@@ -333,7 +333,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			_slopeEffect.rotation = normalRotation;
 			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _slopeParticleEffects) {
 				system.Key.startRotation3D = eulerRotation;
-				system.Value.UpdateWithSize(sizeFactor);
+				system.Value.UpdateWithSize(Mathf.Sqrt(sizeFactor));
 			}
 		}
 		// Positions the sliding effect
