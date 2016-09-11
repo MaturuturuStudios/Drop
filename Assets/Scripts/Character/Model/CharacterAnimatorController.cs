@@ -91,11 +91,11 @@ public class CharacterAnimatorController : MonoBehaviour, CharacterControllerLis
 		// Updates the sliding state
 		_animator.SetBool(CharacterAnimatorParameters.Sliding, _ccc.State.IsSliding);
 
-		// Updates the shoot mode state
-		_animator.SetBool(CharacterAnimatorParameters.ShootMode, _characterShoot.shootmode);
+        // Updates the shoot mode state
+        _animator.SetBool(CharacterAnimatorParameters.ShootMode, _characterShoot.isShooting());
 
-		// Updates the under control state
-		_animator.SetBool(CharacterAnimatorParameters.Controlled, _gcic.IsUnderControl(_drop));
+        // Updates the under control state
+        _animator.SetBool(CharacterAnimatorParameters.Controlled, _gcic.IsUnderControl(_drop));
 
 		// Restores the hit flag
 		if (!_ccc.State.IsFlying)
