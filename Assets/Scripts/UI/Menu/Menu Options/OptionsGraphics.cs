@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+using System.Collections;
 
 public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     #region Public attributes
@@ -57,6 +57,10 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     /// Antialiasing selected by the user
     /// </summary>
     private float _changedAntiAliasing = -1;
+    /// <summary>
+    /// List of the dropdowns
+    /// </summary>
+    private HighlightedOnSelectSubOption[] listText;
     #endregion
 
     #region Method
@@ -77,6 +81,12 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         if (audio != null)
             audio.passPlayAudio = true;
 
+
+        quality.Hide();
+        resolution.Hide();
+        for (int i = 0; i < listText.Length; i++) {
+            listText[i].OnDeselect(null);
+        }
         //select the option
         EventSystem.current.SetSelectedGameObject(resolution.gameObject);
 
@@ -118,6 +128,8 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
         _selectedAntiAliasing = PlayerPrefs.GetInt(OptionsKey.GraphicsAntialiasing, QualitySettings.antiAliasing)/2;
         antialiasing.value = _selectedAntiAliasing;
 
+
+        listText = GetComponents<HighlightedOnSelectSubOption>();
     }
 
     public void Start() {
@@ -142,6 +154,38 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
 
     public override void OnChangeLanguage(LanguageManager languageManager) {
         FillQuality();
+    }
+
+    /// <summary>
+    /// When hitted, save the changes and apply them
+    /// </summary>
+    public void SaveChanges() {
+        //change the resolution and fullscren
+        if (Screen.fullScreen != fullscreen.isOn || _selectedResolution != _changedResolution) {
+            //if no changes on resolution, set the previous one
+            if (_changedResolution < 0) _changedResolution = _selectedResolution;
+            Screen.SetResolution(_resolutions[_changedResolution].width, _resolutions[_changedResolution].height, fullscreen.isOn);
+            _selectedResolution = _changedResolution;
+        }
+
+        //change the quality
+        if (_selectedAntiAliasing != _changedAntiAliasing || _changedQuality != _selectedQuality) {
+            if (_changedAntiAliasing < 0) _changedAntiAliasing = _selectedAntiAliasing;
+            if (_changedQuality < 0) _changedQuality = _selectedQuality;
+
+            QualitySettings.antiAliasing = (int)(_changedAntiAliasing) * 2;
+            QualitySettings.SetQualityLevel(_changedQuality);
+
+            _selectedQuality = _changedQuality;
+            _selectedAntiAliasing = (int)(_changedAntiAliasing);
+        }
+
+        //recover the dirty state
+        _changedQuality = -1;
+        _changedResolution = -1;
+        _changedAntiAliasing = -1;
+
+        StoreOptions();
     }
 
     #region Private Methods
@@ -238,40 +282,10 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
     private void QualityChanged(Dropdown target) {
         _changedQuality = target.value;
     }
-    #endregion
-
+   
     /// <summary>
-    /// When hitted, save the changes and apply them
+    /// Store the options
     /// </summary>
-    public void SaveChanges() {
-        //change the resolution and fullscren
-        if (Screen.fullScreen != fullscreen.isOn || _selectedResolution != _changedResolution) {
-            //if no changes on resolution, set the previous one
-            if (_changedResolution < 0) _changedResolution = _selectedResolution;
-            Screen.SetResolution(_resolutions[_changedResolution].width, _resolutions[_changedResolution].height, fullscreen.isOn);
-            _selectedResolution = _changedResolution;
-        }
-
-        //change the quality
-        if (_selectedAntiAliasing != _changedAntiAliasing || _changedQuality != _selectedQuality) {
-            if (_changedAntiAliasing < 0) _changedAntiAliasing = _selectedAntiAliasing;
-            if (_changedQuality < 0) _changedQuality = _selectedQuality;
-
-            QualitySettings.antiAliasing = (int)(_changedAntiAliasing) * 2;
-            QualitySettings.SetQualityLevel(_changedQuality);
-
-            _selectedQuality = _changedQuality;
-            _selectedAntiAliasing = (int)(_changedAntiAliasing);
-        }
-
-        //recover the dirty state
-        _changedQuality = -1;
-        _changedResolution = -1;
-        _changedAntiAliasing = -1;
-
-        StoreOptions();
-    }
-
     private void StoreOptions() {
         PlayerPrefs.SetInt(OptionsKey.GraphicsQuality, QualitySettings.GetQualityLevel());
 
@@ -287,5 +301,6 @@ public class OptionsGraphics : InterfaceLanguage, SubOptionInterface {
 
         PlayerPrefs.Save();
     }
+    #endregion
     #endregion
 }

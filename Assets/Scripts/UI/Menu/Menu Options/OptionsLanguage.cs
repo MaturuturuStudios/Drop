@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
     #region Attributes
@@ -20,6 +21,10 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
     /// List of available languages
     /// </summary>
     private string[] availableLanguages;
+    /// <summary>
+    /// List of the dropdowns
+    /// </summary>
+    private HighlightedOnSelectSubOption[] listText;
     #endregion
 
 
@@ -41,8 +46,15 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
         if (audio != null)
             audio.passPlayAudio = true;
 
+        languages.Hide();
+
+        for (int i = 0; i < listText.Length; i++) {
+            listText[i].OnDeselect(null);
+        }
+
         //select the option
         EventSystem.current.SetSelectedGameObject(languages.gameObject);
+
         return true;
     }
 
@@ -84,6 +96,8 @@ public class OptionsLanguage : MonoBehaviour, SubOptionInterface {
         
         languages.value = _selectedLanguage;
         languages.RefreshShownValue();
+
+        listText = GetComponents<HighlightedOnSelectSubOption>();
     }
 
     public void LanguageChanged(Dropdown target) {
