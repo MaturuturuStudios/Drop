@@ -88,3 +88,7 @@ No=No
 ConfirmQuit=¿Confirmar salida?
 LevelComplete=¡Nivel completado!
 BackMenuOptions=Volver
+
+#Level transition strings
+MaxDropsExceded=Has completado el nivel con más gotas de lo esperado, por favor indicanos cómo en info@maturuturustudios.com
+SavedDrops=Gotas salvadas

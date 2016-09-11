@@ -11,17 +11,12 @@ public class LevelEndController : MonoBehaviour {
     /// <summary>
     /// Wait time to start fading 
     /// </summary>
-    public float delayStart = 1F;
+    public float timeToSkip = 3F;
 
     /// <summary>
-    /// Elapsed time while fading
+    /// Max time waiting before fade
     /// </summary>
-    public float fadeDuration = 2f;
-
-    /// <summary>
-    /// Wait time after fade
-    /// </summary>
-    public float delayEnd = 0f;
+    public float maxTime = 5F;
 
     #endregion
 
@@ -129,20 +124,20 @@ public class LevelEndController : MonoBehaviour {
     /// </summary>
     public void LevelEnd(){
         // Stops input
-        _gci.StopInput(true, delayStart + fadeDuration);
+        _gci.StopInput(true, timeToSkip);
 
         //unlock the level
         data.UnlockLevel(nextLevel);
 
         // Load scene async
-        _menuNavigator.ChangeScene(nextScene.name, delayStart, fadeDuration, delayEnd, true);
+        _menuNavigator.ChangeScene(nextScene.name, maxTime);
 
         // Start transition animation
-        //_levelTransitionController.BeginLevelTransition(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize());
-        _levelTransition.BeginLevelTransitionAnim(_gcic.currentCharacter.GetComponent<CharacterSize>().GetSize(), delayStart, fadeDuration);
-
-
-        // Reanude input after (delayStart + fadeDuration)
+        if (_levelTransitionController != null) {
+            int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
+            _levelTransitionController.BeginLevelTransition(size);
+            StartCoroutine(_levelTransitionController.WaitMinTimeToSkip(timeToSkip));
+        }
     }
 
 

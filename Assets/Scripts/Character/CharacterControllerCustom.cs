@@ -373,7 +373,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	/// <param name="horizontalInput">Signed-normalized value for the horizontal input</param>
 	/// <param name="verticalInput">Signed-normalized value for the vertical input</param>
-	public void SetInputForce(float horizontalInput, float verticalInput) {
+	public void SetInputForce(float horizontalInput, float verticalInput, float deltaTime) {
 		// Checks if it can move. Nullifies the input otherwise
 		if (!CanMove()) {
 			horizontalInput = 0;
@@ -420,10 +420,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Adds the right forces
 		if (horizontal && (State.IsGrounded || horizontalInput != 0)) {
-			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * Time.fixedDeltaTime);
+			_velocity.x = Mathf.Lerp(Velocity.x, horizontalInput * Parameters.maxSpeed, acceleration * deltaTime);
 		}
 		if (vertical && (State.IsGrounded || verticalInput != 0)) {
-			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * Time.fixedDeltaTime);
+			_velocity.y = Mathf.Lerp(Velocity.y, verticalInput * Parameters.maxSpeed, acceleration * deltaTime);
 		}
 
 		// If it's grounded on a slope, subtracts the necessary vertical speed to stick to the ground
@@ -628,14 +628,13 @@ public class CharacterControllerCustom : MonoBehaviour {
 	#endregion
 
 	/// <summary>
-	/// Unity's method called each fixed step.
 	/// Moves the character according to it's velocity.
 	/// </summary>
-	public void FixedUpdate() {
+	public void PerformMovement() {
 		// Decreases the timers
-		_jumpingTime -= Time.fixedDeltaTime;
-		_flyingTime -= Time.fixedDeltaTime;
-		_jumpDelayTime -= Time.fixedDeltaTime;
+		_jumpingTime -= Time.deltaTime;
+		_flyingTime -= Time.deltaTime;
+		_jumpDelayTime -= Time.deltaTime;
 
 		// If the jump anticipation has ended, performs the jump
 		if (_jumpDelayTime < 0 && _waitingForJump)
@@ -649,13 +648,19 @@ public class CharacterControllerCustom : MonoBehaviour {
 		float dragFactor = 1;
 		if (State.IsSliding)
 			dragFactor -= Parameters.slidingDragFactor / Mathf.Sqrt(GetSize());
-		_velocity += Parameters.Gravity * Time.fixedDeltaTime * dragFactor;
+		_velocity += Parameters.Gravity * Time.deltaTime * dragFactor;
 
 		// Checks if the entity is grounded on a moving platform
 		HandleMovingPlatforms();
 
 		// Tries the movement of the entity according to it's velocity
-		Move(Velocity * Time.fixedDeltaTime);
+		Move(Velocity * Time.deltaTime);
+
+		// Updates the flying time
+		if (!State.IsGrounded)
+			State.TimeFloating += Time.deltaTime;
+		else
+			State.TimeFloating = 0;
 	}
 
 	#region Movement Methods
@@ -676,7 +681,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 				_transform.Translate(moveDistance, Space.World);
 
 			// Saves the velocity of the platform
-			State.PlatformVelocity = moveDistance / Time.fixedDeltaTime;
+			State.PlatformVelocity = moveDistance / Time.deltaTime;
 		}
 		else {
 			// Resets the velocity of the platform
@@ -757,6 +762,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (hit.collider is SphereCollider)
 			normal = -hit.normal;
 
+		// Gets the vector's projection on the XY plane
+		normal = Vector3.ProjectOnPlane(normal, Vector3.forward);
+
 		// Saves the velocity of the character
 		BeforeCollisionVelocity = Velocity;
 
@@ -772,7 +780,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (Vector3.Cross(normal, -Parameters.Gravity).z < 0)
 			State.SlopeAngle = -State.SlopeAngle;
 
-		if (Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit + Parameters.angleThereshold) {
+		if (!hit.collider.CompareTag(Tags.SlideAlways) && (hit.collider.CompareTag(Tags.SlideNever) || Mathf.Abs(State.SlopeAngle) < _controller.slopeLimit + Parameters.angleThereshold)) {
 			// The collider is considered ground
 			State.IsGrounded = true;
 			State.IsFalling = false;
@@ -791,9 +799,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 			// Projects the speed to the normal's perpendicular
 			Vector3 normalPerpendicular = Vector3.Cross(normal, Vector3.forward);
 			_velocity = Vector3.Project(_velocity, normalPerpendicular);
-
-			// Check if the character is on a slope
-			if (Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
+			
+			// Checks if the character is on a slope
+			if (hit.collider.CompareTag(Tags.SlideAlways) || Mathf.Abs(State.SlopeAngle) < Parameters.maxWallSlideAngle + Parameters.angleThereshold) {
 				// The collider is considered a slope
 				State.IsOnSlope = true;
 
@@ -802,8 +810,8 @@ public class CharacterControllerCustom : MonoBehaviour {
 					State.IsSliding = true;
 
 					// If the character wasn't sliding, stops it
-                    if (!_wasSliding)
-                        Stop();
+					if (!_wasSliding)
+						Stop();
 				}
 				else {
 					State.IsSliding = false;

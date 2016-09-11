@@ -74,8 +74,13 @@ public class IntroController : MonoBehaviour {
     /// </summary>
     private bool startedVideo = false;
 
+    /// <summary>
+    /// Control if the video has started
+    /// </summary>
+    private SceneFadeInOut _sfio;
+
     #endregion
-    
+
     #region Public methods
 
     void Start () {
@@ -91,6 +96,9 @@ public class IntroController : MonoBehaviour {
 
         // Get all the images that compose the logo
         _images = GetComponentsInChildren<Image>();
+
+        // Get fade component
+        _sfio = GetComponent<SceneFadeInOut>();
     }
 
 
@@ -119,16 +127,35 @@ public class IntroController : MonoBehaviour {
             Input.GetButtonDown(Axis.Start) ||
             (Input.anyKeyDown && Input.inputString.Length > 0)  &&
             (_elapsedTime > logoDuration + introLockedDuration)))
-            _op.allowSceneActivation = true;
+            StartCoroutine(SkipScene());
 
         //if finished video
-        if(startedVideo && !introMovie.isPlaying)
+        if (startedVideo && !introMovie.isPlaying)
             _op.allowSceneActivation = true;
     }
 
     #endregion
 
     #region Private methods
+
+    /// <summary>
+    /// Threat that loads the menu in background
+    /// </summary>
+    /// <param name="nameScene"></param>
+    /// <param name="timeToStart"></param>
+    /// <returns></returns>
+    private IEnumerator SkipScene() {
+
+        // Do fade effect
+        _sfio.BeginFade(false, 0.8f);
+
+        // Wait for fade done
+        yield return MenuNavigator.WaitForRealSeconds(0.8f);
+
+        // Change scene
+        _op.allowSceneActivation = true;
+    }
+
 
     /// <summary>
     /// Threat that loads the menu in background

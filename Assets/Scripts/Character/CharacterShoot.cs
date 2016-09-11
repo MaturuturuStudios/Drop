@@ -36,11 +36,17 @@ public class CharacterShoot : MonoBehaviour {
     /// </summary>
     private CharacterSize size;
 
-    #endregion
+	/// <summary>
+	/// Reference to the object which will be shown when the
+	/// player is unable to shoot.
+	/// </summary>
+	public UnableIndicator unableIndicator;
 
-    #region Methods
+	#endregion
 
-    /// <summary>
+	#region Methods
+
+	/// <summary>
 	/// Unity's method called when the entity is created.
 	/// Recovers the desired componentes of the entity.
 	/// </summary>
@@ -140,6 +146,10 @@ public class CharacterShoot : MonoBehaviour {
         //if can be in shoot mode, go ahead
         if (ccc.State.IsGrounded == true && (actualSize > 1)
             && _independentControl.CountControlledDrops() < 4) {
+			if (size_component <= 1) {
+				unableIndicator.Show();
+				return;
+			}
 
             //if not in shoot mode, go
             if (!_shootMode) {

@@ -39,4 +39,14 @@ public static class Tags {
     /// Tag for the object with the data of the game
     /// </summary>
     public static readonly string GameData = "GameData";
+
+	/// <summary>
+	/// Tag for wall where the character will always slide.
+	/// </summary>
+	public static readonly string SlideAlways = "SlideAlways";
+
+	/// <summary>
+	/// Tag for wall where the character will never slide.
+	/// </summary>
+	public static readonly string SlideNever = "SlideNever";
 }

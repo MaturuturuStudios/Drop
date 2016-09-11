@@ -25,6 +25,11 @@ public class CharacterControllerState {
 	public bool IsFalling { get; set; }
 
 	/// <summary>
+	/// Amount of time in seconds the character has been floating.
+	/// </summary>
+	public float TimeFloating { get; set; }
+
+	/// <summary>
 	/// If the character has been sent flying and it has not stopped yet.
 	/// </summary>
 	public bool IsFlying { get; set; }

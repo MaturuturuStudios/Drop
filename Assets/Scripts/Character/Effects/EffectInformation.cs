@@ -65,6 +65,18 @@ public class EffectInformation {
 /// Extension class for EffectInformation including some extra fields.
 /// </summary>
 [Serializable]
+public class MinTimeEffectInformation : EffectInformation {
+
+	/// <summary>
+	/// The minimum time that should have passed to play the effect.
+	/// </summary>
+	public float minTime = 0.25f;
+}
+
+/// <summary>
+/// Extension class for EffectInformation including some extra fields.
+/// </summary>
+[Serializable]
 public class MinSpeedEffectInformation : EffectInformation {
 
 	/// <summary>

@@ -108,18 +108,17 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Unity's method called every frame.
 	/// Sends the input to the controller.
+	/// Manages the inputs ridden on FixedUpdate (mainly, the movement)
 	/// </summary>
 	public void FixedUpdate() {
+		if (!isActiveAndEnabled)
+			return;
+
 		// Decreses the timers
-		_jumpPressTime -= Time.fixedDeltaTime;
-		_jumpDelayTime -= Time.fixedDeltaTime;
-		_slopeStickTime -= Time.fixedDeltaTime;
+		_slopeStickTime -= Time.deltaTime;
 
-		// Checks where the player is facing
-		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
-
+		// Manages the movement input
 		if (CurrentWindTube == null) {
 			// If the character is on a slope, checks if the character is stuck to it
 			float newHorizontalInput = HorizontalInput;
@@ -145,7 +144,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			}
 
 			// Sets the input force of the character controller
-			_controller.SetInputForce(newHorizontalInput, VerticalInput);
+			_controller.SetInputForce(newHorizontalInput, VerticalInput, Time.deltaTime);
 		}
 		else {
 			// The character is on a wind tube
@@ -163,6 +162,25 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			finalForce += movementForce + inputForce;
 			_controller.SetForce(finalForce);
 		}
+
+		// Orders the CCC to perform the movement
+		_controller.PerformMovement();
+	}
+
+	/// <summary>
+	/// Sends the input to the controller.
+	/// Manages the inputs ridden on Update (mainly, the jump)
+	/// </summary>
+	public void Update() {
+		if (!isActiveAndEnabled)
+			return;
+
+		// Decreses the timers
+		_jumpPressTime -= Time.deltaTime;
+		_jumpDelayTime -= Time.deltaTime;
+
+		// Checks where the player is facing
+		FacingDirection = new Vector3(HorizontalInput, VerticalInput, 0).normalized;
 
 		// Checks if the jump button has been recently pressed
 		if (_jumpButtonPressed) {

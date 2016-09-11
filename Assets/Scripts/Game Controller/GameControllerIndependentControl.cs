@@ -11,6 +11,11 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public GameObject PfDrop;
 
     /// <summary>
+    /// Drop switch sound effect
+    /// </summary>
+    public AudioSource audioSource;
+
+    /// <summary>
     /// Current character controlled
     /// </summary>
     [HideInInspector]
@@ -121,6 +126,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
         if (allCurrentCharacters.Count > 1) {
 
+            // Play sound effect
+            audioSource.Play();
+
             //Get next index
             int next_drop = allCurrentCharacters.IndexOf(currentCharacter) + 1;
 
@@ -141,6 +149,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
     public void ControlBackDrop() {
 
         if (allCurrentCharacters.Count > 1) {
+
+            // Play sound effect
+            audioSource.Play();
 
             //Get prev index
             int back_drop = allCurrentCharacters.IndexOf(currentCharacter) - 1;

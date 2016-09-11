@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using UnityStandardAssets.ImageEffects;
 
 public class LevelTransitionController : MonoBehaviour {
 
@@ -9,25 +11,23 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Level complete text
     /// </summary>
-    public GameObject levelCompleteText;
+    public GameObject levelCompleteText1;
+
+    /// <summary>
+    /// Level complete text
+    /// </summary>
+    public GameObject levelCompleteText2;
+
+    /// <summary>
+    /// Level complete text
+    /// </summary>
+    public GameObject levelCompleteText3;
 
 
     /// <summary>
     /// Text with contact info
     /// </summary>
     public GameObject contactText;
-
-
-    /// <summary>
-    /// The animation for the max drop indicator
-    /// </summary>
-    public GameObject dropShape;
-
-
-    /// <summary>
-    /// The animation of one drop collected
-    /// </summary>
-    public GameObject dropCounterUnitCollected;
 
 
     /// <summary>
@@ -67,28 +67,10 @@ public class LevelTransitionController : MonoBehaviour {
 
 
     /// <summary>
-    /// Text displayed when the level is completed with less than max drops
-    /// </summary>
-    public string levelCompleteText1;
-
-
-    /// <summary>
-    /// Text displayed when the level is completed with max drops
-    /// </summary>
-    public string levelCompleteText2;
-
-
-    /// <summary>
-    /// Text displayed when the level is completed with more than max drops
-    /// </summary>
-    public string levelCompleteText3;
-
-
-    /// <summary>
     /// Drops required to complete the level 100%
     /// </summary>
     [Range(1, 5)]
-    public int maxDropsRequired = 1;
+    public int maxDropsRequired = 	1;
 
 
     /// <summary>
@@ -101,7 +83,7 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Height position of displayed drops
     /// </summary>
-    [Range(-.5f, .5f)]
+    [Range(-5f, 5f)]
     public float dropsHeightPosition = -0.15f;
 
 
@@ -113,7 +95,7 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Wait before start animation
     /// </summary>
-    public float startDelay = 1f;
+    public float startDelay = 1.1f;
 
     /// <summary>
     /// Duration of the animation when creating drops
@@ -121,20 +103,34 @@ public class LevelTransitionController : MonoBehaviour {
     [Range(0, 100)]
     public float canvasDistance = 4.5f;
 
-    /// <summary>
-    /// Camera who renders the background
-    /// </summary>
-    public Camera renderCamera;
+	/// <summary>
+	/// Background to set the texture
+	/// </summary>
+	public List<GameObject> fireworkFX;
+
+	/// <summary>
+	/// Background to set the texture
+	/// </summary>
+	public GameObject confettiCanonFX;
+
+	/// <summary>
+	/// Drop to show as counter
+	/// </summary>
+	public GameObject dropCounter;
+
+	/// <summary>
+	/// Text to show the number of drops
+	/// </summary>
+	public GameObject dropCounterText;
 
     /// <summary>
-    /// Cube to set the texture
+    /// Drop to show as counter
     /// </summary>
-    public GameObject cubeToTexturize;
+    public GameObject dropCounterFilled;
 
-    /// <summary>
-    /// Texture to save the render
-    /// </summary>
-    public RenderTexture securityCameraTexture;
+    public Material dropMaterial;
+
+    public GameObject appearFX;
 
     #endregion
 
@@ -151,9 +147,15 @@ public class LevelTransitionController : MonoBehaviour {
     /// <summary>
     /// Duration while fading
     /// </summary>
-    public float _fadeDuration = 0.8f;
+    private bool _skippedEnd = false;
+
+    /// <summary>
+    /// variable to know if we can skip the end
+    /// </summary>
+    private bool _canSkip = false;
 
     #endregion
+
     #region Public methods
 
     // Use this for initialization
@@ -161,38 +163,8 @@ public class LevelTransitionController : MonoBehaviour {
 
         // Get reference to audio source
         _audioSources = GetComponents<AudioSource>();
-
-        BeginLevelTransition(dropsCollected);
-
-        Debug.Log("Start Render to texture");
-
-        // get the camera's render texture
-        RenderTexture rendText = RenderTexture.active;
-        RenderTexture.active = renderCamera.targetTexture;
-
-        // render the texture
-        renderCamera.Render();
-
-        // create a new Texture2D with the camera's texture, using its height and width
-        Texture2D cameraImage = new Texture2D(renderCamera.targetTexture.width, renderCamera.targetTexture.height, TextureFormat.RGB24, false);
-        cameraImage.ReadPixels(new Rect(0, 0, renderCamera.targetTexture.width, renderCamera.targetTexture.height), 0, 0);
-        cameraImage.Apply();
-        RenderTexture.active = rendText;
-
-        cubeToTexturize.GetComponent<Renderer>().material.mainTexture = cameraImage;
-        // store the texture into a .PNG file
-        byte[] bytes = cameraImage.EncodeToPNG();
-
-        // save the encoded image to a file
-        System.IO.File.WriteAllBytes(Application.persistentDataPath + "/camera_image.png", bytes);
-  
-
     }
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     /// <summary>
     /// This method calls the apropiate animations for the level transitions
@@ -210,105 +182,135 @@ public class LevelTransitionController : MonoBehaviour {
     /// <param name="dropsGetted">Number of drops collected  in the level</param>
     public IEnumerator LevelTransitionAnimation(int dropsGetted) {
 
+		GameObject parent = GameObject.Find("Temporal Objects");
+
+        Camera.main.GetComponent<DepthOfField>().maxBlurSize = 0f;
+
+        yield return new WaitForSeconds(startDelay);
+
+        // Get the camera reference
+        Camera cam = Camera.main;
+
+        // Calculate and set the cube to canvas
+        float pos = (5f);
+
+        GetComponentInChildren<RectTransform>().position = new Vector3(cam.transform.position.x , cam.transform.position.y, cam.transform.position.z + 5f);
+
+        float h = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * pos * 2f;
+
+        GetComponentInChildren<RectTransform>().sizeDelta = new Vector2(h * cam.aspect * 1.005f, h);
+
         // Get the referencec to the camera
-        Camera cameraTransition = this.gameObject.transform.GetChild(0).GetComponent<Camera>();
+        Camera cameraTransition = Camera.main;
 
         // Get the canvas reference
-        Canvas canvasTransition = GetComponent<Canvas>();
-        canvasTransition.sortingLayerName = "level_transition_back";
+        Canvas canvasTransition = GetComponentInChildren<Canvas>();
+        //canvasTransition.sortingLayerName = "level_transition_back";
 
+
+        GameObject levelCompleteMessage;
         // Instialize the message and the sound
         if (dropsGetted < maxDropsRequired) {
-            //levelCompleteText.GetComponent<Text>().text = levelCompleteText1;
+            levelCompleteMessage = Instantiate(levelCompleteText1, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound1;
         } else if (dropsGetted == maxDropsRequired) {
-            //levelCompleteText.GetComponent<Text>().text = levelCompleteText2;
+            levelCompleteMessage = Instantiate(levelCompleteText2, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound2;
         } else {
-            //levelCompleteText.GetComponent<Text>().text = levelCompleteText3;
+            levelCompleteMessage = Instantiate(levelCompleteText3, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound3;
-            GameObject _ContactText = Instantiate(contactText, Vector3.zero, Quaternion.identity) as GameObject;
+            GameObject _ContactText = Instantiate(contactText);
             _ContactText.transform.SetParent(canvasTransition.transform, false);
-            _ContactText.transform.position = new Vector3(_ContactText.transform.position.x, _ContactText.transform.position.y - 211f, _ContactText.transform.position.z);
+			_ContactText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         }
 
         //if (maxDropsRequired == 1)
             //dropsHeightPosition = 0.15f;
 
         // Instantiate the message and the sound
-        GameObject levelCompleteMessage = Instantiate(levelCompleteText, Vector3.zero, Quaternion.identity) as GameObject;
         _audioSources[0].Play();
 
         // Set object an UI object
         levelCompleteMessage.transform.SetParent(canvasTransition.transform, false);
 
         // Wait to start fading
-        yield return new WaitForSeconds(startDelay);
+        yield return new WaitForSeconds(1);
 
         // Look if player exceded max drops
         int dropsToShow = dropsGetted > maxDropsRequired ? dropsGetted : maxDropsRequired;
 
+		yield return new WaitForSeconds(0.5f);
+
+		GameObject counterText = Instantiate(dropCounterText, new Vector3(0f, 2.3f, 0f), Quaternion.identity) as GameObject;
+		counterText.transform.SetParent(canvasTransition.transform, false);
+
+		string gettedDropsString = LanguageManager.Instance.GetText("SavedDrops") + ": " + 0 + " /" + maxDropsRequired;
+
+		counterText.GetComponent<Text> ().text = gettedDropsString;
+
         // Update canvases
         Canvas.ForceUpdateCanvases();
 
+        List<GameObject> dropsContainer = new List<GameObject>();
 
+        float width  = (Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * 8 * 2f) * cam.aspect;
+
+        float startPosition = -(float)(dropsToShow - 1);
+
+        float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
+
+        Debug.Log("dropsToShow:" + dropsToShow);
         for (int i = 0; i < dropsToShow; ++i) {
+       
+            Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i *2 , Camera.main.transform.position.y + dropsHeightPosition, 0f); 
 
-            // Instantiate the shape
-            GameObject drop2DAnim = GameObject.Instantiate(dropShape);
+            Debug.Log("Spawn position:" + dropCounterPosition);
+            GameObject dropCounterIns = GameObject.Instantiate(dropCounter, dropCounterPosition, Quaternion.identity) as GameObject;
+			dropsContainer.Add(dropCounterIns);
+			dropCounterIns.transform.parent = parent.transform;
 
-            // Set animation UI Component
-            drop2DAnim.transform.SetParent(canvasTransition.transform, false);
-            drop2DAnim.transform.SetAsLastSibling();
-
-            // Calculate size of animation
-            float width = canvasTransition.GetComponent<RectTransform>().sizeDelta.x;
-            // We use this patron BDB / BDBDB / BDBDBDB Allways blank posiotions at sides and the same size for drops and blanks Position
-            float animSize = width / (dropsToShow + ((dropsToShow - 1) / 2) + 2);
-
-            // Set size of animation
-            drop2DAnim.GetComponent<RectTransform>().sizeDelta = new Vector2(animSize, animSize);
-
-            // Set position of animation
-            float horizontalPosition = (animSize / 2) + animSize + (animSize * i) + (animSize * i / 2);
-            if (dropsToShow % 2 == 0)
-                horizontalPosition -= animSize / 4;
-            drop2DAnim.GetComponent<RectTransform>().anchoredPosition = new Vector2(horizontalPosition, Screen.height * dropsHeightPosition);
         }
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
 
 
+        float increasePitch = (maxPitch - startingPitch) / dropsToShow;
         // Set start pitch and calculate the pitch to increase
         _audioSources[1].pitch = startingPitch;
-        float increasePitch = (maxPitch - startingPitch) / dropsToShow;
-
         for (int i = 0; i < dropsGetted; ++i) {
 
-            GameObject drop2DAnim = GameObject.Instantiate(dropCounterUnitCollected);
+			gettedDropsString = LanguageManager.Instance.GetText("SavedDrops") + ": " + (i + 1f) + "/" + maxDropsRequired;
+
+			Animator couterTextAnimator = counterText.GetComponent<Animator> ();
+			couterTextAnimator.SetBool ("Jump", true);
+			StartCoroutine(ResetCounterTextState(0.2f, couterTextAnimator));
+
             _audioSources[1].clip = countDropCollectedSound;
 
             // Play sound
             _audioSources[1].Play();
 
-            // Set animation UI Component
-            drop2DAnim.transform.SetParent(canvasTransition.transform, false);
+			counterText.GetComponent<Text> ().text = gettedDropsString;
 
-            drop2DAnim.transform.SetAsLastSibling();
+            Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i * 2, Camera.main.transform.position.y + dropsHeightPosition, 0f);
 
-            // Calculate size of animation
-            float width = canvasTransition.GetComponent<RectTransform>().sizeDelta.x;
-            // We use this patron BDB / BDBDB / BDBDBDB Allways blank posiotions at sides and the same size for drops and blanks Position
-            float animSize = width / (dropsToShow + ((dropsToShow - 1) / 2) + 2);
+            //Debug.Log("Spawn position:" + dropCounterPosition);
+			GameObject dropCounterFilledIns = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
+			dropsContainer.Add(dropCounterFilledIns);
 
-            // Set size of animation
-            drop2DAnim.GetComponent<RectTransform>().sizeDelta = new Vector2(animSize, animSize);
+			Vector3 direction = dropCounterFilledIns.transform.position - (Camera.main.transform.position - 8f * (16f / 9f - 1f) * Vector3.forward);
+			direction = Vector3.ProjectOnPlane (direction, Vector3.up);
+			dropCounterFilledIns.transform.rotation = Quaternion.LookRotation (direction);
 
-            // Set position of animation
-            float horizontalPosition = (animSize / 2) + animSize + (animSize * i) + (animSize * i / 2);
-            if (dropsToShow % 2 == 0)
-                horizontalPosition -= animSize / 4;
-            drop2DAnim.GetComponent<RectTransform>().anchoredPosition = new Vector2(horizontalPosition, Screen.height * dropsHeightPosition);
+			dropCounterFilledIns.transform.parent = parent.transform;
+
+			GameObject appearFXIns = GameObject.Instantiate(appearFX, dropCounterPosition, Quaternion.identity) as GameObject;
+
+			appearFXIns.transform.parent = parent.transform;
+
+			StartCoroutine(DeleteFX(2f, appearFXIns));
+
+			Destroy(dropsContainer[i]);
 
             // Increase pitch
             _audioSources[1].pitch += increasePitch;
@@ -318,8 +320,100 @@ public class LevelTransitionController : MonoBehaviour {
             // Wait for next animation
             yield return new WaitForSeconds(delayBetweenDrops);
         }
+
+
+		if (dropsGetted >= maxDropsRequired) {
+			StartCoroutine (FireworksFX (true, parent));
+			StartCoroutine (ConfettiFX (true, parent));
+		}
+        yield return new WaitForSeconds(1);
+	}
+
+	public IEnumerator FireworksFX(bool fireFXon, GameObject parent) {
+
+		while (fireFXon) {
+
+			float zPos = Random.Range (1f, 15f);
+			float xBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
+			float xPos = Random.Range (-xBounce, 5f + xBounce);
+			float yBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
+			float yPos = Random.Range (yBounce / 2, yBounce);
+			Vector3 spawnPosition = new Vector3 (transform.position.x + xPos, transform.position.y + yPos, zPos);
+
+            int randomInt = Random.Range(0, fireworkFX.Count - 1);
+            Debug.Log("Random int" + randomInt);
+
+			GameObject fireworkFXIns = GameObject.Instantiate(fireworkFX[randomInt], spawnPosition, Quaternion.identity) as GameObject;
+			fireworkFXIns.transform.parent = parent.transform;
+
+			StartCoroutine(DeleteFX(3f, fireworkFXIns));
+            yield return new WaitForSeconds (Random.Range(0.1f, 2f));
+		}
+	}
+
+    public IEnumerator ConfettiFX(bool ConfettiFXon, GameObject parent) {
+        while (ConfettiFXon) {
+
+            Vector3 spawnPosition = Vector3.zero;
+            Quaternion spawnRotarion = Quaternion.identity;
+            if (Random.value > 0.5f) {
+                spawnPosition = new Vector3(Camera.main.transform.position.x + -8f, 3f, 6f);
+
+            } else {
+                spawnPosition = new Vector3(Camera.main.transform.position.x + 8f, 3f, 6f);
+                spawnRotarion = Quaternion.Inverse(Quaternion.identity);
+            }
+			GameObject confettiCanonFXIns = GameObject.Instantiate(confettiCanonFX, spawnPosition, spawnRotarion) as GameObject;
+			confettiCanonFXIns.transform.parent = parent.transform;
+
+			StartCoroutine(DeleteFX(1f, confettiCanonFXIns));
+            yield return new WaitForSeconds(Random.Range(0.1f, 2f));
+        }
+	}
+
+
+	public IEnumerator DeleteFX(float waitTime, GameObject FX) {
+
+		yield return new WaitForSeconds(waitTime);
+
+		DestroyImmediate(FX);
     }
 
 
-        #endregion
+    public IEnumerator ResetCounterTextState(float waitTime, Animator couterTextAnimator) {
+
+        yield return new WaitForSeconds(waitTime);
+
+        couterTextAnimator.SetBool("Jump", false);
     }
+
+
+    public IEnumerator WaitMinTimeToSkip(float waitTime) {
+
+        yield return new WaitForSeconds(waitTime);
+
+        _canSkip = true;
+    }
+
+    /// <summary>
+    /// Skips the intro and sets all the object to its position
+    /// </summary>
+    public void SkipEnd() {
+
+        if (!_skippedEnd && _canSkip) {
+            _skippedEnd = true;
+
+            StartCoroutine(SkipEndCoroutine(0.8f));
+        }
+    }
+
+
+    public IEnumerator SkipEndCoroutine(float waitTime) {
+        SceneFadeInOut sfio = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<SceneFadeInOut>();
+        sfio.BeginFade(false, waitTime);
+        yield return new WaitForSeconds(waitTime);
+        sfio.op.allowSceneActivation = true;
+    }
+
+    #endregion
+}

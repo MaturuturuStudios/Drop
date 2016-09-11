@@ -120,7 +120,7 @@ public class CharacterSpawner : MonoBehaviour {
             res = true;
 
         } else {
-            Debug.LogWarning("Spawn can't ground drop.");
+            Debug.LogWarning("Spawn can't ground drop from position: "+ _spawnPosition);
         }
         
         return res;
