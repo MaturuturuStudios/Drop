@@ -104,4 +104,35 @@ public static class ExtensionMethods {
 	}
 
 	#endregion
+
+	#region GameObject
+
+	/// <summary>
+	/// Enables all the particle system emissors of the game object.
+	/// </summary>
+	/// <param name="gameObject">The object for the systems to be enabled</param>
+	public static void EnableParticleSystems(this GameObject gameObject) {
+		SetEnableParticleSystem(gameObject, true);
+	}
+
+	/// <summary>
+	/// Disables all the particle system emissors of the game object.
+	/// </summary>
+	/// <param name="gameObject">The object for the systems to be disabled</param>
+	public static void DisableParticleSystems(this GameObject gameObject) {
+		SetEnableParticleSystem(gameObject, false);
+	}
+
+	/// <summary>
+	/// Enables or disables all the particle system emissors of the game object.
+	/// </summary>
+	/// <param name="gameObject">The object for the systems to be enabled or disabled</param>
+	public static void SetEnableParticleSystem(this GameObject gameObject, bool enable) {
+		foreach (ParticleSystem system in gameObject.GetComponentsInChildren<ParticleSystem>()) {
+			ParticleSystem.EmissionModule emission = system.emission;
+			emission.enabled = enable;
+		}
+	}
+
+	#endregion
 }
