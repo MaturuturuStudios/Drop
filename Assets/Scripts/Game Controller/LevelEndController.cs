@@ -49,7 +49,7 @@ public class LevelEndController : MonoBehaviour {
     /// <summary>
     /// Reference to level transition
     /// </summary>
-    private LevelTransition _levelTransition;
+    //private LevelTransition _levelTransition;
 
 
     /// <summary>
@@ -114,7 +114,7 @@ public class LevelEndController : MonoBehaviour {
         //Get input controller
         _gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
         //Get input controller
-        _levelTransition = GetComponent<LevelTransition>();
+        //_levelTransition = GetComponent<LevelTransition>();
         _levelTransitionController = GetComponent<LevelTransitionController>();
     }
 

@@ -201,7 +201,7 @@ public class LevelTransitionController : MonoBehaviour {
         GetComponentInChildren<RectTransform>().sizeDelta = new Vector2(h * cam.aspect * 1.005f, h);
 
         // Get the referencec to the camera
-        Camera cameraTransition = Camera.main;
+        //Camera cameraTransition = Camera.main;
 
         // Get the canvas reference
         Canvas canvasTransition = GetComponentInChildren<Canvas>();
@@ -253,11 +253,11 @@ public class LevelTransitionController : MonoBehaviour {
 
         List<GameObject> dropsContainer = new List<GameObject>();
 
-        float width  = (Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * 8 * 2f) * cam.aspect;
+        //float width  = (Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * 8 * 2f) * cam.aspect;
 
         float startPosition = -(float)(dropsToShow - 1);
 
-        float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
+        //float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
 
         Debug.Log("dropsToShow:" + dropsToShow);
         for (int i = 0; i < dropsToShow; ++i) {

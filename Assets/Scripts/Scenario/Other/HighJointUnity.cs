@@ -7,15 +7,15 @@ public class HighJointUnity : MonoBehaviour {
 
     public float rigbodyMass=100;
 
-    private float _rigbody;
+    //private float _rigbody;
 
-    private bool _onEnter = false;
-    private bool _onExit = false;
+    //private bool _onEnter = false;
+    //private bool _onExit = false;
 
     // Use this for initialization
     void Start () {
         rigbodyMass = transform.parent.GetComponent<Rigidbody>().mass;
-        _rigbody = rigbodyMassIncrease;
+        //_rigbody = rigbodyMassIncrease;
 	}
 
 

@@ -6,8 +6,8 @@ public class GameControllerInput : MonoBehaviour {
 	#region Attributes
 	/// Internal references
 	private GameControllerIndependentControl _switcher;
-	private MainCameraController _mainCameraController;
-	private GameControllerHelp _helpController;
+    //private MainCameraController _mainCameraController;
+    private GameControllerHelp _helpController;
     
     /// <summary>
     /// Menu navigator of the scene
@@ -44,7 +44,7 @@ public class GameControllerInput : MonoBehaviour {
     void Start() {
 		// Retrives the independent control component
 		_switcher = GetComponent<GameControllerIndependentControl>();
-		_mainCameraController = GetComponentInChildren<MainCameraController>();
+		//_mainCameraController = GetComponentInChildren<MainCameraController>();
 		_helpController = GetComponent<GameControllerHelp>();
 
 		_ui = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
@@ -106,8 +106,8 @@ public class GameControllerInput : MonoBehaviour {
                 _switcher.SetControl(4);
 
             //Camera looking arround
-            float hLookInput = Input.GetAxis(Axis.CamHorizontal);
-            float vLookInput = Input.GetAxis(Axis.CamVertical);
+            //float hLookInput = Input.GetAxis(Axis.CamHorizontal);
+            //float vLookInput = Input.GetAxis(Axis.CamVertical);
             //_mainCameraController.LookArround(hLookInput, vLookInput);
 
             //Handle shoot input
