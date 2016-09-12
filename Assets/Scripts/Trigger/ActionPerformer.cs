@@ -22,6 +22,27 @@ public abstract class ActionPerformer : MonoBehaviour {
 	/// </summary>
 	public bool onlyOncePerFrame;
 
+	/// <summary>
+	/// Effect played while the character remains on the area
+	/// where the action can be performed.
+	/// </summary>
+	public GameObject onAreaEffect;
+
+	/// <summary>
+	/// Effect played when the character enters the area where
+	/// the action can be performed.
+	/// </summary>
+	public EffectInformation onEnterAreaEffect;
+
+	#endregion
+
+	#region Private Attributes
+
+	/// <summary>
+	/// Reference to the game controller's GCIC component.
+	/// </summary>
+	private GameControllerIndependentControl _gcic;
+
 	#endregion
 
 	#region Variables
@@ -35,6 +56,56 @@ public abstract class ActionPerformer : MonoBehaviour {
 	#endregion
 
 	#region Methods
+
+	/// <summary>
+	/// Unity's method called the first frame this object is active.
+	/// </summary>
+	void Awake() {
+		// Retrieves the desired componentss
+		_gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
+	}
+
+	/// <summary>
+	/// Unity's method called when an object enters the trigger.
+	/// </summary>
+	void OnTriggerEnter(Collider other) {
+		if (enabled && onEnterAreaEffect != null && other.gameObject == _gcic.currentCharacter)
+			onEnterAreaEffect.PlayEffect(onAreaEffect.transform.position, onAreaEffect.transform.rotation, onAreaEffect.transform.lossyScale.x);
+	}
+
+	/// <summary>
+	/// Unity's method called when an object stays on the trigger.
+	/// </summary>
+	void OnTriggerStay(Collider other) {
+		if (enabled && onAreaEffect != null && other.gameObject == _gcic.currentCharacter)
+			onAreaEffect.EnableParticleSystems();
+	}
+
+	/// <summary>
+	/// Unity's method called each fixed step.
+	/// </summary>
+	void FixedUpdate() {
+		// Since OnTriggerStay will be called after FixedUpdate it is
+		// safe to disable the particles, since they will be reenabled
+		if (onAreaEffect != null)
+			onAreaEffect.DisableParticleSystems();
+	}
+
+	/// <summary>
+	/// Unity's method called when this object is enabled.
+	/// </summary>
+	void OnEnable() {
+		if (onAreaEffect != null)
+			onAreaEffect.EnableParticleSystems();
+	}
+
+	/// <summary>
+	/// Unity's method called when this object is disabled.
+	/// </summary>
+	void OnDisable() {
+		if (onAreaEffect != null)
+			onAreaEffect.DisableParticleSystems();
+	}
 
 	/// <summary>
 	/// Unity's method called each frame after the Update call.
