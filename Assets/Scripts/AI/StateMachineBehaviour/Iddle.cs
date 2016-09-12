@@ -62,16 +62,25 @@ public class Iddle : StateMachineBehaviour {
             if (_deltaTime <= 0) {
                 animator.SetBool("Timer", true);
             }
-        }else {
+
+            //but if only one path...
+            if (commonParameters.AI.walkingParameters.usePath && commonParameters.AI.walkingParameters.path.points.Length<=1) {
+                commonParameters.walking = false;
+            }
+
+        } else {
+
+           
+
             //if the enemy is not walking but not in its position, go to walking
             Vector3 target = commonParameters.initialPositionEnemy;
             Quaternion rotationTarget = commonParameters.initialRotationEnemy;
-            
+
             if (!AIMethods.CheckTargetPoint(commonParameters.enemy, target, commonParameters.onFloor, commonParameters.minimumWalkingDistance)) {
                 animator.SetBool("Timer", true);
             }
 
-            if(!AIMethods.CheckTargetRotation(commonParameters.enemy, rotationTarget, commonParameters.toleranceDegreeToGoal)) {
+            if (!AIMethods.CheckTargetRotation(commonParameters.enemy, rotationTarget, commonParameters.toleranceDegreeToGoal)) {
                 animator.SetBool("Timer", true);
             }
 
