@@ -82,15 +82,15 @@ public class GameControllerInput : MonoBehaviour {
             }
 
             // Control that triggers are pressed only one time
-            if (!_triggerPressed && Input.GetAxisRaw(Axis.SelectDrop) > 0) {
+            if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) > 0) {
                 _switcher.ControlNextDrop();
                 _triggerPressed = true;
             }
-			else if (!_triggerPressed && Input.GetAxisRaw(Axis.SelectDrop) < 0) {
+			else if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) < 0) {
                 _switcher.ControlBackDrop();
                 _triggerPressed = true;
             }
-			else if (Input.GetAxisRaw(Axis.SelectDrop) == 0)
+			else if (Input.GetAxis(Axis.SelectDrop) == 0)
                 _triggerPressed = false;
 
             // Handles the direct access input
@@ -118,13 +118,13 @@ public class GameControllerInput : MonoBehaviour {
                 shootComponent.Aim();
 
             // Control that shootCounter is pressed only one time
-            if (!_shootCounterPressed && Input.GetAxisRaw(Axis.ShootCounter) > 0) {
+            if (!_shootCounterPressed && Input.GetAxis(Axis.ShootCounter) > 0) {
                 shootComponent.IncreaseSize();
                 _shootCounterPressed = true;
-            } else if (!_shootCounterPressed && Input.GetAxisRaw(Axis.ShootCounter) < 0) {
+            } else if (!_shootCounterPressed && Input.GetAxis(Axis.ShootCounter) < 0) {
                 shootComponent.DecreaseSize();
                 _shootCounterPressed = true;
-            } else if (Input.GetAxisRaw(Axis.ShootCounter) == 0)
+            } else if (Input.GetAxis(Axis.ShootCounter) == 0)
                 _shootCounterPressed = false;
 
             //Handle action input
