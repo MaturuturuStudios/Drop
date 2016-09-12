@@ -126,6 +126,10 @@ public class LevelEndController : MonoBehaviour {
         // Stops input
         _gci.StopInput(true, timeToSkip);
 
+        //make sure is stored the first level is completed
+        PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
+        PlayerPrefs.Save();
+
         //unlock the level
         data.UnlockLevel(nextLevel);
 

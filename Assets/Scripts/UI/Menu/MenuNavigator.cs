@@ -377,10 +377,6 @@ public class MenuNavigator : MonoBehaviour {
 	/// </summary>
 	public void NewGame() {
         ChangeScene(newContinueGame.name);
-
-        //TODO change this to a better place, for example, finishing the first level
-        PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
-        PlayerPrefs.Save();
     }
 
     /// <summary>
