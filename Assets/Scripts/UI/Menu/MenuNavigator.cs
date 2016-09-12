@@ -375,7 +375,14 @@ public class MenuNavigator : MonoBehaviour {
     /// <summary>
 	/// Start/continue a new game
 	/// </summary>
-	public void NewGame() {
+	public void NewGame(Button button=null) {
+        //stop input
+        if (button != null) {
+            Navigation nav = button.navigation;
+            nav.mode = Navigation.Mode.None;
+            button.navigation = nav;
+        }
+
         ChangeScene(newContinueGame.name);
     }
 
