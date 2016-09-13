@@ -132,9 +132,13 @@ public class GameControllerIndependentControl : MonoBehaviour {
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
             SetControl(next_drop);
 
-            // Play change drop effect
-            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
-        }
+		}else {
+			// Can't play animation if drop is shooting
+			bool notShoothing = (currentCharacter == null || !currentCharacter.GetComponent<CharacterShoot> ().isShooting ());
+			if (notShoothing) {
+				currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
+			}
+		}
     }
 
 
@@ -143,22 +147,28 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// </summary>
     public void ControlBackDrop() {
 
-        if (allCurrentCharacters.Count > 1) {
+		if (allCurrentCharacters.Count > 1) {
 
-            //Get prev index
-            int back_drop = allCurrentCharacters.IndexOf(currentCharacter) - 1;
+			//Get prev index
+			int back_drop = allCurrentCharacters.IndexOf (currentCharacter) - 1;
 
-            //Loop control
-            if (back_drop == -1)
-                back_drop = allCurrentCharacters.Count - 1;
+			//Loop control
+			if (back_drop == -1)
+				back_drop = allCurrentCharacters.Count - 1;
 
-            //Set Control
-            currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            SetControl(back_drop);
+			//Set Control
+			currentCharacter.GetComponent<CharacterControllerCustomPlayer> ().Stop ();
+			SetControl (back_drop);
 
-            // Play change drop effect
-            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
-        }
+			// Play change drop effect
+			currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
+		} else {
+			// Can't play animation if drop is shooting
+			bool notShoothing = (currentCharacter == null || !currentCharacter.GetComponent<CharacterShoot> ().isShooting ());
+			if (notShoothing) {
+				currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
+			}
+		}
     }
 
 
