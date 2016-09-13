@@ -9,59 +9,53 @@ public class LevelTransitionController : MonoBehaviour {
     #region Public attributes
 
     /// <summary>
-    /// Level complete text
+    /// Level complete text title congratulations
     /// </summary>
     public GameObject levelCompleteText1;
 
     /// <summary>
-    /// Level complete text
+    /// Level complete text title awesome
     /// </summary>
     public GameObject levelCompleteText2;
 
     /// <summary>
-    /// Level complete text
+    /// Level complete text title ay camba
     /// </summary>
     public GameObject levelCompleteText3;
 
 
     /// <summary>
-    /// Text with contact info
+    /// Text with contact info, if you complete the level with mor drops as expected
     /// </summary>
     public GameObject contactText;
 
 
     /// <summary>
-    /// Sound played when the character enters shoot mode.
-    /// </summary>
-    public AudioClip countDropCollectedSound;
-
-
-    /// <summary>
-    /// Sound played when the level is completed with less than max drops
+    /// Music played when the level is completed with less than max drops
     /// </summary>
     public AudioClip levelCompleteSound1;
 
 
     /// <summary>
-    /// Sound played when the level is completed with max drops
+    /// Music played when the level is completed with max drops
     /// </summary>
     public AudioClip levelCompleteSound2;
 
 
     /// <summary>
-    /// Sound played when the level is completed with more than max drops
+    /// Music played when the level is completed with more than max drops
     /// </summary>
     public AudioClip levelCompleteSound3;
 
 
     /// <summary>
-    /// Pitch setted to the first drop apeared
+    /// Pitch setted to the first drop appeared
     /// </summary>
     public float startingPitch = 4;
 
 
     /// <summary>
-    /// Max pitch to reach when all drops getted
+    /// Max pitch to reach when all drops saved
     /// </summary>
     public float maxPitch = 8f;
 
@@ -74,21 +68,21 @@ public class LevelTransitionController : MonoBehaviour {
 
 
     /// <summary>
-    /// Drops required to complete the level 100%
+    /// Drops collected in the level
     /// </summary>
     [Range(1, 6)]
     public int dropsCollected = 1;
 
 
     /// <summary>
-    /// Height position of displayed drops
+    /// Height position of displayed drops counters
     /// </summary>
     [Range(-5f, 5f)]
     public float dropsHeightPosition = -0.15f;
 
 
     /// <summary>
-    /// Duration of the animation when creating drops
+    /// Duration when spawning drops counters
     /// </summary>
     public float dropCreationDuration = 1f;
 
@@ -98,38 +92,39 @@ public class LevelTransitionController : MonoBehaviour {
     public float startDelay = 1.1f;
 
     /// <summary>
-    /// Duration of the animation when creating drops
+    /// Distance from camera to canvas
     /// </summary>
     [Range(0, 100)]
-    public float canvasDistance = 4.5f;
+    public float canvasDistance = 5f;
 
 	/// <summary>
-	/// Background to set the texture
+	/// List of fireworks
 	/// </summary>
 	public List<GameObject> fireworkFX;
 
 	/// <summary>
-	/// Background to set the texture
+	/// Conffeti effect
 	/// </summary>
 	public GameObject confettiCanonFX;
 
 	/// <summary>
-	/// Drop to show as counter
+	/// Drop to show as counter unfilled
 	/// </summary>
 	public GameObject dropCounter;
 
 	/// <summary>
-	/// Text to show the number of drops
+	/// Text to show the number of drops saved
 	/// </summary>
 	public GameObject dropCounterText;
 
     /// <summary>
-    /// Drop to show as counter
+    /// Drop to show as counter filled
     /// </summary>
     public GameObject dropCounterFilled;
 
-    public Material dropMaterial;
-
+	/// <summary>
+	/// The appear effect for counters
+	/// </summary>
     public GameObject appearFX;
 
     #endregion
@@ -138,19 +133,18 @@ public class LevelTransitionController : MonoBehaviour {
 
 
     /// <summary>
-    /// Reference to the object's original AudioSource component which
-    /// the values for the new ones will be copied from.
+    /// Reference to the different audiosources
     /// </summary>
     private AudioSource[] _audioSources;
 
 
     /// <summary>
-    /// Duration while fading
+    /// Handles if the end has been skipped
     /// </summary>
     private bool _skippedEnd = false;
 
     /// <summary>
-    /// variable to know if we can skip the end
+    /// Handles if the end animation can be skiped
     /// </summary>
     private bool _canSkip = false;
 
@@ -158,10 +152,9 @@ public class LevelTransitionController : MonoBehaviour {
 
     #region Public methods
 
-    // Use this for initialization
     void Start () {
 
-        // Get reference to audio source
+        // Get reference to audio sources
         _audioSources = GetComponents<AudioSource>();
     }
 	
@@ -182,34 +175,30 @@ public class LevelTransitionController : MonoBehaviour {
     /// <param name="dropsGetted">Number of drops collected  in the level</param>
     public IEnumerator LevelTransitionAnimation(int dropsGetted) {
 
+		// Get the refenece to the temporal objects container in the scene
 		GameObject parent = GameObject.Find("Temporal Objects");
 
+		// Get out the blur effect to cleary see the effects
         Camera.main.GetComponent<DepthOfField>().maxBlurSize = 0f;
 
+		// Delay for allow drop leave the fustrum
         yield return new WaitForSeconds(startDelay);
 
         // Get the camera reference
         Camera cam = Camera.main;
 
-        // Calculate and set the cube to canvas
-        float pos = (5f);
-
+		// Set the canvas in the corect position
         GetComponentInChildren<RectTransform>().position = new Vector3(cam.transform.position.x , cam.transform.position.y, cam.transform.position.z + 5f);
 
-        float h = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * pos * 2f;
-
+		// Calculate the size of the canvas and set it
+		float h = Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * canvasDistance * 2f;
         GetComponentInChildren<RectTransform>().sizeDelta = new Vector2(h * cam.aspect * 1.005f, h);
-
-        // Get the referencec to the camera
-        //Camera cameraTransition = Camera.main;
 
         // Get the canvas reference
         Canvas canvasTransition = GetComponentInChildren<Canvas>();
-        //canvasTransition.sortingLayerName = "level_transition_back";
 
-
+		// Select the correct objects to instantiate
         GameObject levelCompleteMessage;
-        // Instialize the message and the sound
         if (dropsGetted < maxDropsRequired) {
             levelCompleteMessage = Instantiate(levelCompleteText1, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound1;
@@ -224,92 +213,84 @@ public class LevelTransitionController : MonoBehaviour {
 			_ContactText.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         }
 
-        //if (maxDropsRequired == 1)
-            //dropsHeightPosition = 0.15f;
-
-        // Instantiate the message and the sound
+        // Play the clip loaded
         _audioSources[0].Play();
 
         // Set object an UI object
-        levelCompleteMessage.transform.SetParent(canvasTransition.transform, false);
+		levelCompleteMessage.transform.SetParent(canvasTransition.transform, false);
 
-        // Wait to start fading
-        yield return new WaitForSeconds(1);
+		// Look if player exceded max drops
+		int dropsToShow = dropsGetted > maxDropsRequired ? dropsGetted : maxDropsRequired;
 
-        // Look if player exceded max drops
-        int dropsToShow = dropsGetted > maxDropsRequired ? dropsGetted : maxDropsRequired;
+        // Wait to start drops counter
+        yield return new WaitForSeconds(1.5f);
 
-		yield return new WaitForSeconds(0.5f);
-
+		// Instantiate drops text counter
 		GameObject counterText = Instantiate(dropCounterText, new Vector3(0f, 2.3f, 0f), Quaternion.identity) as GameObject;
 		counterText.transform.SetParent(canvasTransition.transform, false);
 
-		string gettedDropsString = LanguageManager.Instance.GetText("SavedDrops") + ": " + 0 + " /" + maxDropsRequired;
+		// Buld the string to show and set it to the text object
+		string savedDropsString = LanguageManager.Instance.GetText("SavedDrops") + ": " + 0 + " /" + maxDropsRequired;
+		counterText.GetComponent<Text> ().text = savedDropsString;
 
-		counterText.GetComponent<Text> ().text = gettedDropsString;
-
-        // Update canvases
-        Canvas.ForceUpdateCanvases();
-
+		// Create a container to drops counter
         List<GameObject> dropsContainer = new List<GameObject>();
-
-        //float width  = (Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * 8 * 2f) * cam.aspect;
-
+		// Calculate metrics for the spawns of the counters
+        float width  = (Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * 8 * 2f) * cam.aspect;
         float startPosition = -(float)(dropsToShow - 1);
+        float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
 
-        //float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
-
-        Debug.Log("dropsToShow:" + dropsToShow);
+        // Start drops counter spawn
         for (int i = 0; i < dropsToShow; ++i) {
-       
+       		
+			// Calculate desired position
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i *2 , Camera.main.transform.position.y + dropsHeightPosition, 0f); 
 
-            Debug.Log("Spawn position:" + dropCounterPosition);
+            // Instantiate the object an put it in the correct place in hierarchy
             GameObject dropCounterIns = GameObject.Instantiate(dropCounter, dropCounterPosition, Quaternion.identity) as GameObject;
 			dropsContainer.Add(dropCounterIns);
 			dropCounterIns.transform.parent = parent.transform;
 
         }
 
+		// Wait to spawn filled counters
         yield return new WaitForSeconds(0.5f);
 
-
+		// Set pitch to the minium and calculate haw much pitch we have to increase in each drop
+		_audioSources[1].pitch = startingPitch;
         float increasePitch = (maxPitch - startingPitch) / dropsToShow;
-        // Set start pitch and calculate the pitch to increase
-        _audioSources[1].pitch = startingPitch;
+
+		// Start drops filled counter spawn
         for (int i = 0; i < dropsGetted; ++i) {
 
-			gettedDropsString = LanguageManager.Instance.GetText("SavedDrops") + ": " + (i + 1f) + "/" + maxDropsRequired;
+			// Actualize drops text counter 
+			counterText.GetComponent<Text> ().text = LanguageManager.Instance.GetText("SavedDrops") + ": " + (i + 1f) + "/" + maxDropsRequired;
 
+			// Play animation of text counter
 			Animator couterTextAnimator = counterText.GetComponent<Animator> ();
+			couterTextAnimator.SetBool ("Jump", false);
 			couterTextAnimator.SetBool ("Jump", true);
-			StartCoroutine(ResetCounterTextState(0.2f, couterTextAnimator));
 
-            _audioSources[1].clip = countDropCollectedSound;
-
-            // Play sound
+			// Play sound default sound for drop counter
             _audioSources[1].Play();
 
-			counterText.GetComponent<Text> ().text = gettedDropsString;
-
+			// Calculate drop counter filled position, spawn it and add it to the container and child of it's father
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i * 2, Camera.main.transform.position.y + dropsHeightPosition, 0f);
-
-            //Debug.Log("Spawn position:" + dropCounterPosition);
 			GameObject dropCounterFilledIns = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
 			dropsContainer.Add(dropCounterFilledIns);
+			dropCounterFilledIns.transform.parent = parent.transform;
 
+			// Make drop look at the camera
 			Vector3 direction = dropCounterFilledIns.transform.position - (Camera.main.transform.position - 8f * (16f / 9f - 1f) * Vector3.forward);
 			direction = Vector3.ProjectOnPlane (direction, Vector3.up);
 			dropCounterFilledIns.transform.rotation = Quaternion.LookRotation (direction);
 
-			dropCounterFilledIns.transform.parent = parent.transform;
-
+			// Instantiate appear effect and order it
 			GameObject appearFXIns = GameObject.Instantiate(appearFX, dropCounterPosition, Quaternion.identity) as GameObject;
-
 			appearFXIns.transform.parent = parent.transform;
-
 			StartCoroutine(DeleteFX(2f, appearFXIns));
 
+			// Delete drop counter not filled
 			Destroy(dropsContainer[i]);
 
             // Increase pitch
@@ -321,18 +302,24 @@ public class LevelTransitionController : MonoBehaviour {
             yield return new WaitForSeconds(delayBetweenDrops);
         }
 
-
+		// If level complete with max drops play special effects
 		if (dropsGetted >= maxDropsRequired) {
 			StartCoroutine (FireworksFX (true, parent));
 			StartCoroutine (ConfettiFX (true, parent));
 		}
-        yield return new WaitForSeconds(1);
 	}
+	
 
+    /// <summary>
+    /// This method calls the apropiate firework effect for the level transitions
+    /// </summary>
+    /// <param name="fireFXon">Handles if fireworks can be played</param>
+    /// <param name="parent">Object to set as parent</param>
 	public IEnumerator FireworksFX(bool fireFXon, GameObject parent) {
 
 		while (fireFXon) {
 
+			// Calculate the position of the effect
 			float zPos = Random.Range (1f, 15f);
 			float xBounce = Mathf.Tan(Camera.main.fieldOfView * Mathf.Deg2Rad * 0.5f) * zPos * 2f;
 			float xPos = Random.Range (-xBounce, 5f + xBounce);
@@ -340,20 +327,29 @@ public class LevelTransitionController : MonoBehaviour {
 			float yPos = Random.Range (yBounce / 2, yBounce);
 			Vector3 spawnPosition = new Vector3 (transform.position.x + xPos, transform.position.y + yPos, zPos);
 
+			// Get a random effect
             int randomInt = Random.Range(0, fireworkFX.Count - 1);
-            Debug.Log("Random int" + randomInt);
 
+			// Instantiate the effect and set child of its parent
 			GameObject fireworkFXIns = GameObject.Instantiate(fireworkFX[randomInt], spawnPosition, Quaternion.identity) as GameObject;
 			fireworkFXIns.transform.parent = parent.transform;
 
+			// Wait a delay to delete the effect and wait for next effect
 			StartCoroutine(DeleteFX(3f, fireworkFXIns));
             yield return new WaitForSeconds (Random.Range(0.1f, 2f));
 		}
 	}
 
+    /// <summary>
+    /// This method calls the apropiate confetti effect for the level transitions
+    /// </summary>
+    /// <param name="ConfettiFXon">Handles if confetti can be played</param>
+    /// <param name="parent">Object to set as parent</param>
     public IEnumerator ConfettiFX(bool ConfettiFXon, GameObject parent) {
+		
         while (ConfettiFXon) {
 
+			// Calculate position of effect and instantiate it
             Vector3 spawnPosition = Vector3.zero;
             Quaternion spawnRotarion = Quaternion.identity;
             if (Random.value > 0.5f) {
@@ -363,15 +359,20 @@ public class LevelTransitionController : MonoBehaviour {
                 spawnPosition = new Vector3(Camera.main.transform.position.x + 8f, 3f, 6f);
                 spawnRotarion = Quaternion.Inverse(Quaternion.identity);
             }
+			
+			// Instantiate the effect and set child of its parent
 			GameObject confettiCanonFXIns = GameObject.Instantiate(confettiCanonFX, spawnPosition, spawnRotarion) as GameObject;
 			confettiCanonFXIns.transform.parent = parent.transform;
 
+			// Wait a delay to delete the effect and wait for next effect
 			StartCoroutine(DeleteFX(1f, confettiCanonFXIns));
             yield return new WaitForSeconds(Random.Range(0.1f, 2f));
         }
 	}
 
-
+    /// <summary>
+    /// Wait desired time to delete the gameobject effect
+    /// </summary>
 	public IEnumerator DeleteFX(float waitTime, GameObject FX) {
 
 		yield return new WaitForSeconds(waitTime);
@@ -379,15 +380,9 @@ public class LevelTransitionController : MonoBehaviour {
 		DestroyImmediate(FX);
     }
 
-
-    public IEnumerator ResetCounterTextState(float waitTime, Animator couterTextAnimator) {
-
-        yield return new WaitForSeconds(waitTime);
-
-        couterTextAnimator.SetBool("Jump", false);
-    }
-
-
+    /// <summary>
+    /// Skips the intro and sets all the object to its position
+    /// </summary>
     public IEnumerator WaitMinTimeToSkip(float waitTime) {
 
         yield return new WaitForSeconds(waitTime);
@@ -396,7 +391,7 @@ public class LevelTransitionController : MonoBehaviour {
     }
 
     /// <summary>
-    /// Skips the intro and sets all the object to its position
+    /// Skips the intro and begin fade
     /// </summary>
     public void SkipEnd() {
 
@@ -407,11 +402,20 @@ public class LevelTransitionController : MonoBehaviour {
         }
     }
 
-
+    /// <summary>
+    /// Plays the fade effect
+    /// </summary>
+    /// <param name="waitTime">Fade time</param>
     public IEnumerator SkipEndCoroutine(float waitTime) {
+		
+		// Get reference to scene fade
         SceneFadeInOut sfio = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<SceneFadeInOut>();
+		
+		// Start fading and wait to the end of it
         sfio.BeginFade(false, waitTime);
         yield return new WaitForSeconds(waitTime);
+		
+		// Load next scene
         sfio.op.allowSceneActivation = true;
     }
 
