@@ -1,172 +1,82 @@
 fileFormatVersion: 2
-guid: 0cf53cdef6453354d9c99e86d91aca16
-timeCreated: 1473002137
+guid: e2ac5faa1fd8049ca8419e027e4e9052
+timeCreated: 1473712866
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: Cave
+    100000: Cave1
     100002: Cloud
     100004: Cloud2
-    100006: Forest
-    100008: Hill
+    100006: Forest1
+    100008: Hill3
     100010: Level1
     100012: Level2
     100014: Level3
     100016: Level4
     100018: Level5
     100020: //RootNode
-    100022: Montain
-    100024: Pine
-    100026: Pine2
-    100028: Pine3
-    100030: Pine4
-    100032: Pine5
-    100034: pSphere13
-    100036: River
-    100038: Sun
-    100040: Tree
-    100042: Tree1
-    100044: Tree2
-    100046: Tree3
-    100048: Wood
-    100050: Wood1
-    100052: Wood2
-    100054: Wood3
-    100056: Wood4
-    100058: Wood5
-    100060: Wood6
-    100062: Wood7
-    100064: Wood8
-    400000: Cave
+    100022: Montain4
+    100024: pSphere13
+    100026: River3
+    100028: Sun
+    400000: Cave1
     400002: Cloud
     400004: Cloud2
-    400006: Forest
-    400008: Hill
+    400006: Forest1
+    400008: Hill3
     400010: Level1
     400012: Level2
     400014: Level3
     400016: Level4
     400018: Level5
     400020: //RootNode
-    400022: Montain
-    400024: Pine
-    400026: Pine2
-    400028: Pine3
-    400030: Pine4
-    400032: Pine5
-    400034: pSphere13
-    400036: River
-    400038: Sun
-    400040: Tree
-    400042: Tree1
-    400044: Tree2
-    400046: Tree3
-    400048: Wood
-    400050: Wood1
-    400052: Wood2
-    400054: Wood3
-    400056: Wood4
-    400058: Wood5
-    400060: Wood6
-    400062: Wood7
-    400064: Wood8
-    2300000: Cave
+    400022: Montain4
+    400024: pSphere13
+    400026: River3
+    400028: Sun
+    2300000: Cave1
     2300002: Cloud
     2300004: Cloud2
-    2300006: Forest
-    2300008: Hill
+    2300006: Forest1
+    2300008: Hill3
     2300010: Level1
     2300012: Level2
     2300014: Level3
     2300016: Level4
     2300018: Level5
-    2300020: Montain
-    2300022: Pine
-    2300024: Pine2
-    2300026: Pine3
-    2300028: Pine4
-    2300030: Pine5
-    2300032: pSphere13
-    2300034: River
-    2300036: Sun
-    2300038: Tree
-    2300040: Tree1
-    2300042: Tree2
-    2300044: Tree3
-    2300046: Wood
-    2300048: Wood1
-    2300050: Wood2
-    2300052: Wood3
-    2300054: Wood4
-    2300056: Wood5
-    2300058: Wood6
-    2300060: Wood7
-    2300062: Wood8
-    3300000: Cave
+    2300020: Montain4
+    2300022: pSphere13
+    2300024: River3
+    2300026: Sun
+    3300000: Cave1
     3300002: Cloud
     3300004: Cloud2
-    3300006: Forest
-    3300008: Hill
+    3300006: Forest1
+    3300008: Hill3
     3300010: Level1
     3300012: Level2
     3300014: Level3
     3300016: Level4
     3300018: Level5
-    3300020: Montain
-    3300022: Pine
-    3300024: Pine2
-    3300026: Pine3
-    3300028: Pine4
-    3300030: Pine5
-    3300032: pSphere13
-    3300034: River
-    3300036: Sun
-    3300038: Tree
-    3300040: Tree1
-    3300042: Tree2
-    3300044: Tree3
-    3300046: Wood
-    3300048: Wood1
-    3300050: Wood2
-    3300052: Wood3
-    3300054: Wood4
-    3300056: Wood5
-    3300058: Wood6
-    3300060: Wood7
-    3300062: Wood8
+    3300020: Montain4
+    3300022: pSphere13
+    3300024: River3
+    3300026: Sun
     4300000: Level1
-    4300002: Sun
-    4300004: Cloud2
-    4300006: Cloud
-    4300008: Montain
-    4300010: pSphere13
+    4300002: pSphere13
+    4300004: Cloud
+    4300006: Cloud2
+    4300008: Sun
+    4300010: Montain4
     4300012: Level2
-    4300014: Cave
+    4300014: Cave1
     4300016: Level3
-    4300018: Forest
-    4300020: Wood
-    4300022: Tree
-    4300024: Wood1
-    4300026: Tree1
-    4300028: Wood2
-    4300030: Tree2
-    4300032: Tree3
-    4300034: Pine
-    4300036: Wood4
-    4300038: Pine2
-    4300040: Wood5
-    4300042: Pine3
-    4300044: Wood6
-    4300046: Pine4
-    4300048: Wood7
-    4300050: Pine5
-    4300052: Wood8
-    4300054: Wood3
-    4300056: Level4
-    4300058: Hill
-    4300060: Level5
-    4300062: River
+    4300018: Forest1
+    4300020: Level4
+    4300022: Hill3
+    4300024: Level5
+    4300026: River3
     9500000: //RootNode
   materials:
     importMaterials: 1
