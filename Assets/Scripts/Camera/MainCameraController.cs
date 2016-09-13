@@ -98,19 +98,31 @@ public class MainCameraController : MonoBehaviour {
     /// <summary>
     /// Camera movement velocity on Z when changes size
     /// </summary>
-    public float zVelocityChangeSizeSlow = 3f;
+	public float zVelocityChangeSizeSlow = 3f;
 
 
-    /// <summary>
-    /// Camera movement velocity on XY when LockArea state
-    /// </summary>
-    public float velocityLockArea = 2f;
+	/// <summary>
+	/// Camera movement velocity on XY when LockArea state
+	/// </summary>
+	public float velocityLockArea = 2f;
 
 
-    /// <summary>
-    /// Camera movement velocity on z when LockArea state
-    /// </summary>
-    public float zVelocityLockArea = 8f;
+	/// <summary>
+	/// Camera movement velocity on z when LockArea state
+	/// </summary>
+	public float zVelocityLockArea = 8f;
+
+
+	/// <summary>
+	/// Camera movement velocity on XY when it is in shoot mode
+	/// </summary>
+	public float velocityShootMode = 20f;
+
+
+	/// <summary>
+	/// Camera movement velocity on z when it is in shoot mode
+	/// </summary>
+	public float zVelocityShootMode = 5f;
 
 
     /// <summary>
@@ -491,8 +503,8 @@ public class MainCameraController : MonoBehaviour {
                 break;
 
             case CameraState.ShootMode:
-                _velocity = velocity;
-                _zVelocity = zVelocity;
+				_velocity = velocityShootMode;
+                _zVelocity = zVelocityShootMode;
                 break;
 
             default:
