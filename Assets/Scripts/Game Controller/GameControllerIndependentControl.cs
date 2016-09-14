@@ -132,10 +132,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
             currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
             SetControl(next_drop);
 
-		}else {
+            // Play change drop effect
+            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
+
+        } else {
 			// Can't play animation if drop is shooting
-			bool notShoothing = (currentCharacter == null || !currentCharacter.GetComponent<CharacterShoot> ().isShooting ());
-			if (notShoothing) {
+			if (!currentCharacter.GetComponent<CharacterShoot>().isShooting()) {
 				currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
 			}
 		}
@@ -163,10 +165,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
 			// Play change drop effect
 			currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
 		} else {
-			// Can't play animation if drop is shooting
-			bool notShoothing = (currentCharacter == null || !currentCharacter.GetComponent<CharacterShoot> ().isShooting ());
-			if (notShoothing) {
-				currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
+            // Can't play animation if drop is shooting
+            if (!currentCharacter.GetComponent<CharacterShoot>().isShooting()) {
+                currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
 			}
 		}
     }
