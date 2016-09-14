@@ -20,6 +20,12 @@ public class IntroController : MonoBehaviour {
 
 
     /// <summary>
+    /// Audio to be played with the logo
+    /// </summary>
+    public AudioClip maturuturuClip;
+
+
+    /// <summary>
     /// Duration that logo will be displayed on screen
     /// </summary>
     public float logoDuration = 1f;
@@ -87,9 +93,8 @@ public class IntroController : MonoBehaviour {
         // Get the movie texture
         GetComponentInChildren<RawImage>().texture = introMovie as MovieTexture;
 
-        // Get audio source from movie
-        _audio = GetComponentInChildren<AudioSource>();
-        _audio.clip = introMovie.audioClip;
+        // Begin load of menu in background
+        StartCoroutine(PlayLogoSound(logoDuration - 0.1f));
 
         // Begin load of menu in background
         StartCoroutine(ScenePreloading(sceneToLoad.name, logoDuration));
@@ -178,6 +183,24 @@ public class IntroController : MonoBehaviour {
         _audio.Play();
         introMovie.Play();
         startedVideo = true;
+    }
+
+    /// <summary>
+    /// Threat that loads the menu in background
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator PlayLogoSound(float timeToStop) {
+
+        // Load logo sound
+        _audio = GetComponentInChildren<AudioSource>();
+        _audio.clip = maturuturuClip;
+        _audio.Play();
+
+        // Wait logo duration to start the movie
+        yield return MenuNavigator.WaitForRealSeconds(timeToStop);
+
+        // Get audio source from movie
+        _audio.clip = introMovie.audioClip;
     }
 
     #endregion
