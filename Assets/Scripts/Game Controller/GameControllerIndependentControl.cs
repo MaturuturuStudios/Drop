@@ -119,27 +119,25 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// </summary>
     public void ControlNextDrop() {
 
-        if (allCurrentCharacters.Count > 1) {
+		// Can't Change drop is it is shooting
+        if (!currentCharacter.GetComponent<CharacterShoot>().isShooting()) {
 
-            //Get next index
-            int next_drop = allCurrentCharacters.IndexOf(currentCharacter) + 1;
+            if (allCurrentCharacters.Count > 1) {
 
-            //Loop control
-            if (next_drop == allCurrentCharacters.Count)
-                next_drop = 0;
+                //Get next index
+                int next_drop = allCurrentCharacters.IndexOf(currentCharacter) + 1;
 
-            //Set Control
-            currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
-            SetControl(next_drop);
+                //Loop control
+                if (next_drop == allCurrentCharacters.Count)
+                    next_drop = 0;
+
+                //Set Control
+                currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
+                SetControl(next_drop);
+            }
 
             // Play change drop effect
             currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
-
-        } else {
-			// Can't play animation if drop is shooting
-			if (!currentCharacter.GetComponent<CharacterShoot>().isShooting()) {
-				currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
-			}
 		}
     }
 
@@ -149,26 +147,25 @@ public class GameControllerIndependentControl : MonoBehaviour {
     /// </summary>
     public void ControlBackDrop() {
 
-		if (allCurrentCharacters.Count > 1) {
+        // Can't Change drop is it is shooting
+        if (!currentCharacter.GetComponent<CharacterShoot>().isShooting()) {
 
-			//Get prev index
-			int back_drop = allCurrentCharacters.IndexOf (currentCharacter) - 1;
+            if (allCurrentCharacters.Count > 1) {
 
-			//Loop control
-			if (back_drop == -1)
-				back_drop = allCurrentCharacters.Count - 1;
+                //Get prev index
+                int back_drop = allCurrentCharacters.IndexOf(currentCharacter) - 1;
 
-			//Set Control
-			currentCharacter.GetComponent<CharacterControllerCustomPlayer> ().Stop ();
-			SetControl (back_drop);
+                //Loop control
+                if (back_drop == -1)
+                    back_drop = allCurrentCharacters.Count - 1;
 
-			// Play change drop effect
-			currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
-		} else {
-            // Can't play animation if drop is shooting
-            if (!currentCharacter.GetComponent<CharacterShoot>().isShooting()) {
-                currentCharacter.GetComponentInChildren<CharacterControlledIndicator> ().PlayChangeDropEffect ();
-			}
+                //Set Control
+                currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
+                SetControl(back_drop);
+            }
+
+            // Play change drop effect
+            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
 		}
     }
 
