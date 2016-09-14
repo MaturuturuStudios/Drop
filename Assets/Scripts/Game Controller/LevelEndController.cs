@@ -91,10 +91,15 @@ public class LevelEndController : MonoBehaviour {
     }
 
 
-    /// <summary>
-    /// Unity's method called on start script only one time
-    /// </summary>
-    void Start(){
+    void Start() {
+
+        // Get reference to input controller
+        _gci = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
+        // Get reference to independent control
+        _gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
+        // Get reference to level transition controller
+        _levelTransitionController = GetComponent<LevelTransitionController>();
+
         if (data == null) {
             nextScene = new Scene();
             Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
@@ -108,14 +113,6 @@ public class LevelEndController : MonoBehaviour {
                 nextScene = data.GetDefaultScene();
             }
         }
-
-        //Get input controller
-        _gci = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
-        //Get input controller
-        _gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
-        //Get input controller
-        //_levelTransition = GetComponent<LevelTransition>();
-        _levelTransitionController = GetComponent<LevelTransitionController>();
     }
 
 
