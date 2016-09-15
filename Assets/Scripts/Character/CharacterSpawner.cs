@@ -114,7 +114,7 @@ public class CharacterSpawner : MonoBehaviour {
             _spawnPosition = hitInfo.point;
 
             // Cast size to match with drop size
-            _spawnPosition.y += size * 0.65f / 2;
+            _spawnPosition += (size * 0.5f + 0.1f) * hitInfo.normal;
 
             // Set result value
             res = true;
