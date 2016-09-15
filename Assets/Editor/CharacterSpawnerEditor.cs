@@ -23,7 +23,9 @@ public class CharacterSpawnerEditor : Editor {
         }
 
 
-        myScript.size = EditorGUILayout.IntSlider("Character size", myScript.size, 1, 20);
+		myScript.size = EditorGUILayout.IntSlider("Character size", myScript.size, 1, 20);
+
+		myScript.height = EditorGUILayout.FloatField("Height elevation", myScript.height);
 
         int controlledCharacters = ControlledCharacters();
 
