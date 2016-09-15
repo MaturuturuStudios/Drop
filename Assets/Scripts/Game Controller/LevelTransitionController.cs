@@ -236,9 +236,7 @@ public class LevelTransitionController : MonoBehaviour {
 		// Create a container to drops counter
         List<GameObject> dropsContainer = new List<GameObject>();
 		// Calculate metrics for the spawns of the counters
-        float width  = (Mathf.Tan(cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * 8 * 2f) * cam.aspect;
         float startPosition = -(float)(dropsToShow - 1);
-        float height = canvasTransition.GetComponent<RectTransform>().sizeDelta.y;
 
         // Start drops counter spawn
         for (int i = 0; i < dropsToShow; ++i) {
@@ -274,6 +272,9 @@ public class LevelTransitionController : MonoBehaviour {
 			// Play sound default sound for drop counter
             _audioSources[1].Play();
 
+            // Increase pitch
+            _audioSources[1].pitch += increasePitch;
+
 			// Calculate drop counter filled position, spawn it and add it to the container and child of it's father
             Vector3 dropCounterPosition = new Vector3(Camera.main.transform.position.x + startPosition + i * 2, Camera.main.transform.position.y + dropsHeightPosition, 0f);
 			GameObject dropCounterFilledIns = GameObject.Instantiate(dropCounterFilled, dropCounterPosition, Quaternion.identity) as GameObject;
@@ -292,9 +293,6 @@ public class LevelTransitionController : MonoBehaviour {
 
 			// Delete drop counter not filled
 			Destroy(dropsContainer[i]);
-
-            // Increase pitch
-            _audioSources[1].pitch += increasePitch;
 
             // Look for delay between drops animations
             float delayBetweenDrops = dropsGetted > maxDropsRequired ? dropCreationDuration / dropsGetted : dropCreationDuration / maxDropsRequired;
