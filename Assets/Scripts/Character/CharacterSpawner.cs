@@ -15,13 +15,19 @@ public class CharacterSpawner : MonoBehaviour {
     /// <summary>
     /// Variable indicates if character is current character controller
     /// </summary>
-    public bool addToControlList = false;
+	public bool addToControlList = false;
 
-    /// <summary>
-    /// Variable indicates the size of the created character
-    /// </summary>
-    [Range(1, 20)]
-    public int size = 1;
+	/// <summary>
+	/// Variable indicates the size of the created character
+	/// </summary>
+	[Range(1, 20)]
+	public int size = 1;
+
+	/// <summary>
+	/// Variable used if you want to spawn drop on the air
+	/// </summary>
+	[Range(0, 50)]
+	public float height = 0f;
 
     #endregion
 
@@ -115,6 +121,9 @@ public class CharacterSpawner : MonoBehaviour {
 
             // Cast size to match with drop size
             _spawnPosition += (size * 0.5f + 0.1f) * hitInfo.normal;
+
+			// Elevate drop desired distance
+			_spawnPosition.y += height;
 
             // Set result value
             res = true;
