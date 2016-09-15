@@ -1,0 +1,194 @@
+fileFormatVersion: 2
+guid: 5fffbd863324e4f31a81a62c53273f49
+timeCreated: 1473924765
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Group1
+    100004: Group47207
+    100006: tree_leaf016
+    100008: tree_leaf017
+    100010: tree_leaf018
+    100012: tree_leaf019
+    100014: tree_leaf020
+    100016: tree_leaf021
+    100018: tree_leaf022
+    100020: tree_leaf023
+    100022: tree_leaf024
+    100024: tree_leaf025
+    100026: tree_leaf026
+    100028: tree_leaf027
+    100030: tree_leaf028
+    100032: tree_leaf029
+    100034: tree_leaf030
+    100036: tree_leaf031
+    100038: tree_leaf032
+    100040: tree_leaf033
+    100042: tree_leaf034
+    100044: tree_leaf035
+    100046: tree_leaf036
+    100048: tree_leaf037
+    400000: //RootNode
+    400002: Group1
+    400004: Group47207
+    400006: tree_leaf016
+    400008: tree_leaf017
+    400010: tree_leaf018
+    400012: tree_leaf019
+    400014: tree_leaf020
+    400016: tree_leaf021
+    400018: tree_leaf022
+    400020: tree_leaf023
+    400022: tree_leaf024
+    400024: tree_leaf025
+    400026: tree_leaf026
+    400028: tree_leaf027
+    400030: tree_leaf028
+    400032: tree_leaf029
+    400034: tree_leaf030
+    400036: tree_leaf031
+    400038: tree_leaf032
+    400040: tree_leaf033
+    400042: tree_leaf034
+    400044: tree_leaf035
+    400046: tree_leaf036
+    400048: tree_leaf037
+    2300000: Group1
+    2300002: Group47207
+    2300004: tree_leaf016
+    2300006: tree_leaf017
+    2300008: tree_leaf018
+    2300010: tree_leaf019
+    2300012: tree_leaf020
+    2300014: tree_leaf021
+    2300016: tree_leaf022
+    2300018: tree_leaf023
+    2300020: tree_leaf024
+    2300022: tree_leaf025
+    2300024: tree_leaf026
+    2300026: tree_leaf027
+    2300028: tree_leaf028
+    2300030: tree_leaf029
+    2300032: tree_leaf030
+    2300034: tree_leaf031
+    2300036: tree_leaf032
+    2300038: tree_leaf033
+    2300040: tree_leaf034
+    2300042: tree_leaf035
+    2300044: tree_leaf036
+    2300046: tree_leaf037
+    3300000: Group1
+    3300002: Group47207
+    3300004: tree_leaf016
+    3300006: tree_leaf017
+    3300008: tree_leaf018
+    3300010: tree_leaf019
+    3300012: tree_leaf020
+    3300014: tree_leaf021
+    3300016: tree_leaf022
+    3300018: tree_leaf023
+    3300020: tree_leaf024
+    3300022: tree_leaf025
+    3300024: tree_leaf026
+    3300026: tree_leaf027
+    3300028: tree_leaf028
+    3300030: tree_leaf029
+    3300032: tree_leaf030
+    3300034: tree_leaf031
+    3300036: tree_leaf032
+    3300038: tree_leaf033
+    3300040: tree_leaf034
+    3300042: tree_leaf035
+    3300044: tree_leaf036
+    3300046: tree_leaf037
+    4300000: tree_leaf034
+    4300002: tree_leaf018
+    4300004: tree_leaf017
+    4300006: tree_leaf019
+    4300008: tree_leaf021
+    4300010: tree_leaf020
+    4300012: Group47207
+    4300014: tree_leaf022
+    4300016: tree_leaf016
+    4300018: tree_leaf023
+    4300020: tree_leaf030
+    4300022: tree_leaf033
+    4300024: tree_leaf027
+    4300026: tree_leaf025
+    4300028: tree_leaf031
+    4300030: tree_leaf035
+    4300032: tree_leaf037
+    4300034: tree_leaf024
+    4300036: tree_leaf029
+    4300038: tree_leaf028
+    4300040: tree_leaf032
+    4300042: tree_leaf026
+    4300044: Group1
+    4300046: tree_leaf036
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.5
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
