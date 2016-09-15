@@ -27,7 +27,7 @@ public class CommonEvents : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Plays the sound on the object's audio source component..
+	/// Plays the sound on the object's audio source component.
 	/// </summary>
 	/// <param name="sound">The new sound</param>
 	public void PlayAudioSource() {
