@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Moves an entity according to a PathDefinition script.
@@ -87,6 +88,16 @@ public class FollowPath : MonoBehaviour {
 	/// </summary>
 	private float _linearFactor;
 
+	/// <summary>
+	/// If the path is currently moving towards a point.
+	/// </summary>
+	private bool _isMoving;
+
+	/// <summary>
+	/// Listeners registered to this component's events.
+	/// </summary>
+	private List<FollowPathListener> _listeners = new List<FollowPathListener>();
+
 	#endregion
 
 	#region Costants
@@ -99,6 +110,32 @@ public class FollowPath : MonoBehaviour {
 	#endregion
 
 	#region Methods
+
+	/// <summary>
+	/// Subscribes a listener to the components's events.
+	/// Returns false if the listener was already subscribed.
+	/// </summary>
+	/// <param name="listener">The listener to subscribe</param>
+	/// <returns>If the listener was successfully subscribed</returns>
+	public bool AddListener(FollowPathListener listener) {
+		if (_listeners.Contains(listener))
+			return false;
+		_listeners.Add(listener);
+		return true;
+	}
+
+	/// <summary>
+	/// Unsubscribes a listener to the components's events.
+	/// Returns false if the listener wasn't subscribed yet.
+	/// </summary>
+	/// <param name="listener">The listener to unsubscribe</param>
+	/// <returns>If the listener was successfully unsubscribed</returns>
+	public bool RemoveListener(FollowPathListener listener) {
+		if (!_listeners.Contains(listener))
+			return false;
+		_listeners.Remove(listener);
+		return true;
+	}
 
 	/// <summary>
 	/// Unity's method called at the first frame this entity is enabled.
@@ -135,19 +172,43 @@ public class FollowPath : MonoBehaviour {
 			factor = Mathf.SmoothStep(0, 1, _linearFactor);
 
 		// Moves the entity
+		Vector3 lastPosition = _transform.position;
 		_transform.position = Vector3.Lerp(_lastPosition, path.Current.position, factor);
+		Vector3 velocity = (_transform.position - lastPosition) / Time.deltaTime;
 
 		// Rotates the entity
 		if (useOrientation)
 			_transform.rotation = Quaternion.Lerp(_lastRotation, path.Current.rotation, factor);
 
+		// Checks if the destination has been reached
+		bool wasMoving = _isMoving;
+		// Checks if the entity is close enough to the target point
+		float squaredDistance = (_transform.position - path.Current.position).sqrMagnitude;
+		// The squared distance is used becouse a multiplication is cheaper than a square root
+		_isMoving = squaredDistance >= MIN_DISTANCE_TO_CHANGE * MIN_DISTANCE_TO_CHANGE;
+
 		// Automatically changes to the next point in the path
-		if (automatic) {
-			// Checks if the entity is close enough to the target point
-			float squaredDistance = (_transform.position - path.Current.position).sqrMagnitude;
-			// The squared distance is used becouse a multiplication is cheaper than a square root
-			if (squaredDistance < MIN_DISTANCE_TO_CHANGE * MIN_DISTANCE_TO_CHANGE)
-				Next();
+		if (!_isMoving && automatic) {
+			Next();
+			_isMoving = true;
+		}
+		
+		// Calls the listeners
+		if (!_isMoving) {
+			if (wasMoving) {
+				foreach (FollowPathListener listener in _listeners)
+					listener.OnStopMoving(_transform.position);
+			}
+		}
+		else {
+			if (!wasMoving) {
+				foreach (FollowPathListener listener in _listeners)
+					listener.OnStartMoving(_transform.position, path.Current.position, velocity);
+			}
+			else {
+				foreach (FollowPathListener listener in _listeners)
+					listener.OnKeepMoving(_transform.position, path.Current.position, velocity);
+			}
 		}
 	}
 
@@ -229,6 +290,14 @@ public class FollowPath : MonoBehaviour {
     public void SetAutomatic(bool automatic) {
         this.automatic = automatic;
     }
+
+	/// <summary>
+	/// Returns if the object is moving towards a destination point.
+	/// </summary>
+	/// <returns></returns>
+	public bool IsMoving() {
+		return _isMoving;
+	}
 
     /// <summary>
 	/// Unity's method called by the editor in order to draw the gizmos.
