@@ -29,6 +29,6 @@ public class BreakBranch : MonoBehaviour {
 		breakEffect.PlayEffect(particleEffectPosition.position, particleEffectPosition.rotation);
 
 		// Sets the Rigidbody's kinematic flag
-		GetComponent<Rigidbody>().isKinematic = true;
+		GetComponent<Rigidbody>().isKinematic = false;
 	}
 }
