@@ -155,6 +155,16 @@ public class CharacterControllerCustom : MonoBehaviour {
 	/// </summary>
 	private Vector3 _activeLocalPlatformPoint;
 
+	/// <summary>
+	/// Rotation on the global coordinates of the entity while standing on a platform.
+	/// </summary>
+	private Quaternion _activeGlobalPlatformRotation;
+
+	/// <summary>
+	/// Rotation of the entity relative to the platform it's standing on.
+	/// </summary>
+	private Quaternion _activeLocalPlatformRotation;
+
 	#endregion
 
 	#region Methods
@@ -682,6 +692,14 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 			// Saves the velocity of the platform
 			State.PlatformVelocity = moveDistance / Time.deltaTime;
+			
+			// Support for rotating platforms
+			Quaternion newGlobalPlatformRotation = State.GroundedObject.transform.rotation * _activeLocalPlatformRotation;
+			Quaternion rotationDiff = newGlobalPlatformRotation * Quaternion.Inverse(_activeGlobalPlatformRotation);
+
+			// Prevents rotation of the local up vector
+			rotationDiff = Quaternion.FromToRotation(rotationDiff * transform.up, transform.up) * rotationDiff;
+			transform.rotation = rotationDiff * transform.rotation;
 		}
 		else {
 			// Resets the velocity of the platform
@@ -730,6 +748,10 @@ public class CharacterControllerCustom : MonoBehaviour {
 		if (State.GroundedObject != null) {
 			_activeGlobalPlatformPoint = _transform.position;
 			_activeLocalPlatformPoint = State.GroundedObject.transform.InverseTransformPoint(_transform.position);
+			
+			// Support for moving platform rotation
+			_activeGlobalPlatformRotation = transform.rotation;
+			_activeLocalPlatformRotation = Quaternion.Inverse(State.GroundedObject.transform.rotation) * transform.rotation;
 		}
 	}
 
