@@ -96,7 +96,7 @@ public class WindTube : MonoBehaviour {
 	/// Amount of movement friction the character will suffer while
 	/// floating on the wind tube.
 	/// </summary>
-	[Range(0, 1)]
+	[Range(0, 5)]
 	public float characterFrictionFactor = 1.0f;
 
 	/// <summary>

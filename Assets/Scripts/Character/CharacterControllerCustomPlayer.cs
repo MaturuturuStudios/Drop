@@ -151,7 +151,7 @@ public class CharacterControllerCustomPlayer : MonoBehaviour {
 			Vector3 movementForce = Vector3.Project(_controller.Velocity, CurrentWindTube.transform.right);
 
 			// Adds a friction to the velocity
-			movementForce *= (1 - CurrentWindTube.characterFrictionFactor * windTubeFriction);
+			movementForce *= Mathf.Max(0, 1 - CurrentWindTube.characterFrictionFactor * windTubeFriction);
 
 			// Adds the input force
 			Vector3 inputForce = new Vector3(HorizontalInput, VerticalInput, 0);
