@@ -36,7 +36,7 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <summary>
     /// the direction to fade: in = -1 or out = 1
     /// </summary>
-    private bool _isFadeIn = true;
+    private bool _isFadeIn = false;
     /// <summary>
     /// Dark background gameobject;
     /// </summary>
@@ -100,26 +100,29 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <returns>the duration of complete fading</returns>
     public float BeginFade(bool isFadeIn, float desiredFadeDuration = -1) {
 
-        // Sets direction
-        _isFadeIn = isFadeIn;
+        // Control fading only once
+        if (_isFadeIn != isFadeIn) {
 
-        // Reset alpha
-        _alpha = 0;
+            // Sets direction
+            _isFadeIn = isFadeIn;
 
-        // If there isn't any fadeBackround create it
-        if (!_fadeBackround)
-            _fadeBackround = GameObject.Instantiate(fadeOutTexture);
+            // Reset alpha
+            _alpha = 0;
 
-        // Set object a ui element
-        _fadeBackround.transform.SetParent(_parentUI.transform, false);
+            // If there isn't any fadeBackround create it
+            if (!_fadeBackround)
+                _fadeBackround = GameObject.Instantiate(fadeOutTexture);
 
-        // Put in the back of the animations
-        _fadeBackround.transform.SetAsLastSibling();
+            // Set object a ui element
+            _fadeBackround.transform.SetParent(_parentUI.transform, false);
 
-        // Sets the desired duration
-        if (desiredFadeDuration != -1)
-            fadeDuration = desiredFadeDuration;
+            // Put in the back of the animations
+            _fadeBackround.transform.SetAsLastSibling();
 
+            // Sets the desired duration
+            if (desiredFadeDuration != -1)
+                fadeDuration = desiredFadeDuration;
+        }
         return (desiredFadeDuration);
     }
 

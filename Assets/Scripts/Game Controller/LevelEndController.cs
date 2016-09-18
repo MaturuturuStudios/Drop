@@ -120,8 +120,12 @@ public class LevelEndController : MonoBehaviour {
     /// Activated when player enters on the trigger
     /// </summary>
     public void LevelEnd(){
+
         // Stops input
         _gci.StopInput(true, timeToSkip);
+
+        // Disable start button
+        _menuNavigator.SetPauseAvailable(false);
 
         //make sure is stored the first level is completed
         PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
