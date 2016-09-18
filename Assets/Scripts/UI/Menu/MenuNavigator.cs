@@ -131,6 +131,10 @@ public class MenuNavigator : MonoBehaviour {
     /// The scene to load con new/continue game
     /// </summary>
     private Scene newContinueGame;
+    /// <summary>
+    /// Handles if the pause button is available
+    /// </summary>
+    private bool _pauseAvailable = true;
 
 
     /// <summary>
@@ -359,14 +363,16 @@ public class MenuNavigator : MonoBehaviour {
     /// </summary>
     /// <param name="paused">true to pause the game and show the menu</param>
     public void PauseGame(bool paused) {
-        if (paused) {
-            Time.timeScale = 0;
-            OpenMenu(MenuNavigator.Menu.PAUSE_MENU);
-        } else {
-            waitFrame = true;
-            StartCoroutine(WaitFrame());
-            CloseMenu();
-            Time.timeScale = 1;
+        if (_pauseAvailable) { 
+            if (paused) {
+                Time.timeScale = 0;
+                OpenMenu(MenuNavigator.Menu.PAUSE_MENU);
+            } else {
+                waitFrame = true;
+                StartCoroutine(WaitFrame());
+                CloseMenu();
+                Time.timeScale = 1;
+            }
         }
     }
 
@@ -458,6 +464,13 @@ public class MenuNavigator : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Handles if the Start button works
+    /// </summary>
+    /// <param name="available">New state for _pauseAvailable</param>
+    public void SetPauseAvailable(bool available) {
+        _pauseAvailable = available;
+    }
 
     
     #endregion
