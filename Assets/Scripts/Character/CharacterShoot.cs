@@ -144,20 +144,17 @@ public class CharacterShoot : MonoBehaviour {
         float actualSize = size.GetSize();
 
         //if can be in shoot mode, go ahead
-        if (ccc.State.IsGrounded == true && (actualSize > 1)
-            && _independentControl.CountControlledDrops() < 4) {
+        if (ccc.State.IsGrounded == true && _independentControl.CountControlledDrops() < 4) {
 			if (actualSize <= 1) {
-				unableIndicator.Show();
-				return;
-			}
-
-            //if not in shoot mode, go
-            if (!_shootMode) {
-                StartShootMode();
-
+                unableIndicator.Show();
+            }
+            else {
+                //if not in shoot mode, go
+                if (!_shootMode)
+                    StartShootMode();
                 //if already in shoot mode and not during an animation, quit it
-            } else if (_shootMode && !_shootTrajectory.IsInAnimation()) {
-                _shootTrajectory.EndShootMode();
+                else if (_shootMode && !_shootTrajectory.IsInAnimation())
+                    _shootTrajectory.EndShootMode();
             }
         }
     }
