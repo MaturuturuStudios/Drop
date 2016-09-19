@@ -137,7 +137,7 @@ public class TriggerArea : MonoBehaviour {
 	/// <summary>
 	/// Flag to check if the currently controlled character is in the area.
 	/// </summary>
-	private bool _currentCharacterInArea = false;
+	private Collider _currentCharacterInArea = null;
 
 	#endregion
 
@@ -189,20 +189,26 @@ public class TriggerArea : MonoBehaviour {
 
 		// Removes any destroyed collider, simulating an exit
 		Collider[] destroyedColliders = _stayingColliders.Where(e => e == null).ToArray();
-		foreach (Collider collider in destroyedColliders)
-			OnTriggerExit(collider);
+		foreach (Collider collider in destroyedColliders) {
+            if (colliderFilter != ColliderFilter.OnlyControlledCharacter || collider == _currentCharacterInArea)
+                OnTriggerExit(collider);
+            else
+                _stayingColliders.Remove(collider);
+        }
 
-		// Checks if the currently controlled character is on the area
-		if (_stayingColliders.Where(e => _gameControllerIndependentControl.currentCharacter == e.gameObject).Count() != 0) {
-			if (!_currentCharacterInArea) {
-				_currentCharacterInArea = true;
+        // Checks if the currently controlled character is on the area
+        IEnumerable<Collider> currentCharacters = _stayingColliders.Where(e => _gameControllerIndependentControl.currentCharacter == e.gameObject);
+        if (currentCharacters.Count() != 0) {
+            Collider currentCharacter = currentCharacters.First();
+            if (_currentCharacterInArea != currentCharacter) {
+				_currentCharacterInArea = currentCharacter;
 				if (triggerMode == TriggerMode.Sensor && colliderFilter == ColliderFilter.OnlyControlledCharacter)
 					DoEnter();
 			}
 		}
 		else {
-			if (_currentCharacterInArea) {
-				_currentCharacterInArea = false;
+			if (_currentCharacterInArea != null) {
+				_currentCharacterInArea = null;
 				if (triggerMode == TriggerMode.Sensor && colliderFilter == ColliderFilter.OnlyControlledCharacter)
 					DoExit();
 			}
@@ -220,12 +226,8 @@ public class TriggerArea : MonoBehaviour {
 		if (!enabled)
 			return;
 
-		// If the collider is the currently controlled character, sets the flag
-		if (other.gameObject == _gameControllerIndependentControl.currentCharacter)
-			_currentCharacterInArea = true;
-
-		// Checks if it's a valid collider
-		if (!IsValidCollider(other))
+        // Checks if it's a valid collider
+        if (!IsValidCollider(other))
 			return;
 
 		// Adds the collider to the list
@@ -273,10 +275,6 @@ public class TriggerArea : MonoBehaviour {
 	void OnTriggerExit(Collider other) {
 		if (!enabled)
 			return;
-
-		// If the collider is the currently controlled character, sets the flag
-		if (other != null && other.gameObject == _gameControllerIndependentControl.currentCharacter)
-			_currentCharacterInArea = false;
 
 		// Checks if it's a valid collider
 		if (other != null && !IsValidCollider(other))
@@ -342,11 +340,12 @@ public class TriggerArea : MonoBehaviour {
 		if (colliderFilter == ColliderFilter.AnyObject)
 			return true;
 
-		if (other.CompareTag(Tags.Player))
-			if (colliderFilter == ColliderFilter.OnlyControlledCharacter)
-				return _gameControllerIndependentControl.currentCharacter == other.gameObject;
-			else
-				return true;
+		if (other.CompareTag(Tags.Player)) {
+            if (colliderFilter == ColliderFilter.OnlyControlledCharacter)
+                return _gameControllerIndependentControl.currentCharacter == other.gameObject;
+            else
+                return true;
+        }
 
 		return false;
 	}
