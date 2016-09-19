@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 50d57fda6f8113a499231dd10ba8869f
-timeCreated: 1467208460
+guid: 851b902f2224db945a455d13984df32d
+timeCreated: 1474248418
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -39,9 +39,9 @@ ModelImporter:
     400030: tallo1
     4300000: tallo1
     4300002: leaf4
-    7400000: Grow
-    7400002: Idle Small
-    7400004: Idle Big
+    7400000: Grow_Flat
+    7400002: Idle_Small_Flat
+    7400004: Idle_Big_Flat
     9500000: //RootNode
     13700000: leaf4
     13700002: tallo1
@@ -67,8 +67,8 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Grow
-      takeName: Gro_P_Animation
+      name: Grow_Flat
+      takeName: Gro_P_Animation2
       firstFrame: 1
       lastFrame: 51
       wrapMode: 0
@@ -127,8 +127,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 1
     - serializedVersion: 16
-      name: Idle Small
-      takeName: Gro_P_Animation
+      name: Idle_Small_Flat
+      takeName: Gro_P_Animation2
       firstFrame: 1
       lastFrame: 2
       wrapMode: 0
@@ -187,8 +187,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 1
     - serializedVersion: 16
-      name: Idle Big
-      takeName: Gro_P_Animation
+      name: Idle_Big_Flat
+      takeName: Gro_P_Animation2
       firstFrame: 50
       lastFrame: 51
       wrapMode: 0
