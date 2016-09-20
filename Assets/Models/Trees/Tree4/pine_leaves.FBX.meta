@@ -6,10 +6,40 @@ ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
+    100002: pine_l1
+    100004: pine_l2
+    100006: pine_l3
+    100008: pine_r1
+    100010: pine_r2
+    100012: pine_r3
     400000: //RootNode
+    400002: pine_l1
+    400004: pine_l2
+    400006: pine_l3
+    400008: pine_r1
+    400010: pine_r2
+    400012: pine_r3
     2300000: //RootNode
+    2300002: pine_l1
+    2300004: pine_l2
+    2300006: pine_l3
+    2300008: pine_r1
+    2300010: pine_r2
+    2300012: pine_r3
     3300000: //RootNode
+    3300002: pine_l1
+    3300004: pine_l2
+    3300006: pine_l3
+    3300008: pine_r1
+    3300010: pine_r2
+    3300012: pine_r3
     4300000: pine_leaves
+    4300002: pine_r2
+    4300004: pine_r3
+    4300006: pine_r1
+    4300008: pine_l1
+    4300010: pine_l3
+    4300012: pine_l2
     9500000: //RootNode
   materials:
     importMaterials: 1
