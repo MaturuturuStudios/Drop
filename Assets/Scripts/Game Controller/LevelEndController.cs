@@ -60,15 +60,19 @@ public class LevelEndController : MonoBehaviour {
     /// <summary>
     /// The next scene to load
     /// </summary>
-    private Scene nextScene;
+	private Scene _nextScene;
     /// <summary>
     /// The next level to load
     /// </summary>
-    private LevelInfo nextLevel;
+	private LevelInfo _nextLevel;
+	/// <summary>
+	/// The actual level.
+	/// </summary>
+	private LevelInfo _actualLevel;
     /// <summary>
     /// the data to ask for unlock the level
     /// </summary>
-    private GameControllerData data;
+	private GameControllerData _data;
     #endregion
 
     #region Methods
@@ -86,7 +90,7 @@ public class LevelEndController : MonoBehaviour {
 
         //Get data game and store the next level
         if(Application.isPlaying)
-            data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
+            _data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
        
     }
 
@@ -100,17 +104,19 @@ public class LevelEndController : MonoBehaviour {
         // Get reference to level transition controller
         _levelTransitionController = GetComponent<LevelTransitionController>();
 
-        if (data == null) {
-            nextScene = new Scene();
+        if (_data == null) {
+            _nextScene = new Scene();
             Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
-            nextScene.name = "StartScene";
+            _nextScene.name = "StartScene";
+
 
         } else {
             string nameScene = SceneManager.GetActiveScene().name;
-            nextScene = data.GetNextScene(nameScene, out nextLevel);
+            _nextScene = _data.GetNextScene(nameScene, out _nextLevel);
+			_actualLevel = _data.GetInfoScene(nameScene);
 
-            if (nextScene==null) {
-                nextScene = data.GetDefaultScene();
+            if (_nextScene==null) {
+                _nextScene = _data.GetDefaultScene();
             }
         }
     }
@@ -130,16 +136,19 @@ public class LevelEndController : MonoBehaviour {
         //make sure is stored the first level is completed
         PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
         PlayerPrefs.Save();
+		
+		//store the level completed and its score
+		int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
+		_data.SetLevelScore (_actualLevel, size);
 
         //unlock the level
-        data.UnlockLevel(nextLevel);
+        _data.UnlockLevel(_nextLevel);
 
         // Load scene async
-        _menuNavigator.ChangeScene(nextScene.name, maxTime);
+        _menuNavigator.ChangeScene(_nextScene.name, maxTime);
 
         // Start transition animation
         if (_levelTransitionController != null) {
-            int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
             _levelTransitionController.BeginLevelTransition(size);
             StartCoroutine(_levelTransitionController.WaitMinTimeToSkip(timeToSkip));
         }

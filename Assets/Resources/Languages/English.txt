@@ -88,6 +88,8 @@ No=No
 ConfirmQuit=Confirm quit?
 LevelComplete=Level complete!
 BackMenuOptions=Back
+World=World
+Level=Level
 
 #Level transition strings
 MaxDropsExceded=You have solved the level with more drops than expected, please tell us how at info@maturuturustudios.com

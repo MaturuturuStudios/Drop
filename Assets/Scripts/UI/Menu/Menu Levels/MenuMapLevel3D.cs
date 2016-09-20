@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class MenuMapLevel3D : MonoBehaviour {
     #region Public Attributes
@@ -15,17 +16,13 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     public Camera cameraCanvas;
     /// <summary>
-    /// The limits of the camera
-    /// </summary>
-    public BoxCollider2D limits;
-    /// <summary>
     /// Normal distance of the camera in map level
     /// </summary>
-    public float normalDistance=-300;
+    public float normalDistance=-3;
     /// <summary>
     /// Distance of the camera must reach (and come back to normal) when zooming
     /// </summary>
-    public float zoomOutDistance=-400;
+    public float zoomOutDistance=-3;
     /// <summary>
     /// Time of zooming
     /// </summary>
@@ -38,27 +35,6 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// Time to wait until the level start
     /// </summary>
     public float waitBeforeStartLevel = 1f;
-    /// <summary>
-    /// Game object containing the map image and the worlds
-    /// </summary>
-    public SpriteRenderer imageMap;
-   
-    /// <summary>
-    /// The border of a normal level
-    /// </summary>
-    public Sprite ringBaseLevel;
-    /// <summary>
-    /// The border of the last level
-    /// </summary>
-    public Sprite ringLastLevel;
-    /// <summary>
-    /// Color for the non available levels
-    /// </summary>
-    public Color nonAvailableLevelColor;
-    /// <summary>
-    /// Color for the locked levels
-    /// </summary>
-    public Color lockedLevelColor;
     /// <summary>
     /// Time to reach the target point
     /// </summary>
@@ -74,6 +50,10 @@ public class MenuMapLevel3D : MonoBehaviour {
     #endregion
 
     #region Private Attributes
+    /// <summary>
+	/// Control if the trigger is pressed for only call change drop one time
+	/// </summary>
+	private bool _triggerPressed = false;
     /// <summary>
     /// Data reference
     /// </summary>
@@ -95,13 +75,13 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// </summary>
     private bool[] _camerasPreviousState;
     /// <summary>
-	/// The levels' panels (canvas).
-	/// </summary>
-	private CanvasGroup[] _levelsCanvas;
-    /// <summary>
     /// List of all levels
     /// </summary>
     private List<GameObject[]> _levels;
+    /// <summary>
+    /// List of all levels
+    /// </summary>
+    private List<Indicator[]> _levelsindicator;
     /// <summary>
     /// Attribute to know if we have to select the level
     /// </summary>
@@ -126,23 +106,56 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// Listeners of map selection
     /// </summary>
     private List<MapLevelListener> _listeners = new List<MapLevelListener>();
+	/// <summary>
+	/// The title world.
+	/// </summary>
+    private TextMesh _titleWorld;
+	/// <summary>
+	/// The fading out enumerator
+	/// </summary>
+	private IEnumerator fadingOut = null;
+	/// <summary>
+	/// The previous fading out world
+	/// </summary>
+	private int previousFadingOut=-1;
+	/// <summary>
+	/// The fading in enumerator
+	/// </summary>
+	private IEnumerator fadingIn=null;
+	/// <summary>
+	/// The double previous fading in enumerator
+	/// </summary>
+	private IEnumerator doubleFadingIn=null;
+	/// <summary>
+	/// The previous fading in world
+	/// </summary>
+	private int previousFadingIn=-1;
+	/// <summary>
+	/// The previous double fading in world
+	/// </summary>
+	private int previousDoubleFadingIn = -1;
     #endregion
 
     #region Private class
     /// <summary>
     /// On select level class to react a events.
     /// </summary>
-    private class OnSelectLevel : MonoBehaviour, ISelectHandler {
+    private class OnSelectLevel : MonoBehaviour, ISelectHandler, IDeselectHandler {
         /// <summary>
         /// World and level info
         /// </summary>
         public LevelInfo level;
+		/// <summary>
+		/// To select.
+		/// </summary>
+		public bool toSelect=true;
         /// <summary>
         /// Script to call to
         /// </summary>
         public MenuMapLevel3D delegateAction;
 
         public void OnSelect(BaseEventData eventData) {
+			if (!toSelect) return;
             StartCoroutine(Delegate(eventData.selectedObject));
         }
 
@@ -159,7 +172,14 @@ public class MenuMapLevel3D : MonoBehaviour {
 
             if (EventSystem.current.currentSelectedGameObject == selected) {
                 delegateAction.SelectLevel(level);
+				//start animation
+				GetComponentInChildren<Indicator>().SetState(StateIndicator.SELECTED);
             }
+        }
+
+        void IDeselectHandler.OnDeselect(BaseEventData eventData) {
+			if (!toSelect) return;
+            GetComponentInChildren<Indicator>().SetState(StateIndicator.NORMAL);
         }
     }
     #endregion
@@ -209,30 +229,38 @@ public class MenuMapLevel3D : MonoBehaviour {
         _data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
 
         _levels = new List<GameObject[]>();
-        _levelsCanvas = new CanvasGroup[worlds.Length];
- 
+        _levelsindicator = new List<Indicator[]>();
 
-        ConfigureWorlds();
+        _titleWorld = cameraCanvas.GetComponentInChildren<TextMesh>();
+        MeshRenderer titleRender = cameraCanvas.GetComponentInChildren<MeshRenderer>();
+        titleRender.sortingOrder = 100;
 
         _transformCamera = cameraCanvas.GetComponent<Transform>();
 
         //show the world but not focus
         _actualLevelInfo.world = -1;
         _actualLevelInfo.level = -1;
-        
+    }
+
+    public void Start() {
+        ConfigureWorlds();
+
         GameObject first = _levels[0][0];
-        MeshRenderer renderer = first.GetComponentInChildren<MeshRenderer>(true);
+
+        GameObject textGameobject = first.GetComponentInChildren<TextMesh>(true).gameObject;
+        MeshRenderer renderer = textGameobject.GetComponent<MeshRenderer>();
         Color color = renderer.material.color;
         color.a = 1;
 
-        for(int i=0; i<_levels[0].Length; i++) {
-            GameObject aLevel = _levels[0][i];
-            renderer = aLevel.GetComponentInChildren<MeshRenderer>(true);
-            renderer.material.color = color;
+        //for every level
+        for (int i = 0; i < _levels[0].Length; i++) {
+            //get all text of the level
+            TextMesh[] text = _levels[0][i].GetComponentsInChildren<TextMesh>(true);
+            for (int j = 0; j < text.Length; j++) {
+                renderer = text[j].GetComponent<MeshRenderer>();
+                renderer.material.color = color;
+            }
         }
-        _levelsCanvas[0].alpha = 1;
-
-
 
         _actualLevelInfo.level = 0;
         _actualLevelInfo.world = 0;
@@ -268,6 +296,9 @@ public class MenuMapLevel3D : MonoBehaviour {
             || Input.GetButtonDown(Axis.Start)) {
             _menuNavigator.ComeBack();
         }
+
+        //Change worlds with LR
+        ChangeWorldInput();
 
         CalculatePosition();
     }
@@ -312,9 +343,13 @@ public class MenuMapLevel3D : MonoBehaviour {
         //if has a change of world, zoom in and out
         if (_actualLevelInfo.world != info.world) {
             //fade out the previous world
-            StartCoroutine(FadeOut(_levelsCanvas[_actualLevelInfo.world], _actualLevelInfo.world));
+            FadeOut(_actualLevelInfo.world);
 
-            StartCoroutine(Zoom());
+            if(normalDistance!=zoomOutDistance)
+                StartCoroutine(Zoom());
+
+            //change title world
+            _titleWorld.text = LanguageManager.Instance.GetText("World") + " " + (info.world + 1);
 
             foreach (MapLevelListener listener in _listeners)
                 listener.OnChangeWorld(_actualLevelInfo.world, info.world);
@@ -343,6 +378,112 @@ public class MenuMapLevel3D : MonoBehaviour {
     #endregion
 
     #region Private Methods
+    /// <summary>
+    /// Change the world if input is made
+    /// </summary>
+    private void ChangeWorldInput() {
+        // Control that triggers are pressed only one time
+        if (!_triggerPressed && Input.GetAxisRaw(Axis.SelectDrop) > 0) {
+            FocusLevelNextWorld();
+            _triggerPressed = true;
+
+        } else if (!_triggerPressed && Input.GetAxisRaw(Axis.SelectDrop) < 0) {
+            FocusLevelPreviousWorld();
+            _triggerPressed = true;
+
+        } else if (Input.GetAxisRaw(Axis.SelectDrop) == 0)
+            _triggerPressed = false;
+    }
+
+    /// <summary>
+    /// Look for the next world, with preference of keeping the same level
+    /// </summary>
+    private void FocusLevelPreviousWorld() {
+        LevelInfo next = _actualLevelInfo;
+        next.world -= 1;
+
+        GameControllerData data = GameControllerData.control;
+        bool found = false;
+        while (!found) {
+            //if go out of limits, out of method
+            if (next.world < 0) return;
+
+            //check previous levels
+            while (next.level >= 0 && !found) {
+                //is unlocked?
+                if (data.IsUnlockedlevel(next)) {
+                    //select it
+                    FocusLevel(next);
+                    found = true;
+                }
+                //previous level...
+                next.level--;
+            }
+
+            //no? check next levels of world
+            while (next.level < GetNumberLevels(next.world) && !found) {
+                //is unlocked?
+                if (data.IsUnlockedlevel(next)) {
+                    //select it
+                    FocusLevel(next);
+                    found = true;
+                }
+                //next level...
+                next.level++;
+            }
+
+            //nothing? try with previous world
+            next.world--;
+            //reset level
+            next.level = _actualLevelInfo.level;
+        }
+    }
+
+    /// <summary>
+    /// Look for the previous world, with preference of keeping the same level
+    /// </summary>
+    private void FocusLevelNextWorld() {
+        LevelInfo next = _actualLevelInfo;
+        next.world += 1;
+        
+        GameControllerData data = GameControllerData.control;
+        bool found = false;
+        while (!found) {
+            //if go out of limits, out of method
+            if (next.world >= worlds.Length) return;
+
+            //check previous levels
+            while (next.level >= 0 && !found) {
+                //is unlocked?
+                if (data.IsUnlockedlevel(next)) {
+                    //select it
+                    FocusLevel(next);
+                    found = true;
+                }
+                //previous level...
+                next.level--;
+            }
+
+            //no? check next levels of world
+            next.level = _actualLevelInfo.level + 1;
+            while (next.level < GetNumberLevels(next.world) && !found) {
+                //is unlocked?
+                if (data.IsUnlockedlevel(next)) {
+                    //select it
+                    FocusLevel(next);
+                    found = true;
+                }
+                //next level...
+                next.level++;
+            }
+
+            //nothing? try with next world
+            next.world++;
+            //reset level
+            next.level = _actualLevelInfo.level;
+        }
+    }
+
     /// <summary>
     /// Calculate the position of the camera and update it
     /// </summary>
@@ -390,6 +531,7 @@ public class MenuMapLevel3D : MonoBehaviour {
         } else if(_cameras!=null){
             //restore status cameras
             for (int i = 0; i < _cameras.Length; i++) {
+				if (_cameras [i] == null) continue;
                 _cameras[i].gameObject.SetActive(_camerasPreviousState[i]);
                 _cameras[i].enabled = true;
             }
@@ -423,10 +565,10 @@ public class MenuMapLevel3D : MonoBehaviour {
             || actual.level >= _levels[actual.world].Length || previous.level >= _levels[previous.world].Length) return;
 
         //quit the ring to previous level
-        _levels[previous.world][previous.level].GetComponentInChildren<SpriteRenderer>().sprite = ringBaseLevel;
+		_levels[previous.world][previous.level].GetComponentInChildren<Indicator>().setLastUnlockedLevel(false);
 
         //put the ring to the new level
-        _levels[actual.world][actual.level].GetComponentInChildren<SpriteRenderer>().sprite = ringLastLevel;
+		_levels[actual.world][actual.level].GetComponentInChildren<Indicator>().setLastUnlockedLevel(true);
     }
 
     /// <summary>
@@ -438,7 +580,7 @@ public class MenuMapLevel3D : MonoBehaviour {
         if (_actualLevelInfo.world == world) return;
 
         //fade in the selected world
-        StartCoroutine(FadeIn(_levelsCanvas[world], world));
+        FadeIn(world);
     }
 
     /// <summary>
@@ -448,69 +590,75 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// <param name="hidden">true if hidde the text false otherwise</param>
     private IEnumerator HiddeText(int world, bool hidden) {
         if (world >= 0) {
-            float alpha = (hidden) ? 0:1;
+            float alpha = (hidden) ? 0 : 1;
             bool done = false;
             do {
                 GameObject first = _levels[world][0];
-                MeshRenderer renderer = first.GetComponentInChildren<MeshRenderer>(true);
-                Color color = renderer.material.color;
-                color.a = Mathf.MoveTowards(color.a, alpha, Time.unscaledDeltaTime * speedFading);
+                TextMesh[] text = first.GetComponentsInChildren<TextMesh>(true);
+                Color color = Color.white;
+                for (int j = 0; j < text.Length; j++) {
+                    MeshRenderer renderer = text[j].GetComponent<MeshRenderer>();
+                    color = renderer.material.color;
+                    color.a = Mathf.MoveTowards(color.a, alpha, Time.unscaledDeltaTime * speedFading);
 
-                if (Mathf.Abs(color.a - alpha) < 0.01) done = true;
+                    if (Mathf.Abs(color.a - alpha) < 0.01) done = true;
+                }
 
+                //for every level...
                 foreach (GameObject aLevel in _levels[world]) {
-                    renderer = aLevel.GetComponentInChildren<MeshRenderer>(true);
-                    renderer.material.color = color;
+                    text = aLevel.GetComponentsInChildren<TextMesh>(true);
+                    for (int j = 0; j < text.Length; j++) {
+                        MeshRenderer renderer = text[j].GetComponent<MeshRenderer>();
+                        renderer.material.color = color;
+                    }
                 }
                 yield return null;
             } while (!done);
         }
     }
-
+		
     /// <summary>
     /// Fade int a canvas group
     /// </summary>
     /// <param name="canvas"></param>
-    private IEnumerator FadeIn(CanvasGroup canvas, int fadingInWorld) {
-        if (canvas != null) {
-            StartCoroutine(HiddeText(fadingInWorld, false));
-
-            while (canvas.alpha < 1) {
-                //fading...
-                canvas.alpha = Mathf.MoveTowards(canvas.alpha, 1, Time.unscaledDeltaTime * speedFading);
-                yield return null;
-            }
-        }
+    private void FadeIn(int fadingInWorld) {
+		previousDoubleFadingIn = previousFadingIn;
+		previousFadingIn = fadingInWorld;
+		//stop if some is fading in!
+		if(previousFadingOut==fadingInWorld){
+			StopCoroutine(fadingOut); 
+			previousFadingOut = -1;
+		}
+		doubleFadingIn = fadingIn;
+		fadingIn = HiddeText (fadingInWorld, false);
+		StartCoroutine(fadingIn);
     }
+
 
     /// <summary>
     /// Fade out a canvas group
     /// </summary>
     /// <param name="canvas"></param>
-    private IEnumerator FadeOut(CanvasGroup canvas, int fadingOutWorld) {
-        if (canvas != null) {
-            //hide all text
-            StartCoroutine(HiddeText(fadingOutWorld, true));
-
-            while (canvas.alpha > hiddenAlphaWorld) {
-                //fading...
-                canvas.alpha = Mathf.MoveTowards(canvas.alpha, hiddenAlphaWorld, Time.unscaledDeltaTime * speedFading);
-                yield return null;
-            }
-        }
-    }
+    private void FadeOut(int fadingOutWorld) {
+		previousFadingOut = fadingOutWorld;
+		if (previousFadingIn == fadingOutWorld) {
+			StopCoroutine (fadingIn);
+			previousFadingIn = -1;
+		}
+		if (previousDoubleFadingIn == fadingOutWorld) {
+			StopCoroutine(doubleFadingIn);
+			previousDoubleFadingIn = -1;
+		}
+		//hide all text
+		fadingOut = HiddeText(fadingOutWorld, true);
+		StartCoroutine(fadingOut);
+   }
 
     /// <summary>
     /// Configure the worlds
     /// </summary>
     private void ConfigureWorlds() {
         for (int i = 0; i < worlds.Length; i++) {
-            GameObject aWorld = worlds[i];
-
-            //get the canvas of the world
-            _levelsCanvas[i] = aWorld.GetComponent<CanvasGroup>();
-            //hide it
-            _levelsCanvas[i].alpha = hiddenAlphaWorld;
             //configure the levels of the world
             ConfigureLevels(i);
         }
@@ -528,6 +676,7 @@ public class MenuMapLevel3D : MonoBehaviour {
 
         int i = 0;
         _levels.Add(new GameObject[allLevelWorld.transform.childCount]);
+        _levelsindicator.Add(new Indicator[allLevelWorld.transform.childCount]);
 
         LevelInfo theLevel;
         theLevel.world = world;
@@ -541,35 +690,38 @@ public class MenuMapLevel3D : MonoBehaviour {
             //store it
             _levels[world][i] = child;
 
+            //get its script
+            _levelsindicator[world][i] = child.GetComponentInChildren<Indicator>();
+
             //add a script to watch selection over the level
             child.AddComponent(typeof(OnSelectLevel));
             OnSelectLevel script = child.GetComponent<OnSelectLevel>();
 
-            script.level.world= world; //which world belongs
+            script.level.world = world; //which world belongs
             script.level.level = i; //number of level
 
             //get the text and hidde it
-            MeshRenderer renderer = child.GetComponentInChildren<MeshRenderer>(true);
-            Color color = renderer.material.color;
-            color.a = 0;
-            renderer.material.color = color;
+            TextMesh[] text = child.GetComponentsInChildren<TextMesh>(true);
+            for (int j = 0; j < text.Length; j++) {
+                MeshRenderer renderer = text[j].gameObject.GetComponent<MeshRenderer>();
+                Color color = renderer.material.color;
+                color.a = 0;
+                renderer.material.color = color;
+            }
 
             //check if the level is locked (or non-available)
             if (!_data.IsUnlockedlevel(theLevel)) {
+                _levelsindicator[world][i].SetState(StateIndicator.NON_UNLOCKED);
                 Button button = child.GetComponent<Button>();
-                ColorBlock colorBlock = button.colors;
-                colorBlock.disabledColor = lockedLevelColor;
                 button.interactable = false;
-                button.colors = colorBlock;
+				script.toSelect = false;
             }
 
             //check if the level is non-available (put it grey)
             if (!_data.IsAvailableLevel(theLevel)) {
+                _levelsindicator[world][i].SetState(StateIndicator.NON_AVAILABLE);
                 Button button = child.GetComponent<Button>();
-                ColorBlock colorBlock = button.colors;
-                colorBlock.disabledColor = nonAvailableLevelColor;
                 button.interactable = false;
-                button.colors = colorBlock;
             }
 
             script.delegateAction = this; //script to delegate
@@ -581,6 +733,11 @@ public class MenuMapLevel3D : MonoBehaviour {
             sceneLevel.level = _data.GetScene(theLevel);
             sceneLevel.infoLevel = theLevel;
             sceneLevel.menuMap = this;
+
+			//Get the script to give the level asociated to this score
+			ScoreLevel levelScore=_data.GetScoreLevel(theLevel);
+			Score score = child.GetComponentInChildren<Score>();
+			score.SetScore(levelScore.max, levelScore.achieved);
 
             i++;
         }
