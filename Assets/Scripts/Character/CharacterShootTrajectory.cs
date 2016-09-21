@@ -350,8 +350,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// </summary>
     public void Update() {
         //shoot mode not available
-        if (!_inShootMode) return;
-
+        if (!_inShootMode){                      
+            return;
+        }
         if (_endScript) {
             //set the quit animation
             QuitTrajectory();

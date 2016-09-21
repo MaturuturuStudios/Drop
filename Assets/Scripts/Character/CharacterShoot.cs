@@ -68,6 +68,8 @@ public class CharacterShoot : MonoBehaviour {
 
             //quit it inmediatly
             _shootTrajectory.QuitShootMode();
+
+            this.GetComponent<CharacterShoot>().ShootModeEnded();
             ccc.Parameters = null;
 
             // Notifies the listeners
