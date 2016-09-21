@@ -6,7 +6,8 @@ public class OnSelectInvokeOptions : MonoBehaviour, ISelectHandler{
     public OptionsMenu menuOptions;
     
     public void ChangePanel() {
-        menuOptions.ChangePanel(panelToShow);
+        if(panelToShow!=null)
+            menuOptions.ChangePanel(panelToShow);
     }
 
     public void OnSelect(BaseEventData eventData) {

@@ -164,7 +164,8 @@ public class OptionsMenu : MonoBehaviour {
         //deselect the main option as a panel's option focused
         _actualMenuSelected.GetComponent<Animator>().SetBool("Setted", false);
         //hide it
-        _actualMenuSelected.GetComponent<OnSelectInvokeOptions>().panelToShow.SetActive(false);
+        GameObject panel = _actualMenuSelected.GetComponent<OnSelectInvokeOptions>().panelToShow;
+        if(panel!=null) panel.SetActive(false);
         _actualPanel.LoseFocus();
         //and set the focus to the button (not sound)
         OnSelectInvokeAudio audio = _actualMenuSelected.GetComponent<OnSelectInvokeAudio>();
