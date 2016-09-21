@@ -90,10 +90,24 @@ public class Indicator : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Do the module
+    /// </summary>
+    /// <param name="num"></param>
+    /// <param name="div"></param>
+    /// <returns></returns>
 	private float mod(float num, float div){
 		float ratio = num / div;
 		return div * (ratio - Mathf.Floor(ratio));
 	}
+
+    /// <summary>
+    /// Normalize value
+    /// </summary>
+    /// <param name="val"></param>
+    /// <param name="max"></param>
+    /// <param name="min"></param>
+    /// <returns></returns>
 	private float normalize(float val, float max, float min){
 		float range = max - min;
 		float cycle = 2 * range;

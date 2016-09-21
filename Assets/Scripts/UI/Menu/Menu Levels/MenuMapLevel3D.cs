@@ -658,89 +658,138 @@ public class MenuMapLevel3D : MonoBehaviour {
     /// Configure the worlds
     /// </summary>
     private void ConfigureWorlds() {
-        for (int i = 0; i < worlds.Length; i++) {
-            //configure the levels of the world
-            ConfigureLevels(i);
+        Button previousLevel = null;
+
+        for (int h = 0; h < worlds.Length; h++) {
+
+            int world = h;
+            GameObject allLevelWorld = worlds[world];
+
+            int i = 0;
+            _levels.Add(new GameObject[allLevelWorld.transform.childCount]);
+            _levelsindicator.Add(new Indicator[allLevelWorld.transform.childCount]);
+
+            LevelInfo theLevel;
+            theLevel.world = world;
+
+            //for each level...
+            foreach (Transform childTransform in allLevelWorld.transform) {
+                theLevel.level = i;
+
+                //get the object of the level
+                GameObject child = childTransform.gameObject;
+                //store it
+                _levels[world][i] = child;
+
+                //get its script
+                _levelsindicator[world][i] = child.GetComponentInChildren<Indicator>();
+
+                //add a script to watch selection over the level
+                child.AddComponent(typeof(OnSelectLevel));
+                OnSelectLevel script = child.GetComponent<OnSelectLevel>();
+
+                script.level.world = world; //which world belongs
+                script.level.level = i; //number of level
+
+                //get the text and hidde it
+                TextMesh[] text = child.GetComponentsInChildren<TextMesh>(true);
+                for (int j = 0; j < text.Length; j++) {
+                    MeshRenderer renderer = text[j].gameObject.GetComponent<MeshRenderer>();
+                    Color color = renderer.material.color;
+                    color.a = 0;
+                    renderer.material.color = color;
+                }
+
+                Button button = child.GetComponent<Button>();
+                previousLevel = SetButton(previousLevel, theLevel, button, script);
+
+                SetDataLevelScript(child, theLevel);
+
+                i++;
+            }
         }
+
+        //last level has no more levels
+        if (previousLevel != null) {
+            Navigation navigation = previousLevel.navigation;
+            navigation.selectOnDown = null;
+            navigation.selectOnRight = null;
+            previousLevel.navigation = navigation;
+        }
+
         //put the special ring
         LevelInfo lastUnlocked = _data.GetLastUnlockedLevel();
         ChangeRingLevel(lastUnlocked, lastUnlocked);
     }
 
     /// <summary>
-    /// Configures the levels.
+    /// Set data to the script of the level
     /// </summary>
-    /// <param name="world">World.</param>
-    private void ConfigureLevels(int world) {
-        GameObject allLevelWorld = worlds[world];
+    /// <param name="child"></param>
+    /// <param name="theLevel"></param>
+    private void SetDataLevelScript(GameObject child, LevelInfo theLevel) {
+        //get the script to give the scene asociated to this level
+        //and few information
+        SceneLevel sceneLevel = child.GetComponent<SceneLevel>();
+        sceneLevel.waitBeforeStartLevel = waitBeforeStartLevel;
+        sceneLevel.level = _data.GetScene(theLevel);
+        sceneLevel.infoLevel = theLevel;
+        sceneLevel.menuMap = this;
 
-        int i = 0;
-        _levels.Add(new GameObject[allLevelWorld.transform.childCount]);
-        _levelsindicator.Add(new Indicator[allLevelWorld.transform.childCount]);
+        //Get the script to give the level asociated to this score
+        ScoreLevel levelScore = _data.GetScoreLevel(theLevel);
+        Score score = child.GetComponentInChildren<Score>();
+        score.SetScore(levelScore.max, levelScore.achieved);
+    }
 
-        LevelInfo theLevel;
-        theLevel.world = world;
+    /// <summary>
+    /// Set some data button
+    /// </summary>
+    /// <param name="previousLevel"></param>
+    /// <param name="theLevel"></param>
+    /// <param name="actualLevel"></param>
+    /// <param name="script"></param>
+    /// <returns></returns>
+    private Button SetButton(Button previousLevel, LevelInfo theLevel, Button actualLevel, OnSelectLevel script) {
+        int world = theLevel.world;
+        int i = theLevel.level;
 
-        //for each level...
-        foreach (Transform childTransform in allLevelWorld.transform) {
-            theLevel.level = i;
-
-            //get the object of the level
-            GameObject child = childTransform.gameObject;
-            //store it
-            _levels[world][i] = child;
-
-            //get its script
-            _levelsindicator[world][i] = child.GetComponentInChildren<Indicator>();
-
-            //add a script to watch selection over the level
-            child.AddComponent(typeof(OnSelectLevel));
-            OnSelectLevel script = child.GetComponent<OnSelectLevel>();
-
-            script.level.world = world; //which world belongs
-            script.level.level = i; //number of level
-
-            //get the text and hidde it
-            TextMesh[] text = child.GetComponentsInChildren<TextMesh>(true);
-            for (int j = 0; j < text.Length; j++) {
-                MeshRenderer renderer = text[j].gameObject.GetComponent<MeshRenderer>();
-                Color color = renderer.material.color;
-                color.a = 0;
-                renderer.material.color = color;
-            }
-
-            //check if the level is locked (or non-available)
-            if (!_data.IsUnlockedlevel(theLevel)) {
-                _levelsindicator[world][i].SetState(StateIndicator.NON_UNLOCKED);
-                Button button = child.GetComponent<Button>();
-                button.interactable = false;
-				script.toSelect = false;
-            }
-
-            //check if the level is non-available (put it grey)
-            if (!_data.IsAvailableLevel(theLevel)) {
-                _levelsindicator[world][i].SetState(StateIndicator.NON_AVAILABLE);
-                Button button = child.GetComponent<Button>();
-                button.interactable = false;
-            }
-
-            script.delegateAction = this; //script to delegate
-
-            //get the script to give the scene asociated to this level
-            //and few information
-            SceneLevel sceneLevel = child.GetComponent<SceneLevel>();
-            sceneLevel.waitBeforeStartLevel = waitBeforeStartLevel;
-            sceneLevel.level = _data.GetScene(theLevel);
-            sceneLevel.infoLevel = theLevel;
-            sceneLevel.menuMap = this;
-
-			//Get the script to give the level asociated to this score
-			ScoreLevel levelScore=_data.GetScoreLevel(theLevel);
-			Score score = child.GetComponentInChildren<Score>();
-			score.SetScore(levelScore.max, levelScore.achieved);
-
-            i++;
+        Button button = actualLevel;
+        bool availableForNavigation = true;
+        //check if the level is locked (or non-available)
+        if (!_data.IsUnlockedlevel(theLevel)) {
+            _levelsindicator[world][i].SetState(StateIndicator.NON_UNLOCKED);
+            button.interactable = false;
+            script.toSelect = false;
+            availableForNavigation = false;
         }
+
+        //check if the level is non-available (put it grey)
+        if (!_data.IsAvailableLevel(theLevel)) {
+            _levelsindicator[world][i].SetState(StateIndicator.NON_AVAILABLE);
+            button.interactable = false;
+            availableForNavigation = false;
+        }
+
+
+        //link with previous level
+        if (previousLevel != null && availableForNavigation) {
+            Navigation nav = previousLevel.navigation;
+            nav.selectOnDown = button;
+            nav.selectOnRight = button;
+            previousLevel.navigation = nav;
+
+            nav = button.navigation;
+            nav.selectOnUp = previousLevel;
+            nav.selectOnLeft = previousLevel;
+            button.navigation = nav;
+        }
+
+        if(availableForNavigation) previousLevel = button;
+
+        script.delegateAction = this; //script to delegate
+
+        return previousLevel;
     }
     
     /// <summary>
