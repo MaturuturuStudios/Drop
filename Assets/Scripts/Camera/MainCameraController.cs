@@ -348,6 +348,8 @@ public class MainCameraController : MonoBehaviour {
         // Set distance to border
         _distanceToBorder = Mathf.Tan(Camera.main.fieldOfView * Mathf.Rad2Deg) * (Mathf.Abs(_offset.z));
         _distanceToBorder *= Camera.main.aspect;
+
+        transform.position = target.transform.position + _offset;
     }
 
 
