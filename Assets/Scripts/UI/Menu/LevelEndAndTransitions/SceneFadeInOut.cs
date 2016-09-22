@@ -48,10 +48,6 @@ public class SceneFadeInOut : MonoBehaviour {
     /// <summary>
     /// parent UI object
     /// </summary>
-    //private LevelEndThanks _levelEndThanks;
-    /// <summary>
-    /// parent UI object
-    /// </summary>
     private LoadingAnim _loadingAnim;
     #endregion
 

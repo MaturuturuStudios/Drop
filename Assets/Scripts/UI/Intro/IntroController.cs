@@ -129,10 +129,9 @@ public class IntroController : MonoBehaviour {
             Input.GetButtonDown(Axis.Jump) ||
             Input.GetButtonDown(Axis.Irrigate) ||
             Input.GetButtonDown(Axis.ShootMode) ||
-            Input.GetButtonDown(Axis.Start) ||
-            (Input.anyKeyDown && Input.inputString.Length > 0)  &&
-            (_elapsedTime > logoDuration + introLockedDuration)))
-            StartCoroutine(SkipScene());
+            Input.GetButtonDown(Axis.Start)) &&
+            (_elapsedTime > logoDuration + introLockedDuration))
+                StartCoroutine(SkipScene());
 
         //if finished video
         if (startedVideo && !introMovie.isPlaying)
