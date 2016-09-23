@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <BuildData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <buildName>drop-loading-test</buildName>
-  <workPath>Build/drop-loading-test</workPath>
+  <buildName>drop-loading-test3</buildName>
+  <workPath>Build/drop-loading-test3</workPath>
   <share>false</share>
   <sharedFolderPath>../../Google Drive/WorkSpace/DropOfficial/Realeases</sharedFolderPath>
   <zipPath>D:/Program Files (x86)/GnuWin32/bin/zip.exe</zipPath>
@@ -15,5 +15,6 @@
     <string>Assets/_Scenes/StartScene.unity</string>
     <string>Assets/_Scenes/Tutorial.unity</string>
     <string>Assets/_Scenes/Level.unity</string>
+    <string>Assets/_Scenes/Tutorial (parte 2).unity</string>
   </scenes>
 </BuildData>
