@@ -304,7 +304,7 @@ public class MenuNavigator : MonoBehaviour {
     /// </summary>
     /// <param name="nameScene">The next scene</param>
     /// <param name="maxTime">Delay should wait before start the fade to the next scene</param>
-    public void ChangeScene(string nameScene, float maxTime = 3) {
+    public void ChangeScene(string nameScene, float maxTime = 0) {
         _fading.ChangeScene(nameScene, maxTime);
     }
 

@@ -149,15 +149,15 @@ public class SceneFadeInOut : MonoBehaviour {
         
         // Don't load scene untill time has expired
         op.allowSceneActivation = false;
-
-        // Show loading icon
-        StartCoroutine(_loadingAnim.PlayLoadingAnim(op));
         
         // Wait max time to skip
         yield return MenuNavigator.WaitForRealSeconds(maxTime);
 
         // Start fade animation
         BeginFade(false, fadeDuration);
+
+        // Show loading icon
+        StartCoroutine(_loadingAnim.PlayLoadingAnim(op));
 
         // Wait for the fade duration
         yield return MenuNavigator.WaitForRealSeconds(fadeDuration);

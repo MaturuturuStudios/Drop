@@ -45,6 +45,9 @@ public class LoadingAnim : MonoBehaviour {
         // Set the loading indicator part of the UI
         loadingIndicator.transform.SetParent(_parentUI.transform, false);
 
+        // Set visible on top
+        loadingIndicator.transform.SetAsLastSibling();
+
         // While progress is fewer than 0.9, it is still loading 
         while (op.progress < 0.9f) {
             yield return null;
