@@ -3,44 +3,46 @@ using System.Collections;
 
 public class Score : MonoBehaviour {
     /// <summary>
-    /// The particle effect for max score achieved
+    /// Effect to show when the level has played and achieved the max score
     /// </summary>
-    public GameObject particleMaxScoreAchieved;
+    public GameObject levelCompleted;
     /// <summary>
-    /// The instantiated particles
+    /// Effect to show when the level has played
     /// </summary>
-    private GameObject _instantiatedParticles;
+    public GameObject levelPlayed;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void Awake() {
+        levelPlayed.SetActive(false);
+        levelCompleted.SetActive(false);
+    }
 
     /// <summary>
     /// Set the score
     /// </summary>
     /// <param name="max">max score available</param>
     /// <param name="achieved">score achieved</param>
-	public void SetScore(float max, float achieved=0){
+	public void SetScore(int max, int achieved=0){
 		TextMesh text = GetComponent<TextMesh> ();
 		text.text = achieved + "/" + max;
 
-        SetParticleScore(achieved >= max);
+        SetParticleScore(achieved, max);
 	}
 
     /// <summary>
     /// Set the particles
     /// </summary>
     /// <param name="achieved"></param>
-    private void SetParticleScore(bool achieved) {
-        if (!achieved) {
-            if (_instantiatedParticles == null) return;
-            else Destroy(_instantiatedParticles);
-
+    private void SetParticleScore(int achieved, int max) {
+        if (achieved <= 0) {
+            levelPlayed.SetActive(false);
+            levelCompleted.SetActive(false);
+        }else if (achieved == max) {
+            levelCompleted.SetActive(true);
         } else {
-            _instantiatedParticles = Instantiate(particleMaxScoreAchieved);
-            Vector3 localPosition = _instantiatedParticles.transform.localPosition;
-            Quaternion localRotation = _instantiatedParticles.transform.localRotation;
-            Vector3 localScale = _instantiatedParticles.transform.localScale;
-            _instantiatedParticles.transform.parent = this.transform;
-            _instantiatedParticles.transform.localPosition = localPosition;
-            _instantiatedParticles.transform.localScale = localScale;
-            _instantiatedParticles.transform.localRotation = localRotation;
+            levelPlayed.SetActive(true);
         }
     }
 }

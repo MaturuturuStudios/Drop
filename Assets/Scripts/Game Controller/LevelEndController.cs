@@ -106,8 +106,8 @@ public class LevelEndController : MonoBehaviour {
 
         if (_data == null) {
             _nextScene = new Scene();
-            Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
-            _nextScene.name = "StartScene";
+            Debug.LogWarning("Next Scene not setted, using Menu by default, please, assign an scene");
+            _nextScene.name = "Menu";
 
 
         } else {

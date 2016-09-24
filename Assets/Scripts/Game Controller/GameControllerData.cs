@@ -59,8 +59,8 @@ public class GameControllerData : MonoBehaviour, InterfaceUnlockedLevels {
         }
 
         if (defaultScene.name == "Not" || defaultScene.name == "") {
-            Debug.LogWarning("Next Scene not setted, using StartScene by default, please, assign an scene");
-            defaultScene.name = "StartScene";
+            Debug.LogWarning("Next Scene not setted, using Menu by default, please, assign an scene");
+            defaultScene.name = "Menu";
         }
     }
 
