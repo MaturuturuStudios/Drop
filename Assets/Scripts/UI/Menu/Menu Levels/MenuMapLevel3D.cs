@@ -246,18 +246,18 @@ public class MenuMapLevel3D : MonoBehaviour {
         ConfigureWorlds();
 
         GameObject first = _levels[0][0];
-
-        GameObject textGameobject = first.GetComponentInChildren<TextMesh>(true).gameObject;
-        MeshRenderer renderer = textGameobject.GetComponent<MeshRenderer>();
-        Color color = renderer.material.color;
-        color.a = 1;
+        
+        MeshRenderer renderer;
 
         //for every level
         for (int i = 0; i < _levels[0].Length; i++) {
             //get all text of the level
             TextMesh[] text = _levels[0][i].GetComponentsInChildren<TextMesh>(true);
+            
             for (int j = 0; j < text.Length; j++) {
                 renderer = text[j].GetComponent<MeshRenderer>();
+                Color color = renderer.material.color;
+                color.a = 1;
                 renderer.material.color = color;
             }
         }
@@ -593,22 +593,20 @@ public class MenuMapLevel3D : MonoBehaviour {
             float alpha = (hidden) ? 0 : 1;
             bool done = false;
             do {
+                Color color = Color.white;
                 GameObject first = _levels[world][0];
                 TextMesh[] text = first.GetComponentsInChildren<TextMesh>(true);
-                Color color = Color.white;
-                for (int j = 0; j < text.Length; j++) {
-                    MeshRenderer renderer = text[j].GetComponent<MeshRenderer>();
-                    color = renderer.material.color;
-                    color.a = Mathf.MoveTowards(color.a, alpha, Time.unscaledDeltaTime * speedFading);
+                float alphaFinal = Mathf.MoveTowards(color.a, alpha, Time.unscaledDeltaTime * speedFading);
 
-                    if (Mathf.Abs(color.a - alpha) < 0.01) done = true;
-                }
+                if (Mathf.Abs(alphaFinal - alpha) < 0.01) done = true;
 
                 //for every level...
                 foreach (GameObject aLevel in _levels[world]) {
                     text = aLevel.GetComponentsInChildren<TextMesh>(true);
                     for (int j = 0; j < text.Length; j++) {
                         MeshRenderer renderer = text[j].GetComponent<MeshRenderer>();
+                        color = renderer.material.color;
+                        color.a = alphaFinal;
                         renderer.material.color = color;
                     }
                 }

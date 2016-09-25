@@ -61,20 +61,6 @@ public class LevelTransitionController : MonoBehaviour {
 
 
     /// <summary>
-    /// Drops required to complete the level 100%
-    /// </summary>
-    [Range(1, 5)]
-    public int maxDropsRequired = 	1;
-
-
-    /// <summary>
-    /// Drops collected in the level
-    /// </summary>
-    [Range(1, 6)]
-    public int dropsCollected = 1;
-
-
-    /// <summary>
     /// Height position of displayed drops counters
     /// </summary>
     [Range(-5f, 5f)]
@@ -163,17 +149,17 @@ public class LevelTransitionController : MonoBehaviour {
     /// This method calls the apropiate animations for the level transitions
     /// </summary>
     /// <param name="dropsGetted">Number of drops collected in game</param>
-    public void BeginLevelTransition(int dropsGetted) {
+    public void BeginLevelTransition(int dropsGetted, int maxDrops) {
 
         // Start counter animation
-        StartCoroutine(LevelTransitionAnimation(dropsGetted));
+        StartCoroutine(LevelTransitionAnimation(dropsGetted, maxDrops));
     }
 
     /// <summary>
     /// Animation that shows the number of drops collected in the level
     /// </summary>
     /// <param name="dropsGetted">Number of drops collected  in the level</param>
-    public IEnumerator LevelTransitionAnimation(int dropsGetted) {
+    public IEnumerator LevelTransitionAnimation(int dropsGetted, int maxDropsRequired) {
 
 		// Get the refenece to the temporal objects container in the scene
 		GameObject parent = GameObject.Find("Temporal Objects");

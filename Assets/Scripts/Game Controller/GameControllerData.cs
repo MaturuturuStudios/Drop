@@ -45,7 +45,7 @@ public class GameControllerData : MonoBehaviour, InterfaceUnlockedLevels {
         }
 
 		//initialize stored scores
-		scoreLevels.SetScoreLevels ();
+		scoreLevels.SetScoreLevels();
 		//initialize stored unlocked levels
         string unlocked = PlayerPrefs.GetString(PlayerDataStoreKeys.PlayerUnlockedLevels);
         //if have some data, use it over the inspector data

@@ -1,11 +1,13 @@
 fileFormatVersion: 2
 guid: 1a52ea4d0b8f7da40b597531af12e6a3
-timeCreated: 1474486816
+timeCreated: 1474753427
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
-  - particleMaxScoreAchieved: {fileID: 1000013098799782, guid: b46829e1989a2634e85e339ca68a91e7,
+  - levelCompleted: {instanceID: 0}
+  - levelPlayed: {instanceID: 0}
+  - levelCompletedColorText: {fileID: 2100000, guid: 7fde745fbcb9de54eaa74c079d105c90,
       type: 2}
   executionOrder: 0
   icon: {instanceID: 0}

@@ -10,11 +10,25 @@ public class Score : MonoBehaviour {
     /// Effect to show when the level has played
     /// </summary>
     public GameObject levelPlayed;
+    /// <summary>
+    /// Material for the text score when max is achieved
+    /// </summary>
+    public Color levelCompletedColorText;
+    /// <summary>
+    /// Original color for the text score
+    /// </summary>
+    private Color originalColor;
+    /// <summary>
+    /// reference to the material
+    /// </summary>
+    private MeshRenderer text;
 
     /// <summary>
-    /// 
+    /// TODO cambiar por material
     /// </summary>
     public void Awake() {
+        text = GetComponent<MeshRenderer>();
+        originalColor = text.material.color;
         levelPlayed.SetActive(false);
         levelCompleted.SetActive(false);
     }
@@ -39,8 +53,12 @@ public class Score : MonoBehaviour {
         if (achieved <= 0) {
             levelPlayed.SetActive(false);
             levelCompleted.SetActive(false);
-        }else if (achieved == max) {
+            text.material.color = originalColor;
+
+        } else if (achieved == max) {
+            text.material.color = levelCompletedColorText;
             levelCompleted.SetActive(true);
+
         } else {
             levelPlayed.SetActive(true);
         }

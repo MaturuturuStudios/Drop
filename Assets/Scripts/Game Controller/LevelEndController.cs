@@ -149,7 +149,9 @@ public class LevelEndController : MonoBehaviour {
 
         // Start transition animation
         if (_levelTransitionController != null) {
-            _levelTransitionController.BeginLevelTransition(size);
+            //get the max score of the level
+            ScoreLevel score = _data.GetScoreLevel(_actualLevel);
+            _levelTransitionController.BeginLevelTransition(size, score.max);
             StartCoroutine(_levelTransitionController.WaitMinTimeToSkip(timeToSkip));
         }
     }

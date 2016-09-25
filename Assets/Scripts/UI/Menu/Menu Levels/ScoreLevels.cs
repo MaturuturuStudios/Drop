@@ -82,7 +82,9 @@ public class ScoreLevels {
 	/// <param name="level">Level.</param>
 	public void SetAchievedScore(int score, LevelInfo level){
 		if (score < 0) return;
-		_achievedScoreLevels[level.world][level.level]=score;
+        int actualScore = _achievedScoreLevels[level.world][level.level];
+        if (actualScore < score) 
+            _achievedScoreLevels[level.world][level.level]=score;
 		StoreScoreLevels();
 	}
 
