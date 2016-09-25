@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 /// <summary>
 /// This class active, desactive shoot-mode and shoot a drop 
 /// </summary>
-public class CharacterShoot : MonoBehaviour {
+public class CharacterShoot : MonoBehaviour, CharacterSizeListener {
 
     #region Private Attributes
 
@@ -42,20 +43,53 @@ public class CharacterShoot : MonoBehaviour {
 	/// </summary>
 	public UnableIndicator unableIndicator;
 
-	#endregion
+    #endregion
 
-	#region Methods
+    #region Methods
+    public void OnChangeSizeStart(GameObject character, Vector3 previousScale, Vector3 nextScale) {
+        //quit it inmediatly
+        _shootTrajectory.QuitShootMode();
 
-	/// <summary>
-	/// Unity's method called when the entity is created.
-	/// Recovers the desired componentes of the entity.
-	/// </summary>
+        this.GetComponent<CharacterShoot>().ShootModeEnded();
+        
+        // Notifies the listeners
+        foreach (CharacterShootListener listener in _listeners)
+            listener.OnExitShootMode(this);
+    }
+
+    public void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale) {
+        ccc.Parameters = null;
+    }
+
+    public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
+        //quit it inmediatly
+        _shootTrajectory.QuitShootMode();
+
+        this.GetComponent<CharacterShoot>().ShootModeEnded();
+        ccc.Parameters = null;
+
+        // Notifies the listeners
+        foreach (CharacterShootListener listener in _listeners)
+            listener.OnExitShootMode(this);
+    }
+
+    /// <summary>
+    /// Unity's method called when the entity is created.
+    /// Recovers the desired componentes of the entity.
+    /// </summary>
     public void Awake() {
         ccc = GetComponent<CharacterControllerCustom>();
         _shootTrajectory = GetComponent<CharacterShootTrajectory>();
         size = GetComponent<CharacterSize>();
         _independentControl = GameObject.FindGameObjectWithTag(Tags.GameController)
                                 .GetComponent<GameControllerIndependentControl>();
+    }
+
+    /// <summary>
+    /// Add listener to size
+    /// </summary>
+    public void Start() {
+        size.AddListener(this);
     }
 
     /// <summary>
