@@ -8,6 +8,10 @@ public class OptionsInput : MonoBehaviour, SubOptionInterface {
     /// </summary>
     public Text title;
     /// <summary>
+    /// The object to be selected
+    /// </summary>
+    public GameObject firstSelected;
+    /// <summary>
     /// Key of string for gamepad
     /// </summary>
     public string keyGamepad;
@@ -60,7 +64,7 @@ public class OptionsInput : MonoBehaviour, SubOptionInterface {
             audio.passPlayAudio = true;
 
         //select the option
-        EventSystem.current.SetSelectedGameObject(choice.gameObject);
+        EventSystem.current.SetSelectedGameObject(firstSelected);
         return true;
     }
 
