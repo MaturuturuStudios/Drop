@@ -349,6 +349,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
     /// Unity's method called each frame.
     /// </summary>
     public void Update() {
+        //in pause!!
+        if (Time.deltaTime == 0) return;
+
         //shoot mode not available
         if (!_inShootMode){                      
             return;
