@@ -47,30 +47,15 @@ public class CharacterShoot : MonoBehaviour, CharacterSizeListener {
 
     #region Methods
     public void OnChangeSizeStart(GameObject character, Vector3 previousScale, Vector3 nextScale) {
-        //quit it inmediatly
-        _shootTrajectory.QuitShootMode();
-
-        this.GetComponent<CharacterShoot>().ShootModeEnded();
-        
-        // Notifies the listeners
-        foreach (CharacterShootListener listener in _listeners)
-            listener.OnExitShootMode(this);
+        EndAbruptly();
     }
 
     public void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale) {
-        ccc.Parameters = null;
+        EndAbruptly();
     }
 
     public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
-        //quit it inmediatly
-        _shootTrajectory.QuitShootMode();
-
-        this.GetComponent<CharacterShoot>().ShootModeEnded();
-        ccc.Parameters = null;
-
-        // Notifies the listeners
-        foreach (CharacterShootListener listener in _listeners)
-            listener.OnExitShootMode(this);
+        EndAbruptly();
     }
 
     /// <summary>
@@ -99,16 +84,8 @@ public class CharacterShoot : MonoBehaviour, CharacterSizeListener {
         //check if we shouldn't be in shootmode
         if (_shootMode
             && (ccc.State.IsGrounded == false || size.GetSize() == 1)) {
-
-            //quit it inmediatly
-            _shootTrajectory.QuitShootMode();
-
-            this.GetComponent<CharacterShoot>().ShootModeEnded();
+            EndAbruptly();
             ccc.Parameters = null;
-
-            // Notifies the listeners
-            foreach (CharacterShootListener listener in _listeners)
-                listener.OnExitShootMode(this);
         }
     }
 
@@ -263,6 +240,20 @@ public class CharacterShoot : MonoBehaviour, CharacterSizeListener {
             listener.OnEnterShootMode(this);
     }
 
+    /// <summary>
+    /// End abruptly the shoot mode
+    /// </summary>
+    private void EndAbruptly() {
+        if (!_shootMode) return;
+        //quit it inmediatly
+        _shootTrajectory.QuitShootMode();
+
+        ShootModeEnded();
+
+        // Notifies the listeners
+        foreach (CharacterShootListener listener in _listeners)
+            listener.OnExitShootMode(this);
+    }
 
     #endregion
 }
