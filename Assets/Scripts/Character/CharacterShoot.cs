@@ -85,7 +85,6 @@ public class CharacterShoot : MonoBehaviour, CharacterSizeListener {
         if (_shootMode
             && (ccc.State.IsGrounded == false || size.GetSize() == 1)) {
             EndAbruptly();
-            ccc.Parameters = null;
         }
     }
 
@@ -249,6 +248,7 @@ public class CharacterShoot : MonoBehaviour, CharacterSizeListener {
         _shootTrajectory.QuitShootMode();
 
         ShootModeEnded();
+        ccc.Parameters = null;
 
         // Notifies the listeners
         foreach (CharacterShootListener listener in _listeners)
