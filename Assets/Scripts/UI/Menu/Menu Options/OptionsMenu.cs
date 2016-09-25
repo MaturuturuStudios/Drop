@@ -2,8 +2,9 @@
 using UnityEngine.EventSystems;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
-public class OptionsMenu : MonoBehaviour {
+public class OptionsMenu : MonoBehaviour, BackOption {
 	#region Public Attributes
 	/// <summary>
 	/// first option to be selected (button)
@@ -106,7 +107,7 @@ public class OptionsMenu : MonoBehaviour {
 
 
         //B, back or start
-        if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back)) {
+        if (Input.GetButtonDown(Axis.Irrigate)) { //|| Input.GetButtonDown(Axis.Back)) {
             //check if focus is inside the suboption
             if (IsUnderSubOption())
                 //if yes, unselect the option
@@ -114,11 +115,9 @@ public class OptionsMenu : MonoBehaviour {
             else
                 //if not, the focus is already on the buttons menu, come back
                 _menuNavigator.ComeBack();
-
             _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
-        }
 
-
+        }else
         if (Input.GetButtonDown(Axis.Start)) {
             _actualPanel.LoseFocus();
             _menuNavigator.ComeBack();
@@ -148,6 +147,7 @@ public class OptionsMenu : MonoBehaviour {
         Button currentSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
         //if null, for sure is not a button on list of options
         if (currentSelected == null) return true;
+        if (_actualPanel == null) return false;
         
         //get all buttons of the panel
         Component[] components = _actualPanel.GetPanel().GetComponentsInChildren(currentSelected.GetType(), false);
@@ -214,5 +214,24 @@ public class OptionsMenu : MonoBehaviour {
         
     }
 
-	#endregion
+    /// <summary>
+    /// Tell the action back is taked in this script, so game controller input must do nothing
+    /// here
+    /// </summary>
+    /// <returns></returns>
+    public bool BackTaked() {
+        _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
+        //check if focus is inside the suboption
+        if (IsUnderSubOption()) {
+            //if yes, unselect the option
+            UnfocusOption();
+            return true;
+        } else {
+            //if not, the focus is already on the buttons menu, come back (return false)
+            return false;
+        }
+        
+    }
+
+    #endregion
 }

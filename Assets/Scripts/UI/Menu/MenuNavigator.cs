@@ -294,6 +294,10 @@ public class MenuNavigator : MonoBehaviour {
     /// Close the menu if there is no more menus on stack
     /// </summary>
     public void ComeBack() {
+        MenuInstance panel = _menuPanel.Peek();
+        BackOption back = panel.panel.GetComponent<BackOption>();
+        if (back != null && back.BackTaked()) return;
+
         StartCoroutine(ComeBackWait());
         //make sure to quit the confirmation
         DoConfirmQuitNo();
@@ -497,6 +501,7 @@ public class MenuNavigator : MonoBehaviour {
     /// <returns>IEnumerator</returns>
     private IEnumerator ComeBackWait() {
         yield return WaitForRealSeconds(secondsReaction);
+        
         MenuInstance panel = _menuPanel.Pop();
         background.SetActive(true);
         //if main menu, disable background

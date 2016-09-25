@@ -26,7 +26,8 @@ public class PauseMenu : MonoBehaviour {
 	public void OnEnable() {
 		//we have to select the option in update
 		_selectOption = true;
-	}
+        EventSystem.current.SetSelectedGameObject(null);
+    }
 
 	public void Update() {
 		//if we have to select the option...

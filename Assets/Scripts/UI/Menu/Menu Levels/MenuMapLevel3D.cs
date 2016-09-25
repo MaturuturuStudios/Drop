@@ -244,8 +244,6 @@ public class MenuMapLevel3D : MonoBehaviour {
 
     public void Start() {
         ConfigureWorlds();
-
-        GameObject first = _levels[0][0];
         
         MeshRenderer renderer;
 
