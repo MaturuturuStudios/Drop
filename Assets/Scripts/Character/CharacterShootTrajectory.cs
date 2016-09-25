@@ -563,7 +563,6 @@ public class CharacterShootTrajectory : MonoBehaviour {
                 nextPoint = _hitPoint.point;
             }
             //we have the point of the indicator
-            if (integerPart < 0) return;
             finalPosition = Vector3.Lerp(_trajectoryPoints[integerPart], nextPoint, remain);
 
             //we need the offset because of the radius of the indicator
@@ -581,7 +580,7 @@ public class CharacterShootTrajectory : MonoBehaviour {
             percentage = Mathf.Pow(percentage,5);
             //the final displacement
             move = Vector3.Lerp(Vector3.zero, move, percentage);
-
+            
             finalPosition += move;
 
         } else {
@@ -747,10 +746,9 @@ public class CharacterShootTrajectory : MonoBehaviour {
             float dx = velocity * fTime * Mathf.Cos(angle * Mathf.Deg2Rad);
             float dy = velocity * fTime * Mathf.Sin(angle * Mathf.Deg2Rad) - (_ccc.Parameters.Gravity.magnitude * fTime * fTime / 2.0f);
             Vector3 pos = new Vector3(pStartPosition.x + dx, pStartPosition.y + dy, 0);
-            _trajectoryPoints[i] = Vector3.MoveTowards(_trajectoryPoints[i], pos, distanceLineSegments);
+            _trajectoryPoints[i] = Vector3.MoveTowards(_trajectoryPoints[i-1], pos, distanceLineSegments);
             fTime += 0.1f;
         }
-
     }
 
     ///  <summary>
