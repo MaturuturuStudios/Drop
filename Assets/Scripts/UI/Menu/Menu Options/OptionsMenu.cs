@@ -83,19 +83,23 @@ public class OptionsMenu : MonoBehaviour, BackOption {
 
             //change options with triggers
             Selectable select = null;
-            Selectable actualSelected;
+            Selectable actualSelected=null;
             bool setFocusInOption = IsUnderSubOption();
-            actualSelected = _actualMenuSelected.GetComponent<Selectable>();
+            if (_actualMenuSelected != null) {
+                actualSelected = _actualMenuSelected.GetComponent<Selectable>();
+            }
 
             //check if left or rigth
-            if (Input.GetAxis(Axis.SelectDrop) > 0) {
-                select = actualSelected.FindSelectableOnDown();
-            } else {
-                select = actualSelected.FindSelectableOnUp();
+            if (actualSelected != null) {
+                if (Input.GetAxis(Axis.SelectDrop) > 0) {
+                    select = actualSelected.FindSelectableOnDown();
+                } else {
+                    select = actualSelected.FindSelectableOnUp();
+                }
             }
 
             //if have a selection, select it
-            if (select != null) {
+            if (select != null && _actualMenuSelected!=null) {
                 //always disable permament focus
                 UnfocusOption();
                 //if suboption, set the focus
@@ -107,15 +111,16 @@ public class OptionsMenu : MonoBehaviour, BackOption {
 
 
         //B, back or start
-        if (Input.GetButtonDown(Axis.Irrigate)) { //|| Input.GetButtonDown(Axis.Back)) {
+        if (Input.GetButtonDown(Axis.Irrigate)) {
             //check if focus is inside the suboption
             if (IsUnderSubOption())
                 //if yes, unselect the option
                 UnfocusOption();
-            else
+            else 
                 //if not, the focus is already on the buttons menu, come back
                 _menuNavigator.ComeBack();
             _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
+            
 
         }else
         if (Input.GetButtonDown(Axis.Start)) {
