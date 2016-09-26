@@ -278,7 +278,7 @@ public class AIBase : MonoBehaviour {
         size.y = triggerArea.size.y; //height is the same as trigger area
 
         size /= 2.0f;
-        Vector3 origin=Vector3.zero;// = triggerArea.origin + transform.position;
+        Vector3 origin = triggerArea.origin + transform.position;
         origin.x = commonParameters.enemy.transform.position.x;
         origin.y += size.y;
         origin.z = 0;
