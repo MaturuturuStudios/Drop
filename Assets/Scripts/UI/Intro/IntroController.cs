@@ -18,6 +18,11 @@ public class IntroController : MonoBehaviour {
     /// </summary>
     public MovieTexture introMovie;
 
+    /// <summary>
+    /// Movie audio source
+    /// </summary>
+    public AudioSource introAudio;
+
 
     /// <summary>
     /// Audio to be played with the logo
@@ -45,11 +50,6 @@ public class IntroController : MonoBehaviour {
     #endregion
 
     #region Private attributes
-
-    /// <summary>
-    /// Movie audio source
-    /// </summary>
-    private AudioSource _audio;
 
 
     /// <summary>
@@ -179,7 +179,7 @@ public class IntroController : MonoBehaviour {
         yield return MenuNavigator.WaitForRealSeconds(timeToStart);
 
         // Play the movie and audio
-        _audio.Play();
+        introAudio.Play();
         introMovie.Play();
         startedVideo = true;
     }
@@ -191,15 +191,15 @@ public class IntroController : MonoBehaviour {
     private IEnumerator PlayLogoSound(float timeToStop) {
 
         // Load logo sound
-        _audio = GetComponentInChildren<AudioSource>();
-        _audio.clip = maturuturuClip;
-        _audio.Play();
+        introAudio = GetComponentInChildren<AudioSource>();
+        introAudio.clip = maturuturuClip;
+        introAudio.Play();
 
         // Wait logo duration to start the movie
         yield return MenuNavigator.WaitForRealSeconds(timeToStop);
 
         // Get audio source from movie
-        _audio.clip = introMovie.audioClip;
+        introAudio.clip = introMovie.audioClip;
     }
 
     #endregion
