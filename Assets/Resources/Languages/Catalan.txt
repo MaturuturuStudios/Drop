@@ -69,10 +69,10 @@ HelpText=Pobre petita gota ... On són els teus amics? On són els teus companys
 
 HelpWallJump=Salto en pared\nMientras estás en el aire contra una pared, puedes saltar de nuevo con el botón, haciendo un salto en pared. Puedes repetirlo tantas veces quieras.
 HelpShoot=Disparo\nCuando eres de un tamaño suficiente, puedes entrar en modo disparo y seleccionar el ángulo de disparo y el número de gotas a disparar. Durante el modo disparo no puedes moverte.
-HelpFusion=Fusión\nDos gotas pueden fusionarse si se juntan y si el espacio lo permite, sino, expulsará las que le sobran
+HelpFusion=Fusió\nDues gotes poden fusionar si s'ajunten i si l'espai ho permet, sinó, expulsarà les que li sobren.
 HelpIrrigate=Regar\nPuedes regar las plantas que lo permitan si eres lo suficientemente grande. Si estás en el área de riego, la planta o bulbo brillará más y podrás regarla con el botón.
 HelpSelect=Select\nConsulta en cualquier momento cuán grande eres tú o tus enemigos o el número de gotas necesarias.
-HelpChangeDrop=Cambiar gota\nSi controlas más de una gota, puedes cambiar entre ellas con los triggers del mando.
+HelpChangeDrop=Canviar gota\nSi controles més d'una gota, pots canviar entre elles amb els triggers del comandament.
 
 #Quality options name
 Fastest=La més ràpida
