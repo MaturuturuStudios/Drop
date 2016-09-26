@@ -11,7 +11,7 @@ MenuLoadGame=Continuar Juego
 MenuNewGame=Nuevo Juego
 
 #Menu Credits
-MenuCreditsArtist= Artistas
+MenuCreditsArtist=Artistas
 MenuCreditsProgrammer=Programadores
 MenuCreditsCollaborations=Colaboraciones
 MenuCreditsMusician=Musicos
@@ -32,7 +32,7 @@ GraphicsFullscreen=Pantalla completa
 GraphicsAntialiasing=Antialiasing
 
 #Audio options
-AudioMaster=Master
+AudioMaster=Maestro
 AudioMusic=Música
 AudioAmbient=Ambiente
 AudioEffects=Efectos
@@ -51,10 +51,9 @@ MenuInputNextDrop=Siguiente gota
 MenuInputPreviousDrop=Gota anterior
 MenuInputShowNumberDrop=Mostrar ayuda
 MenuInputEnterExitShoot=Modo disparo
-MenuInputIrrigate=Regar
+MenuInputIrrigate=Regar/Disparar
 MenuInputJumpShoot=Saltar/Disparar
 MenuInputAction=Acción
-MenuInputLookAround=Mirar alrededor
 
 MenuInputPreviousNextDrop=Anterior/siguiente gota
 MenuInputTurnLeftRight=Girar izquierda/derecha
@@ -66,12 +65,12 @@ MenuInputKeyboard=Mostrar teclado
 #Help option
 HelpText=Pobre pequeña gota... ¿Dónde están tus amigos? ¿Dónde están tus compañeros, tu familia? Te ves perdida y lejos de todos ellos.\n\nTe voy a contar un secreto. Eres una gota. Y todas las gotas tienen un destino. El mar.\n\nVe al mar, pequeña gota, ve al mar y encuentra a tus seres queridos. Usa todas tus habilidades para pasar todos los obstáculos y dificultades del viaje. Salta en las paredes, únete a otras gotas, divídete y entra en sitios pequeños, dispárate a lo alto, riega plantas...\n\nSé inteligente, sé el agua amigo mío.
 
-HelpWallJump=Salto en pared\nMientras estás en el aire contra una pared, puedes saltar de nuevo con el botón, haciendo un salto en pared. Puedes repetirlo tantas veces quieras.
-HelpShoot=Disparo\nCuando eres de un tamaño suficiente, puedes entrar en modo disparo y seleccionar el ángulo de disparo y el número de gotas a disparar. Durante el modo disparo no puedes moverte.
-HelpFusion=Fusión\nDos gotas pueden fusionarse si se juntan y si el espacio lo permite, sino, expulsará las que le sobran
-HelpIrrigate=Regar\nPuedes regar las plantas que lo permitan si eres lo suficientemente grande. Si estás en el área de riego, la planta o bulbo brillará más y podrás regarla con el botón.
-HelpSelect=Select\nConsulta en cualquier momento cuán grande eres tú o tus enemigos o el número de gotas necesarias.
-HelpChangeDrop=Cambiar gota\nSi controlas más de una gota, puedes cambiar entre ellas con los triggers del mando.
+HelpWallJump=Saltar en pared\nMantén pulsada la dirección hacia una pared para deslizarte por ella. Mientras te deslizas, salta para rebotar en ella.
+HelpShoot=Disparar gotas\nAl entrar en modo disparo, puedes lanzar gotas a lugares distantes. Usa la dirección para elegir el ángulo de tiro. Podrás controlar la gota disparada.
+HelpFusion=Fusión\nJunta varias gotas para formar una de mayor tamaño. Cuánto más grande seas más rápido te moverás y más alto saltarás.
+HelpIrrigate=Regar\nCuando un bulbo brille, signfica que lo puedes regar. Acércate y pulsa el botón de regar para desbloquear nuevos caminos. Pero ten en cuenta que te volverás más pequeña en el proceso.
+HelpSelect=Consultar tamaño\nPuedes consultar en cualquier momento el tamaño de las gotas en pantalla. También verás cuántas gotas hacen falta para regar un bulbo o para espantar una hormiga.
+HelpChangeDrop=Cambiar gota\nPuedes alternar qué gota controlas en cualquier momento, aunque no podrás controlar las gotas que aún estén dormidas.
 
 #Quality options name
 Fastest=El más rápido
@@ -86,12 +85,12 @@ SaveChanges=Guardar cambios
 Yes=Si
 No=No
 #Quit
-ConfirmQuit=¿Confirmar salida?
+ConfirmQuit=¿Seguro que quieres salir?
 LevelComplete=¡Nivel completado!
 BackMenuOptions=Volver
 World=Mundo
 Level=Nivel
 
 #Level transition strings
-MaxDropsExceded=Has completado el nivel con más gotas de lo esperado, por favor indicanos cómo en info@maturuturustudios.com
+MaxDropsExceded=Vaya, ¡has completado el nivel con más gotas de lo esperado! Por favor indicanos cómo en info@maturuturustudios.com
 SavedDrops=Gotas salvadas

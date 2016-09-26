@@ -55,7 +55,6 @@ MenuInputEnterExitShoot=Mode tret
 MenuInputIrrigate=Regar
 MenuInputJumpShoot=Saltar/Disparar
 MenuInputAction=Acció
-MenuInputLookAround=Mirar al voltant
 
 MenuInputPreviousNextDrop=Gota Següent/Anterior
 MenuInputTurnLeftRight=Girar Dreta/Esquerra

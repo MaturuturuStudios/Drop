@@ -11,7 +11,7 @@ MenuLoadGame=Continue Game
 MenuNewGame=New Game
 
 #Menu Credits
-MenuCreditsArtist= Artists
+MenuCreditsArtist=Artists
 MenuCreditsProgrammer=Programmers
 MenuCreditsCollaborations=Collaborations
 MenuCreditsMusician=Musicians
@@ -52,10 +52,9 @@ MenuInputNextDrop=Next Drop
 MenuInputPreviousDrop=Previous Drop
 MenuInputShowNumberDrop=Show help
 MenuInputEnterExitShoot=Shoot mode
-MenuInputIrrigate=Irrigate
+MenuInputIrrigate=Irrigate/Shoot
 MenuInputJumpShoot=Jump/Shoot
 MenuInputAction=Action
-MenuInputLookAround=Look around
 
 MenuInputPreviousNextDrop=Previous/Next Drop
 MenuInputTurnLeftRight=Turn left/right
@@ -65,14 +64,14 @@ MenuInputGamepad=Show gamepad
 MenuInputKeyboard=Show keyboard
 
 #Help option
-HelpText=Little and poor drop... Where are your friends? Where are your mates, your family? You look lost and away from all of them.\n\nI'm going to tell you a secret. You are a drop. And all drops have one destiny. The sea.\n\nGo to the sea, little drop, go to the sea and find your beloved people. Use all your abilities to pass all the obstacles and difficulties of the journey. Jump in the walls, join other drops, split yourself and fit small sites, shoot yourself at high, irrigate plants...\n\nBe smart, be water my friend.
+HelpText=Poor little drop... Where are your friends? Where are your mates, your family? You look lost and away from all of them.\n\nI'm going to tell you a secret. You are a drop. And all drops have one destiny. The sea.\n\nGo to the sea, little drop, go to the sea and find your beloved friends. Use all of your abilities to pass the obstacles and difficulties of the journey. Jump in the walls, join other drops, split yourself and fit small sites, shoot yourself at high, irrigate plants...\n\nBe smart, be water my friend.
 
-HelpWallJump=Wall Jump\nWhile you are in the air against a wall, you can jump again with the jump button doing a wall jump. You can repeat it every time.
-HelpShoot=Shoot\nWhen you are big enough, you can enter in shoot mode and choose the angle and number of drops to shoot. You are not able to move in shoot mode.
-HelpFusion=Fusion\nTwo drops can merge if they come together and if there is space enough, if not, will spit the remaining drops.
-HelpIrrigate=Irrigate\nYou can irrigate plants that allow it if you are big enough. If you are in the irrigate area, the plant will shine more and you will be able to irrigate it with the button.
-HelpSelect=Select/Back\nSee anytime how big are you or your enemies or the number of drops needed.
-HelpChangeDrop=Change drop\nIf you control more than one drop, you can change between drops with the triggers of the gamepad.
+HelpWallJump=Wall Jump\nKeep pressing the dirección towards the wall to slide along it. While sliding, jump to bounce out of the wall.
+HelpShoot=Shoot\nWhen you enter shoot mode, you can throw drops to distant places. Use the direction to choose the shooting angle. You will be able to control the drop shot.
+HelpFusion=Fusion\nMerge two drops together to become a bigger one. The bigger you are, the faster you will move and the higher you will jump.
+HelpIrrigate=Irrigate\nWhen a plant shines, it means you can water it. Come close and press the irrigate button to unlock new paths. But keep in mind you will become smaller after it.
+HelpSelect=Check size\nYou can check the size of the drops on the screen anytime you want. You will also see how many drops are needed to water a plant or to scare an ant.
+HelpChangeDrop=Swich drop\nYou can swich control between the drops anytime you want, but you wont be able to control drops which are still asleep.
 
 #Quality options name
 Fastest=Fastest
@@ -86,12 +85,12 @@ Fantastic=Fantastic
 SaveChanges=Save changes
 Yes=Yes
 No=No
-ConfirmQuit=Confirm quit?
-LevelComplete=Level complete!
+ConfirmQuit=Are you sure you want to quit?
+LevelComplete=Level completed!
 BackMenuOptions=Back
 World=World
 Level=Level
 
 #Level transition strings
-MaxDropsExceded=You have solved the level with more drops than expected, please tell us how at info@maturuturustudios.com
+MaxDropsExceded=Huh, you have solved the level with more drops than we expected! Please tell us how at info@maturuturustudios.com
 SavedDrops=Saved drops
