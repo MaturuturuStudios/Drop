@@ -41,12 +41,22 @@ public class OptionsMenu : MonoBehaviour, BackOption {
     /// Variable to control the triggers
     /// </summary>
     private bool _triggerPressed;
+    /// <summary>
+    /// Check if we have the input controller (if not, we need to control it)
+    /// </summary>
+    private bool _hasInputController = false;
     #endregion
 
     #region Methods
     public void Awake() {
         _menuNavigator = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
         _audioMenu = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<AudioMenu>();
+
+        GameObject[] gameController = GameObject.FindGameObjectsWithTag(Tags.GameController);
+        if (gameController.Length == 0) return;
+        GameControllerInput input = gameController[0].GetComponent<GameControllerInput>();
+        if (input == null) return;
+        _hasInputController = input.isActiveAndEnabled;
     }
 
 	public void OnEnable() {
@@ -124,9 +134,24 @@ public class OptionsMenu : MonoBehaviour, BackOption {
 
         }else
         if (Input.GetButtonDown(Axis.Start)) {
-            _actualPanel.LoseFocus();
-            _menuNavigator.ComeBack();
-            _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
+            if (_actualPanel == null) {
+                _menuNavigator.ComeBack();
+            } else {
+                _actualPanel.LoseFocus();
+                _menuNavigator.ComeBack();
+                _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
+            }
+        }
+
+        if (!_hasInputController && Input.GetButtonDown(Axis.Back)) {
+                //check if focus is inside the suboption
+                if (IsUnderSubOption())
+                    //if yes, unselect the option
+                    UnfocusOption();
+                else
+                    //if not, the focus is already on the buttons menu, come back
+                    _menuNavigator.ComeBack();
+                _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
         }
 
     }
