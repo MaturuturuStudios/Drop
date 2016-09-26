@@ -102,7 +102,7 @@ public class MenuNavigator : MonoBehaviour {
     #endregion
 
     #region Private Attributes
-    private Image backgroundImageMainMenu;
+    private RawImage backgroundImageMainMenu;
     /// <summary>
     /// The stack of menus
     /// </summary>
@@ -159,7 +159,7 @@ public class MenuNavigator : MonoBehaviour {
         //get input controller
         _gameControllerInput = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerInput>();
 
-        backgroundImageMainMenu = backgroundMainMenu.GetComponent<Image>();
+        backgroundImageMainMenu = backgroundMainMenu.GetComponent<RawImage>();
 
         //Get the scene
         GameControllerData data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
