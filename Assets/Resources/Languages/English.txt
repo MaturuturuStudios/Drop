@@ -67,11 +67,12 @@ MenuInputKeyboard=Show keyboard
 #Help option
 HelpText=Little and poor drop... Where are your friends? Where are your mates, your family? You look lost and away from all of them.\n\nI'm going to tell you a secret. You are a drop. And all drops have one destiny. The sea.\n\nGo to the sea, little drop, go to the sea and find your beloved people. Use all your abilities to pass all the obstacles and difficulties of the journey. Jump in the walls, join other drops, split yourself and fit small sites, shoot yourself at high, irrigate plants...\n\nBe smart, be water my friend.
 
-HelpWallJump=Wall Jump\nMientras estás en el aire contra una pared en la que se pueda hacer salto, pulsa de nuevo saltar para realizar un salto en pared. El proceso se puede repetir varias veces con la misma pared u otras
-HelpShoot=Shoot\nCuando eres de un tamaño suficiente, puedes entrar en modo disparo y seleccionar tanto el ángulo de disparo como el número de gotas a disparar. Durante el modo disparo no puedes moverte y puedes anular el disparo pulsando de nuevo el modo disparo
-HelpFusion=Fusion\nDos gotas pueden fusionarse si se juntan y si el espacio lo permite, sino, expulsará las que le sobran
-HelpLookAround=Look around\nPuedes ver más allá si miras a tu alrededor. Consulta la entrada para cómo mirar
-HelpSelect=Select\nConsulta en cualquier momento cuán grande eres tú o tus enemigos
+HelpWallJump=Wall Jump\nWhile you are in the air against a wall, you can jump again with the jump button doing a wall jump. You can repeat it every time.
+HelpShoot=Shoot\nWhen you are big enough, you can enter in shoot mode and choose the angle and number of drops to shoot. You are not able to move in shoot mode.
+HelpFusion=Fusion\nTwo drops can merge if they come together and if there is space enough, if not, will spit the remaining drops.
+HelpIrrigate=Irrigate\nYou can irrigate plants that allow it if you are big enough. If you are in the irrigate area, the plant will shine more and you will be able to irrigate it with the button.
+HelpSelect=Select/Back\nSee anytime how big are you or your enemies or the number of drops needed.
+HelpChangeDrop=Change drop\nIf you control more than one drop, you can change between drops with the triggers of the gamepad.
 
 #Quality options name
 Fastest=Fastest
