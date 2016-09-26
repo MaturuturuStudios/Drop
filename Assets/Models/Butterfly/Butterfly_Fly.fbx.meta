@@ -1,0 +1,345 @@
+fileFormatVersion: 2
+guid: 90fcee3473079411a8fd7d150d84e041
+timeCreated: 1474904670
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: alas:Group30050
+    100002: alas:Group30065
+    100004: Antena1:Group51224
+    100006: Antena2:Group51224
+    100008: AntenaA
+    100010: AntenaB
+    100012: boca:Group237
+    100014: Butherfly_Rig
+    100016: //RootNode
+    100018: Ctrl_Antena_Der
+    100020: Ctrl_Antena_Izq
+    100022: Ctrl_Body
+    100024: Ctrl_Butherfly
+    100026: Ctrl_Head
+    100028: Ctrl_Mouth
+    100030: Ctrl_Tail
+    100032: Ctrl_Wing_A
+    100034: Ctrl_Wing_b
+    100036: Cuerpo:Group30140
+    100038: Cuerpo:Group30155
+    100040: Cuerpo:Group30170
+    100042: Cuerpo:Group30185
+    100044: Cuerpo:Group30200
+    100046: Cuerpo:Group30215
+    100048: Cuerpo:Group30230
+    100050: Cuerpo:Group30245
+    100052: Head
+    100054: ikHandle1
+    100056: ikHandle2
+    100058: joint10
+    100060: joint11
+    100062: joint12
+    100064: joint13
+    100066: joint15
+    100068: joint16
+    100070: joint17
+    100072: joint18
+    100074: joint5
+    100076: joint6
+    100078: Mesh
+    100080: Mouth
+    100082: Muth
+    100084: Neck
+    100086: Ojos:Group30095
+    100088: Ojos:Group30110
+    100090: pPlane1
+    100092: pPlane2
+    100094: Tail
+    100096: Wing
+    100098: Wing1
+    100100: WingA
+    100102: WingB
+    400000: alas:Group30050
+    400002: alas:Group30065
+    400004: Antena1:Group51224
+    400006: Antena2:Group51224
+    400008: AntenaA
+    400010: AntenaB
+    400012: boca:Group237
+    400014: Butherfly_Rig
+    400016: //RootNode
+    400018: Ctrl_Antena_Der
+    400020: Ctrl_Antena_Izq
+    400022: Ctrl_Body
+    400024: Ctrl_Butherfly
+    400026: Ctrl_Head
+    400028: Ctrl_Mouth
+    400030: Ctrl_Tail
+    400032: Ctrl_Wing_A
+    400034: Ctrl_Wing_b
+    400036: Cuerpo:Group30140
+    400038: Cuerpo:Group30155
+    400040: Cuerpo:Group30170
+    400042: Cuerpo:Group30185
+    400044: Cuerpo:Group30200
+    400046: Cuerpo:Group30215
+    400048: Cuerpo:Group30230
+    400050: Cuerpo:Group30245
+    400052: Head
+    400054: ikHandle1
+    400056: ikHandle2
+    400058: joint10
+    400060: joint11
+    400062: joint12
+    400064: joint13
+    400066: joint15
+    400068: joint16
+    400070: joint17
+    400072: joint18
+    400074: joint5
+    400076: joint6
+    400078: Mesh
+    400080: Mouth
+    400082: Muth
+    400084: Neck
+    400086: Ojos:Group30095
+    400088: Ojos:Group30110
+    400090: pPlane1
+    400092: pPlane2
+    400094: Tail
+    400096: Wing
+    400098: Wing1
+    400100: WingA
+    400102: WingB
+    4300000: Mesh
+    4300002: Cuerpo:Group30170
+    4300004: Cuerpo:Group30185
+    4300006: Cuerpo:Group30200
+    4300008: Cuerpo:Group30215
+    4300010: Cuerpo:Group30230
+    4300012: Cuerpo:Group30245
+    4300014: Cuerpo:Group30140
+    4300016: Ojos:Group30095
+    4300018: Ojos:Group30110
+    4300020: Antena2:Group51224
+    4300022: Antena1:Group51224
+    4300024: boca:Group237
+    4300026: alas:Group30050
+    4300028: alas:Group30065
+    4300030: Cuerpo:Group30155
+    4300032: pPlane1
+    4300034: pPlane2
+    7400000: Mariposa_fly
+    9500000: //RootNode
+    13700000: alas:Group30050
+    13700002: alas:Group30065
+    13700004: Antena1:Group51224
+    13700006: Antena2:Group51224
+    13700008: boca:Group237
+    13700010: Cuerpo:Group30140
+    13700012: Cuerpo:Group30155
+    13700014: Cuerpo:Group30170
+    13700016: Cuerpo:Group30185
+    13700018: Cuerpo:Group30200
+    13700020: Cuerpo:Group30215
+    13700022: Cuerpo:Group30230
+    13700024: Cuerpo:Group30245
+    13700026: Mesh
+    13700028: Ojos:Group30095
+    13700030: Ojos:Group30110
+    13700032: pPlane1
+    13700034: pPlane2
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Mariposa_fly
+      takeName: Mariposa_fly
+      firstFrame: 1
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Butherfly_Rig
+        weight: 1
+      - path: Butherfly_Rig/Neck
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaA
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaA/joint10
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaA/joint10/joint11
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaA/joint10/joint11/joint12
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaA/joint10/joint11/joint12/joint13
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaB
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaB/joint15
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaB/joint15/joint16
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaB/joint15/joint16/joint17
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/AntenaB/joint15/joint16/joint17/joint18
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/Muth
+        weight: 1
+      - path: Butherfly_Rig/Neck/Head/Muth/Mouth
+        weight: 1
+      - path: Butherfly_Rig/Tail
+        weight: 1
+      - path: Butherfly_Rig/Tail/joint5
+        weight: 1
+      - path: Butherfly_Rig/Tail/joint5/joint6
+        weight: 1
+      - path: Butherfly_Rig/Wing
+        weight: 1
+      - path: Butherfly_Rig/Wing/WingA
+        weight: 1
+      - path: Butherfly_Rig/Wing1
+        weight: 1
+      - path: Butherfly_Rig/Wing1/WingB
+        weight: 1
+      - path: Ctrl_Butherfly
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Body
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Head
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Head/Ctrl_Antena_Der
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Head/Ctrl_Antena_Izq
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Head/Ctrl_Mouth
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Tail
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Wing_A
+        weight: 1
+      - path: Ctrl_Butherfly/Ctrl_Wing_b
+        weight: 1
+      - path: ikHandle1
+        weight: 1
+      - path: ikHandle2
+        weight: 1
+      - path: Mesh
+        weight: 1
+      - path: Mesh/alas:Group30050
+        weight: 1
+      - path: Mesh/alas:Group30065
+        weight: 1
+      - path: Mesh/Cuerpo:Group30140
+        weight: 1
+      - path: Mesh/Cuerpo:Group30140/Antena1:Group51224
+        weight: 1
+      - path: Mesh/Cuerpo:Group30140/Antena2:Group51224
+        weight: 1
+      - path: Mesh/Cuerpo:Group30140/boca:Group237
+        weight: 1
+      - path: Mesh/Cuerpo:Group30140/Ojos:Group30095
+        weight: 1
+      - path: Mesh/Cuerpo:Group30140/Ojos:Group30110
+        weight: 1
+      - path: Mesh/Cuerpo:Group30155
+        weight: 1
+      - path: Mesh/Cuerpo:Group30170
+        weight: 1
+      - path: Mesh/Cuerpo:Group30185
+        weight: 1
+      - path: Mesh/Cuerpo:Group30200
+        weight: 1
+      - path: Mesh/Cuerpo:Group30215
+        weight: 1
+      - path: Mesh/Cuerpo:Group30230
+        weight: 1
+      - path: Mesh/Cuerpo:Group30245
+        weight: 1
+      - path: pPlane1
+        weight: 1
+      - path: pPlane2
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 80
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
