@@ -149,7 +149,9 @@ public class OptionsMenu : MonoBehaviour, BackOption {
 	}
 
     private bool IsUnderSubOption() {
-        Button currentSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        GameObject objectSelected = EventSystem.current.currentSelectedGameObject;
+        if (objectSelected == null) return true;
+        Button currentSelected = objectSelected.GetComponent<Button>();
         //if null, for sure is not a button on list of options
         if (currentSelected == null) return true;
         if (_actualPanel == null) return false;
