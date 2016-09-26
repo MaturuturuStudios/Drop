@@ -11,10 +11,11 @@
   <mac>false</mac>
   <countScenes>false</countScenes>
   <scenes>
-    <string>Assets/_Scenes/Intro.unity</string>
-    <string>Assets/_Scenes/StartScene.unity</string>
-    <string>Assets/_Scenes/Tutorial.unity</string>
-    <string>Assets/_Scenes/Level.unity</string>
-    <string>Assets/_Scenes/Tutorial (parte 2).unity</string>
+    <string>Assets/_Scenes/Video.unity</string>
+    <string>Assets/_Scenes/Menu.unity</string>
+    <string>Assets/_Scenes/Level 1.unity</string>
+    <string>Assets/_Scenes/Level 2.unity</string>
+    <string>Assets/_Scenes/Level 3.unity</string>
+    <string>Assets/_Scenes/Thanks.unity</string>
   </scenes>
 </BuildData>

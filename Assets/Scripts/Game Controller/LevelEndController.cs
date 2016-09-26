@@ -117,6 +117,7 @@ public class LevelEndController : MonoBehaviour {
 
             if (_nextScene==null) {
                 _nextScene = _data.GetDefaultScene();
+                _nextScene.name = "Thanks";
             }
         }
     }
