@@ -120,8 +120,10 @@ public class OptionsMenu : MonoBehaviour, BackOption {
 			_triggerPressed = false;
 
 
-        //B, back or start
-        if (Input.GetButtonDown(Axis.Irrigate)) {
+        //B
+        if (Input.GetButtonDown(Axis.Irrigate)
+            || (!_hasInputController && Input.GetButtonDown(Axis.Back))
+            || (Input.GetButtonDown(Axis.Start))) {
             //check if focus is inside the suboption
             if (IsUnderSubOption())
                 //if yes, unselect the option
@@ -132,28 +134,7 @@ public class OptionsMenu : MonoBehaviour, BackOption {
             _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
             
 
-        }else
-        if (Input.GetButtonDown(Axis.Start)) {
-            if (_actualPanel == null) {
-                _menuNavigator.ComeBack();
-            } else {
-                _actualPanel.LoseFocus();
-                _menuNavigator.ComeBack();
-                _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
-            }
         }
-
-        if (!_hasInputController && Input.GetButtonDown(Axis.Back)) {
-                //check if focus is inside the suboption
-                if (IsUnderSubOption())
-                    //if yes, unselect the option
-                    UnfocusOption();
-                else
-                    //if not, the focus is already on the buttons menu, come back
-                    _menuNavigator.ComeBack();
-                _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
-        }
-
     }
 
 	/// <summary>
