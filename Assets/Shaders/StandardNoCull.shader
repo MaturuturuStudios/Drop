@@ -46,6 +46,9 @@ Shader "Standard (No Cull)"
 	SubShader
 	{
 		Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
+
+		Cull Off
+
 		LOD 300
 	
 
@@ -56,7 +59,6 @@ Shader "Standard (No Cull)"
 			Name "FORWARD" 
 			Tags { "LightMode" = "ForwardBase" }
 
-			Cull Off
 			Blend [_SrcBlend] [_DstBlend]
 			ZWrite [_ZWrite]
 
