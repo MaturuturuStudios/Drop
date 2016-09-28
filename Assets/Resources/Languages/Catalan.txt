@@ -71,7 +71,7 @@ HelpShoot=Disparar gotes\nA l'entrar en mode tret, pots llançar gotes a llocs d
 HelpFusion=Fusió\nJunta diverses gotes per formar una de més gran. Quant més gran ets més ràpid et mouràs i més alt saltaràs.
 HelpIrrigate=Regar\nQuan un bulb brilli, vol dir que el pots regar. Acosta't i prem el botó de regar per desbloquejar nous camins. Però tingues en compte que et tornaràs més petita en el procés.
 HelpSelect=Consultar mida\nPots consultar en qualsevol moment la mida de les gotes en pantalla. També veuràs quantes gotes calen per regar un bulb o per espantar una formiga.
-HelpChangeDrop=Canviar gota\nPots alternar què gota controles en qualsevol moment, encara que no podràs controlar les gotes que encara estiguin adormides.
+HelpChangeDrop=Canviar gota\nPots alternar quina gota controles en qualsevol moment, encara que no podràs controlar les gotes que encara estiguin adormides.
 
 #Quality options name
 Fastest=La més ràpida
