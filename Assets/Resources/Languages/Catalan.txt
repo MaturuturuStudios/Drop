@@ -66,7 +66,7 @@ MenuInputKeyboard=Mostrar teclat
 #Help option
 HelpText=Pobre petita gota ... On són els teus amics? On són els teus companys i la teva família? Et veus perduda i lluny de tots ells.\n\nT’explicaré un secret. Ets una gota. I totes les gotes tenen un destí. El mar. \n\nVes al mar, petita gota, ves al mar i trova els teus éssers estimats. Utilitza totes les teves habilitas per superar els obstacles i les dificultats del viatge. Salta a las parets, uneix-te a altres gotes, divideix-te i entra a petits llocs, dispara’t ven amunt, rega plantes...\n\nSigues intel·ligent, sigues aigua amic meu.
 
-HelpWallJump=Saltar en paret\nManteniu premuda la direcció cap a una paret per lliscar per ella. Mentre llisques, salta per rebotar-hi.
+HelpWallJump=Saltar en paret\nMantingues premuda la direcció cap a una paret per lliscar per ella. Mentre llisques, salta per rebotar-hi.
 HelpShoot=Disparar gotes\nA l'entrar en mode tret, pots llançar gotes a llocs distants. Fes servir la direcció per triar l'angle de tir. Podràs controlar la gota disparada.
 HelpFusion=Fusió\nJunta diverses gotes per formar una de més gran. Quant més gran ets més ràpid et mouràs i més alt saltaràs.
 HelpIrrigate=Regar\nQuan un bulb brilli, vol dir que el pots regar. Acosta't i prem el botó de regar per desbloquejar nous camins. Però tingues en compte que et tornaràs més petita en el procés.

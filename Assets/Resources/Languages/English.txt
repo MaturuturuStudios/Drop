@@ -66,12 +66,12 @@ MenuInputKeyboard=Show keyboard
 #Help option
 HelpText=Poor little drop... Where are your friends? Where are your mates, your family? You look lost and away from all of them.\n\nI'm going to tell you a secret. You are a drop. And all drops have one destiny. The sea.\n\nGo to the sea, little drop, go to the sea and find your beloved friends. Use all of your abilities to pass the obstacles and difficulties of the journey. Jump in the walls, join other drops, split yourself and fit small sites, shoot yourself at high, irrigate plants...\n\nBe smart, be water my friend.
 
-HelpWallJump=Wall Jump\nKeep pressing the dirección towards the wall to slide along it. While sliding, jump to bounce out of the wall.
+HelpWallJump=Wall Jump\nKeep pressing the direction towards the wall to slide along it. While sliding, jump to bounce out of the wall.
 HelpShoot=Shoot\nWhen you enter shoot mode, you can throw drops to distant places. Use the direction to choose the shooting angle. You will be able to control the drop shot.
 HelpFusion=Fusion\nMerge two drops together to become a bigger one. The bigger you are, the faster you will move and the higher you will jump.
 HelpIrrigate=Irrigate\nWhen a plant shines, it means you can water it. Come close and press the irrigate button to unlock new paths. But keep in mind you will become smaller after it.
 HelpSelect=Check size\nYou can check the size of the drops on the screen anytime you want. You will also see how many drops are needed to water a plant or to scare an ant.
-HelpChangeDrop=Swich drop\nYou can swich control between the drops anytime you want, but you wont be able to control drops which are still asleep.
+HelpChangeDrop=Swich drop\nYou can swich control between the drops anytime you want, but you won't be able to control drops which are still asleep.
 
 #Quality options name
 Fastest=Fastest
