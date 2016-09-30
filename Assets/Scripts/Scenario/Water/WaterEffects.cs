@@ -18,8 +18,14 @@ public class WaterEffects : MonoBehaviour, WaterRepulsionListener {
 	/// Effects for sizes above 4
 	/// </summary>
 	public GameObject columnWater;
-
+    /// <summary>
+    /// Duration of the effect
+    /// </summary>
 	public float duration = 5.0f;
+    /// <summary>
+    /// Offset of the effect in y axis
+    /// </summary>
+    public float yOffset = 0f;
 
 	// Use this for initialization
 	void Start () {
@@ -39,7 +45,8 @@ public class WaterEffects : MonoBehaviour, WaterRepulsionListener {
         int size=sizeCharacter.GetSize();
         Bounds collider = water.GetCollider();
         Vector3 position = character.transform.position;
-        position.y = collider.max.y + 0.2f;
+        position.y = collider.max.y + 0.2f + yOffset;
+        position.z = 0;
 
         List<GameObject> effects = new List<GameObject>();
 
