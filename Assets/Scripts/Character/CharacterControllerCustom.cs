@@ -11,6 +11,12 @@ public class CharacterControllerCustom : MonoBehaviour {
 	#region Properties
 
 	/// <summary>
+	/// Trick used to allow a character to jump in any situation.
+	/// After a GodJump, the character won't be able to GodJump again.
+	/// </summary>
+	public bool GodJump { get; set; }
+
+	/// <summary>
 	/// Contains information about the state of the character controller on the last frame.
 	/// </summary>
 	public CharacterControllerState State { get; private set; }
@@ -200,7 +206,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Enables the rotation
 		rotateWithVelocity = true;
-    }
+	}
 
 	/// <summary>
 	/// Subscribes a listener to the controller's events.
@@ -545,6 +551,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// Resets the flags
 		_waitingForJump = false;
+		GodJump = false;
 
 		// Notifies the listeners
 		_listeners.ForEach(e => e.OnPerformJump(this));
@@ -558,6 +565,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		// If it has recently jumped, it cannot jump again
 		if (_jumpingTime > 0)
 			return false;
+
+		if (GodJump)
+			return true;
 
 		// If it's waiting to jump, it cannot jump again
 		if (_waitingForJump)
@@ -597,9 +607,9 @@ public class CharacterControllerCustom : MonoBehaviour {
 		ForceMode mode = useMass ? ForceMode.Impulse : ForceMode.VelocityChange;
 		AddForce(velocity, mode);
 
-        // Changes the character's parameters
-        _overrideParameters.Clear();
-        Parameters = CharacterControllerParameters.FlyingParameters;
+		// Changes the character's parameters
+		_overrideParameters.Clear();
+		Parameters = CharacterControllerParameters.FlyingParameters;
 
 		// Sets the flags
 		State.IsFlying = true;
@@ -632,7 +642,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 			Parameters = null;
 			State.IsFlying = false;
 			rotateWithVelocity = true;
-        }
+		}
 	}
 
 	#endregion
@@ -652,7 +662,7 @@ public class CharacterControllerCustom : MonoBehaviour {
 
 		// If the flying timer has expired, stops the flight
 		if (_flyingTime < 0)
-		    StopFlying();
+			StopFlying();
 
 		// Adds the gravity to the velocity. If sliding, multiply it by a drag factor.
 		float dragFactor = 1;
