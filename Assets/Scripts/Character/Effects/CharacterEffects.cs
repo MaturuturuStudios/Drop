@@ -280,7 +280,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		if (validLayer)
 			foreach (ParticleSystem system in _slopeParticleEffects.Keys) {
 				ParticleSystem.EmissionModule emission = system.emission;
-				emission.enabled = _ccc.State.IsOnSlope && !_ccc.State.IsSliding;
+				emission.enabled = _ccc.State.IsFalling && _ccc.State.IsOnSlope && !_ccc.State.IsSliding;
 			}
 
 		// If the character is controlled, stops the sleep effect
