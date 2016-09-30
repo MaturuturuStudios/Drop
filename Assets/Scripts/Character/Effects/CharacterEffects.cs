@@ -12,6 +12,17 @@ using System.Collections.Generic;
 public class CharacterEffects : MonoBehaviour, CharacterShootListener, CharacterFusionListener, CharacterControllerListener, IrrigateListener, EnemyBehaviourListener {
 
 	/// <summary>
+	/// The collision effects will only be played when the
+	/// collision happens with these layers.
+	/// </summary>
+	public LayerMask colliderLayerToPlayEffects;
+
+	/// <summary>
+	/// The layer of the last collider hit by the character.
+	/// </summary>
+	private int _colliderLayer;
+
+	/// <summary>
 	/// Effect played while walking.
 	/// </summary>
 	public MinSpeedEffectInformation walkTrail;
@@ -154,17 +165,17 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	void Awake() {
 		// Retrieves the desired components
 		_transform = transform;
-        _ccc = GetComponent<CharacterControllerCustom>();
-        _characterSize = GetComponent<CharacterSize>();
+		_ccc = GetComponent<CharacterControllerCustom>();
+		_characterSize = GetComponent<CharacterSize>();
 		_characterFusion = GetComponent<CharacterFusion>();
 		_characterShoot = GetComponent<CharacterShoot>();
 		_controller = GetComponent<CharacterController>();
 		_gcic = GameObject.FindGameObjectWithTag(Tags.GameController).GetComponent<GameControllerIndependentControl>();
 	}
 
-    void Start() {
+	void Start() {
 		// Subscribes itself to the publishers
-        _ccc.AddListener(this);
+		_ccc.AddListener(this);
 		_characterFusion.AddListener(this);
 		_characterShoot.AddListener(this);
 
@@ -247,24 +258,30 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		}
 	}
 
-	void Update() {
+	void FixedUpdate() {
+		// Checks if the hit object has a valid layer
+		bool validLayer = colliderLayerToPlayEffects.ContainsLayer(_colliderLayer);
+
 		// Plays or stops the walking effect
-		foreach (ParticleSystem system in _walkTrailParticleEffects.Keys) {
-			ParticleSystem.EmissionModule emission = system.emission;
-			emission.enabled = _ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkTrail.GetMinSpeed(_characterSize.GetSize());
-		}
+		if (validLayer)
+			foreach (ParticleSystem system in _walkTrailParticleEffects.Keys) {
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = _ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkTrail.GetMinSpeed(_characterSize.GetSize());
+			}
 
 		// Plays or stops the sliding effect
-		foreach (ParticleSystem system in _slideParticleEffects.Keys) {
-			ParticleSystem.EmissionModule emission = system.emission;
-			emission.enabled = _ccc.State.IsSliding;
-		}
+		if (validLayer)
+			foreach (ParticleSystem system in _slideParticleEffects.Keys) {
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = _ccc.State.IsSliding;
+			}
 
 		// Plays or stops the slope effect
-		foreach (ParticleSystem system in _slopeParticleEffects.Keys) {
-			ParticleSystem.EmissionModule emission = system.emission;
-			emission.enabled = _ccc.State.IsOnSlope && !_ccc.State.IsSliding;
-		}
+		if (validLayer)
+			foreach (ParticleSystem system in _slopeParticleEffects.Keys) {
+				ParticleSystem.EmissionModule emission = system.emission;
+				emission.enabled = _ccc.State.IsOnSlope && !_ccc.State.IsSliding;
+			}
 
 		// If the character is controlled, stops the sleep effect
 		if (_sleepEffect != null && _gcic.IsUnderControl(gameObject)) {
@@ -285,33 +302,35 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 	/// </summary>
 	public void OnWalkStep() {
 		// Plays the walk step effect
-		if (_ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkStep.GetMinSpeed(_characterSize.GetSize())) {
+		if (_ccc.State.IsGrounded && Mathf.Abs(_ccc.GetNormalizedSpeed()) >= walkStep.GetMinSpeed(1)) {
 			GameObject effect = walkStep.PlayEffect(_walkTrailEffect.position, modelTransfrom.rotation);
 			effect.transform.parent = _transform;
 			effect.transform.localScale = Vector3.one;
-        }
+		}
 	}
 
-    public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
-        // Do nothing
-    }
+	public void OnBeginJump(CharacterControllerCustom ccc, float delay) {
+		// Do nothing
+	}
 
-    public void OnPerformJump(CharacterControllerCustom ccc) {
+	public void OnPerformJump(CharacterControllerCustom ccc) {
 		// Looks for the ground and plays the jump effect
 		RaycastHit hit;
 		if (Physics.SphereCast(ccc.transform.position, _controller.radius * _characterSize.GetSize(), ccc.Parameters.Gravity, out hit, 10, sceneMask))
 			jump.PlayEffect(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal), _characterSize.GetSize());
 	}
 
-    public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
+	public void OnPostCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
 		if (hit.collider.CompareTag(Tags.Player))
 			return;
 
+		_colliderLayer = hit.gameObject.layer;
+
 		// Plays the landing effect
 		Quaternion normalRotation = Quaternion.LookRotation(Vector3.forward, hit.normal);
-        if (ccc.State.IsGrounded && ccc.State.TimeFloating > land.minTime) {
-            land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
-        }
+		if (ccc.State.IsGrounded && ccc.State.TimeFloating > land.minTime) {
+			land.PlayEffect(hit.point, normalRotation, _characterSize.GetSize());
+		}
 
 		// Calculates some values for the particles
 		Vector3 eulerRotation = new Vector3(Mathf.PI + Vector3.Angle(Vector3.left, hit.normal) * Mathf.Deg2Rad, Mathf.PI / 2, 0);
@@ -322,7 +341,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 			_walkTrailEffect.position = hit.point;
 			_walkTrailEffect.rotation = normalRotation;
 			foreach (KeyValuePair<ParticleSystem, ParticleSystemState> system in _walkTrailParticleEffects) {
-                system.Key.startRotation3D = eulerRotation;
+				system.Key.startRotation3D = eulerRotation;
 				system.Value.UpdateWithSize(sizeFactor);
 			}
 		}
@@ -347,15 +366,15 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		}
 	}
 
-    public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
-        // Do nothing
-    }
+	public void OnPreCollision(CharacterControllerCustom ccc, ControllerColliderHit hit) {
+		// Do nothing
+	}
 
-    public void OnWallJump(CharacterControllerCustom ccc) {
+	public void OnWallJump(CharacterControllerCustom ccc) {
 		// Since to wall jump the character needs to be sliding, uses the slide effect position
 		if (_slideEffect != null)
 			wallJump.PlayEffect(_slideEffect.transform.position, _slideEffect.transform.rotation, _characterSize.GetSize());
-    }
+	}
 
 	public void OnBeginFusion(CharacterFusion originalCharacter, GameObject fusingCharacter, ControllerColliderHit hit) {
 		// Do nothing
@@ -365,7 +384,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		// Plays the fusion effect
 		Transform characterTransform = finalCharacter.transform;
 		fuse.PlayEffect(characterTransform.position, characterTransform.rotation, finalCharacter.GetSize());
-    }
+	}
 
 	public void OnEnterShootMode(CharacterShoot character) {
 		// Do nothing
@@ -379,7 +398,7 @@ public class CharacterEffects : MonoBehaviour, CharacterShootListener, Character
 		// Plays the shooting effect
 		Transform characterTransform = shotCharacter.transform;
 		int size = shootingCharacter.GetComponent<CharacterSize>().GetSize() + shotCharacter.GetComponent<CharacterSize>().GetSize();
-        float radius = _controller.radius * size;
+		float radius = _controller.radius * size;
 		shoot.PlayEffect(characterTransform.position + radius * velocity.normalized, Quaternion.LookRotation(Vector3.forward, velocity), size);
 	}
 
