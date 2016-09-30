@@ -38,10 +38,6 @@ public class OptionsMenu : MonoBehaviour, BackOption {
     /// </summary>
     private AudioMenu _audioMenu;
     /// <summary>
-    /// Variable to control the triggers
-    /// </summary>
-    private bool _triggerPressed;
-    /// <summary>
     /// Check if we have the input controller (if not, we need to control it)
     /// </summary>
     private bool _hasInputController = false;
@@ -85,40 +81,6 @@ public class OptionsMenu : MonoBehaviour, BackOption {
             //select the option
             EventSystem.current.SetSelectedGameObject(firstSelected);
         }
-
-		
-		// Control that triggers are pressed only one time
-		if (!_triggerPressed && Input.GetAxis(Axis.SelectDrop) != 0) {
-			_triggerPressed = true;
-
-            //change options with triggers
-            Selectable select = null;
-            Selectable actualSelected=null;
-            bool setFocusInOption = IsUnderSubOption();
-            if (_actualMenuSelected != null) {
-                actualSelected = _actualMenuSelected.GetComponent<Selectable>();
-            }
-
-            //check if left or rigth
-            if (actualSelected != null) {
-                if (Input.GetAxis(Axis.SelectDrop) > 0) {
-                    select = actualSelected.FindSelectableOnDown();
-                } else {
-                    select = actualSelected.FindSelectableOnUp();
-                }
-            }
-
-            //if have a selection, select it
-            if (select != null && _actualMenuSelected!=null) {
-                //always disable permament focus
-                UnfocusOption();
-                //if suboption, set the focus
-                StartCoroutine(DelaySelect(select, setFocusInOption));
-            }
-		
-        }else if (Input.GetAxis(Axis.SelectDrop) == 0)
-			_triggerPressed = false;
-
 
         //B
         if (Input.GetButtonDown(Axis.Irrigate)
