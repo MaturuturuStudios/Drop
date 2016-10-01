@@ -3,9 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class StartApplication : MonoBehaviour {
-        
-	void Awake () {
+    public Texture2D cursorTexture;
+
+    void Awake () {
         ApplyGraphics();
+        ApplyMouse();
+    }
+
+    private void ApplyMouse() {
+        Cursor.visible = false;
+        CursorMode cursorMode = CursorMode.Auto;
+        Vector2 hotSpot = Vector2.zero;
+        Cursor.SetCursor(cursorTexture, hotSpot, cursorMode);
     }
 
     private void ApplyGraphics() {
