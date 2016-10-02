@@ -145,9 +145,6 @@ public class LevelEndController : MonoBehaviour {
             PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
             PlayerPrefs.Save();
 
-            //store the level completed and its score
-            int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
-
             //unlock the level
             _data.UnlockLevel(_nextLevel);
 
