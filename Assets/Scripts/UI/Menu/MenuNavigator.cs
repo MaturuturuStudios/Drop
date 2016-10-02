@@ -285,6 +285,13 @@ public class MenuNavigator : MonoBehaviour {
             backgroundImageMainMenu.enabled = true;
         }
 
+        //unpause
+        if (Time.timeScale == 0) {
+            waitFrame = true;
+            StartCoroutine(WaitFrame());
+            Time.timeScale = 1;
+        }
+
         //make sure to quit the confirmation
         DoConfirmQuitNo();
     }
