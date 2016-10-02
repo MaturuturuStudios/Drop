@@ -134,11 +134,12 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 //Set Control
                 currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
                 SetControl(next_drop);
-            }
+            } else {
 
-            // Play change drop effect
-            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
-		}
+                // Play change drop effect
+                currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
+            }
+        }
     }
 
 
@@ -162,10 +163,11 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 //Set Control
                 currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
                 SetControl(back_drop);
-            }
+            } else {
 
-            // Play change drop effect
-            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
+                // Play change drop effect
+                currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
+            }
 		}
     }
 
@@ -189,6 +191,9 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Update camera objective
             _cameraController.SetObjective(currentCharacter, isFusion);
+
+            // Play change drop effect
+            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
         }
     }
 
