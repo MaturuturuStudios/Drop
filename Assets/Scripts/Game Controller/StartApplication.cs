@@ -12,9 +12,11 @@ public class StartApplication : MonoBehaviour {
 
     private void ApplyMouse() {
         Cursor.visible = false;
-        CursorMode cursorMode = CursorMode.Auto;
-        Vector2 hotSpot = Vector2.zero;
-        Cursor.SetCursor(cursorTexture, hotSpot, cursorMode);
+        if (!Application.isEditor) {
+            CursorMode cursorMode = CursorMode.Auto;
+            Vector2 hotSpot = Vector2.zero;
+            Cursor.SetCursor(cursorTexture, hotSpot, cursorMode);
+        }
     }
 
     private void ApplyGraphics() {
