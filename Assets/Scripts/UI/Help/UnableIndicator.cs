@@ -18,6 +18,12 @@ public class UnableIndicator : MonoBehaviour {
 	public Animator characterAnimator;
 
 	/// <summary>
+	/// List of other indicators that should be hidden
+	/// when this one is shown.
+	/// </summary>
+	public UnableIndicator[] otherIndicators;
+
+	/// <summary>
 	/// Reference to the object's Animator component.
 	/// </summary>
 	private Animator _animator;
@@ -63,20 +69,24 @@ public class UnableIndicator : MonoBehaviour {
 			Hide();
 	}
 
-    /// <summary>
-    /// Unity's method called at the end of each frame.
-    /// </summary>
+	/// <summary>
+	/// Unity's method called at the end of each frame.
+	/// </summary>
 	void LateUpdate() {
 		// Orientates the object to the camera
 		_transform.rotation = Camera.main.transform.rotation;
-    }
+	}
 
-    /// <summary>
-    /// Shows the information item.
-    /// </summary>
+	/// <summary>
+	/// Shows the information item.
+	/// </summary>
 	public void Show() {
+		// Hides the other unable indicators
+		foreach (UnableIndicator indicator in otherIndicators)
+			indicator.Hide();
+
 		// Plays the effect animation
-        _animator.SetTrigger("show");
+		_animator.SetTrigger("show");
 
 		// Sets the flag and starts the timer
 		_shown = true;
@@ -89,10 +99,10 @@ public class UnableIndicator : MonoBehaviour {
 		characterAnimator.SetTrigger(CharacterAnimatorParameters.Unable);
 	}
 
-    /// <summary>
-    /// Hides the information item.
-    /// </summary>
-    public void Hide() {
+	/// <summary>
+	/// Hides the information item.
+	/// </summary>
+	public void Hide() {
 		// Checks if the object has been destroyed
 		if (this == null || !gameObject.activeInHierarchy)
 			return;
