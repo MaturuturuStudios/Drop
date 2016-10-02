@@ -54,6 +54,7 @@ public static class SoundUtility {
 		AS.spread = originalAudioSource.spread;
 		AS.velocityUpdateMode = originalAudioSource.velocityUpdateMode;
 		AS.volume = originalAudioSource.volume;
+		AS.loop = originalAudioSource.loop;
 
 		return AS;
 	}
