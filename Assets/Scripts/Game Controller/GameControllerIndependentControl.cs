@@ -134,11 +134,10 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 //Set Control
                 currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
                 SetControl(next_drop);
-            } else {
-
-                // Play change drop effect
-                currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
             }
+
+            // Play change drop effect
+            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
         }
     }
 
@@ -163,12 +162,30 @@ public class GameControllerIndependentControl : MonoBehaviour {
                 //Set Control
                 currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
                 SetControl(back_drop);
-            } else {
-
-                // Play change drop effect
-                currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
             }
+
+            // Play change drop effect
+            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
 		}
+    }
+
+
+    /// <summary>
+    /// Sets the control to an specific drop from input
+    /// </summary>
+    /// <param name="index">Index of drop in the allCurentCharacters list</param>
+    public void SetControlFromInput(int index) {
+
+        // Can't change controll if it is in shoot mode
+        bool notShoothing = (currentCharacter == null || !currentCharacter.GetComponent<CharacterShoot>().isShooting());
+
+        if (index < allCurrentCharacters.Count && index > -1 && notShoothing) {
+
+            SetControl(index, false);
+
+            // Play change drop effect
+            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
+        }
     }
 
 
@@ -183,7 +200,7 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
         if (index < allCurrentCharacters.Count && index > -1 && notShoothing) {
             //Try to stop abandoned drop
-            if(currentCharacter != null)
+            if (currentCharacter != null)
                 currentCharacter.GetComponent<CharacterControllerCustomPlayer>().Stop();
 
             //Set Control to new drop
@@ -191,9 +208,6 @@ public class GameControllerIndependentControl : MonoBehaviour {
 
             //Update camera objective
             _cameraController.SetObjective(currentCharacter, isFusion);
-
-            // Play change drop effect
-            currentCharacter.GetComponentInChildren<CharacterControlledIndicator>().PlayChangeDropEffect();
         }
     }
 

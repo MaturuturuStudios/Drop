@@ -95,15 +95,15 @@ public class GameControllerInput : MonoBehaviour {
 
             // Handles the direct access input
             if (Input.GetButtonDown(Axis.SelectDrop1))
-                _switcher.SetControl(0);
+                _switcher.SetControlFromInput(0);
             if (Input.GetButtonDown(Axis.SelectDrop2))
-                _switcher.SetControl(1);
+                _switcher.SetControlFromInput(1);
             if (Input.GetButtonDown(Axis.SelectDrop3))
-                _switcher.SetControl(2);
+                _switcher.SetControlFromInput(2);
             if (Input.GetButtonDown(Axis.SelectDrop4))
-                _switcher.SetControl(3);
+                _switcher.SetControlFromInput(3);
             if (Input.GetButtonDown(Axis.SelectDrop5))
-                _switcher.SetControl(4);
+                _switcher.SetControlFromInput(4);
 
             //Camera looking arround
             //float hLookInput = Input.GetAxis(Axis.CamHorizontal);
