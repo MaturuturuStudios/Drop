@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityStandardAssets.ImageEffects;
+using UnityEngine.SceneManagement;
 
 public class LevelTransitionController : MonoBehaviour {
 
@@ -134,6 +135,11 @@ public class LevelTransitionController : MonoBehaviour {
     /// </summary>
     private bool _canSkip = false;
 
+    /// <summary>
+    /// the data to ask for unlock the level
+    /// </summary>
+    private GameControllerData _data;
+
     #endregion
 
     #region Public methods
@@ -142,6 +148,10 @@ public class LevelTransitionController : MonoBehaviour {
 
         // Get reference to audio sources
         _audioSources = GetComponents<AudioSource>();
+
+        //Get data game and store the next level
+        if (Application.isPlaying)
+            _data = GameObject.FindGameObjectWithTag(Tags.GameData).GetComponent<GameControllerData>();
     }
 	
 
@@ -149,17 +159,17 @@ public class LevelTransitionController : MonoBehaviour {
     /// This method calls the apropiate animations for the level transitions
     /// </summary>
     /// <param name="dropsGetted">Number of drops collected in game</param>
-    public void BeginLevelTransition(int dropsGetted, int maxDrops) {
+    public void BeginLevelTransition(int maxDrops) {
 
         // Start counter animation
-        StartCoroutine(LevelTransitionAnimation(dropsGetted, maxDrops));
+        StartCoroutine(LevelTransitionAnimation(maxDrops));
     }
 
     /// <summary>
     /// Animation that shows the number of drops collected in the level
     /// </summary>
     /// <param name="dropsGetted">Number of drops collected  in the level</param>
-    public IEnumerator LevelTransitionAnimation(int dropsGetted, int maxDropsRequired) {
+    public IEnumerator LevelTransitionAnimation(int maxDropsRequired) {
 
 		// Get the refenece to the temporal objects container in the scene
 		GameObject parent = GameObject.Find("Temporal Objects");
@@ -183,12 +193,25 @@ public class LevelTransitionController : MonoBehaviour {
         // Get the canvas reference
         Canvas canvasTransition = GetComponentInChildren<Canvas>();
 
-		// Select the correct objects to instantiate
+        // Calculate saved drops
+        Collider[] posibleDrops = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size / 2);
+        int savedDrops = 0;
+        foreach (Collider posibleDrop in posibleDrops) {
+            CharacterSize sizeComponent = posibleDrop.GetComponent<CharacterSize>();
+            if(sizeComponent) {
+                savedDrops += sizeComponent.GetSize();
+            }
+        }
+
+        // Actualize game data
+        _data.SetLevelScore(_data.GetInfoScene(SceneManager.GetActiveScene().name), savedDrops);
+
+        // Select the correct objects to instantiate
         GameObject levelCompleteMessage;
-        if (dropsGetted < maxDropsRequired) {
+        if (savedDrops < maxDropsRequired) {
             levelCompleteMessage = Instantiate(levelCompleteText1, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound1;
-        } else if (dropsGetted == maxDropsRequired) {
+        } else if (savedDrops == maxDropsRequired) {
             levelCompleteMessage = Instantiate(levelCompleteText2, Vector3.zero, Quaternion.identity) as GameObject;
             _audioSources[0].clip = levelCompleteSound2;
         } else {
@@ -206,7 +229,7 @@ public class LevelTransitionController : MonoBehaviour {
 		levelCompleteMessage.transform.SetParent(canvasTransition.transform, false);
 
 		// Look if player exceded max drops
-		int dropsToShow = dropsGetted > maxDropsRequired ? dropsGetted : maxDropsRequired;
+		int dropsToShow = savedDrops > maxDropsRequired ? savedDrops : maxDropsRequired;
 
         // Wait to start drops counter
         yield return new WaitForSeconds(1.5f);
@@ -245,7 +268,7 @@ public class LevelTransitionController : MonoBehaviour {
         float increasePitch = (maxPitch - startingPitch) / dropsToShow;
 
 		// Start drops filled counter spawn
-        for (int i = 0; i < dropsGetted; ++i) {
+        for (int i = 0; i < savedDrops; ++i) {
 
 			// Actualize drops text counter 
 			counterText.GetComponent<Text> ().text = LanguageManager.Instance.GetText("SavedDrops") + ": " + (i + 1f) + "/" + maxDropsRequired;
@@ -281,13 +304,13 @@ public class LevelTransitionController : MonoBehaviour {
 			Destroy(dropsContainer[i]);
 
             // Look for delay between drops animations
-            float delayBetweenDrops = dropsGetted > maxDropsRequired ? dropCreationDuration / dropsGetted : dropCreationDuration / maxDropsRequired;
+            float delayBetweenDrops = savedDrops > maxDropsRequired ? dropCreationDuration / savedDrops : dropCreationDuration / maxDropsRequired;
             // Wait for next animation
             yield return new WaitForSeconds(delayBetweenDrops);
         }
 
 		// If level complete with max drops play special effects
-		if (dropsGetted >= maxDropsRequired) {
+		if (savedDrops >= maxDropsRequired) {
 			StartCoroutine (FireworksFX (true, parent));
 			StartCoroutine (ConfettiFX (true, parent));
 		}

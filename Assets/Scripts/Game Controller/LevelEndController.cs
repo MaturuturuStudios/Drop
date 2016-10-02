@@ -73,6 +73,10 @@ public class LevelEndController : MonoBehaviour {
     /// the data to ask for unlock the level
     /// </summary>
 	private GameControllerData _data;
+    /// <summary>
+    /// Handles if we have entered the trigger before
+    /// </summary>
+	private bool _finished = false;
     #endregion
 
     #region Methods
@@ -128,32 +132,35 @@ public class LevelEndController : MonoBehaviour {
     /// </summary>
     public void LevelEnd(){
 
-        // Stops input
-        _gci.StopInput(true, timeToSkip);
+        if (!_finished) {
+            _finished = true;
 
-        // Disable start button
-        _menuNavigator.SetPauseAvailable(false);
+            // Stops input
+            _gci.StopInput(true, timeToSkip);
 
-        //make sure is stored the first level is completed
-        PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
-        PlayerPrefs.Save();
-		
-		//store the level completed and its score
-		int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
-		_data.SetLevelScore (_actualLevel, size);
+            // Disable start button
+            _menuNavigator.SetPauseAvailable(false);
 
-        //unlock the level
-        _data.UnlockLevel(_nextLevel);
+            //make sure is stored the first level is completed
+            PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
+            PlayerPrefs.Save();
 
-        // Load scene async
-        _menuNavigator.ChangeScene(_nextScene.name, maxTime);
+            //store the level completed and its score
+            int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
 
-        // Start transition animation
-        if (_levelTransitionController != null) {
-            //get the max score of the level
-            ScoreLevel score = _data.GetScoreLevel(_actualLevel);
-            _levelTransitionController.BeginLevelTransition(size, score.max);
-            StartCoroutine(_levelTransitionController.WaitMinTimeToSkip(timeToSkip));
+            //unlock the level
+            _data.UnlockLevel(_nextLevel);
+
+            // Load scene async
+            _menuNavigator.ChangeScene(_nextScene.name, maxTime);
+
+            // Start transition animation
+            if (_levelTransitionController != null) {
+                //get the max score of the level
+                ScoreLevel score = _data.GetScoreLevel(_actualLevel);
+                _levelTransitionController.BeginLevelTransition(score.max);
+                StartCoroutine(_levelTransitionController.WaitMinTimeToSkip(timeToSkip));
+            }
         }
     }
 
