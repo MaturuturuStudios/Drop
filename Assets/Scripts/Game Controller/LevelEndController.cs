@@ -145,10 +145,6 @@ public class LevelEndController : MonoBehaviour {
             PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
             PlayerPrefs.Save();
 
-            //store the level completed and its score
-            int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
-            _data.SetLevelScore(_actualLevel, size);
-
             //unlock the level
             _data.UnlockLevel(_nextLevel);
             // Load scene async
@@ -160,6 +156,11 @@ public class LevelEndController : MonoBehaviour {
                 ScoreLevel score = _data.GetScoreLevel(_actualLevel);
                 _levelTransitionController.BeginLevelTransition(score.max);
                 StartCoroutine(_levelTransitionController.WaitMinTimeToSkip(timeToSkip));
+            }else {
+
+                //store the level completed and its score
+                int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
+                _data.SetLevelScore(_actualLevel, size);
             }
         }
     }

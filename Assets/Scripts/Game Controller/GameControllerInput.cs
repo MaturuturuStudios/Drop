@@ -166,11 +166,11 @@ public class GameControllerInput : MonoBehaviour {
                 Input.GetButtonDown(Axis.Start) ||
                 (Input.anyKeyDown && Input.inputString.Length > 0))) {
                     _allowToSkip = false;
-                GetComponentInChildren<MainCameraAnimationController>().SkipIntro();
                 LevelTransitionController ltc = GameObject.FindObjectOfType<LevelTransitionController>();
                 if (ltc != null) {
                     ltc.SkipEnd();
                 }
+                GetComponentInChildren<MainCameraAnimationController>().SkipIntro();
             }
         }
     }

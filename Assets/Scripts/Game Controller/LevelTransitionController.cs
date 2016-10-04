@@ -203,8 +203,8 @@ public class LevelTransitionController : MonoBehaviour {
             }
         }
 
-        //// Actualize game data
-        //_data.SetLevelScore(_data.GetInfoScene(SceneManager.GetActiveScene().name), savedDrops);
+        // Actualize game data
+        _data.SetLevelScore(_data.GetInfoScene(SceneManager.GetActiveScene().name), savedDrops);
 
         // Select the correct objects to instantiate
         GameObject levelCompleteMessage;
