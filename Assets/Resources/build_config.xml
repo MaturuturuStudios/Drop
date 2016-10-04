@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <BuildData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <buildName>drop-5.0-rc</buildName>
-  <workPath>Build/drop-5.0-rc</workPath>
+  <buildName>drop-v0.5.1</buildName>
+  <workPath>Build/drop-v0.5.1</workPath>
   <share>false</share>
   <sharedFolderPath>../../Google Drive/WorkSpace/DropOfficial/Realeases</sharedFolderPath>
   <zipPath>D:/Program Files (x86)/GnuWin32/bin/zip.exe</zipPath>
