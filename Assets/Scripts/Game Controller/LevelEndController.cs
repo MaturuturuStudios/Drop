@@ -145,9 +145,12 @@ public class LevelEndController : MonoBehaviour {
             PlayerPrefs.SetInt(PlayerDataStoreKeys.PlayerFirstTime, 1);
             PlayerPrefs.Save();
 
+            //store the level completed and its score
+            int size = _gcic.currentCharacter.GetComponent<CharacterSize>().GetSize();
+            _data.SetLevelScore(_actualLevel, size);
+
             //unlock the level
             _data.UnlockLevel(_nextLevel);
-
             // Load scene async
             _menuNavigator.ChangeScene(_nextScene.name, maxTime);
 
