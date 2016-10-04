@@ -21,7 +21,13 @@ public class IntroController : MonoBehaviour {
     /// <summary>
     /// Movie audio source
     /// </summary>
-    public AudioSource introAudio;
+    public AudioSource audioSource;
+
+
+    /// <summary>
+    /// Movie audio source
+    /// </summary>
+    public AudioClip introClip;
 
 
     /// <summary>
@@ -179,7 +185,7 @@ public class IntroController : MonoBehaviour {
         yield return MenuNavigator.WaitForRealSeconds(timeToStart);
 
         // Play the movie and audio
-        introAudio.Play();
+        audioSource.Play();
         introMovie.Play();
         startedVideo = true;
     }
@@ -191,15 +197,15 @@ public class IntroController : MonoBehaviour {
     private IEnumerator PlayLogoSound(float timeToStop) {
 
         // Load logo sound
-        introAudio = GetComponentInChildren<AudioSource>();
-        introAudio.clip = maturuturuClip;
-        introAudio.Play();
+        audioSource = GetComponentInChildren<AudioSource>();
+        audioSource.clip = maturuturuClip;
+        audioSource.Play();
 
         // Wait logo duration to start the movie
         yield return MenuNavigator.WaitForRealSeconds(timeToStop);
 
         // Get audio source from movie
-        introAudio.clip = introMovie.audioClip;
+        audioSource.clip = introClip;
     }
 
     #endregion
