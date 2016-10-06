@@ -109,7 +109,7 @@ public class MenuMapLevel3D : MonoBehaviour {
 	/// <summary>
 	/// The title world.
 	/// </summary>
-    private TextMesh _titleWorld;
+    private TextInternationalizationMesh _titleWorld;
 	/// <summary>
 	/// The fading out enumerator
 	/// </summary>
@@ -236,7 +236,7 @@ public class MenuMapLevel3D : MonoBehaviour {
         _levels = new List<GameObject[]>();
         _levelsindicator = new List<Indicator[]>();
 
-        _titleWorld = cameraCanvas.GetComponentInChildren<TextMesh>();
+        _titleWorld = cameraCanvas.GetComponentInChildren<TextInternationalizationMesh>();
         MeshRenderer titleRender = cameraCanvas.GetComponentInChildren<MeshRenderer>();
         titleRender.sortingOrder = 100;
 
@@ -267,6 +267,10 @@ public class MenuMapLevel3D : MonoBehaviour {
 
         _actualLevelInfo.level = 0;
         _actualLevelInfo.world = 0;
+
+        //Run the method one first time
+        LanguageManager languageManager = LanguageManager.Instance;
+        _titleWorld.OnChangeLanguage(languageManager);
 
         //deactivate map until is needed
         this.gameObject.SetActive(false);
@@ -355,7 +359,9 @@ public class MenuMapLevel3D : MonoBehaviour {
                 StartCoroutine(Zoom());
 
             //change title world
-            _titleWorld.text = LanguageManager.Instance.GetText("World") + " " + (info.world + 1);
+            _titleWorld.addedString = " " + (info.world + 1);
+            LanguageManager languageManager = LanguageManager.Instance;
+            _titleWorld.OnChangeLanguage(languageManager);
 
             foreach (MapLevelListener listener in _listeners)
                 listener.OnChangeWorld(_actualLevelInfo.world, info.world);
