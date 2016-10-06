@@ -41,6 +41,10 @@ public class OptionsMenu : MonoBehaviour, BackOption {
     /// Check if we have the input controller (if not, we need to control it)
     /// </summary>
     private bool _hasInputController = false;
+    /// <summary>
+    /// control double return!
+    /// </summary>
+    private bool returned=false;
     #endregion
 
     #region Methods
@@ -53,6 +57,8 @@ public class OptionsMenu : MonoBehaviour, BackOption {
         GameControllerInput input = gameController[0].GetComponent<GameControllerInput>();
         if (input == null) return;
         _hasInputController = input.isActiveAndEnabled;
+
+        returned = false;
     }
 
 	public void OnEnable() {
@@ -65,6 +71,8 @@ public class OptionsMenu : MonoBehaviour, BackOption {
 
         //we have to select the option in update
         _selectOption = true;
+
+        returned = false;
 	}
 
 	public void Update() {
@@ -90,12 +98,13 @@ public class OptionsMenu : MonoBehaviour, BackOption {
             if (IsUnderSubOption())
                 //if yes, unselect the option
                 UnfocusOption();
-            else 
+            else {
                 //if not, the focus is already on the buttons menu, come back
+                if (returned) return;
                 _menuNavigator.ComeBack();
+                returned = true;
+            }
             _audioMenu.PlayEffect(AudioMenuType.BACK_BUTTON);
-            
-
         }
     }
 
@@ -201,8 +210,11 @@ public class OptionsMenu : MonoBehaviour, BackOption {
             //if yes, unselect the option
             UnfocusOption();
             return true;
-        } else {
+        } else if (returned) {
+            return true;
+        } else { 
             //if not, the focus is already on the buttons menu, come back (return false)
+            returned = true;
             return false;
         }
         

@@ -134,6 +134,10 @@ public class MenuMapLevel3D : MonoBehaviour {
 	/// The previous double fading in world
 	/// </summary>
 	private int previousDoubleFadingIn = -1;
+    /// <summary>
+    /// control double return!
+    /// </summary>
+    private bool returned = false;
     #endregion
 
     #region Private class
@@ -189,6 +193,7 @@ public class MenuMapLevel3D : MonoBehaviour {
         //we have to select the option in update
         _selectOption = true;
         SelectMapCamera(true);
+        returned = false;
     }
 
     public void OnDisable() {
@@ -292,7 +297,10 @@ public class MenuMapLevel3D : MonoBehaviour {
         //B, return, start
         if (Input.GetButtonDown(Axis.Irrigate) || Input.GetButtonDown(Axis.Back)
             || Input.GetButtonDown(Axis.Start)) {
-            _menuNavigator.ComeBack();
+            if (!returned) {
+                returned = true;
+                _menuNavigator.ComeBack();
+            }
         }
 
         //Change worlds with LR
