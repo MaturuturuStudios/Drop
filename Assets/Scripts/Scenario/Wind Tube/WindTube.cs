@@ -466,6 +466,7 @@ public class WindTube : MonoBehaviour {
     /// <summary>
     /// Allows to change the length parameter
     /// </summary>
+    /// <param name="length">The new value for length</param>
     public void SetLength(float length)
     {
 
