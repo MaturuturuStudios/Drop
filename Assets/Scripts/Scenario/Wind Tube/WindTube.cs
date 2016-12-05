@@ -452,15 +452,25 @@ public class WindTube : MonoBehaviour {
 		// Draws the collider
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Gizmos.DrawCube(Vector3.up * collider.size.y / 2, collider.size);
-	}
+    }
 
-	/// <summary>
-	/// Enables or disables the script.
-	/// </summary>
-	/// <param name="enabled">If the script should be enabled</param>
-	public void SetEnabled(bool enabled) {
-		this.enabled = enabled;
-	}
+    /// <summary>
+    /// Enables or disables the script.
+    /// </summary>
+    /// <param name="enabled">If the script should be enabled</param>
+    public void SetEnabled(bool enabled)
+    {
+        this.enabled = enabled;
+    }
 
-	#endregion
+    /// <summary>
+    /// Allows to change the length parameter
+    /// </summary>
+    public void SetLength(float length)
+    {
+
+        this.length = length;
+    }
+
+    #endregion
 }
