@@ -27,4 +27,13 @@ public class Teleporter : ActionPerformer {
 		Gizmos.color = Color.magenta;
 		Gizmos.DrawLine(transform.position, target.position);
 	}
+
+    /// <summary>
+    /// Enables or disables the script.
+    /// </summary>
+    /// <param name="enabled">If the script should be enabled</param>
+    public void SetEnabled(bool enabled)
+    {
+        this.enabled = enabled;
+    }
 }
