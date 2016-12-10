@@ -181,7 +181,8 @@ public class GameControllerInput : MonoBehaviour {
     /// </summary>
     /// <param name="allowToSkip"></param>
     /// <param name="timeToReanude"></param>
-    public void StopInput(bool allowToSkip = false, float timeToReanude = 0) {
+    public void StopInput(bool allowToSkip = false, float timeToReanude = 0)
+    {
 
         // Disable input
         CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
@@ -190,6 +191,20 @@ public class GameControllerInput : MonoBehaviour {
 
         // Wait for display the intro
         StartCoroutine(WaitForSkip(allowToSkip, timeToReanude));
+    }
+
+
+    /// <summary>
+    /// Stops the player immediatly and closes the input.
+    /// </summary>
+    public void StopInputAndPlayer()
+    {
+
+        // Disable input
+        CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+        cccp.Stop(true);
+
+        _enabled = false;
     }
 
 
