@@ -196,33 +196,42 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	/// Reference to the deformation script on the model.
 	/// </summary>
 	[Header("Deformation")]
-	public SkinnedSphereDeform deformationScript;
+	public SphereDeformationShader deformationScript;
 
 	/// <summary>
 	/// The deformation the character will have when at
-	/// minimum scale. Not this will change the character's
-	/// visual scale.
+	/// minimum scale.
 	/// </summary>
-	public float minDeformationScale = 1;
+	public DeformationParameters minDeformationParameters;
 
 	/// <summary>
 	/// The deformation the character will have when at
-	/// maximum scale. Not this will change the character's
-	/// visual scale.
+	/// maximum scale.
 	/// </summary>
-	public float maxDeformationScale = 1;
+	public DeformationParameters maxDeformationParameters;
+
+	#endregion
+
+	#region Distortion
 
 	/// <summary>
-	/// The chamf scale the character will have when at
-	/// minimum scale;
+	/// If enabled, the character's distortio will scale with
+	/// it's size, overriding the material's configuration.
 	/// </summary>
-	public float minChamfScale = 1;
+	[Header("Distortion")]
+	public bool scaleDistortion = true;
 
 	/// <summary>
-	/// The chamf scale the character will have when at
-	/// maximum scale;
+	/// The distortion the character will make when at
+	/// minimum scale.
 	/// </summary>
-	public float maxChamfScale = 1;
+	public DistortionParameters minDistortionParameters;
+
+	/// <summary>
+	/// The distortion the character will make when at
+	/// maximum scale.
+	/// </summary>
+	public DistortionParameters maxDistortionParameters;
 
 	#endregion
 
@@ -255,10 +264,10 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	private CharacterShootTrajectory _characterShootTrajectory;
 
 	/// <summary>
-	/// A reference to the EyesAttacher component on
+	/// A reference to the EyesController component on
 	/// this entity.
 	/// </summary>
-	private EyesAttacher _eyesAttacher;
+	private EyesController _eyesController;
 
 	/// <summary>
 	/// A reference to the model's parent.
@@ -317,7 +326,7 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 		_characterSize = GetComponentInParent<CharacterSize>();
 		_characterShoot = GetComponentInParent<CharacterShoot>();
 		_characterShootTrajectory = GetComponentInParent<CharacterShootTrajectory>();
-		_eyesAttacher = GetComponent<EyesAttacher>();
+		_eyesController = GetComponent<EyesController>();
 		_transform = transform;
 		_parent = _transform.parent;
 
@@ -344,11 +353,6 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 				break;
 		}
 
-		// Sets the eyes, hat and deformation scale
-		ScaleEyes(_parent.lossyScale.x);
-		ScaleHat(_parent.lossyScale.x);
-		ScaleDeformation(_parent.lossyScale.x);
-
 		// Subscribes itself to the size's changes
 		_characterSize.AddListener(this);
 	}
@@ -357,6 +361,13 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	/// Unity's method called when the component becomes enabled.
 	/// </summary>
 	void OnEnable() {
+
+		// Sets the eyes, hat and deformation scale
+		ScaleEyes(_parent.lossyScale.x);
+		ScaleHat(_parent.lossyScale.x);
+		ScaleDeformation(_parent.lossyScale.x);
+		ScaleDistortion(_parent.lossyScale.x);
+
 		// Resets the joints to fit the character's current scale
 		float hatScale = Mathf.Lerp(minHatScale, maxHatScale, GetInterpolatedScale(_transform.lossyScale.x));
 		for (int i = 0; i < _joints.Length; i++) {
@@ -374,9 +385,9 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	void LateUpdate() {
 		// Checks if the character is shooting
 		if (_characterShoot.isShooting()) {
-            // Makes the model face the right direction
-            float desiredAngle = Vector3.Angle(_characterShootTrajectory.GetVelocityDrop(), Vector3.right);
-            Quaternion desiredRotation = Quaternion.Euler(0, -rotationAngle * Mathf.Cos(desiredAngle * Mathf.Deg2Rad), 0);
+			// Makes the model face the right direction
+			float desiredAngle = Vector3.Angle(_characterShootTrajectory.GetVelocityDrop(), Vector3.right);
+			Quaternion desiredRotation = Quaternion.Euler(0, -rotationAngle * Mathf.Cos(desiredAngle * Mathf.Deg2Rad), 0);
 			_transform.rotation = Quaternion.RotateTowards(_transform.rotation, desiredRotation, aimSpeed * Time.deltaTime);
 
 			// Makes the eyes face the right direction
@@ -410,7 +421,7 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 		}
 
 		// Adjusts the eye rotation
-		_eyesAttacher.center.localRotation *= _currentEyeAimingRotation;
+		_eyesController.center.localRotation *= _currentEyeAimingRotation;
 
 		// Scales the eyes
 		ScaleEyes(_parent.lossyScale.x);
@@ -448,6 +459,7 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	public void OnChangeSizeEnd(GameObject character, Vector3 previousScale, Vector3 nextScale) {
 		// Scales the deformation
 		ScaleDeformation(_parent.lossyScale.x);
+		ScaleDistortion(_parent.lossyScale.x);
 
 		// Reattachs the connected bodies
 		for (int i = 0; i < _joints.Length; i++)
@@ -460,9 +472,9 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	/// <param name="scale">The current scale of the character</param>
 	private void ScaleEyes(float scale) {
 		float scaleFactor = GetInterpolatedScale(scale);
-		_eyesAttacher.eyeScale = Mathf.Lerp(minEyeScale, maxEyeScale, scaleFactor);
-		_eyesAttacher.eyeSeparation = Vector2.Lerp(minEyeSeparation, maxEyeSeparation, scaleFactor);
-		_eyesAttacher.eyePenetration = Mathf.Lerp(minEyePenetration, maxEyePenetration, scaleFactor);
+		_eyesController.eyeScale = Mathf.Lerp(minEyeScale, maxEyeScale, scaleFactor);
+		_eyesController.eyeSeparation = Vector2.Lerp(minEyeSeparation, maxEyeSeparation, scaleFactor);
+		_eyesController.eyePenetration = Mathf.Lerp(minEyePenetration, maxEyePenetration, scaleFactor);
 	}
 
 	/// <summary>
@@ -480,12 +492,22 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 	/// <param name="scale">The current scale of the character</param>
 	private void ScaleDeformation(float scale) {
 		float scaleFactor = GetInterpolatedScale(scale);
-		deformationScript.chamfScale = Mathf.Lerp(minChamfScale, maxChamfScale, scaleFactor);
+		DeformationParameters scaledParameters = DeformationParameters.GetInterpolatedParameters(minDeformationParameters, maxDeformationParameters, scaleFactor);
+		deformationScript.SetDeformationParameters(scaledParameters);
 
 		// Scales the model to scale the deformation. Simulates a "size change"
-		float modelScale = Mathf.Lerp(minDeformationScale, maxDeformationScale, scaleFactor);
-		_transform.localScale = new Vector3(modelScale, modelScale, modelScale);
-		_transform.localPosition = _originalModelOffset * modelScale;
+		_transform.localScale = scaledParameters.modelScale * Vector3.one;
+		_transform.localPosition = _originalModelOffset * scaledParameters.modelScale;
+	}
+
+	/// <summary>
+	/// Scales the deformation to fit the parameters.
+	/// </summary>
+	/// <param name="scale">The current scale of the character</param>
+	private void ScaleDistortion(float scale) {
+		float scaleFactor = GetInterpolatedScale(scale);
+		DistortionParameters scaledParameters = DistortionParameters.GetInterpolatedParameters(minDistortionParameters, maxDistortionParameters, scaleFactor);
+		deformationScript.SetDistortionParameters(scaledParameters);
 	}
 
 	/// <summary>
@@ -520,7 +542,7 @@ public class CharacterModelController : MonoBehaviour,  CharacterSizeListener {
 		// If the angle is bigger than 180º, it's using the wrong sign
 		if (angle > 180)
 			angle -= 360;
-        return -angle / rotationAngle;
+		return -angle / rotationAngle;
 	}
 	
 	public void OnSpitDrop(GameObject character, GameObject spittedCharacter) {
