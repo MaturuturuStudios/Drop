@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class GameControllerInput : MonoBehaviour {
 
 	#region Attributes
 	/// Internal references
 	private GameControllerIndependentControl _switcher;
-    //private MainCameraController _mainCameraController;
-    private GameControllerHelp _helpController;
+	//private MainCameraController _mainCameraController;
+	private GameControllerHelp _helpController;
     
-    /// <summary>
-    /// Menu navigator of the scene
-    /// </summary>
-    private MenuNavigator _ui;
+	/// <summary>
+	/// Menu navigator of the scene
+	/// </summary>
+	private MenuNavigator _ui;
 
 	/// <summary>
 	/// Control if the trigger is pressed for only call change drop one time
@@ -24,217 +25,291 @@ public class GameControllerInput : MonoBehaviour {
 	/// </summary>
 	private bool _shootCounterPressed = false;
 
-    /// <summary>
-    /// Control if the input is listening
-    /// </summary>
-    private bool _enabled;
+	/// <summary>
+	/// Control if the input is listening
+	/// </summary>
+	private bool _enabled;
 
-    /// <summary>
-    /// Control if there is input moving
-    /// </summary>
-    private bool _moving;
+	/// <summary>
+	/// Control if there is input moving
+	/// </summary>
+	private bool _moving;
 
-    /// <summary>
-    /// Controls if any key is pressed for skip intros
-    /// </summary>
-    private bool _allowToSkip;
-    #endregion
+	/// <summary>
+	/// Controls if any key is pressed for skip intros
+	/// </summary>
+	private bool _allowToSkip;
 
-    #region Methods
-    void Start() {
+	/// <summary>
+	/// The source providing the input to the character.
+	/// </summary>
+	private InputProvider currentInput;
+
+	/// <summary>
+	/// The current sequence being played. If null, the
+	/// player is on control.
+	/// </summary>
+	private InputSequence currentInputSequence;
+
+	/// <summary>
+	/// The time the current sequence has been being played.
+	/// </summary>
+	private float sequenceTime;
+
+	[HideInInspector]
+	public bool updateOnFixedStep = false;
+
+	#endregion
+
+	#region Methods
+	void Start() {
 		// Retrives the independent control component
 		_switcher = GetComponent<GameControllerIndependentControl>();
 		//_mainCameraController = GetComponentInChildren<MainCameraController>();
 		_helpController = GetComponent<GameControllerHelp>();
 
 		_ui = GameObject.FindGameObjectWithTag(Tags.Menus).GetComponent<MenuNavigator>();
-        _enabled = true;
+		_enabled = true;
 
-    }
+		// Starts the input provider
+		currentInput = new InputProviderFromPlayer();
+	}
+
+	void FixedUpdate() {
+		if (IsSequencePlaying() && IsInputEnabled()) {
+
+			if (!currentInputSequence.IsOver(sequenceTime)) {
+				currentInput = currentInputSequence.GetInputAtTime(sequenceTime);
+				sequenceTime += Time.deltaTime;
+			}
+			else {
+				StopSequence();
+			}
+		}
+
+		if (updateOnFixedStep && IsInputEnabled()) {
+			PerformCharacterInput();
+		}
+	}
 
 	void Update() {
 		//Start button
 		if (Input.GetButtonDown(Axis.Start))
 			_ui.PauseGame();
 
-        _moving = false;
+		_moving = false;
 
-        if (_enabled && (_ui == null || !_ui.IsMenuActive())) {
-            // Retrieves current character's components
-            CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
-            CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
-            CharacterAction actionComponent = _switcher.currentCharacter.GetComponent<CharacterAction>();
+		if (!updateOnFixedStep && !IsSequencePlaying() && IsInputEnabled()) {
+			// Character input
+			PerformCharacterInput();
+		}
+		else {
+			if (_ui != null) {
+				//Select button
+				if (Input.GetButtonDown(Axis.Back)) {
+					_ui.ComeBack();
+					//come back close the menu? unpause the game!!
+					if (!_ui.IsMenuActive()) {
+						_ui.PauseGame(false);
+					}
+				}
+			}
 
-            // Horizontal input
-            float hInput = Input.GetAxis(Axis.Horizontal);
-            cccp.HorizontalInput = hInput;
+			if (_allowToSkip &&
+				(Input.GetButtonDown(Axis.Action) ||
+				Input.GetButtonDown(Axis.Jump) ||
+				Input.GetButtonDown(Axis.Irrigate) ||
+				Input.GetButtonDown(Axis.ShootMode) ||
+				Input.GetButtonDown(Axis.Start) ||
+				(Input.anyKeyDown && Input.inputString.Length > 0))) {
+				_allowToSkip = false;
+				LevelTransitionController ltc = GameObject.FindObjectOfType<LevelTransitionController>();
+				if (ltc != null) {
+					ltc.SkipEnd();
+				}
+				GetComponentInChildren<MainCameraAnimationController>().SkipIntro();
+			}
+		}
+	}
 
-            // Vertical input
-            float vInput = Input.GetAxis(Axis.Vertical);
-            cccp.VerticalInput = vInput;
+	public bool IsInputEnabled() {
+		return _enabled && (_ui == null || !_ui.IsMenuActive());
+	}
 
-            // Controls if player wants to move
-            _moving = hInput != 0 || vInput != 0;
+	private void PerformCharacterInput() {
+		// Retrieves current character's components
+		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+		CharacterShoot shootComponent = _switcher.currentCharacter.GetComponent<CharacterShoot>();
+		CharacterAction actionComponent = _switcher.currentCharacter.GetComponent<CharacterAction>();
 
-            // Jump input
-            if (Input.GetButtonDown(Axis.Jump)) {
-                cccp.Jump();
-            }
+		// Horizontal input
+		float hInput = currentInput.GetAxis(Axis.Horizontal);
+		cccp.HorizontalInput = hInput;
 
-            // Control that triggers are pressed only one time
-            if (!_triggerPressed && Input.GetAxisRaw(Axis.SelectDrop) > 0) {
-                _switcher.ControlNextDrop();
-                _triggerPressed = true;
-            }
-			else if (!_triggerPressed && Input.GetAxisRaw(Axis.SelectDrop) < 0) {
-                _switcher.ControlBackDrop();
-                _triggerPressed = true;
-            }
-			else if (Input.GetAxisRaw(Axis.SelectDrop) == 0)
-                _triggerPressed = false;
+		// Vertical input
+		float vInput = currentInput.GetAxis(Axis.Vertical);
+		cccp.VerticalInput = vInput;
 
-            // Handles the direct access input
-            if (Input.GetButtonDown(Axis.SelectDrop1))
-                _switcher.SetControlFromInput(0);
-            if (Input.GetButtonDown(Axis.SelectDrop2))
-                _switcher.SetControlFromInput(1);
-            if (Input.GetButtonDown(Axis.SelectDrop3))
-                _switcher.SetControlFromInput(2);
-            if (Input.GetButtonDown(Axis.SelectDrop4))
-                _switcher.SetControlFromInput(3);
-            if (Input.GetButtonDown(Axis.SelectDrop5))
-                _switcher.SetControlFromInput(4);
+		// Controls if player wants to move
+		_moving = hInput != 0 || vInput != 0;
 
-            //Camera looking arround
-            //float hLookInput = Input.GetAxis(Axis.CamHorizontal);
-            //float vLookInput = Input.GetAxis(Axis.CamVertical);
-            //_mainCameraController.LookArround(hLookInput, vLookInput);
+		// Jump input
+		if (currentInput.GetButtonDown(Axis.Jump)) {
+			cccp.Jump();
+		}
 
-            //Handle shoot input
-            bool isShooting = shootComponent.isShooting();
-            if (Input.GetButtonDown(Axis.Action) || Input.GetButtonDown(Axis.Jump))
-                shootComponent.Shoot();
-            if (Input.GetButtonDown(Axis.ShootMode))
-                shootComponent.Aim();
+		// Control that triggers are pressed only one time
+		if (!_triggerPressed && currentInput.GetAxisRaw(Axis.SelectDrop) > 0) {
+			_switcher.ControlNextDrop();
+			_triggerPressed = true;
+		}
+		else if (!_triggerPressed && currentInput.GetAxisRaw(Axis.SelectDrop) < 0) {
+			_switcher.ControlBackDrop();
+			_triggerPressed = true;
+		}
+		else if (currentInput.GetAxisRaw(Axis.SelectDrop) == 0)
+			_triggerPressed = false;
 
-            // Control that shootCounter is pressed only one time
-            if (!_shootCounterPressed && Input.GetAxisRaw(Axis.ShootCounter) > 0) {
-                shootComponent.IncreaseSize();
-                _shootCounterPressed = true;
-            } else if (!_shootCounterPressed && Input.GetAxisRaw(Axis.ShootCounter) < 0) {
-                shootComponent.DecreaseSize();
-                _shootCounterPressed = true;
-            } else if (Input.GetAxisRaw(Axis.ShootCounter) == 0)
-                _shootCounterPressed = false;
+		// Handles the direct access input
+		if (currentInput.GetButtonDown(Axis.SelectDrop1))
+			_switcher.SetControlFromInput(0);
+		if (currentInput.GetButtonDown(Axis.SelectDrop2))
+			_switcher.SetControlFromInput(1);
+		if (currentInput.GetButtonDown(Axis.SelectDrop3))
+			_switcher.SetControlFromInput(2);
+		if (currentInput.GetButtonDown(Axis.SelectDrop4))
+			_switcher.SetControlFromInput(3);
+		if (currentInput.GetButtonDown(Axis.SelectDrop5))
+			_switcher.SetControlFromInput(4);
 
-            //Handle action input
-            if (Input.GetButtonDown(Axis.Action) && !isShooting)
-                actionComponent.DoAction();
+		//Camera looking arround
+		//float hLookInput = currentInput.GetAxis(Axis.CamHorizontal);
+		//float vLookInput = currentInput.GetAxis(Axis.CamVertical);
+		//_mainCameraController.LookArround(hLookInput, vLookInput);
 
-            //Irrigate action
-            if (Input.GetButtonDown(Axis.Irrigate))
-                actionComponent.Irrigate();
+		//Handle shoot input
+		bool isShooting = shootComponent.isShooting();
+		if (currentInput.GetButtonDown(Axis.Action) || currentInput.GetButtonDown(Axis.Jump))
+			shootComponent.Shoot();
+		if (currentInput.GetButtonDown(Axis.ShootMode))
+			shootComponent.Aim();
 
-            //Select button
-            bool help = Input.GetButtonDown(Axis.Back);
-            if (help)
-                _helpController.ToggleHelp();
-            _helpController.UpdateAutoShow(hInput, vInput);
+		// Control that shootCounter is pressed only one time
+		if (!_shootCounterPressed && currentInput.GetAxisRaw(Axis.ShootCounter) > 0) {
+			shootComponent.IncreaseSize();
+			_shootCounterPressed = true;
+		}
+		else if (!_shootCounterPressed && currentInput.GetAxisRaw(Axis.ShootCounter) < 0) {
+			shootComponent.DecreaseSize();
+			_shootCounterPressed = true;
+		}
+		else if (currentInput.GetAxisRaw(Axis.ShootCounter) == 0)
+			_shootCounterPressed = false;
 
-            //Shoot mode pointer inputs
-            if (Input.GetAxis(Axis.LookAtDir) < 0)
-                shootComponent.LookatRight();
-            if (Input.GetAxis(Axis.LookAtDir) > 0)
-                shootComponent.LookatLeft();
-        } else {
-            if (_ui != null) {
-                //Select button
-                if (Input.GetButtonDown(Axis.Back)) {
-                    _ui.ComeBack();
-                    //come back close the menu? unpause the game!!
-                    if (!_ui.IsMenuActive()) {
-                        _ui.PauseGame(false);
-                    }
-                }
-            }
+		//Handle action input
+		if (currentInput.GetButtonDown(Axis.Action) && !isShooting)
+			actionComponent.DoAction();
 
-            if (_allowToSkip &&
-                (Input.GetButtonDown(Axis.Action) ||
-                Input.GetButtonDown(Axis.Jump) ||
-                Input.GetButtonDown(Axis.Irrigate) ||
-                Input.GetButtonDown(Axis.ShootMode) ||
-                Input.GetButtonDown(Axis.Start) ||
-                (Input.anyKeyDown && Input.inputString.Length > 0))) {
-                    _allowToSkip = false;
-                LevelTransitionController ltc = GameObject.FindObjectOfType<LevelTransitionController>();
-                if (ltc != null) {
-                    ltc.SkipEnd();
-                }
-                GetComponentInChildren<MainCameraAnimationController>().SkipIntro();
-            }
-        }
-    }
+		//Irrigate action
+		if (currentInput.GetButtonDown(Axis.Irrigate))
+			actionComponent.Irrigate();
 
+		//Select button
+		bool help = currentInput.GetButtonDown(Axis.Back);
+		if (help)
+			_helpController.ToggleHelp();
+		_helpController.UpdateAutoShow(hInput, vInput);
 
-    /// <summary>
-    /// Stops the player and closes the input.
-    /// </summary>
-    /// <param name="allowToSkip"></param>
-    /// <param name="timeToReanude"></param>
-    public void StopInput(bool allowToSkip = false, float timeToReanude = 0)
-    {
+		//Shoot mode pointer inputs
+		if (currentInput.GetAxis(Axis.LookAtDir) < 0)
+			shootComponent.LookatRight();
+		if (currentInput.GetAxis(Axis.LookAtDir) > 0)
+			shootComponent.LookatLeft();
+	}
 
-        // Disable input
-        CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
-        cccp.Stop();
-        _enabled = false;
+	public bool IsSequencePlaying() {
+		return currentInputSequence != null;
+	}
 
-        // Wait for display the intro
-        StartCoroutine(WaitForSkip(allowToSkip, timeToReanude));
-    }
+	public void PlaySequence(InputSequence sequence) {
+		if (sequence == null)
+			StopSequence();
+		else {
+			currentInputSequence = sequence;
+			sequenceTime = 0;
+			updateOnFixedStep = true;
+		}
+	}
 
+	public void StopSequence() {
+		currentInput = new InputProviderFromPlayer();
+		currentInputSequence = null;
+		updateOnFixedStep = false;
+	}
 
-    /// <summary>
-    /// Stops the player immediatly and closes the input.
-    /// </summary>
-    public void StopInputAndPlayer()
-    {
+	public InputProvider GetCurrentInputProvider() {
+		return currentInput;
+	}
 
-        // Disable input
-        CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
-        cccp.Stop(true);
+	/// <summary>
+	/// Stops the player and closes the input.
+	/// </summary>
+	/// <param name="allowToSkip"></param>
+	/// <param name="timeToReanude"></param>
+	public void StopInput(bool allowToSkip = false, float timeToReanude = 0)
+	{
 
-        _enabled = false;
-    }
+		// Disable input
+		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+		cccp.Stop();
+		_enabled = false;
+
+		// Wait for display the intro
+		StartCoroutine(WaitForSkip(allowToSkip, timeToReanude));
+	}
 
 
-    /// <summary>
-    /// Waits wait time and then allows to skip
-    /// </summary>
-    /// <param name="waitTime">Desired time to wait untill intro is skipped</param>
-    public IEnumerator WaitForSkip(bool allowToSkip, float waitTime) {
+	/// <summary>
+	/// Stops the player immediatly and closes the input.
+	/// </summary>
+	public void StopInputAndPlayer()
+	{
 
-        // Wait for display the intro
-        yield return new WaitForSeconds(waitTime);
+		// Disable input
+		CharacterControllerCustomPlayer cccp = _switcher.currentCharacter.GetComponent<CharacterControllerCustomPlayer>();
+		cccp.Stop(true);
 
-        // allow to skip
-        _allowToSkip = allowToSkip;
+		_enabled = false;
+	}
 
-        yield return true;
-    }
 
-    /// <summary>
-    /// Resumes the input.
-    /// </summary>
-    public void ResumeInput() {
-        _enabled = true;
-    }
+	/// <summary>
+	/// Waits wait time and then allows to skip
+	/// </summary>
+	/// <param name="waitTime">Desired time to wait untill intro is skipped</param>
+	public IEnumerator WaitForSkip(bool allowToSkip, float waitTime) {
 
-    /// <summary>
-    /// Indicates if there is moving input
-    /// </summary>
-    public bool isMoving() {
-        return _moving;
-    }
-    #endregion
+		// Wait for display the intro
+		yield return new WaitForSeconds(waitTime);
+
+		// allow to skip
+		_allowToSkip = allowToSkip;
+
+		yield return true;
+	}
+
+	/// <summary>
+	/// Resumes the input.
+	/// </summary>
+	public void ResumeInput() {
+		_enabled = true;
+	}
+
+	/// <summary>
+	/// Indicates if there is moving input
+	/// </summary>
+	public bool isMoving() {
+		return _moving;
+	}
+	#endregion
 }
