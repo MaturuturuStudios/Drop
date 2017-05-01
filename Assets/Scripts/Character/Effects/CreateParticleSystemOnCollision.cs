@@ -44,7 +44,7 @@ public class CreateParticleSystemOnCollision : MonoBehaviour {
 		// Retrieves the desired components
 		_particleSystem = GetComponent<ParticleSystem>();
 		_transform = _particleSystem.transform;
-    }
+	}
 
 	public void OnParticleCollision(GameObject other) {
 		// Filters the layer
@@ -53,25 +53,25 @@ public class CreateParticleSystemOnCollision : MonoBehaviour {
 
 		// Gets this frame's collisions
 		int safeLength = _particleSystem.GetSafeCollisionEventSize();
-        List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(safeLength);
+		List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(safeLength);
 		int numCollisionEvents = _particleSystem.GetCollisionEvents(other, collisionEvents);
 
 		// Creates a particle effect instance for each collision
 		for (int i = 0; i < numCollisionEvents; i++) {
-            GameObject effect = Instantiate(particleSystemPrefab, collisionEvents[i].intersection, Quaternion.LookRotation(Vector3.forward, collisionEvents[i].normal)) as GameObject;
-            
-            ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
-            foreach (ParticleSystem sys in systems) {
-                sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
-                sys.Simulate(0, true, true);
-                sys.Play();
-            }
+			GameObject effect = Instantiate(particleSystemPrefab, collisionEvents[i].intersection, Quaternion.LookRotation(Vector3.forward, collisionEvents[i].normal)) as GameObject;
 
-            if (setParent) {
-                // Parents the effect. The scale needs to be reset to inherit the parent's
-                effect.transform.parent = _transform;
-                effect.transform.localScale = Vector3.one;
-            }
+			ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
+			foreach (ParticleSystem sys in systems) {
+				// sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+				sys.Simulate(0, true, true);
+				sys.Play();
+			}
+
+			if (setParent) {
+				// Parents the effect. The scale needs to be reset to inherit the parent's
+				effect.transform.parent = _transform;
+				effect.transform.localScale = Vector3.one;
+			}
 			else {
 				// Registers the effect on the game controller
 				GameControllerTemporal.AddTemporal(effect);

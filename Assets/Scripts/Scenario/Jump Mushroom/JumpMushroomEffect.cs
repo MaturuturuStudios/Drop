@@ -30,19 +30,19 @@ public class JumpMushroomEffect : MonoBehaviour, JumpMushroomListener {
 		GameObject effect = (GameObject) Instantiate(effectPrefab, collisionPoint, Quaternion.LookRotation(Vector3.forward, collisionNormal));
 		GameControllerTemporal.AddTemporal(effect);
 
-        ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
-        foreach (ParticleSystem sys in systems) {
-            sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
-            sys.Simulate(0, true, true);
-            sys.Play();
-        }
+		ParticleSystem[] systems = effect.GetComponentsInChildren<ParticleSystem>();
+		foreach (ParticleSystem sys in systems) {
+			// sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+			sys.Simulate(0, true, true);
+			sys.Play();
+		}
 
-        if (scaleWithSize) {
+		if (scaleWithSize) {
 			CharacterSize characterSize = bouncingCharacter.GetComponent<CharacterSize>();
 			effect.transform.localScale = Vector3.one;
 			if (characterSize != null)
 				effect.transform.localScale *= Mathf.Sqrt(characterSize.GetSize());
-        }
+		}
 		Destroy(effect, effectDuration);
 	}
 }

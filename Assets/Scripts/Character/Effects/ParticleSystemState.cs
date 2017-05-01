@@ -39,11 +39,11 @@ public class ParticleSystemState {
 		// Scales the VelocityOverLifetime module as well
 		if (system.velocityOverLifetime.enabled) {
 			ParticleSystem.MinMaxCurve x = system.velocityOverLifetime.x;
-			x.curveScalar = sizeFactor;
+			x.curveMultiplier = sizeFactor;
 			ParticleSystem.MinMaxCurve y = system.velocityOverLifetime.x;
-			y.curveScalar = sizeFactor;
+			y.curveMultiplier = sizeFactor;
 			ParticleSystem.MinMaxCurve z = system.velocityOverLifetime.x;
-			z.curveScalar = sizeFactor;
+			z.curveMultiplier = sizeFactor;
 		}
 	}
 }

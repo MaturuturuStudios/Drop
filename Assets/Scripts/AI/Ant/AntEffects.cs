@@ -71,10 +71,10 @@ public class AntEffects : MonoBehaviour, EnemyBehaviourListener {
 
 		// Looks for the renderers' materials
 		_eyeMaterials = new Material[eyeRenderers.Length];
-        for (int i = 0; i < eyeRenderers.Length; i++) {
+		for (int i = 0; i < eyeRenderers.Length; i++) {
 			// Saves a reference to the material
 			_eyeMaterials[i] = eyeRenderers[i].material;
-        }
+		}
 
 		// Sets the eyes' color to the default one
 		SetAllMaterialsColor(_targetEyeColor);
@@ -125,14 +125,14 @@ public class AntEffects : MonoBehaviour, EnemyBehaviourListener {
 
 		// Creates the scared prefab
 		GameObject scaredEffect = Instantiate(scaredEffectPrefab, scaredEffectTransform.position, scaredEffectTransform.rotation) as GameObject;
-        ParticleSystem[] systems = scaredEffect.GetComponentsInChildren<ParticleSystem>();
-        foreach (ParticleSystem sys in systems) {
-            sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
-            sys.Simulate(0, true, true);
-            sys.Play();
-        }
-        scaredEffect.transform.parent = scaredEffectTransform;
-    }
+		ParticleSystem[] systems = scaredEffect.GetComponentsInChildren<ParticleSystem>();
+		foreach (ParticleSystem sys in systems) {
+			// sys.randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+			sys.Simulate(0, true, true);
+			sys.Play();
+		}
+		scaredEffect.transform.parent = scaredEffectTransform;
+	}
 
 	public void OnStateAnimationChange(AnimationState previousState, AnimationState actualState) {
 		// Do nothing

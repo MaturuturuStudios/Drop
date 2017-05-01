@@ -200,7 +200,7 @@ public class WindTube : MonoBehaviour {
 
 		// Creates the wind effect
 		_windEffect = (GameObject) Instantiate(windEffect, _transform.position, _transform.rotation);
-        _windEffect.transform.parent = _transform;
+		_windEffect.transform.parent = _transform;
 
 		// Retrieves all the particle systems
 		_particleSystems = _windEffect.GetComponentsInChildren<ParticleSystem>();
@@ -221,10 +221,10 @@ public class WindTube : MonoBehaviour {
 			state.forceZ = _particleSystems[i].forceOverLifetime.z;
 			_initialParticleSystemStates[i] = state;
 
-            _particleSystems[i].randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
-            _particleSystems[i].Simulate(0, true, true);
-            _particleSystems[i].Play();
-        }
+			// _particleSystems[i].randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
+			_particleSystems[i].Simulate(0, true, true);
+			_particleSystems[i].Play();
+		}
 
 		// Disables the particle system's emission as they will be renabled if needed
 		OnDisable();
@@ -264,7 +264,7 @@ public class WindTube : MonoBehaviour {
 		_collider.center = new Vector3(0, length / 2, 0);
 
 		// Modifies each particle system to fit the collider
-        for (int i = 0; i < _particleSystems.Length; i++) {
+		for (int i = 0; i < _particleSystems.Length; i++) {
 			// Modifies the emissor's shape
 			ParticleSystem.ShapeModule shape = _particleSystems[i].shape;
 			shape.box = new Vector3(width * _transform.lossyScale.x, 0, 1);
@@ -274,42 +274,42 @@ public class WindTube : MonoBehaviour {
 
 			// Modifies the particle speed
 			float speedFactor = particleSpeedMultiplier * _transform.lossyScale.y * windForce / _baseWindForce;
-            _particleSystems[i].startSpeed = _initialParticleSystemStates[i].startSpeed * speedFactor;
+			_particleSystems[i].startSpeed = _initialParticleSystemStates[i].startSpeed * speedFactor;
 
 			// Modifies the particle velocity
 			if (_particleSystems[i].velocityOverLifetime.enabled) {
 				ParticleSystem.MinMaxCurve x = _initialParticleSystemStates[i].velocityX;
 				x.constantMax *= speedFactor;
 				x.constantMin *= speedFactor;
-				x.curveScalar *= speedFactor;
+				x.curveMultiplier *= speedFactor;
 				ParticleSystem.MinMaxCurve y = _initialParticleSystemStates[i].velocityY;
 				y.constantMax *= speedFactor;
 				y.constantMin *= speedFactor;
-				y.curveScalar *= speedFactor;
+				y.curveMultiplier *= speedFactor;
 				ParticleSystem.MinMaxCurve z = _initialParticleSystemStates[i].velocityZ;
 				z.constantMax *= speedFactor;
 				z.constantMin *= speedFactor;
-				z.curveScalar *= speedFactor;
+				z.curveMultiplier *= speedFactor;
 				ParticleSystem.VelocityOverLifetimeModule velocity = _particleSystems[i].velocityOverLifetime;
 				velocity.x = x;
 				velocity.y = y;
 				velocity.z = z;
-            }
+			}
 
 			// Modifies the particle force
 			if (_particleSystems[i].forceOverLifetime.enabled) {
 				ParticleSystem.MinMaxCurve x = _initialParticleSystemStates[i].forceX;
 				x.constantMax *= speedFactor;
 				x.constantMin *= speedFactor;
-				x.curveScalar *= speedFactor;
+				x.curveMultiplier *= speedFactor;
 				ParticleSystem.MinMaxCurve y = _initialParticleSystemStates[i].forceY;
 				y.constantMax *= speedFactor;
 				y.constantMin *= speedFactor;
-				y.curveScalar *= speedFactor;
+				y.curveMultiplier *= speedFactor;
 				ParticleSystem.MinMaxCurve z = _initialParticleSystemStates[i].forceZ;
 				z.constantMax *= speedFactor;
 				z.constantMin *= speedFactor;
-				z.curveScalar *= speedFactor;
+				z.curveMultiplier *= speedFactor;
 				ParticleSystem.ForceOverLifetimeModule force = _particleSystems[i].forceOverLifetime;
 				force.x = x;
 				force.y = y;
@@ -322,7 +322,7 @@ public class WindTube : MonoBehaviour {
 				ParticleSystem.MinMaxCurve rate = _initialParticleSystemStates[i].rate;
 				rate.constantMax *= emissionRateFactor;
 				rate.constantMin *= emissionRateFactor;
-				rate.curveScalar *= emissionRateFactor;
+				rate.curveMultiplier *= emissionRateFactor;
 				ParticleSystem.EmissionModule emission = _particleSystems[i].emission;
 				emission.rate = rate;
 			}
@@ -334,9 +334,9 @@ public class WindTube : MonoBehaviour {
 				if (curve.mode == ParticleSystemCurveMode.Constant || curve.mode == ParticleSystemCurveMode.TwoConstants)
 					particleSpeed = Mathf.Max(curve.constantMax, curve.constantMin);
 				else
-					particleSpeed = curve.curveScalar * curve.curveMax.Evaluate(0);
+					particleSpeed = curve.curveMultiplier * curve.curveMax.Evaluate(0);
 			}
-            _particleSystems[i].startLifetime = length * _transform.lossyScale.y / particleSpeed;
+			_particleSystems[i].startLifetime = length * _transform.lossyScale.y / particleSpeed;
 		}
 	}
 
@@ -452,26 +452,26 @@ public class WindTube : MonoBehaviour {
 		// Draws the collider
 		Gizmos.matrix = transform.localToWorldMatrix;
 		Gizmos.DrawCube(Vector3.up * collider.size.y / 2, collider.size);
-    }
+	}
 
-    /// <summary>
-    /// Enables or disables the script.
-    /// </summary>
-    /// <param name="enabled">If the script should be enabled</param>
-    public void SetEnabled(bool enabled)
-    {
-        this.enabled = enabled;
-    }
+	/// <summary>
+	/// Enables or disables the script.
+	/// </summary>
+	/// <param name="enabled">If the script should be enabled</param>
+	public void SetEnabled(bool enabled)
+	{
+		this.enabled = enabled;
+	}
 
-    /// <summary>
-    /// Allows to change the length parameter
-    /// </summary>
-    /// <param name="length">The new value for length</param>
-    public void SetLength(float length)
-    {
+	/// <summary>
+	/// Allows to change the length parameter
+	/// </summary>
+	/// <param name="length">The new value for length</param>
+	public void SetLength(float length)
+	{
 
-        this.length = length;
-    }
+		this.length = length;
+	}
 
-    #endregion
+	#endregion
 }
