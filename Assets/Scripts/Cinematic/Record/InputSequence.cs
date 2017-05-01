@@ -25,7 +25,7 @@ public class InputSequence : ScriptableObject {
 	}
 
 	public bool IsOver(float time) {
-		return time > (endAt - beginAt);
+		return time >= (endAt - beginAt);
 	}
 
 	private int GetInputIndex(float time) {

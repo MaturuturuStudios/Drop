@@ -128,6 +128,7 @@ public class InputRecorderUI : MonoBehaviour {
 		namePrompt.SetActive(true);
 		namePromptText.Select();
 		namePromptText.ActivateInputField();
+		recorder.StopInput();
 		_audioSource.clip = promptForNameClip;
 		_audioSource.Play();
 	}
@@ -141,6 +142,7 @@ public class InputRecorderUI : MonoBehaviour {
 
 	public void ExitPrompt() {
 		namePrompt.SetActive(false);
+		recorder.ResumeInput();
 	}
 
 	public void PlayLastSequence() {

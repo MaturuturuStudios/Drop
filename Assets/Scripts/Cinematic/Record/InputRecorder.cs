@@ -60,6 +60,8 @@ public class InputRecorder : MonoBehaviour {
 	public void SetUseFixedStep(bool value) {
 		useFixedStep = value;
 	}
+	
+	#region Métodos extra
 
 	public void PlaySequence(InputSequence sequence) {
 		_gameControllerInput.PlaySequence(sequence);
@@ -72,4 +74,14 @@ public class InputRecorder : MonoBehaviour {
 	public bool IsSequencePlaying() {
 		return _gameControllerInput.IsSequencePlaying();
 	}
+
+	public void StopInput() {
+		_gameControllerInput.StopInput();
+	}
+
+	public void ResumeInput() {
+		_gameControllerInput.ResumeInput();
+	}
+
+	#endregion
 }
